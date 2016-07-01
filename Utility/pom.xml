@@ -28,6 +28,11 @@
 			<artifactId>stanford-corenlp</artifactId>
 			<version>3.5.2</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.avro</groupId>
+			<artifactId>avro</artifactId>
+			<version>1.7.7</version>
+		</dependency>
 	</dependencies>
 
 </project>
