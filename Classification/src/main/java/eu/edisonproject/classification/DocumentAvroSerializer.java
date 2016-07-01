@@ -25,26 +25,26 @@ import org.apache.avro.file.DataFileWriter;
 import org.apache.avro.io.DatumWriter;
 import org.apache.avro.specific.SpecificDatumWriter;
 
-public class JobPostAvroSerializer {
+public class DocumentAvroSerializer {
 
 	public class AvroSerializer {
 
-		private DataFileWriter<Jobpost> dataFileWriter;
+		private DataFileWriter<Document> dataFileWriter;
 
-		public AvroSerializer(String file, Schema jpSchema) {
-			DatumWriter<Jobpost> jobpostDatumWriter = new SpecificDatumWriter<Jobpost>(Jobpost.class);
-			dataFileWriter = new DataFileWriter<Jobpost>(jobpostDatumWriter);
+		public AvroSerializer(String file, Schema documentSchema) {
+			DatumWriter<Document> documentDatumWriter = new SpecificDatumWriter<Document>(Document.class);
+			dataFileWriter = new DataFileWriter<Document>(documentDatumWriter);
 			try {
-				dataFileWriter.create(jpSchema, new File(file));
+				dataFileWriter.create(documentSchema, new File(file));
 
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 
-		public void serialize(Jobpost jp) {
+		public void serialize(Document d) {
 			try {
-				dataFileWriter.append(jp);
+				dataFileWriter.append(d);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
