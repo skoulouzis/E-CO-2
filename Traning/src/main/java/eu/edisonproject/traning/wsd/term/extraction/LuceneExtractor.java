@@ -106,31 +106,31 @@ public class LuceneExtractor implements TermExtractor {
 
         //Read asosiation rules file and check if we have the same terms 
         try (BufferedReader br = new BufferedReader(new FileReader(new File(itemsFilePath)))) {
-            for (String text; (text = br.readLine()) != null;) {
-
-                for (String t : tokens) {
-
-                    Double tf;
-                    if (termDictionaray.containsKey(t)) {
-                        tf = termDictionaray.get(t);
-                        tf++;
-                    } else {
-                        tf = 1.0;
-                    }
-                    termDictionaray.put(t, tf);
-                }
-
-                for (String t : ngrams) {
-                    Double tf;
-                    if (termDictionaray.containsKey(t)) {
-                        tf = termDictionaray.get(t);
-                        tf++;
-                    } else {
-                        tf = 1.0;
-                    }
-                    termDictionaray.put(t, tf);
-                }
-            }
+//            for (String text; (text = br.readLine()) != null;) {
+//
+//                for (String t : tokens) {
+//
+//                    Double tf;
+//                    if (termDictionaray.containsKey(t)) {
+//                        tf = termDictionaray.get(t);
+//                        tf++;
+//                    } else {
+//                        tf = 1.0;
+//                    }
+//                    termDictionaray.put(t, tf);
+//                }
+//
+//                for (String t : ngrams) {
+//                    Double tf;
+//                    if (termDictionaray.containsKey(t)) {
+//                        tf = termDictionaray.get(t);
+//                        tf++;
+//                    } else {
+//                        tf = 1.0;
+//                    }
+//                    termDictionaray.put(t, tf);
+//                }
+//            }
         }
 
         return termDictionaray;
