@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -92,18 +93,21 @@ public class JtopiaExtractor implements TermExtractor {
         tokenizer = new StopWord(stopwordsCharArray);
         lematizer = new StanfordLemmatizer();
 
-        Set<String> terms = null;
+        Set<String> terms = new HashSet<>();
 
         if (dir.isDirectory()) {
             for (File f : dir.listFiles()) {
                 if (FilenameUtils.getExtension(f.getName()).endsWith("txt")) {
                     count++;
                     Logger.getLogger(JtopiaExtractor.class.getName()).log(Level.INFO, "{0}: {1} of {2}", new Object[]{f.getName(), count, dir.list().length});
-                    terms = extractFromFile(f, termExtractor, topiaDoc);
+                    terms.addAll(extractFromFile(f, termExtractor, topiaDoc));
                 }
             }
         } else if (dir.isFile()) {
-            terms = extractFromFile(dir, termExtractor, topiaDoc);
+            if (FilenameUtils.getExtension(dir.getName()).endsWith("txt")) {
+                terms.addAll(extractFromFile(dir, termExtractor, topiaDoc));
+            }
+
         }
         for (String t : terms) {
             Double tf;
@@ -130,7 +134,10 @@ public class JtopiaExtractor implements TermExtractor {
                 fileContents.deleteCharAt(fileContents.length() - 1);
                 fileContents.setLength(fileContents.length());
 
-                tokenizer.setDescription(fileContents.toString());
+                String contents = fileContents.toString().replaceAll("_", " ");
+                contents = contents.replaceAll("\\s{2,}", " ");
+
+                tokenizer.setDescription(contents);
                 String cleanText = tokenizer.execute();
                 lematizer.setDescription(cleanText);
                 String lematizedText = lematizer.execute();

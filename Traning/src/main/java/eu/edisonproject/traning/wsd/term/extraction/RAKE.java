@@ -1,8 +1,5 @@
 package eu.edisonproject.traning.wsd.term.extraction;
 
-import com.sree.textbytes.jtopia.TermDocument;
-import com.sree.textbytes.jtopia.TermsExtractor;
-import edu.ehu.galan.rake.RakeAlgorithm;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;

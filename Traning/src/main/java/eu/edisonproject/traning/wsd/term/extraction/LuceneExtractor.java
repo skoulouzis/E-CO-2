@@ -11,7 +11,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -57,7 +61,7 @@ public class LuceneExtractor implements TermExtractor {
     public Map<String, Double> termXtraction(String inDir) throws IOException, FileNotFoundException, MalformedURLException {
         File dir = new File(inDir);
         Map<String, Double> termDictionaray = new HashMap();
-        String[] terms = null;
+        List<String> terms = new ArrayList<>();
         int count = 0;
 
         CharArraySet stopwordsCharArray = new CharArraySet(ConfigHelper.loadStopWords(stopWordsPath), true);
@@ -67,44 +71,46 @@ public class LuceneExtractor implements TermExtractor {
 
         try {
             if (dir.isDirectory()) {
-
                 for (File f : dir.listFiles()) {
                     count++;
                     Logger.getLogger(LuceneExtractor.class.getName()).log(Level.INFO, "{0}: {1} of {2}", new Object[]{f.getName(), count, dir.list().length});
                     if (FilenameUtils.getExtension(f.getName()).endsWith("txt")) {
-                        terms = extractFromFile(f);
+                        terms.addAll(extractFromFile(f));
                     }
                 }
             } else if (dir.isFile()) {
-                terms = extractFromFile(dir);
+                if (FilenameUtils.getExtension(dir.getName()).endsWith("txt")) {
+                    terms.addAll(extractFromFile(dir));
+                }
+
             }
 
-            try (BufferedReader br = new BufferedReader(new FileReader(new File(itemsFilePath)))) {
-                for (String text; (text = br.readLine()) != null;) {
-                    String aprioryTerm = text.split("/")[0];
-                    for (String term : terms) {
-                        String t = term.replaceAll("_", " ");
-                        if (aprioryTerm.equals(t)) {
-                            Double tf;
-                            if (termDictionaray.containsKey(t)) {
-                                tf = termDictionaray.get(t);
-                                tf++;
-                            } else {
-                                tf = 1.0;
-                            }
-                            termDictionaray.put(t, tf);
-                        }
+            Map<String, String> itemsMap = loadFileAsHashMap(itemsFilePath, "/");
+            for (String term : terms) {
+                String t = term.replaceAll("_", " ");
+                if (itemsMap.containsKey(t)) {
+                    Double tf;
+                    if (termDictionaray.containsKey(t)) {
+                        tf = termDictionaray.get(t);
+                        tf++;
+                    } else {
+                        tf = 1.0;
                     }
+                    termDictionaray.put(t, tf);
                 }
             }
-
+            //Indicate null to garbage collector
+            itemsMap = null;
+            terms = null;
+            System.gc();
         } catch (Exception ex) {
             Logger.getLogger(LuceneExtractor.class.getName()).log(Level.SEVERE, null, ex);
         }
         return termDictionaray;
     }
 
-    private String[] extractFromFile(File f) throws IOException, MalformedURLException, Exception {
+    private HashSet<String> extractFromFile(File f) throws IOException, MalformedURLException, Exception {
+
         StringBuilder fileContents = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new FileReader(f))) {
             for (String text; (text = br.readLine()) != null;) {
@@ -114,7 +120,10 @@ public class LuceneExtractor implements TermExtractor {
         fileContents.deleteCharAt(fileContents.length() - 1);
         fileContents.setLength(fileContents.length());
 
-        tokenizer.setDescription(fileContents.toString());
+        String contents = fileContents.toString().replaceAll("_", " ");
+        contents = contents.replaceAll("\\s{2,}", " ");
+
+        tokenizer.setDescription(contents);
         String cleanText = tokenizer.execute();
         lematizer.setDescription(cleanText);
 //        System.err.println(cleanText);
@@ -122,37 +131,25 @@ public class LuceneExtractor implements TermExtractor {
         ng.setDescription(lematizedText);
         String ngText = ng.execute();
         ngText += lematizedText;
-        return ngText.split(" ");
+        HashSet<String> set = new HashSet<>();
 
-        //Read asosiation rules file and check if we have the same terms 
-//        try (BufferedReader br = new BufferedReader(new FileReader(new File(itemsFilePath)))) {
-//            for (String text; (text = br.readLine()) != null;) {
-//
-//                for (String t : tokens) {
-//
-//                    Double tf;
-//                    if (termDictionaray.containsKey(t)) {
-//                        tf = termDictionaray.get(t);
-//                        tf++;
-//                    } else {
-//                        tf = 1.0;
-//                    }
-//                    termDictionaray.put(t, tf);
-//                }
-//
-//                for (String t : ngrams) {
-//                    Double tf;
-//                    if (termDictionaray.containsKey(t)) {
-//                        tf = termDictionaray.get(t);
-//                        tf++;
-//                    } else {
-//                        tf = 1.0;
-//                    }
-//                    termDictionaray.put(t, tf);
-//                }
-//            }
-//        }
-//        return termDictionaray;
+        for (String term : ngText.split(" ")) {
+            set.add(term);
+        }
+
+        return set;
+
+    }
+
+    private Map<String, String> loadFileAsHashMap(String itemsFilePath, String delimeter) throws IOException {
+        Map<String, String> map = new HashMap<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(new File(itemsFilePath)))) {
+            for (String text; (text = br.readLine()) != null;) {
+                String[] parts = text.split(delimeter);
+                map.put(parts[0], parts[1]);
+            }
+        }
+        return map;
     }
 
 }

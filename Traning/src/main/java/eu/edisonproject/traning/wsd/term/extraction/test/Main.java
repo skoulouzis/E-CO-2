@@ -20,6 +20,7 @@ import eu.edisonproject.traning.wsd.term.extraction.LuceneExtractor;
 import eu.edisonproject.traning.wsd.term.extraction.TermExtractor;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -50,15 +51,15 @@ public class Main {
 
             TermExtractor le = new LuceneExtractor();
             le.configure(prop);
-            String keyWordsFile = ".." + File.separator + "documentation" + File.separator + "keywordFiles" + File.separator + "BigDataFrameworks.txt";
-            Map<String, Double> terms = le.termXtraction(keyWordsFile);
-            System.err.println(terms);
-
             TermExtractor je = new JtopiaExtractor();
             je.configure(prop);
-            terms = je.termXtraction(keyWordsFile);
-            System.err.println(terms);
 
+            String testFiles = ".." + File.separator + "documentation"
+                    + File.separator + "sampleTextFiles";
+            Map<String, Double> terms = new HashMap<>();
+            terms.putAll(le.termXtraction(testFiles));
+            terms.putAll(je.termXtraction(testFiles));
+            System.err.println(terms);
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }

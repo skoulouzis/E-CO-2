@@ -58,11 +58,16 @@ public class NGramGenerator extends Cleaner {
             sf.reset();
             while (sf.incrementToken()) {
                 String word = charTermAttribute.toString();
-//                words.add(word.replaceAll(" ", "_"));
-                words.append(word.replaceAll(" ", "_")).append(" ");
+                word = word.replaceAll("_", " ");
+                word = word.replaceAll("\\s{2,}", " ");
+                word = word.replaceAll(" ", "_");
+                words.append(word).append(" ");
             }
             sf.end();
         }
+        words.deleteCharAt(words.length() - 1);
+        words.setLength(words.length());
+
         return words.toString();
     }
 }
