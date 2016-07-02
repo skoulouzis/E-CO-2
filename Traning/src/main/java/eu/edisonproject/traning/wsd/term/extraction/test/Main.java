@@ -32,10 +32,10 @@ import java.util.logging.Logger;
 public class Main {
 
     public static void main(String args[]) {
-        testLuceneExtractor();
+        testExtractors();
     }
 
-    private static void testLuceneExtractor() {
+    private static void testExtractors() {
         try {
 
             String stopwordsPath = ".." + File.separator + "etc" + File.separator + "stopwords.csv";
