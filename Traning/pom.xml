@@ -40,10 +40,19 @@
             <version>1.7.4</version>
             <type>jar</type>
         </dependency>
+        
+          
+        <dependency>
+            <groupId>edu.ehu.galan.rake</groupId>
+            <artifactId>RAKE</artifactId>
+            <version>1.0</version>
+            <type>jar</type>
+        </dependency>
+        
     </dependencies>
     
     
-      <repositories>
+    <repositories>
       
         <repository>
             <id>repo2_maven_org</id>
