@@ -1,6 +1,8 @@
 package eu.edisonproject.traning.wsd.term.extraction;
 
+import eu.edisonproject.utility.file.ConfigHelper;
 import eu.edisonproject.utility.text.processing.Cleaner;
+import eu.edisonproject.utility.text.processing.NGramGenerator;
 import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
 import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.BufferedReader;
@@ -9,29 +11,14 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-//import net.didion.jwnl.JWNLException;
-//import net.didion.jwnl.data.POS;
-//import nl.uva.sne.commons.SemanticUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.lucene.analysis.util.CharArraySet;
-import org.apache.lucene.util.Version;
-//import nl.uva.sne.commons.ValueComparator;
-//import org.json.simple.parser.ParseException;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 /**
  *
  * @author S. Koulouzis
@@ -39,23 +26,30 @@ import org.apache.lucene.util.Version;
 public class LuceneExtractor implements TermExtractor {
 
     private int maxNgrams;
-    private StopWord tokenizer;
-    private StanfordLemmatizer lematizer;
     private String itemsFilePath;
+    private String stopWordsPath;
+    Cleaner ng;
+    private Cleaner tokenizer;
+    private Cleaner lematizer;
 
     @Override
     public void configure(Properties prop) {
-        maxNgrams = Integer.valueOf(prop.getProperty("max.ngrams", "4"));
-
-        String stopWordsPath = System.getProperty("stop.words.file");
-
-        if (stopWordsPath == null) {
-            stopWordsPath = prop.getProperty("stop.words.file", "etc" + File.separator + "stopwords");
+        String strMaxNgrams = System.getProperty("max.ngrams");
+        if (strMaxNgrams == null) {
+            maxNgrams = Integer.valueOf(prop.getProperty("max.ngrams", "4"));
+        } else {
+            maxNgrams = Integer.valueOf(strMaxNgrams);
         }
 
-        itemsFilePath = System.getProperty("items.file");
+        stopWordsPath = System.getProperty("stop.words.file");
+
+        if (stopWordsPath == null) {
+            stopWordsPath = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
+        }
+
+        itemsFilePath = System.getProperty("itemset.file");
         if (itemsFilePath == null) {
-            itemsFilePath = prop.getProperty("items.file", "etc" + File.separator + "items.csv");
+            itemsFilePath = prop.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "itemset.csv");
         }
     }
 
@@ -63,33 +57,54 @@ public class LuceneExtractor implements TermExtractor {
     public Map<String, Double> termXtraction(String inDir) throws IOException, FileNotFoundException, MalformedURLException {
         File dir = new File(inDir);
         Map<String, Double> termDictionaray = new HashMap();
+        String[] terms = null;
         int count = 0;
+
+        CharArraySet stopwordsCharArray = new CharArraySet(ConfigHelper.loadStopWords(stopWordsPath), true);
+        tokenizer = new StopWord(stopwordsCharArray);
+        lematizer = new StanfordLemmatizer();
+        ng = new NGramGenerator(stopwordsCharArray, maxNgrams);
+
         try {
             if (dir.isDirectory()) {
-
-                Collection c = null;
-                CharArraySet stopwordsCharArray = new CharArraySet(c, true);
-                tokenizer = new StopWord(stopwordsCharArray);
-                lematizer = new StanfordLemmatizer();
 
                 for (File f : dir.listFiles()) {
                     count++;
                     Logger.getLogger(LuceneExtractor.class.getName()).log(Level.INFO, "{0}: {1} of {2}", new Object[]{f.getName(), count, dir.list().length});
                     if (FilenameUtils.getExtension(f.getName()).endsWith("txt")) {
-                        termDictionaray.putAll(extractFromFile(f));
+                        terms = extractFromFile(f);
                     }
                 }
             } else if (dir.isFile()) {
-                termDictionaray.putAll(extractFromFile(dir));
+                terms = extractFromFile(dir);
             }
+
+            try (BufferedReader br = new BufferedReader(new FileReader(new File(itemsFilePath)))) {
+                for (String text; (text = br.readLine()) != null;) {
+                    String aprioryTerm = text.split("/")[0];
+                    for (String term : terms) {
+                        String t = term.replaceAll("_", " ");
+                        if (aprioryTerm.equals(t)) {
+                            Double tf;
+                            if (termDictionaray.containsKey(t)) {
+                                tf = termDictionaray.get(t);
+                                tf++;
+                            } else {
+                                tf = 1.0;
+                            }
+                            termDictionaray.put(t, tf);
+                        }
+                    }
+                }
+            }
+
         } catch (Exception ex) {
             Logger.getLogger(LuceneExtractor.class.getName()).log(Level.SEVERE, null, ex);
         }
         return termDictionaray;
     }
 
-    private Map<String, Double> extractFromFile(File f) throws IOException, MalformedURLException {
-        Map<String, Double> termDictionaray = new HashMap();
+    private String[] extractFromFile(File f) throws IOException, MalformedURLException, Exception {
         StringBuilder fileContents = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new FileReader(f))) {
             for (String text; (text = br.readLine()) != null;) {
@@ -98,11 +113,16 @@ public class LuceneExtractor implements TermExtractor {
         }
         fileContents.deleteCharAt(fileContents.length() - 1);
         fileContents.setLength(fileContents.length());
+
         tokenizer.setDescription(fileContents.toString());
         String cleanText = tokenizer.execute();
-
         lematizer.setDescription(cleanText);
+//        System.err.println(cleanText);
         String lematizedText = lematizer.execute();
+        ng.setDescription(lematizedText);
+        String ngText = ng.execute();
+        ngText += lematizedText;
+        return ngText.split(" ");
 
         //Read asosiation rules file and check if we have the same terms 
 //        try (BufferedReader br = new BufferedReader(new FileReader(new File(itemsFilePath)))) {
@@ -132,6 +152,7 @@ public class LuceneExtractor implements TermExtractor {
 //                }
 //            }
 //        }
-        return termDictionaray;
+//        return termDictionaray;
     }
+
 }

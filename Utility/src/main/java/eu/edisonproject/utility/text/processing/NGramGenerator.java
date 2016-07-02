@@ -5,10 +5,13 @@
  */
 package eu.edisonproject.utility.text.processing;
 
+import eu.edisonproject.utility.file.ConfigHelper;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.core.StopFilter;
@@ -24,30 +27,42 @@ import org.apache.lucene.util.Version;
  */
 public class NGramGenerator extends Cleaner {
 
+    private final int maxNGrams;
+    private final CharArraySet stopwords;
+
+    public NGramGenerator(CharArraySet stopwords, int maxNGrams) {
+        this.stopwords = stopwords;
+        this.maxNGrams = maxNGrams;
+    }
+
     @Override
     public String execute() {
+        try {
+            return getNGrams();
+        } catch (IOException ex) {
+            Logger.getLogger(NGramGenerator.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return null;
     }
 
-//      public static List<String> getNGrams(String text, int maxNGrams) throws IOException {
+    private String getNGrams() throws IOException {
 //        List<String> words = new ArrayList<>();
-//
-//        Analyzer analyzer = new StandardAnalyzer(CharArraySet.EMPTY_SET);
-//        TokenStream tokenStream = analyzer.tokenStream("content", new StringReader(text));
-//        StopFilter stopFilter = new StopFilter(Version.LUCENE_5_0_0, tokenStream, getStopWords());
-////        stopFilter.setEnablePositionIncrements(false);
-////        SnowballFilter snowballFilter = new SnowballFilter(stopFilter, "English");
-//
-//        try (ShingleFilter sf = new ShingleFilter(stopFilter, 2, maxNGrams)) {
-//            sf.setOutputUnigrams(false);
-//            CharTermAttribute charTermAttribute = sf.addAttribute(CharTermAttribute.class);
-//            sf.reset();
-//            while (sf.incrementToken()) {
-//                String word = charTermAttribute.toString();
+
+        Analyzer analyzer = new StandardAnalyzer(stopwords);
+        TokenStream tokenStream = analyzer.tokenStream("content", new StringReader(getDescription()));
+        StopFilter stopFilter = new StopFilter(tokenStream, stopwords);
+        StringBuilder words = new StringBuilder();
+        try (ShingleFilter sf = new ShingleFilter(stopFilter, 2, maxNGrams)) {
+            sf.setOutputUnigrams(false);
+            CharTermAttribute charTermAttribute = sf.addAttribute(CharTermAttribute.class);
+            sf.reset();
+            while (sf.incrementToken()) {
+                String word = charTermAttribute.toString();
 //                words.add(word.replaceAll(" ", "_"));
-//            }
-//            sf.end();
-//        }
-//        return words;
-//    }
+                words.append(word.replaceAll(" ", "_")).append(" ");
+            }
+            sf.end();
+        }
+        return words.toString();
+    }
 }

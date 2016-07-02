@@ -26,25 +26,25 @@ public class Term extends org.apache.avro.specific.SpecificRecordBase implements
     public static org.apache.avro.Schema getClassSchema() {
         return SCHEMA$;
     }
-    @Deprecated
+   
     public java.lang.CharSequence uid;
-    @Deprecated
+   
     public java.lang.CharSequence lemma;
-    @Deprecated
+   
     public java.util.List<java.lang.CharSequence> glosses;
-    @Deprecated
+   
     public java.lang.CharSequence originalTerm;
-    @Deprecated
+   
     public java.lang.CharSequence url;
-    @Deprecated
+   
     public java.util.List<java.lang.CharSequence> categories;
-    @Deprecated
+   
     public java.util.List<java.lang.CharSequence> altLables;
-    @Deprecated
+   
     public java.util.List<java.lang.CharSequence> buids;
-    @Deprecated
+   
     public java.util.List<java.lang.CharSequence> nuids;
-    @Deprecated
+ 
     public double confidence;
 
     /**
@@ -450,6 +450,8 @@ public class Term extends org.apache.avro.specific.SpecificRecordBase implements
 
         /**
          * Sets the value of the 'uid' field
+         * @param value
+         * @return 
          */
         public Term.Builder setUid(java.lang.CharSequence value) {
             validate(fields()[0], value);
@@ -460,6 +462,7 @@ public class Term extends org.apache.avro.specific.SpecificRecordBase implements
 
         /**
          * Checks whether the 'uid' field has been set
+         * @return 
          */
         public boolean hasUid() {
             return fieldSetFlags()[0];
@@ -467,6 +470,7 @@ public class Term extends org.apache.avro.specific.SpecificRecordBase implements
 
         /**
          * Clears the value of the 'uid' field
+         * @return 
          */
         public Term.Builder clearUid() {
             uid = null;
@@ -476,6 +480,7 @@ public class Term extends org.apache.avro.specific.SpecificRecordBase implements
 
         /**
          * Gets the value of the 'lemma' field
+         * @return 
          */
         public java.lang.CharSequence getLemma() {
             return lemma;
@@ -483,6 +488,8 @@ public class Term extends org.apache.avro.specific.SpecificRecordBase implements
 
         /**
          * Sets the value of the 'lemma' field
+         * @param value
+         * @return 
          */
         public Term.Builder setLemma(java.lang.CharSequence value) {
             validate(fields()[1], value);
@@ -493,6 +500,7 @@ public class Term extends org.apache.avro.specific.SpecificRecordBase implements
 
         /**
          * Checks whether the 'lemma' field has been set
+         * @return 
          */
         public boolean hasLemma() {
             return fieldSetFlags()[1];
@@ -500,6 +508,7 @@ public class Term extends org.apache.avro.specific.SpecificRecordBase implements
 
         /**
          * Clears the value of the 'lemma' field
+         * @return 
          */
         public Term.Builder clearLemma() {
             lemma = null;
@@ -509,6 +518,7 @@ public class Term extends org.apache.avro.specific.SpecificRecordBase implements
 
         /**
          * Gets the value of the 'glosses' field
+         * @return 
          */
         public java.util.List<java.lang.CharSequence> getGlosses() {
             return glosses;
