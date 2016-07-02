@@ -46,15 +46,15 @@ public class DataPrepare {
 	private ReaderFile fileReader;
 	private List<List<String>> allRules;
 
-	public DataPrepare(String inputFolder, String outputFolder) {
-		stopWordArraySet = loadStopWords();
+	public DataPrepare(String inputFolder, String outputFolder,String stopwordDocument) {
+		stopWordArraySet = loadStopWords(stopwordDocument);
 		this.inputFolder = inputFolder;
 		this.outputFolder = outputFolder;
 		this.allRules = new LinkedList<List<String>>();
 	}
 
-	public CharArraySet loadStopWords() {
-		fileReader = new ReaderFile("C:/Users/miche/git/E-COCO/documentation/stopwords.csv");
+	public CharArraySet loadStopWords(String stopwordDocument) {
+		fileReader = new ReaderFile(stopwordDocument);
 		String[] stopWord = fileReader.readFile().split(" ");
 		final List<String> stopWords = Arrays.asList(stopWord);
 

@@ -31,8 +31,11 @@ import eu.edisonproject.traning.context.corpus.DataPrepare;
 public class TestApriori {
 
 	public static void main(String[] args) {
-		String absolutePath = "C:/Users/miche/git/E-COCO";
-		DataPrepare dataPrepare = new DataPrepare(absolutePath+"/documentation/Apriori documents/",absolutePath+"/documentation/results/");
+		String absolutePath = ".."+File.separator+"documentation";
+		String inputPath = absolutePath+File.separator+"Apriori documents"+File.separator;
+		String outputPath = absolutePath+File.separator+"results"+File.separator;
+		String stopwordPath = absolutePath+File.separator+"stopwords.csv";
+		DataPrepare dataPrepare = new DataPrepare(inputPath,outputPath,stopwordPath);
 		dataPrepare.execute();
 	}
 
