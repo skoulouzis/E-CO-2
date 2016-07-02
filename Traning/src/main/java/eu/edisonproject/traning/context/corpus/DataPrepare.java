@@ -17,7 +17,7 @@ import eu.edisonproject.utility.text.processing.Cleaner;
 import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
 import eu.edisonproject.utility.text.processing.StopWord;
 
-import org.apache.log4j.Logger;
+
 import org.apache.lucene.analysis.util.CharArraySet;
 
 /**

@@ -105,7 +105,7 @@ public class LuceneExtractor implements TermExtractor {
         String lematizedText = lematizer.execute();
 
         //Read asosiation rules file and check if we have the same terms 
-        try (BufferedReader br = new BufferedReader(new FileReader(new File(itemsFilePath)))) {
+//        try (BufferedReader br = new BufferedReader(new FileReader(new File(itemsFilePath)))) {
 //            for (String text; (text = br.readLine()) != null;) {
 //
 //                for (String t : tokens) {
@@ -131,8 +131,7 @@ public class LuceneExtractor implements TermExtractor {
 //                    termDictionaray.put(t, tf);
 //                }
 //            }
-        }
-
+//        }
         return termDictionaray;
     }
 }
