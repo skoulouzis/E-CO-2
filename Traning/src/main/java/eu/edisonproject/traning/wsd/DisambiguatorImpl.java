@@ -6,19 +6,28 @@
 package eu.edisonproject.traning.wsd;
 
 import eu.edisonproject.traning.utility.term.avro.Term;
+import eu.edisonproject.utility.commons.ValueComparator;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.lucene.search.similarities.DefaultSimilarity;
+import org.apache.lucene.search.similarities.TFIDFSimilarity;
 import org.json.simple.parser.ParseException;
 
 /**
@@ -27,13 +36,16 @@ import org.json.simple.parser.ParseException;
  */
 public class DisambiguatorImpl implements Disambiguator, Callable {
 
+    private static Collection<? extends String> tokenize(CharSequence s, boolean b) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     private Integer limit;
     private Double minimumSimilarity;
     private Integer lineOffset;
-    private String cachePath;
-    private String allTermsDictionaryPath;
     private String termToProcess;
     private String stopWordsPath;
+    private String itemsFilePath;
 
     /**
      *
@@ -96,14 +108,21 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         } else {
             lineOffset = Integer.valueOf(offset);
         }
-        minimumSimilarity = Double.valueOf(properties.getProperty("minimum.similarity", "0,3"));
-        this.cachePath = (properties.getProperty("cache.path"));
-        allTermsDictionaryPath = properties.getProperty("all.terms.dictionary.path");
+        String minimumSimilarityStr = System.getProperty("minimum.similarity");
+        if (minimumSimilarityStr == null) {
+            minimumSimilarityStr = properties.getProperty("minimum.similarity", "0,3");
+        }
+        minimumSimilarity = Double.valueOf(minimumSimilarityStr);
 
         stopWordsPath = System.getProperty("stop.words.file");
 
-        if (getStopWordsPath() == null) {
+        if (stopWordsPath == null) {
             stopWordsPath = properties.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
+        }
+
+        itemsFilePath = System.getProperty("itemset.file");
+        if (itemsFilePath == null) {
+            itemsFilePath = properties.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "itemset.csv");
         }
 
     }
@@ -120,14 +139,6 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         } else {
             return null;
         }
-
-    }
-
-    /**
-     * @return the cachePath
-     */
-    public String getCachePath() {
-        return cachePath;
     }
 
     /**
@@ -149,13 +160,6 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
      */
     public Integer getLineOffset() {
         return lineOffset;
-    }
-
-    /**
-     * @return the allTermsDictionaryPath
-     */
-    public String getAllTermsDictionaryPath() {
-        return allTermsDictionaryPath;
     }
 
     /**
@@ -185,10 +189,186 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
     }
 
     protected Term disambiguate(String term, Set<Term> possibleTerms, Set<String> ngarms, double minimumSimilarity) {
+
         return null;
+    }
+
+    private Set<Term> tf_idf_Disambiguation(Set<Term> possibleTerms, Set<String> nGrams, String lemma, double confidence, boolean matchTitle) throws IOException, ParseException {
+        List<List<String>> allDocs = new ArrayList<>();
+        Map<CharSequence, List<String>> docs = new HashMap<>();
+
+        for (Term tv : possibleTerms) {
+            Set<String> doc = getDocument(tv);
+            allDocs.add(new ArrayList<>(doc));
+            docs.put(tv.getUid(), new ArrayList<>(doc));
+        }
+
+        Set<String> contextDoc = new HashSet<>();
+        for (String s : nGrams) {
+            if (s.contains("_")) {
+                String[] parts = s.split("_");
+                for (String token : parts) {
+                    if (token.length() >= 1 && !token.contains(lemma)) {
+                        contextDoc.add(token);
+                    }
+                }
+            } else if (s.length() >= 1 && !s.contains(lemma)) {
+                contextDoc.add(s);
+            }
+        }
+        docs.put("context", new ArrayList<>(contextDoc));
+
+        Map<CharSequence, Map<String, Double>> featureVectors = new HashMap<>();
+        for (CharSequence k : docs.keySet()) {
+            List<String> doc = docs.get(k);
+            Map<String, Double> featureVector = new TreeMap<>();
+            for (String term : doc) {
+                if (!featureVector.containsKey(term)) {
+                    double tfidf = tfIdf(doc, allDocs, term);
+                    featureVector.put(term, tfidf);
+                }
+            }
+            featureVectors.put(k, featureVector);
+        }
+
+        Map<String, Double> contextVector = featureVectors.remove("context");
+
+        Map<CharSequence, Double> scoreMap = new HashMap<>();
+        for (CharSequence key : featureVectors.keySet()) {
+            Double similarity = cosineSimilarity(contextVector, featureVectors.get(key));
+
+            for (Term t : possibleTerms) {
+                if (t.getUid().equals(key)) {
+
+                    String stemTitle = stem(t.getLemma());
+                    String stemLema = stem(lemma);
+//                    List<String> subTokens = new ArrayList<>();
+//                    if (!t.getLemma().toLowerCase().startsWith("(") && t.getLemma().toLowerCase().contains("(") && t.getLemma().toLowerCase().contains(")")) {
+//                        int index1 = t.getLemma().toLowerCase().indexOf("(") + 1;
+//                        int index2 = t.getLemma().toLowerCase().indexOf(")");
+//                        String sub = t.getLemma().toLowerCase().substring(index1, index2);
+//                        subTokens.addAll(tokenize(sub, true));
+//                    }
+//
+//                    List<String> nTokens = new ArrayList<>();
+//                    for (String s : nGrams) {
+//                        if (s.contains("_")) {
+//                            String[] parts = s.split("_");
+//                            for (String token : parts) {
+//                                nTokens.addAll(tokenize(token, true));
+//                            }
+//                        } else {
+//                            nTokens.addAll(tokenize(s, true));
+//                        }
+//                    }
+//                    if (t.getCategories() != null) {
+//                        for (String s : t.getCategories()) {
+//                            if (s != null && s.contains("_")) {
+//                                String[] parts = s.split("_");
+//                                for (String token : parts) {
+//                                    subTokens.addAll(tokenize(token, true));
+//                                }
+//                            } else if (s != null) {
+//                                subTokens.addAll(tokenize(s, true));
+//                            }
+//                        }
+//                    }
+////                    System.err.println(t.getGlosses());
+//                    Set<String> intersection = new HashSet<>(nTokens);
+//                    intersection.retainAll(subTokens);
+//                    if (intersection.isEmpty()) {
+//                        similarity -= 0.1;
+//                    }
+                    int dist = edu.stanford.nlp.util.StringUtils.editDistance(stemTitle, stemLema);
+                    similarity = similarity - (dist * 0.05);
+                    t.setConfidence(similarity);
+                }
+            }
+            scoreMap.put(key, similarity);
+        }
+
+        if (scoreMap.isEmpty()) {
+            return null;
+        }
+
+        ValueComparator bvc = new ValueComparator(scoreMap);
+        TreeMap<CharSequence, Double> sorted_map = new TreeMap(bvc);
+        sorted_map.putAll(scoreMap);
+//        System.err.println(sorted_map);
+
+        Iterator<CharSequence> it = sorted_map.keySet().iterator();
+        CharSequence winner = it.next();
+
+        Double s1 = scoreMap.get(winner);
+        if (s1 < confidence) {
+            return null;
+        }
+
+        Set<Term> terms = new HashSet<>();
+        for (Term t : possibleTerms) {
+            if (t.getUid().equals(winner)) {
+                terms.add(t);
+            }
+        }
+        if (!terms.isEmpty()) {
+            return terms;
+        } else {
+            Logger.getLogger(DisambiguatorImpl.class.getName()).log(Level.INFO, "No winner");
+            return null;
+        }
     }
 
     private Set<String> getPossibleTermsFromDB(String term) {
         return null;
+    }
+
+    /**
+     * @return the itemsFilePath
+     */
+    public String getItemsFilePath() {
+        return itemsFilePath;
+    }
+
+    private static Set<String> getDocument(Term term) throws IOException, MalformedURLException, ParseException {
+
+        Set<String> doc = new HashSet<>();
+
+        List<CharSequence> g = term.getGlosses();
+        if (g != null) {
+            for (CharSequence s : g) {
+                if (s != null) {
+                    doc.addAll(tokenize(s, true));
+                }
+            }
+        }
+        List<CharSequence> al = term.getAltLables();
+        if (al != null) {
+            for (CharSequence s : al) {
+                if (s != null) {
+                    doc.addAll(tokenize(s, true));
+                }
+            }
+        }
+        List<CharSequence> cat = term.getCategories();
+        if (cat != null) {
+            for (CharSequence s : cat) {
+                if (s != null) {
+                    doc.addAll(tokenize(s, true));
+                }
+            }
+        }
+        return doc;
+    }
+
+    private double tfIdf(List<String> doc, List<List<String>> allDocs, String term) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private Double cosineSimilarity(Map<String, Double> contextVector, Map<String, Double> get) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private String stem(CharSequence lemma) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

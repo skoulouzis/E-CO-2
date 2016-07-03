@@ -8,6 +8,7 @@ package eu.edisonproject.traning.wsd;
 import edu.stanford.nlp.util.Pair;
 import eu.edisonproject.traning.utility.term.avro.Term;
 import eu.edisonproject.utility.commons.ValueComparator;
+import eu.edisonproject.utility.file.CSVFileReader;
 import java.util.Properties;
 
 import java.io.FileNotFoundException;
@@ -47,19 +48,23 @@ public class BabelNet extends DisambiguatorImpl {
     public Term getTerm(String term) throws IOException, ParseException, UnsupportedEncodingException, FileNotFoundException {
         Term dis = super.getTerm(term);
         if (dis == null) {
-
+            String delimeter = ",";
+            String wordSeperator = "_";
+            Set<String> ngarms = CSVFileReader.getNGramsForTerm(term, getItemsFilePath(), delimeter, wordSeperator);
             Set<Term> possibleTerms = getTermNodeByLemma(term);
-//        String delimeter = "/";
-//        Set<String> ngarms = CSVFileReader.getNGramsForTerm(term, itemsFilePath, delimeter);
-//                possibleTerms = babelNetDisambiguation("EN", term, ngarms);
-//                if (possibleTerms != null && possibleTerms.size() == 1) {
-//                    dis = possibleTerms.iterator().next();
-//                }
+            dis = super.disambiguate(term, possibleTerms, ngarms, getMinimumSimilarity());
+            if (dis == null) {
+                possibleTerms = babelNetDisambiguation("EN", term, ngarms);
+                if (possibleTerms != null && possibleTerms.size() == 1) {
+                    dis = possibleTerms.iterator().next();
+                }
+            }
+
         } else {
             return dis;
         }
 
-        return null;
+        return dis;
     }
 
     private Set<Term> getTermNodeByLemma(String term) throws IOException, ParseException, UnsupportedEncodingException, FileNotFoundException {

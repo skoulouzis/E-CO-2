@@ -43,7 +43,7 @@ public class CSVFileReader {
         return map;
     }
 
-    public static Set<String> getNGramsForTerm(String term, String itemsFilePath, String delimeter) throws IOException {
+    public static Set<String> getNGramsForTerm(String term, String itemsFilePath, String delimeter, String wordSeperator) throws IOException {
         if (nGramsMap == null) {
             nGramsMap = new HashMap<>();
         }
@@ -52,7 +52,6 @@ public class CSVFileReader {
             return nGrams;
         }
         nGrams = new HashSet<>();
-        String wordSeperator = " ";
         try (BufferedReader br = new BufferedReader(new FileReader(itemsFilePath))) {
             String line;
             while ((line = br.readLine()) != null) {
