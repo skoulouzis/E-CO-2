@@ -1,4 +1,4 @@
-package eu.edisonproject.traning.wsd.term.extraction;
+package eu.edisonproject.traning.term.extraction;
 
 import eu.edisonproject.utility.file.ConfigHelper;
 import eu.edisonproject.utility.text.processing.Cleaner;

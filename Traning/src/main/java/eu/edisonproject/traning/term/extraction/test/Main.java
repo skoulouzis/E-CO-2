@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.edisonproject.traning.wsd.term.extraction.test;
+package eu.edisonproject.traning.term.extraction.test;
 
-import eu.edisonproject.traning.wsd.term.extraction.JtopiaExtractor;
-import eu.edisonproject.traning.wsd.term.extraction.LuceneExtractor;
-import eu.edisonproject.traning.wsd.term.extraction.TermExtractor;
+import eu.edisonproject.traning.term.extraction.JtopiaExtractor;
+import eu.edisonproject.traning.term.extraction.LuceneExtractor;
+import eu.edisonproject.traning.term.extraction.TermExtractor;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
