@@ -1,5 +1,6 @@
 package eu.edisonproject.traning.term.extraction;
 
+import eu.edisonproject.utility.file.CSVFileReader;
 import eu.edisonproject.utility.file.ConfigHelper;
 import eu.edisonproject.utility.text.processing.Cleaner;
 import eu.edisonproject.utility.text.processing.NGramGenerator;
@@ -12,7 +13,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -85,7 +85,7 @@ public class LuceneExtractor implements TermExtractor {
 
             }
 
-            Map<String, String> itemsMap = loadFileAsHashMap(itemsFilePath, "/");
+            Map<String, String> itemsMap = CSVFileReader.csvFileToMap(itemsFilePath, "/");
             for (String term : terms) {
                 String t = term.replaceAll("_", " ");
                 if (itemsMap.containsKey(t)) {
@@ -141,15 +141,6 @@ public class LuceneExtractor implements TermExtractor {
 
     }
 
-    private Map<String, String> loadFileAsHashMap(String itemsFilePath, String delimeter) throws IOException {
-        Map<String, String> map = new HashMap<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(new File(itemsFilePath)))) {
-            for (String text; (text = br.readLine()) != null;) {
-                String[] parts = text.split(delimeter);
-                map.put(parts[0], parts[1]);
-            }
-        }
-        return map;
-    }
+   
 
 }

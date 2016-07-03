@@ -144,6 +144,7 @@ public class Term extends org.apache.avro.specific.SpecificRecordBase implements
 
     /**
      * Gets the value of the 'uid' field.
+     * @return 
      */
     public java.lang.CharSequence getUid() {
         return uid;
