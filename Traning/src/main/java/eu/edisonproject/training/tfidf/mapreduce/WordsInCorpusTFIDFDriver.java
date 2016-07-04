@@ -19,8 +19,8 @@ package eu.edisonproject.training.tfidf.mapreduce;
  *
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
  */
+import eu.edisonproject.training.tfidf.avro.Tfidf;
 import eu.edisonproject.training.tfidf.avro.TfidfDocument;
-import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -33,7 +33,6 @@ import org.apache.avro.mapreduce.AvroJob;
 import org.apache.avro.mapreduce.AvroKeyValueInputFormat;
 import org.apache.avro.mapreduce.AvroKeyValueOutputFormat;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -41,15 +40,14 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.util.Tool;
 
 public class WordsInCorpusTFIDFDriver{
 
     // where to put the data in hdfs when we're done
-    private static final String OUTPUT_PATH = ".."+File.separator+"etc"+File.separator+"3-tf-idf";
+  //  private static final String OUTPUT_PATH = ".."+File.separator+"etc"+File.separator+"3-tf-idf";
 
     // where to read the data from.
-    private static final String INPUT_PATH = ".."+File.separator+"etc"+File.separator+"2-word-counts";
+//    private static final String INPUT_PATH = ".."+File.separator+"etc"+File.separator+"2-word-counts";
 
     public static class WordsInCorpusTFIDFMapper extends Mapper<AvroKey<Text>, AvroValue<Text>, Text, Text> {
 
@@ -73,7 +71,7 @@ public class WordsInCorpusTFIDFDriver{
     } // end of mapper class
 
 //	public static class WordsInCorpusTFIDFReducer extends Reducer<Text, Text, AvroKey<Text>, AvroValue<Tfidf>> {
-    public static class WordsInCorpusTFIDFReducer extends Reducer<Text, Text, AvroKey<Text>, AvroValue<TfidfDocument>> {
+    public static class WordsInCorpusTFIDFReducer extends Reducer<Text, Text, AvroKey<Text>, AvroValue<Tfidf>> {
 
         private static final DecimalFormat DF = new DecimalFormat("###.########");
 
@@ -119,29 +117,27 @@ public class WordsInCorpusTFIDFDriver{
 
                 lineValue += documentFields[0] + ";" + key.toString() + ";" + DF.format(tfIdf) + "\n";
 
-                TfidfDocument tfidfDocument = new TfidfDocument();
-                tfidfDocument.setTitle(documentFields[0]);
-                tfidfDocument.setPostDate(documentFields[1]);
-                tfidfDocument.setWord(key.toString());
-                tfidfDocument.setTfidfValue(DF.format(tfIdf));
+                Tfidf tfidfJson = new Tfidf();
+                tfidfJson.setDocumentId(documentFields[0]);
+                tfidfJson.setWord(key.toString());
+                tfidfJson.setTfidf(DF.format(tfIdf));
 
-                System.out.println(tfidfDocument);
-                context.write(new AvroKey<Text>(new Text(String.valueOf(count++))), new AvroValue<TfidfDocument>(tfidfDocument));
+                context.write(new AvroKey<Text>(new Text(String.valueOf(count++))), new AvroValue<Tfidf>(tfidfJson));
 
             }
         }
     } // end of reducer class
     //changed run(String[]) in runWordsInCorpusTFIDFDriver(String[])
-    public int runWordsInCorpusTFIDFDriver(String rawArgs) throws Exception {
+    public int runWordsInCorpusTFIDFDriver(String[] rawArgs) throws Exception {
         Configuration conf = new Configuration();
         Job job = new Job(conf,"WordsInCorpusTFIDFDriver");
 
         job.setJarByClass(WordsInCorpusTFIDFDriver.class);
         //This row must be changed
-        job.setJobName(rawArgs);
+        job.setJobName(rawArgs[2]);
 
-        Path inPath = new Path(INPUT_PATH);
-        Path outPath = new Path(OUTPUT_PATH);
+        Path inPath = new Path(rawArgs[0]);
+        Path outPath = new Path(rawArgs[1]);
 
         FileInputFormat.setInputPaths(job, inPath);
         FileOutputFormat.setOutputPath(job, outPath);
@@ -158,7 +154,7 @@ public class WordsInCorpusTFIDFDriver{
         job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
         job.setReducerClass(WordsInCorpusTFIDFReducer.class);
         AvroJob.setOutputKeySchema(job, Schema.create(Schema.Type.STRING));
-        AvroJob.setOutputValueSchema(job, TfidfDocument.getClassSchema());
+        AvroJob.setOutputValueSchema(job, Tfidf.getClassSchema());
 
         return (job.waitForCompletion(true) ? 0 : 1);
     }

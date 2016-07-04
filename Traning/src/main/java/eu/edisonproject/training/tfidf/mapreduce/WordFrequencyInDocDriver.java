@@ -51,13 +51,13 @@ import eu.edisonproject.training.utility.term.avro.Term;
 public class WordFrequencyInDocDriver{
 
     // where to read the frequent itemset
-    private static final String ITEMSET_PATH = ".." + File.separator + "etc" + File.separator + "itemset.csv";
+   // private static final String ITEMSET_PATH = ".." + File.separator + "etc" + File.separator + "itemset.csv";
 
     // where to put the data in hdfs when we're done
-    private static final String OUTPUT_PATH = ".." + File.separator + "etc" + File.separator + "1-word-freq";
+    //private static final String OUTPUT_PATH = ".." + File.separator + "etc" + File.separator + "1-word-freq";
 
     // where to read the data from.
-    private static final String INPUT_PATH = ".." + File.separator + "etc" + File.separator + "input";
+    //private static final String INPUT_PATH = ".." + File.separator + "etc" + File.separator + "input";
 
     // hashmap for the itemset
     private static List<String> itemset;
@@ -130,10 +130,10 @@ public class WordFrequencyInDocDriver{
     } // end of reducer class
 
     // runWordFrequencyInDocDriver --> run (args[])
-    public int runWordFrequencyInDocDriver() throws Exception {
+    public int runWordFrequencyInDocDriver(String[] args) throws Exception {
 
         itemset = new LinkedList<String>();
-        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(ITEMSET_PATH)));
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(args[2])));
         String line;
         while ((line = br.readLine()) != null) {
             String[] components = line.split(",");
@@ -145,8 +145,8 @@ public class WordFrequencyInDocDriver{
         job.setJarByClass(WordFrequencyInDocDriver.class);
         job.setJobName("Word Frequency In Doc Driver");
 
-        Path inPath = new Path(INPUT_PATH);
-        Path outPath = new Path(OUTPUT_PATH);
+        Path inPath = new Path(args[0]);
+        Path outPath = new Path(args[1]);
 
         FileInputFormat.setInputPaths(job, inPath);
         FileOutputFormat.setOutputPath(job, outPath);

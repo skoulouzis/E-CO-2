@@ -43,11 +43,9 @@ import org.apache.hadoop.util.Tool;
 
 public class WordCountsForDocsDriver{
 
-    // where to put the data in hdfs when we're done
-    private static final String OUTPUT_PATH = ".."+File.separator+"etc"+File.separator+"2-word-counts";
+    // where to put the data in hdfs when we're done     private static final String OUTPUT_PATH = ".."+File.separator+"etc"+File.separator+"2-word-counts";
 
-    // where to read the data from.
-    private static final String INPUT_PATH = ".."+File.separator+"etc"+File.separator+"1-word-freq";
+    // where to read the data from.    private static final String INPUT_PATH = ".."+File.separator+"etc"+File.separator+"1-word-freq";
 
     public static class WordCountsForDocsMapper extends Mapper<AvroKey<Text>, AvroValue<Integer>, Text, Text> {
 
@@ -86,15 +84,15 @@ public class WordCountsForDocsDriver{
         }
     } // end of reducer class
     //changed run(String[]) in runWordCountsForDocsDriver(String[])
-    public int runWordCountsForDocsDriver() throws Exception {
+    public int runWordCountsForDocsDriver(String[] args) throws Exception {
         Configuration conf = new Configuration();
         Job job = new Job(conf, "WordsCountsForDocsDriver");
 
         job.setJarByClass(WordCountsForDocsDriver.class);
         job.setJobName("Word Counts For Docs Driver");
 
-        Path inPath = new Path(INPUT_PATH);
-        Path outPath = new Path(OUTPUT_PATH);
+        Path inPath = new Path(args[0]);
+        Path outPath = new Path(args[1]);
 
         FileInputFormat.setInputPaths(job, inPath);
         FileOutputFormat.setOutputPath(job, outPath);
