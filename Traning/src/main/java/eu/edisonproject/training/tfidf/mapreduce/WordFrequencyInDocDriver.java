@@ -46,7 +46,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-import eu.edisonproject.traning.utility.term.avro.Term;
+import eu.edisonproject.training.utility.term.avro.Term;
 
 public class WordFrequencyInDocDriver{
 

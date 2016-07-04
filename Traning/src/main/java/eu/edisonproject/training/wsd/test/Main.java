@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.edisonproject.traning.wsd.test;
+package eu.edisonproject.training.wsd.test;
 
-import eu.edisonproject.traning.utility.term.avro.Term;
-import eu.edisonproject.traning.wsd.BabelNet;
-import eu.edisonproject.traning.wsd.DisambiguatorImpl;
+import eu.edisonproject.training.utility.term.avro.Term;
+import eu.edisonproject.training.wsd.BabelNet;
+import eu.edisonproject.training.wsd.DisambiguatorImpl;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;

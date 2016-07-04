@@ -1,4 +1,4 @@
-package eu.edisonproject.traning.context.corpus;
+package eu.edisonproject.training.context.corpus;
 import java.io.*;
 import java.util.*;
 /**

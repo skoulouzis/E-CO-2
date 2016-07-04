@@ -1,4 +1,4 @@
-package eu.edisonproject.traning.term.extraction;
+package eu.edisonproject.training.term.extraction;
 
 import java.io.File;
 import java.io.IOException;

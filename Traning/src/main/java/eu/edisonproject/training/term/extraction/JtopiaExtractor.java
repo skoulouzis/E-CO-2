@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.edisonproject.traning.term.extraction;
+package eu.edisonproject.training.term.extraction;
 
 import com.sree.textbytes.jtopia.Configuration;
 import com.sree.textbytes.jtopia.TermDocument;

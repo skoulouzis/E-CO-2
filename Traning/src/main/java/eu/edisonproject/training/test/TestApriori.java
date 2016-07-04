@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package eu.edisonproject.training.context.corpus.test;
+package eu.edisonproject.training.test;
 /**
  *
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
@@ -23,7 +23,7 @@ package eu.edisonproject.training.context.corpus.test;
 
 import java.io.File;
 
-import eu.edisonproject.traning.context.corpus.DataPrepare;
+import eu.edisonproject.training.context.corpus.DataPrepare;
 
 public class TestApriori {
 

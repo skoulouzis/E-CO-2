@@ -1,4 +1,4 @@
-package eu.edisonproject.traning.utility.term.avro;
+package eu.edisonproject.training.utility.term.avro;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package eu.edisonproject.traning.term.extraction;
+package eu.edisonproject.training.term.extraction;
 
 import eu.edisonproject.utility.file.CSVFileReader;
 import eu.edisonproject.utility.file.ConfigHelper;
