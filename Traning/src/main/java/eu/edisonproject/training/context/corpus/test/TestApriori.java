@@ -1,13 +1,10 @@
 /**
  * 
  */
-package eu.edisonproject.training.test;
+package eu.edisonproject.training.context.corpus.test;
 
-import static org.junit.Assert.*;
 
 import java.io.File;
-
-import org.junit.Test;
 
 import eu.edisonproject.traning.context.corpus.DataPrepare;
 
