@@ -59,7 +59,7 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
     public List<Term> disambiguateTerms(String filterredDictionary) throws IOException, FileNotFoundException, ParseException {
 //        Logger.getLogger(DisambiguatorImpl.class.getName()).log(Level.INFO, "filterredDictionary: " + filterredDictionary);
         List<Term> terms = new ArrayList<>();
-
+        String delimeter = ",";
         File dictionary = new File(filterredDictionary);
         int count = 0;
         int lineCount = 1;
@@ -68,7 +68,7 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
 //                Logger.getLogger(DisambiguatorImpl.class.getName()).log(Level.INFO, "line: " + line);
                 if (lineCount >= getLineOffset()) {
 //                    Logger.getLogger(DisambiguatorImpl.class.getName()).log(Level.INFO, "Processing: " + line);
-                    String[] parts = line.split(",");
+                    String[] parts = line.split(delimeter);
                     String term = parts[0];
 //                Integer score = Integer.valueOf(parts[1]);
                     if (term.length() >= 1) {
