@@ -192,23 +192,22 @@ public class TermFactory {
     }
 
     public static JSONObject term2Json(Term t) {
-//        JSONObject obj = new JSONObject();
-//        obj.put("uid", t.getUID());
-//        obj.put("lemma", t.getLemma());
-//        obj.put("alternativeLables", t.getAlternativeLables());
-//        obj.put("broaderUIDS", t.getBroaderUIDS());
-//        obj.put("categories", t.getCategories());
+        JSONObject obj = new JSONObject();
+        obj.put("uid", t.getUid());
+        obj.put("lemma", t.getLemma());
+        obj.put("altLables", t.getAltLables());
+        obj.put("buids", t.getBuids());
+        obj.put("categories", t.getCategories());
 //        obj.put("foreignKey", t.getForeignKey());
-//        obj.put("glosses", t.getGlosses());
+        obj.put("glosses", t.getGlosses());
 //        obj.put("isFromDictionary", t.getIsFromDictionary());
-////                    obj.put("narrower", t.getNarrower());
-//        obj.put("narrowerUIDS", t.getNarrowerUIDS());
-////  obj.put("narrowerUIDS", t.getSynonyms());
-//        obj.put("confidence", t.getConfidence());
-//        obj.put("originalTerm", t.getOriginalTerm());
-//        obj.put("url", t.getUrl());
-//        return obj;
-        return null;
+//                    obj.put("narrower", t.getNarrower());
+        obj.put("narrowerUIDS", t.getNuids());
+//  obj.put("narrowerUIDS", t.getSynonyms());
+        obj.put("confidence", t.getConfidence());
+        obj.put("originalTerm", t.getOriginalTerm());
+        obj.put("url", t.getUrl());
+        return obj;
     }
 
 //    public static Term create(JSONObject page, String originalTerm) {
@@ -301,11 +300,11 @@ public class TermFactory {
     }
 
     static List<CharSequence> getAltLables(String jsonString) throws IOException, ParseException {
-        return getList(jsonString, "alternativeLables");
+        return getList(jsonString, "altLables");
     }
 
     static List<CharSequence> getBroaderUIDS(String jsonString) throws IOException, ParseException {
-        return getList(jsonString, "broaderUIDS");
+        return getList(jsonString, "buids");
     }
 
     static List<CharSequence> getCategories(String jsonString) throws IOException, ParseException {
