@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.edisonproject.traning.wsd;
+package eu.edisonproject.training.wsd;
 
-import eu.edisonproject.traning.utility.term.avro.Term;
+import eu.edisonproject.training.utility.term.avro.Term;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;

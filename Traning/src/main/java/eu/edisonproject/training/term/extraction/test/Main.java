@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.edisonproject.traning.wsd.test;
+package eu.edisonproject.training.term.extraction.test;
 
-import eu.edisonproject.traning.utility.term.avro.Term;
-import eu.edisonproject.traning.utility.term.avro.TermAvroSerializer;
-import eu.edisonproject.traning.wsd.BabelNet;
-import eu.edisonproject.traning.wsd.DisambiguatorImpl;
-import eu.edisonproject.traning.wsd.TermFactory;
+
+import eu.edisonproject.training.utility.term.avro.Term;
+import eu.edisonproject.training.utility.term.avro.TermAvroSerializer;
+import eu.edisonproject.training.wsd.BabelNet;
+import eu.edisonproject.training.wsd.DisambiguatorImpl;
+import eu.edisonproject.training.wsd.TermFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -56,23 +57,18 @@ public class Main {
         }
     }
 
-    private static void testDisambiguators() {
-        try {
-            Properties prop = new Properties();
-            prop.setProperty("bablenet.key", "f4212b8f-161e-42cc-88a9-3d06b515c4a1");
-            prop.setProperty("minimum.similarity", "0.3");
-            prop.setProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
-            prop.setProperty("max.ngrams", "4");
-            String itemsFilePath = ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv";
-            prop.setProperty("itemset.file", itemsFilePath);
-
-            DisambiguatorImpl d = new BabelNet();
-            d.configure(prop);
-            Term t = d.getTerm("python");
-            System.err.println(t.getGlosses());
-        } catch (IOException | ParseException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    private static void testDisambiguators() throws IOException, ParseException {
+        Properties prop = new Properties();
+        prop.setProperty("bablenet.key", "f4212b8f-161e-42cc-88a9-3d06b515c4a1");
+        prop.setProperty("minimum.similarity", "0.3");
+        prop.setProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
+        prop.setProperty("max.ngrams", "4");
+        String itemsFilePath = ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv";
+        prop.setProperty("itemset.file", itemsFilePath);
+        DisambiguatorImpl d = new BabelNet();
+        d.configure(prop);
+        Term t = d.getTerm("python");
+        System.err.println(t.getGlosses());
     }
 
     private static void hBaseExample() throws ZooKeeperConnectionException, IOException, ParseException {

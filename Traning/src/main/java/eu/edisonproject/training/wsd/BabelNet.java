@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.edisonproject.traning.wsd;
+package eu.edisonproject.training.wsd;
 
 import edu.stanford.nlp.util.Pair;
-import eu.edisonproject.traning.utility.term.avro.Term;
+import eu.edisonproject.training.utility.term.avro.Term;
 import eu.edisonproject.utility.commons.ValueComparator;
 import eu.edisonproject.utility.file.CSVFileReader;
 import java.util.Properties;
@@ -36,6 +36,7 @@ import org.json.simple.parser.ParseException;
 /**
  *
  * @author S. Koulouzis
+ *
  */
 public class BabelNet extends DisambiguatorImpl {
 
