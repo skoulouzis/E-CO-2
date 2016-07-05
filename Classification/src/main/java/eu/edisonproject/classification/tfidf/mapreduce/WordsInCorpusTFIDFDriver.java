@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.edisonproject.training.tfidf.mapreduce;
+package eu.edisonproject.classification.tfidf.mapreduce;
 
 /**
  *
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
  */
-import eu.edisonproject.training.tfidf.avro.Tfidf;
+import eu.edisonproject.classification.avro.Tfidf;
+import eu.edisonproject.classification.avro.TfidfDocument;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -42,12 +43,6 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class WordsInCorpusTFIDFDriver{
 
-    // where to put the data in hdfs when we're done
-  //  private static final String OUTPUT_PATH = ".."+File.separator+"etc"+File.separator+"3-tf-idf";
-
-    // where to read the data from.
-//    private static final String INPUT_PATH = ".."+File.separator+"etc"+File.separator+"2-word-counts";
-
     public static class WordsInCorpusTFIDFMapper extends Mapper<AvroKey<Text>, AvroValue<Text>, Text, Text> {
 
         public WordsInCorpusTFIDFMapper() {
@@ -56,14 +51,15 @@ public class WordsInCorpusTFIDFDriver{
         protected void map(AvroKey<Text> key, AvroValue<Text> value, Context context) throws IOException, InterruptedException {
             /*
 			 * keyValues[0] --> word
-			 * keyValues[1] --> title/document
+			 * keyValues[1] --> date
+			 * keyValues[2] --> title/document
 			 * 
 			 * value --> n/N
              */
             String[] keyValues = key.toString().split("@");
             String valueString = value.toString();
 
-            context.write(new Text(keyValues[0]), new Text(keyValues[1] + "=" + valueString));
+            context.write(new Text(keyValues[0]), new Text(keyValues[2] + "=" + valueString + "=" + keyValues[1]));
 
         }
     } // end of mapper class
@@ -79,7 +75,7 @@ public class WordsInCorpusTFIDFDriver{
         /*
 		 * Reducer Input
 		 * key --> word
-		 * values --> document = n/N
+		 * values --> document = n/N = date
          */
         protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             // get the number of documents indirectly from the file-system (stored in the job name on purpose)
@@ -92,7 +88,7 @@ public class WordsInCorpusTFIDFDriver{
             for (Text val : values) {
                 String[] documentAndFrequencies = val.toString().split("=");
                 numberOfDocumentsInCorpusWhereKeyAppears++;
-                tempFrequencies.put(documentAndFrequencies[0], documentAndFrequencies[1]);
+                tempFrequencies.put(documentAndFrequencies[0] + "@" + documentAndFrequencies[2], documentAndFrequencies[1]);
             }
 
             String lineValue = "";
@@ -116,7 +112,7 @@ public class WordsInCorpusTFIDFDriver{
                 lineValue += documentFields[0] + ";" + key.toString() + ";" + DF.format(tfIdf) + "\n";
 
                 Tfidf tfidfJson = new Tfidf();
-                tfidfJson.setDocumentId(documentFields[0]);
+                tfidfJson.setDocumentId(documentFields[0]+"@"+documentFields[1]);
                 tfidfJson.setWord(key.toString());
                 tfidfJson.setTfidf(DF.format(tfIdf));
 

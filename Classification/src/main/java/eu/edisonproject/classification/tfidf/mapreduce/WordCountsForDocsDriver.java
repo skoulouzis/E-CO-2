@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.edisonproject.training.tfidf.mapreduce;
+package eu.edisonproject.classification.tfidf.mapreduce;
 
 /**
  *
@@ -51,10 +51,9 @@ public class WordCountsForDocsDriver{
 
         protected void map(AvroKey<Text> key, AvroValue<Integer> value, Context context) throws IOException, InterruptedException {
             String[] keyValues = key.toString().split("@");
-            String valueString = value.toString();
-
-            context.write(new Text(keyValues[1]), new Text(keyValues[0] + "=" + valueString));
-
+            String valueString = value.toString();	
+			
+            context.write(new Text(keyValues[1]),new Text(keyValues[0]+"="+valueString+"="+keyValues[2]));
         }
     } // end of mapper class
 
@@ -68,12 +67,13 @@ public class WordCountsForDocsDriver{
             Map<String, Integer> tempCounter = new HashMap<String, Integer>();
             for (Text val : values) {
                 String[] wordCounter = val.toString().split("=");
-                tempCounter.put(wordCounter[0], Integer.valueOf(wordCounter[1]));
+                tempCounter.put(wordCounter[0] + "@" + wordCounter[2], Integer.valueOf(wordCounter[1]));
                 sumOfWordsInDocument += Integer.parseInt(val.toString().split("=")[1]);
             }
             for (String wordKey : tempCounter.keySet()) {
                 Text newKey = new Text(wordKey + "@" + key.toString());
                 Text newValue = new Text(tempCounter.get(wordKey) + "/" + sumOfWordsInDocument);
+                System.out.println(newKey + "  ,  " + newValue);
                 context.write(new AvroKey<Text>(newKey), new AvroValue<Text>(newValue));
             }
 
