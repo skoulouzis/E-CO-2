@@ -29,6 +29,7 @@ public class TestTFIDF {
         String inputPath="";
         ITFIDFDriver tfidfDriver = new TFIDFDriver(contextName);
         tfidfDriver.executeTFIDF(inputPath);
+        tfidfDriver.computeMean();
         tfidfDriver.driveProcessResizeVector();
     }
     

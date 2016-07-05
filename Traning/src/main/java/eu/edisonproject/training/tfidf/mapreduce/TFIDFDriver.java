@@ -16,7 +16,6 @@
 package eu.edisonproject.training.tfidf.mapreduce;
 
 import eu.edisonproject.training.tfidf.avro.TfidfDocument;
-import eu.edisonproject.utility.file.FileIO;
 import eu.edisonproject.utility.file.WriterFile;
 import java.io.File;
 import java.io.IOException;
@@ -72,6 +71,10 @@ public class TFIDFDriver implements ITFIDFDriver{
     // the list of all value for each transaction
     private List<List<String>> transactionValues;
     
+    private HashMap<String,Double> wordTfidf;
+    
+    private double threshold;
+    
     public TFIDFDriver(String contextName){
         this.contextName = contextName+".csv";
         this.allWords = new LinkedList<String>();
@@ -125,7 +128,6 @@ public class TFIDFDriver implements ITFIDFDriver{
         
         // Compute the sum group by word
         List<Double> sum = computeSum(transactionValues);
-        HashMap<String, Double> wordTfidf = new HashMap<String, Double>();
         for(int i=0;i<sum.size();i++){
             wordTfidf.put(allWords.get(i), sum.get(i));
         }
@@ -205,17 +207,30 @@ public class TFIDFDriver implements ITFIDFDriver{
         return sumOfValues;
     }
     
-    public HashMap<String,Double> resizeVector(HashMap<String,Double> wordsValue){
-        HashMap<String,Double> resizedVector = new HashMap<>();
+    public void setThreshold(double threshold){
+        this.threshold = threshold;
+    }
+    
+    public double getThreshold(){
+        return this.threshold;
+    }
+    
+    public void computeMean(){
         double meanTfidf = 0.0;
-        Collection<Double> values = wordsValue.values();
+        Collection<Double> values = wordTfidf.values();
         for(Double d: values){
             meanTfidf+=d;
         }
         meanTfidf = meanTfidf/values.size();
+        this.setThreshold(meanTfidf);
+    }
+    
+    public HashMap<String,Double> resizeVector(HashMap<String,Double> wordsValue){
+        HashMap<String,Double> resizedVector = new HashMap<>();
+       
         Set<String> words = wordsValue.keySet();
         for(String key: words){
-            if(wordsValue.get(key)>=meanTfidf){
+            if(wordsValue.get(key)>=this.getThreshold()){
                 resizedVector.put(key, wordsValue.get(key));
             }
         }

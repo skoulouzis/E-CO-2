@@ -15,6 +15,7 @@
  */
 package eu.edisonproject.training.tfidf.mapreduce;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -25,6 +26,10 @@ import java.util.List;
 public interface ITFIDFDriver {
     
     public void executeTFIDF(String inputPath) ;
+    
+    public void setThreshold(double threshold);
+    
+    public void computeMean();   
 
     public void driveProcessResizeVector();
 }
