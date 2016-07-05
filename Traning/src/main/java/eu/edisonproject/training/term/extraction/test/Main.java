@@ -41,6 +41,7 @@ import org.apache.hadoop.hbase.ZooKeeperConnectionException;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
+import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
@@ -62,8 +63,8 @@ public class Main {
 
     public static void main(String args[]) {
         try {
-//            testDisambiguators();
-            hBaseExample();
+            testDisambiguators();
+//            hBaseExample();
 //            testAvroSerializer();
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -72,7 +73,7 @@ public class Main {
 
     private static void testDisambiguators() throws IOException, ParseException {
         Properties prop = new Properties();
-        prop.setProperty("bablenet.key", "f4212b8f-161e-42cc-88a9-3d06b515c4a1");
+        prop.setProperty("bablenet.key", "07e1f9b6-4aa3-435d-8046-ee016333ade5");
         prop.setProperty("minimum.similarity", "0.3");
         prop.setProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
         prop.setProperty("max.ngrams", "4");
@@ -95,9 +96,9 @@ public class Main {
             if (!admin.tableExists(tblName)) {
                 createTableDescriptor(tblName, admin);
             }
-//            try (Table tbl = conn.getTable(tblName)) {
-//                populateTable(tbl, admin, tblName);
-//            }
+            try (Table tbl = conn.getTable(tblName)) {
+                populateTable(tbl, admin, tblName);
+            }
 
             try (Table tbl = conn.getTable(tblName)) {
                 Set<String> terms = getPossibleTermsFromDB("somthing", tbl);
@@ -106,6 +107,13 @@ public class Main {
                     System.err.println(t);
                 }
             }
+
+            try (Table tbl = conn.getTable(tblName)) {
+                String jsonString = getTermFromDB("43620318", tbl);
+                System.err.println(jsonString);
+
+            }
+
         }
 
     }
@@ -159,6 +167,7 @@ public class Main {
             Put put = new Put(Bytes.toBytes(t.getUid().toString()));
             String jsonStr = TermFactory.term2Json(t).toJSONString();
             put.addColumn(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString"), Bytes.toBytes(jsonStr));
+
             if (count > 1) {
                 put.addColumn(Bytes.toBytes("ambiguousTerm"), Bytes.toBytes("ambiguousTerm"), Bytes.toBytes("somthing"));
             } else {
@@ -239,6 +248,14 @@ public class Main {
 
         }
         return jsonTerms;
+    }
+
+    private static String getTermFromDB(String id, Table tbl) throws IOException {
+
+        Get get = new Get(Bytes.toBytes(id));
+        get.addFamily(Bytes.toBytes("jsonString"));
+        Result r = tbl.get(get);
+        return Bytes.toString(r.getValue(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString")));
     }
 
 }
