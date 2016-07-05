@@ -13,23 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.edisonproject.training.test;
+package eu.edisonproject.training.tfidf.mapreduce;
 
-import eu.edisonproject.training.tfidf.mapreduce.ITFIDFDriver;
-import eu.edisonproject.training.tfidf.mapreduce.TFIDFDriver;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  *
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
  */
-public class TestTFIDF {
+public interface ITFIDFDriver {
     
-    public static void main(String[] args){
-        String contextName="";
-        String inputPath="";
-        ITFIDFDriver tfidfDriver = new TFIDFDriver(contextName);
-        tfidfDriver.executeTFIDF(inputPath);
-        tfidfDriver.driveProcessResizeVector();
-    }
-    
+    public void executeTFIDF(String inputPath) ;
+
+    public void driveProcessResizeVector();
 }

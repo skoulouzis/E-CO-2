@@ -20,8 +20,11 @@ import eu.edisonproject.utility.file.FileIO;
 import eu.edisonproject.utility.file.WriterFile;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.avro.file.DataFileReader;
@@ -32,12 +35,12 @@ import org.apache.avro.specific.SpecificDatumReader;
  *
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
  */
-public class TFIDFDriver {
+public class TFIDFDriver implements ITFIDFDriver{
 
     //where to read the frequent itemset
     private String INPUT_ITEMSET = ".." + File.separator + "etc" + File.separator + "itemset.csv";
     //where to read the data for MapReduce#1
-    private String INPUT_PATH1 = ".." + File.separator + "etc" + File.separator + "input";
+    private String INPUT_PATH1;
     //where to put the data in hdfs when MapReduce#1 will finish
     private String OUTPUT_PATH1 = ".." + File.separator + "etc" + File.separator + "1-word-freq";
 
@@ -56,10 +59,27 @@ public class TFIDFDriver {
     // where to put the data in hdfs when the MapReduce# will finish
     private String OUTPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "4-tf-idf-document";
     
-    private String TFIDFCSV_PATH = ".." + File.separator + "etc" + File.separator + "5-csv";
+    // where to put the csv with the tfidf
+    private String TFIDFCSV_PATH = ".." + File.separator + "etc" + File.separator + "5-csv" ;
+    // where to put the csv with the context vector
+    private String CONTEXT_PATH = ".." + File.separator + " etc" + File.separator + "6-context-vector";
+    
+    // the name of the context (categories) that it is under analysis
+    private String contextName;
+    
+    // the list of all words
+    private List<String> allWords;
+    // the list of all value for each transaction
+    private List<List<String>> transactionValues;
+    
+    public TFIDFDriver(String contextName){
+        this.contextName = contextName+".csv";
+        this.allWords = new LinkedList<String>();
+        this.transactionValues = new LinkedList<List<String>>();
+    }
 
-    public void executeTFIDF() {
-
+    public void executeTFIDF(String inputPath) {
+        INPUT_PATH1 = inputPath;
         int numberOfDocuments = 0;
         File file = new File(INPUT_PATH1);
         File[] filesInDir = file.listFiles();
@@ -93,14 +113,46 @@ public class TFIDFDriver {
         } catch (Exception ex) {
             Logger.getLogger(TFIDFDriver.class.getName()).log(Level.SEVERE, "Word Group By Title Driver fail", ex);
         }
-
-        //Now from the .avro produce in hdfs we want a .csv
-        readAvroAndPrintCSV();
+        
+    }
+    
+    public void driveProcessResizeVector(){
+        // Read the output from avro file
+        readAvro();
+        
+        // Now from the .avro produce in hdfs we want a .csv
+        printCSV(TFIDFCSV_PATH+File.separator+this.contextName);
+        
+        // Compute the sum group by word
+        List<Double> sum = computeSum(transactionValues);
+        HashMap<String, Double> wordTfidf = new HashMap<String, Double>();
+        for(int i=0;i<sum.size();i++){
+            wordTfidf.put(allWords.get(i), sum.get(i));
+        }
+        // Resize the hashmap wordtfidf
+        wordTfidf = resizeVector(wordTfidf);
+        
+        writeResizedOutputIntoCSV(CONTEXT_PATH + File.separator + this.contextName,wordTfidf);
+  
     }
 
-    public void readAvroAndPrintCSV() {
-        List<String> words = new LinkedList<>();
-        List<List<String>> line = new LinkedList<>();
+    public void printCSV(String fileOutputPath) {        
+        WriterFile fileWriter = new WriterFile(fileOutputPath);
+        String text = "";
+        for(String w: allWords)
+            text+=w+",";
+        
+        text+="\n";
+        for(List<String> val: transactionValues){
+            for(String value:val){
+                text+=value+",";
+            }
+            text+="\n";
+        }
+        fileWriter.writeFile(text);
+    }
+    
+    public void readAvro() {     
         File file = new File(OUTPUT_PATH4);
         File[] filesInDir = file.listFiles();
         for (File f : filesInDir) {
@@ -119,14 +171,14 @@ public class TFIDFDriver {
                         for (int i = 0; i < tfidfDoc.getWords().size(); i++) {
                             String word = tfidfDoc.getWords().get(i).toString();
                             String value = tfidfDoc.getValues().get(i).toString();
-                            if (words.contains(word)) {
-                                values.add(words.indexOf(word), value);
+                            if (allWords.contains(word)) {
+                                values.add(allWords.indexOf(word), value);
                             } else {
-                                words.add(word);
-                                values.add(words.indexOf(word), value);
+                                allWords.add(word);
+                                values.add(allWords.indexOf(word), value);
                             }
                         }
-                        line.add(values);
+                        transactionValues.add(values);
 
                         tfidfDoc = dataFileReader.next(tfidfDoc);
                         System.out.println(tfidfDoc);
@@ -138,22 +190,45 @@ public class TFIDFDriver {
 
             }
         }
+    }
+    
+    public List<Double> computeSum(List<List<String>> values){
+        List<Double> sumOfValues = new LinkedList<Double>();
         
-        WriterFile fileWriter = new WriterFile(TFIDFCSV_PATH);
-        String text = "";
-        for(String w: words)
-            text+=w+",";
-        
-        text+="\n";
-        for(List<String> val: line){
-            for(String value:val){
-                text+=value+",";
+        for(int i=0;i<values.get(0).size();i++){
+            double wordIValue=0.0;
+            for(List<String> value: values){
+                wordIValue+=Double.parseDouble(value.get(i));
             }
-            text+="\n";
+            sumOfValues.add(wordIValue);
+        }        
+        return sumOfValues;
+    }
+    
+    public HashMap<String,Double> resizeVector(HashMap<String,Double> wordsValue){
+        HashMap<String,Double> resizedVector = new HashMap<>();
+        double meanTfidf = 0.0;
+        Collection<Double> values = wordsValue.values();
+        for(Double d: values){
+            meanTfidf+=d;
         }
-        fileWriter.writeFile(text);
-            
-
+        meanTfidf = meanTfidf/values.size();
+        Set<String> words = wordsValue.keySet();
+        for(String key: words){
+            if(wordsValue.get(key)>=meanTfidf){
+                resizedVector.put(key, wordsValue.get(key));
+            }
+        }
+        return resizedVector;
     }
 
+    public void writeResizedOutputIntoCSV(String fileOutputPath, HashMap<String,Double> wordSum){
+        WriterFile fo = new WriterFile(fileOutputPath);
+        String textToWrite="";
+        Set<String> words = wordSum.keySet();
+        for(String word: words){
+            textToWrite+=word+","+String.valueOf(wordSum.get(word))+"\n";   
+        }
+        fo.writeFile(textToWrite);
+    }
 }
