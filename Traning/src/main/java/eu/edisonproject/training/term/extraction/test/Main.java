@@ -15,7 +15,6 @@
  */
 package eu.edisonproject.training.term.extraction.test;
 
-
 import eu.edisonproject.training.utility.term.avro.Term;
 import eu.edisonproject.training.utility.term.avro.TermAvroSerializer;
 import eu.edisonproject.training.wsd.BabelNet;
@@ -23,9 +22,13 @@ import eu.edisonproject.training.wsd.DisambiguatorImpl;
 import eu.edisonproject.training.utility.term.avro.TermFactory;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,7 +41,17 @@ import org.apache.hadoop.hbase.ZooKeeperConnectionException;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
+import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.filter.BinaryComparator;
+import org.apache.hadoop.hbase.filter.ColumnPrefixFilter;
+import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
+import org.apache.hadoop.hbase.filter.RowFilter;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.json.simple.parser.ParseException;
 
 /**
@@ -50,8 +63,8 @@ public class Main {
     public static void main(String args[]) {
         try {
 //            testDisambiguators();
-//            hBaseExample();
-            testAvroSerializer();
+            hBaseExample();
+//            testAvroSerializer();
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -82,17 +95,17 @@ public class Main {
             if (!admin.tableExists(tblName)) {
                 createTableDescriptor(tblName, admin);
             }
-            try (Table tbl = conn.getTable(tblName)) {
-                populateTable(tbl, admin, tblName);
-            }
-//
-//            try (Table tbl = conn.getTable(peopleTblName)) {
-//                getAllFirstNames(tbl);
+//            try (Table tbl = conn.getTable(tblName)) {
+//                populateTable(tbl, admin, tblName);
 //            }
 
-//            try (Table tbl = conn.getTable(peopleTblName)) {
-//                getAnEmail(tbl);
-//            }
+            try (Table tbl = conn.getTable(tblName)) {
+                Set<String> terms = getPossibleTermsFromDB("somthing", tbl);
+                for (String s : terms) {
+                    Term t = TermFactory.create(s);
+                    System.err.println(t);
+                }
+            }
         }
 
     }
@@ -101,7 +114,6 @@ public class Main {
 
         // create the table...
         HTableDescriptor tableDescriptor = new HTableDescriptor(peopleTblName);
-        // ... with two column families
 //        HColumnDescriptor uid = new HColumnDescriptor("uid");
 //        tableDescriptor.addFamily(uid);
 
@@ -138,19 +150,25 @@ public class Main {
         HColumnDescriptor jsonString = new HColumnDescriptor("jsonString");
         tableDescriptor.addFamily(jsonString);
         admin.createTable(tableDescriptor);
-
     }
 
     private static void populateTable(Table tbl, Admin admin, TableName peopleTblName) throws IOException, ParseException {
+        List<Term> terms = createTerms();
+        int count = 0;
+        for (Term t : terms) {
+            Put put = new Put(Bytes.toBytes(t.getUid().toString()));
+            String jsonStr = TermFactory.term2Json(t).toJSONString();
+            put.addColumn(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString"), Bytes.toBytes(jsonStr));
+            if (count > 1) {
+                put.addColumn(Bytes.toBytes("ambiguousTerm"), Bytes.toBytes("ambiguousTerm"), Bytes.toBytes("somthing"));
+            } else {
+                put.addColumn(Bytes.toBytes("ambiguousTerm"), Bytes.toBytes("ambiguousTerm"), Bytes.toBytes("somthingElse"));
+            }
 
-//        for (Term t : terms) {
-//            Put put = new Put(Bytes.toBytes(t.getUid().toString()));
-//            String jsonStr = TermFactory.term2Json(t).toJSONString();
-//            put.addColumn(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString"), Bytes.toBytes(jsonStr));
-//            put.addColumn(Bytes.toBytes("ambiguousTerm"), Bytes.toBytes("ambiguousTerm"), Bytes.toBytes("python"));
-//            tbl.put(put);
-//        }
-//        admin.flush(peopleTblName);
+            tbl.put(put);
+            count++;
+        }
+        admin.flush(peopleTblName);
     }
 
     private static void testAvroSerializer() throws IOException, ParseException {
@@ -198,6 +216,29 @@ public class Main {
             terms.add(t);
         }
         return terms;
+    }
+
+    private static Set<String> getPossibleTermsFromDB(String term, Table tbl) throws IOException, ParseException {
+
+        Scan scan = new Scan();
+        scan.addFamily(Bytes.toBytes("ambiguousTerm"));
+        scan.addFamily(Bytes.toBytes("jsonString"));
+
+        ResultScanner resultScanner = tbl.getScanner(scan);
+        Iterator<Result> results = resultScanner.iterator();
+        Set<String> jsonTerms = new HashSet<>();
+        while (results.hasNext()) {
+            Result r = results.next();
+
+            String ambiguousTerm = Bytes.toString(r.getValue(Bytes.toBytes("ambiguousTerm"), Bytes.toBytes("ambiguousTerm")));
+            if (ambiguousTerm.equals(term)) {
+//                String uid = Bytes.toString(r.getRow());
+                String jsonStr = Bytes.toString(r.getValue(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString")));
+                jsonTerms.add(jsonStr);
+            }
+
+        }
+        return jsonTerms;
     }
 
 }
