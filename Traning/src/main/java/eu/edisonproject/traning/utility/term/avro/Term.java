@@ -57,6 +57,16 @@ public class Term extends org.apache.avro.specific.SpecificRecordBase implements
 
     /**
      * All-args constructor.
+     * @param uid
+     * @param lemma
+     * @param glosses
+     * @param originalTerm
+     * @param url
+     * @param categories
+     * @param altLables
+     * @param buids
+     * @param nuids
+     * @param confidence
      */
     public Term(java.lang.CharSequence uid, java.lang.CharSequence lemma, java.util.List<java.lang.CharSequence> glosses, java.lang.CharSequence originalTerm, java.lang.CharSequence url, java.util.List<java.lang.CharSequence> categories, java.util.List<java.lang.CharSequence> altLables, java.util.List<java.lang.CharSequence> buids, java.util.List<java.lang.CharSequence> nuids, java.lang.Double confidence) {
         this.uid = uid;
@@ -71,11 +81,13 @@ public class Term extends org.apache.avro.specific.SpecificRecordBase implements
         this.confidence = confidence;
     }
 
+    @Override
     public org.apache.avro.Schema getSchema() {
         return SCHEMA$;
     }
     // Used by DatumWriter.  Applications should not call. 
 
+    @Override
     public java.lang.Object get(int field$) {
         switch (field$) {
             case 0:
@@ -105,6 +117,7 @@ public class Term extends org.apache.avro.specific.SpecificRecordBase implements
     // Used by DatumReader.  Applications should not call. 
 
     @SuppressWarnings(value = "unchecked")
+    @Override
     public void put(int field$, java.lang.Object value$) {
         switch (field$) {
             case 0:
@@ -161,6 +174,7 @@ public class Term extends org.apache.avro.specific.SpecificRecordBase implements
 
     /**
      * Gets the value of the 'lemma' field.
+     * @return 
      */
     public java.lang.CharSequence getLemma() {
         return lemma;
@@ -177,6 +191,7 @@ public class Term extends org.apache.avro.specific.SpecificRecordBase implements
 
     /**
      * Gets the value of the 'glosses' field.
+     * @return 
      */
     public java.util.List<java.lang.CharSequence> getGlosses() {
         return glosses;
