@@ -19,6 +19,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -29,6 +30,13 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.Admin;
+import org.apache.hadoop.hbase.client.Get;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -45,6 +53,10 @@ public class BabelNet extends DisambiguatorImpl {
     private String key;
     private String[] keys;
     private int keyIndex = 0;
+
+    public static final TableName edgesTblName = TableName.valueOf("edges");
+    public static final TableName synsetTblName = TableName.valueOf("synset");
+    public static final TableName wordsTblName = TableName.valueOf("words");
 
     @Override
     public Term getTerm(String term) throws IOException, ParseException, UnsupportedEncodingException, FileNotFoundException {
@@ -99,6 +111,7 @@ public class BabelNet extends DisambiguatorImpl {
                     }
                 }
             }
+            addPossibleTermsToDB(term, nodes);
             return nodes;
         } catch (InterruptedException ex) {
             Logger.getLogger(BabelNet.class.getName()).log(Level.SEVERE, null, ex);
@@ -107,31 +120,26 @@ public class BabelNet extends DisambiguatorImpl {
     }
 
     private String getBabelnetSynset(String id, String lan) throws IOException, FileNotFoundException, InterruptedException {
-//        if (db == null || db.isClosed()) {
-//            loadCache();
-//        }
+
         if (id == null || id.length() < 1) {
             return null;
         }
-//        String json = getFromSynsetCache(id);
-//        if (json != null && json.equals("NON-EXISTING")) {
-//            return null;
-//        }
-        String json = null;
+        String json = getFromSynsetDB(id);
+        if (json != null && json.equals("NON-EXISTING")) {
+            return null;
+        }
+
         if (json == null) {
             URL url = new URL("http://babelnet.io/v2/getSynset?id=" + id + "&filterLangs=" + lan + "&langs=" + lan + "&key=" + this.key);
             System.err.println(url);
             json = IOUtils.toString(url);
             handleKeyLimitException(json);
-//            if (db.isClosed()) {
-//                loadCache();
-//            }
 
-//            if (json != null) {
-//                putInSynsetCache(id, json);
-//            } else {
-//                putInSynsetCache(id, "NON-EXISTING");
-//            }
+            if (json != null) {
+                addToSynsetDB(id, json);
+            } else {
+                addToSynsetDB(id, "NON-EXISTING");
+            }
         }
 
         return json;
@@ -149,11 +157,11 @@ public class BabelNet extends DisambiguatorImpl {
 //        if (db == null || db.isClosed()) {
 //            loadCache();
 //        }
-//        List<String> ids = getFromWordIDCache(word);
-//        if (ids != null && ids.size() == 1 && ids.get(0).equals("NON-EXISTING")) {
-//            return null;
-//        }
-        List<String> ids = null;
+        List<String> ids = getFromWordIDDB(word);
+        if (ids != null && ids.size() == 1 && ids.get(0).equals("NON-EXISTING")) {
+            return null;
+        }
+//        List<String> ids = null;
         language = language.toUpperCase();
         if (ids == null || ids.isEmpty()) {
             ids = new ArrayList<>();
@@ -196,11 +204,11 @@ public class BabelNet extends DisambiguatorImpl {
 //            }
 
             if (ids.isEmpty()) {
-//                ids.add("NON-EXISTING");
-//                putInWordIDCache(word, ids);
+                ids.add("NON-EXISTING");
+                putInWordINDB(word, ids);
                 return null;
             }
-//            putInWordIDCache(word, ids);
+            putInWordINDB(word, ids);
         }
         return ids;
     }
@@ -256,7 +264,7 @@ public class BabelNet extends DisambiguatorImpl {
 //        if (db == null || db.isClosed()) {
 //            loadCache();
 //        }
-//        String genreJson = getFromEdgesCache(id);
+//        String genreJson = getFromEdgesDB(id);
         String genreJson = null;
         if (genreJson == null) {
             URL url = new URL("http://babelnet.io/v2/getEdges?id=" + id + "&key=" + this.key);
@@ -264,14 +272,22 @@ public class BabelNet extends DisambiguatorImpl {
             genreJson = IOUtils.toString(url);
             handleKeyLimitException(genreJson);
             if (genreJson != null) {
-//                putInEdgesCache(id, genreJson);
+                addToEdgesDB(id, genreJson);
             }
             if (genreJson == null) {
-//                putInEdgesCache(id, "NON-EXISTING");
+                addToEdgesDB(id, "NON-EXISTING");
             }
         }
+
         Object obj = JSONValue.parseWithException(genreJson);
-        JSONArray edgeArray = (JSONArray) obj;
+        JSONArray edgeArray = null;
+        if (obj instanceof org.json.simple.JSONObject) {
+            JSONObject jsonObj = (JSONObject) obj;
+            System.err.println(jsonObj);
+        } else {
+            edgeArray = (JSONArray) obj;
+        }
+
         Map<String, Double> map = new HashMap<>();
         for (Object o : edgeArray) {
             JSONObject pointer = (JSONObject) ((JSONObject) o).get("pointer");
@@ -470,5 +486,103 @@ public class BabelNet extends DisambiguatorImpl {
             }
         }
         return null;
+    }
+
+    private String getFromEdgesDB(CharSequence id) throws IOException {
+        try (Admin admin = getConn().getAdmin()) {
+            if (admin.tableExists(edgesTblName)) {
+                try (Table tbl = getConn().getTable(edgesTblName)) {
+                    Get get = new Get(Bytes.toBytes(id.toString()));
+                    get.addFamily(Bytes.toBytes("jsonString"));
+                    Result r = tbl.get(get);
+                    return Bytes.toString(r.getValue(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString")));
+                }
+            }
+        }
+        return null;
+    }
+
+    private void addToEdgesDB(CharSequence id, String jsonString) throws IOException {
+        List<String> families = new ArrayList<>();
+        families.add("jsonString");
+        createTable(edgesTblName, families);
+
+        try (Admin admin = getConn().getAdmin()) {
+            try (Table tbl = getConn().getTable(edgesTblName)) {
+                Put put = new Put(Bytes.toBytes(id.toString()));
+                put.addColumn(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString"), Bytes.toBytes(jsonString));
+                tbl.put(put);
+            }
+            admin.flush(edgesTblName);
+        }
+    }
+
+    private String getFromSynsetDB(String id) throws IOException {
+        try (Admin admin = getConn().getAdmin()) {
+            if (admin.tableExists(synsetTblName)) {
+                try (Table tbl = getConn().getTable(synsetTblName)) {
+                    Get get = new Get(Bytes.toBytes(id));
+                    get.addFamily(Bytes.toBytes("jsonString"));
+                    Result r = tbl.get(get);
+                    return Bytes.toString(r.getValue(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString")));
+                }
+            }
+        }
+        return null;
+    }
+
+    private void addToSynsetDB(String id, String json) throws IOException {
+        List<String> families = new ArrayList<>();
+        families.add("jsonString");
+        createTable(edgesTblName, families);
+
+        try (Admin admin = getConn().getAdmin()) {
+            try (Table tbl = getConn().getTable(edgesTblName)) {
+                Put put = new Put(Bytes.toBytes(id));
+                put.addColumn(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString"), Bytes.toBytes(json));
+                tbl.put(put);
+            }
+            admin.flush(edgesTblName);
+        }
+    }
+
+    private List<String> getFromWordIDDB(String word) throws IOException {
+
+        try (Admin admin = getConn().getAdmin()) {
+            if (admin.tableExists(wordsTblName)) {
+                try (Table tbl = getConn().getTable(wordsTblName)) {
+                    Get get = new Get(Bytes.toBytes(word));
+                    get.addFamily(Bytes.toBytes("csvIds"));
+                    Result r = tbl.get(get);
+                    String csvIds = Bytes.toString(r.getValue(Bytes.toBytes("csvIds"), Bytes.toBytes("csvIds")));
+                    return Arrays.asList(csvIds.split(","));
+                }
+            }
+        }
+        return null;
+
+    }
+
+    private void putInWordINDB(String word, List<String> ids) throws IOException {
+        List<String> families = new ArrayList<>();
+        families.add("csvIds");
+        createTable(wordsTblName, families);
+
+        StringBuilder strIds = new StringBuilder();
+        for (String id : ids) {
+            strIds.append(id).append(",");
+        }
+        strIds.deleteCharAt(strIds.length() - 1);
+        strIds.setLength(strIds.length());
+
+        try (Admin admin = getConn().getAdmin()) {
+            try (Table tbl = getConn().getTable(wordsTblName)) {
+                Put put = new Put(Bytes.toBytes(word));
+                put.addColumn(Bytes.toBytes("csvIds"), Bytes.toBytes("csvIds"), Bytes.toBytes(strIds.toString()));
+                tbl.put(put);
+            }
+            admin.flush(wordsTblName);
+        }
+
     }
 }

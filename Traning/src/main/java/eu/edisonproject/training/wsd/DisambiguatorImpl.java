@@ -7,6 +7,7 @@ package eu.edisonproject.training.wsd;
 
 import eu.edisonproject.training.utility.term.avro.TermFactory;
 import eu.edisonproject.training.utility.term.avro.Term;
+import static eu.edisonproject.training.wsd.BabelNet.synsetTblName;
 import eu.edisonproject.utility.commons.ValueComparator;
 import java.io.BufferedReader;
 import java.io.File;
@@ -27,9 +28,31 @@ import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.lucene.search.similarities.DefaultSimilarity;
 import org.apache.lucene.search.similarities.TFIDFSimilarity;
 import org.json.simple.parser.ParseException;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.HColumnDescriptor;
+import org.apache.hadoop.hbase.ZooKeeperConnectionException;
+import org.apache.hadoop.hbase.client.Admin;
+import org.apache.hadoop.hbase.client.Connection;
+import org.apache.hadoop.hbase.client.ConnectionFactory;
+import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.filter.BinaryComparator;
+import org.apache.hadoop.hbase.filter.ColumnPrefixFilter;
+import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
+import org.apache.hadoop.hbase.filter.RowFilter;
+import org.apache.hadoop.hbase.util.Bytes;
 
 /**
  *
@@ -47,6 +70,8 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
     private String termToProcess;
     private String stopWordsPath;
     private String itemsFilePath;
+    private Connection conn;
+    public static final TableName termsTblName = TableName.valueOf("terms");
 
     /**
      *
@@ -124,6 +149,13 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         itemsFilePath = System.getProperty("itemset.file");
         if (itemsFilePath == null) {
             itemsFilePath = properties.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "itemset.csv");
+        }
+
+        Configuration config = HBaseConfiguration.create();
+        try {
+            conn = ConnectionFactory.createConnection(config);
+        } catch (IOException ex) {
+            Logger.getLogger(DisambiguatorImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
@@ -319,7 +351,51 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         }
     }
 
-    private Set<String> getPossibleTermsFromDB(String term) {
+    protected void addPossibleTermsToDB(String ambiguousTerm, Set<Term> terms) throws IOException {
+        List<String> families = new ArrayList<>();
+        families.add("jsonString");
+        families.add("ambiguousTerm");
+        createTable(termsTblName, families);
+        try (Admin admin = getConn().getAdmin()) {
+            try (Table tbl = getConn().getTable(termsTblName)) {
+                for (Term t : terms) {
+                    Put put = new Put(Bytes.toBytes(t.getUid().toString()));
+                    String jsonStr = TermFactory.term2Json(t).toJSONString();
+                    put.addColumn(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString"), Bytes.toBytes(jsonStr));
+                    put.addColumn(Bytes.toBytes("ambiguousTerm"), Bytes.toBytes("ambiguousTerm"), Bytes.toBytes(ambiguousTerm));
+                    tbl.put(put);
+                }
+            }
+            admin.flush(termsTblName);
+        }
+    }
+
+    protected Set<String> getPossibleTermsFromDB(String term) throws IOException {
+        try (Admin admin = getConn().getAdmin()) {
+            if (admin.tableExists(termsTblName)) {
+                try (Table tbl = getConn().getTable(termsTblName)) {
+                    Scan scan = new Scan();
+                    scan.addFamily(Bytes.toBytes("ambiguousTerm"));
+                    scan.addFamily(Bytes.toBytes("jsonString"));
+
+                    ResultScanner resultScanner = tbl.getScanner(scan);
+                    Iterator<Result> results = resultScanner.iterator();
+                    Set<String> jsonTerms = new HashSet<>();
+                    while (results.hasNext()) {
+                        Result r = results.next();
+
+                        String ambiguousTerm = Bytes.toString(r.getValue(Bytes.toBytes("ambiguousTerm"), Bytes.toBytes("ambiguousTerm")));
+                        if (ambiguousTerm.equals(term)) {
+//                String uid = Bytes.toString(r.getRow());
+                            String jsonStr = Bytes.toString(r.getValue(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString")));
+                            jsonTerms.add(jsonStr);
+                        }
+
+                    }
+                    return jsonTerms;
+                }
+            }
+        }
         return null;
     }
 
@@ -371,5 +447,26 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
 
     private String stem(CharSequence lemma) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    /**
+     * @return the conn
+     */
+    public Connection getConn() {
+        return conn;
+    }
+
+    protected void createTable(TableName tblName, List<String> families) throws IOException {
+        try (Admin admin = getConn().getAdmin()) {
+            if (!admin.tableExists(tblName)) {
+                HTableDescriptor tableDescriptor = new HTableDescriptor(tblName);
+                for (String f : families) {
+                    HColumnDescriptor desc = new HColumnDescriptor(f);
+                    tableDescriptor.addFamily(desc);
+                }
+                admin.createTable(tableDescriptor);
+            }
+        }
+
     }
 }
