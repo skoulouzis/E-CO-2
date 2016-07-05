@@ -20,7 +20,7 @@ import eu.edisonproject.training.utility.term.avro.Term;
 import eu.edisonproject.training.utility.term.avro.TermAvroSerializer;
 import eu.edisonproject.training.wsd.BabelNet;
 import eu.edisonproject.training.wsd.DisambiguatorImpl;
-import eu.edisonproject.training.wsd.TermFactory;
+import eu.edisonproject.training.utility.term.avro.TermFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

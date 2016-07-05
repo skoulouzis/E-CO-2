@@ -3,9 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.edisonproject.training.wsd;
+package eu.edisonproject.training.utility.term.avro;
 
-import eu.edisonproject.training.utility.term.avro.Term;
 import eu.edisonproject.utility.text.processing.Cleaner;
 import eu.edisonproject.utility.text.processing.Stemming;
 import java.io.FileReader;
@@ -174,6 +173,7 @@ public class TermFactory {
         term.setUid(getUID(jsonStr));
         term.setAltLables(getAltLables(jsonStr));
         term.setBuids(getBroaderUIDS(jsonStr));
+        term.setNuids(getNarrowerUIDS(jsonStr));
         term.setCategories(getCategories(jsonStr));
 //        term.setForeignKey(getForeignKey(jsonStr));
         term.setGlosses(getGlosses(jsonStr));
@@ -287,15 +287,18 @@ public class TermFactory {
         Object obj;
         obj = parser.parse(jsonString);
         JSONObject jsonObject = (JSONObject) obj;
+        List<CharSequence> list = new ArrayList<>();
         org.json.simple.JSONArray ja = (org.json.simple.JSONArray) jsonObject.get(field);
         if (ja == null) {
-            return null;
+            list.add("EMPTY");
+        } else {
+
+            for (Object elem : ja) {
+                String s = (String) elem;
+                list.add(s);
+            }
         }
-        List<CharSequence> list = new ArrayList<>();
-        for (Object elem : ja) {
-            String s = (String) elem;
-            list.add(s);
-        }
+
         return list;
     }
 
@@ -305,6 +308,10 @@ public class TermFactory {
 
     static List<CharSequence> getBroaderUIDS(String jsonString) throws IOException, ParseException {
         return getList(jsonString, "buids");
+    }
+
+    private static List<CharSequence> getNarrowerUIDS(String jsonString) throws IOException, ParseException {
+        return getList(jsonString, "nuids");
     }
 
     static List<CharSequence> getCategories(String jsonString) throws IOException, ParseException {
@@ -327,4 +334,5 @@ public class TermFactory {
         JSONObject jsonObject = (JSONObject) obj;
         return (Double) jsonObject.get(field);
     }
+
 }

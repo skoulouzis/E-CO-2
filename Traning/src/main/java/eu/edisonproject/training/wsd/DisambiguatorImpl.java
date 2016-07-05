@@ -5,6 +5,7 @@
  */
 package eu.edisonproject.training.wsd;
 
+import eu.edisonproject.training.utility.term.avro.TermFactory;
 import eu.edisonproject.training.utility.term.avro.Term;
 import eu.edisonproject.utility.commons.ValueComparator;
 import java.io.BufferedReader;
