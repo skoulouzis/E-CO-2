@@ -54,9 +54,10 @@ public class BabelNet extends DisambiguatorImpl {
     private String[] keys;
     private int keyIndex = 0;
 
-    public static final TableName edgesTblName = TableName.valueOf("edges");
-    public static final TableName synsetTblName = TableName.valueOf("synset");
-    public static final TableName wordsTblName = TableName.valueOf("words");
+    public static final TableName EDGES_TBL_NAME = TableName.valueOf("edges");
+    public static final TableName SYNSET_TBL_NAME = TableName.valueOf("synset");
+    public static final TableName WORDS_TBL_NAME = TableName.valueOf("words");
+    public static final TableName DISAMBIGUATE_TBL_NAME = TableName.valueOf("disambiguate");
 
     @Override
     public Term getTerm(String term) throws IOException, ParseException, UnsupportedEncodingException, FileNotFoundException {
@@ -264,8 +265,7 @@ public class BabelNet extends DisambiguatorImpl {
 //        if (db == null || db.isClosed()) {
 //            loadCache();
 //        }
-//        String genreJson = getFromEdgesDB(id);
-        String genreJson = null;
+        String genreJson = getFromEdgesDB(id);
         if (genreJson == null) {
             URL url = new URL("http://babelnet.io/v2/getEdges?id=" + id + "&key=" + this.key);
             System.err.println(url);
@@ -283,7 +283,6 @@ public class BabelNet extends DisambiguatorImpl {
         JSONArray edgeArray = null;
         if (obj instanceof org.json.simple.JSONObject) {
             JSONObject jsonObj = (JSONObject) obj;
-            System.err.println(jsonObj);
         } else {
             edgeArray = (JSONArray) obj;
         }
@@ -431,15 +430,10 @@ public class BabelNet extends DisambiguatorImpl {
         if (lemma == null || lemma.length() < 1) {
             return null;
         }
-//        if (db == null || db.isClosed()) {
-//            loadCache();
-//        }
         String query = lemma + " " + sentence.replaceAll("_", " ");
 
         query = URLEncoder.encode(query, "UTF-8");
-        String genreJson = null;
-
-//        genreJson = getFromDisambiguateCache(sentence);
+        String genreJson = getFromDisambiguateDB(sentence);
         if (genreJson != null && genreJson.equals("NON-EXISTING")) {
             return null;
         }
@@ -448,14 +442,11 @@ public class BabelNet extends DisambiguatorImpl {
             System.err.println(url);
             genreJson = IOUtils.toString(url);
             handleKeyLimitException(genreJson);
-//            if (db.isClosed()) {
-//                loadCache();
-//            }
-//            if (!genreJson.isEmpty() || genreJson.length() < 1) {
-//                putInDisambiguateCache(sentence, genreJson);
-//            } else {
-//                putInDisambiguateCache(sentence, "NON-EXISTING");
-//            }
+            if (!genreJson.isEmpty() || genreJson.length() < 1) {
+                putInDisambiguateDB(sentence, genreJson);
+            } else {
+                putInDisambiguateDB(sentence, "NON-EXISTING");
+            }
         }
         Object obj = JSONValue.parseWithException(genreJson);
 //        Term term = null;
@@ -490,8 +481,8 @@ public class BabelNet extends DisambiguatorImpl {
 
     private String getFromEdgesDB(CharSequence id) throws IOException {
         try (Admin admin = getConn().getAdmin()) {
-            if (admin.tableExists(edgesTblName)) {
-                try (Table tbl = getConn().getTable(edgesTblName)) {
+            if (admin.tableExists(EDGES_TBL_NAME)) {
+                try (Table tbl = getConn().getTable(EDGES_TBL_NAME)) {
                     Get get = new Get(Bytes.toBytes(id.toString()));
                     get.addFamily(Bytes.toBytes("jsonString"));
                     Result r = tbl.get(get);
@@ -505,22 +496,22 @@ public class BabelNet extends DisambiguatorImpl {
     private void addToEdgesDB(CharSequence id, String jsonString) throws IOException {
         List<String> families = new ArrayList<>();
         families.add("jsonString");
-        createTable(edgesTblName, families);
+        createTable(EDGES_TBL_NAME, families);
 
         try (Admin admin = getConn().getAdmin()) {
-            try (Table tbl = getConn().getTable(edgesTblName)) {
+            try (Table tbl = getConn().getTable(EDGES_TBL_NAME)) {
                 Put put = new Put(Bytes.toBytes(id.toString()));
                 put.addColumn(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString"), Bytes.toBytes(jsonString));
                 tbl.put(put);
             }
-            admin.flush(edgesTblName);
+            admin.flush(EDGES_TBL_NAME);
         }
     }
 
     private String getFromSynsetDB(String id) throws IOException {
         try (Admin admin = getConn().getAdmin()) {
-            if (admin.tableExists(synsetTblName)) {
-                try (Table tbl = getConn().getTable(synsetTblName)) {
+            if (admin.tableExists(SYNSET_TBL_NAME)) {
+                try (Table tbl = getConn().getTable(SYNSET_TBL_NAME)) {
                     Get get = new Get(Bytes.toBytes(id));
                     get.addFamily(Bytes.toBytes("jsonString"));
                     Result r = tbl.get(get);
@@ -534,23 +525,23 @@ public class BabelNet extends DisambiguatorImpl {
     private void addToSynsetDB(String id, String json) throws IOException {
         List<String> families = new ArrayList<>();
         families.add("jsonString");
-        createTable(edgesTblName, families);
+        createTable(SYNSET_TBL_NAME, families);
 
         try (Admin admin = getConn().getAdmin()) {
-            try (Table tbl = getConn().getTable(edgesTblName)) {
+            try (Table tbl = getConn().getTable(SYNSET_TBL_NAME)) {
                 Put put = new Put(Bytes.toBytes(id));
                 put.addColumn(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString"), Bytes.toBytes(json));
                 tbl.put(put);
             }
-            admin.flush(edgesTblName);
+            admin.flush(SYNSET_TBL_NAME);
         }
     }
 
     private List<String> getFromWordIDDB(String word) throws IOException {
 
         try (Admin admin = getConn().getAdmin()) {
-            if (admin.tableExists(wordsTblName)) {
-                try (Table tbl = getConn().getTable(wordsTblName)) {
+            if (admin.tableExists(WORDS_TBL_NAME)) {
+                try (Table tbl = getConn().getTable(WORDS_TBL_NAME)) {
                     Get get = new Get(Bytes.toBytes(word));
                     get.addFamily(Bytes.toBytes("csvIds"));
                     Result r = tbl.get(get);
@@ -560,13 +551,12 @@ public class BabelNet extends DisambiguatorImpl {
             }
         }
         return null;
-
     }
 
     private void putInWordINDB(String word, List<String> ids) throws IOException {
         List<String> families = new ArrayList<>();
         families.add("csvIds");
-        createTable(wordsTblName, families);
+        createTable(WORDS_TBL_NAME, families);
 
         StringBuilder strIds = new StringBuilder();
         for (String id : ids) {
@@ -576,13 +566,43 @@ public class BabelNet extends DisambiguatorImpl {
         strIds.setLength(strIds.length());
 
         try (Admin admin = getConn().getAdmin()) {
-            try (Table tbl = getConn().getTable(wordsTblName)) {
+            try (Table tbl = getConn().getTable(WORDS_TBL_NAME)) {
                 Put put = new Put(Bytes.toBytes(word));
                 put.addColumn(Bytes.toBytes("csvIds"), Bytes.toBytes("csvIds"), Bytes.toBytes(strIds.toString()));
                 tbl.put(put);
             }
-            admin.flush(wordsTblName);
+            admin.flush(WORDS_TBL_NAME);
         }
 
+    }
+
+    private void putInDisambiguateDB(String sentence, String jsonString) throws IOException {
+
+        List<String> families = new ArrayList<>();
+        families.add("jsonString");
+        createTable(DISAMBIGUATE_TBL_NAME, families);
+
+        try (Admin admin = getConn().getAdmin()) {
+            try (Table tbl = getConn().getTable(DISAMBIGUATE_TBL_NAME)) {
+                Put put = new Put(Bytes.toBytes(sentence));
+                put.addColumn(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString"), Bytes.toBytes(jsonString));
+                tbl.put(put);
+            }
+            admin.flush(DISAMBIGUATE_TBL_NAME);
+        }
+    }
+
+    private String getFromDisambiguateDB(String sentence) throws IOException {
+        try (Admin admin = getConn().getAdmin()) {
+            if (admin.tableExists(DISAMBIGUATE_TBL_NAME)) {
+                try (Table tbl = getConn().getTable(DISAMBIGUATE_TBL_NAME)) {
+                    Get get = new Get(Bytes.toBytes(sentence));
+                    get.addFamily(Bytes.toBytes("jsonString"));
+                    Result r = tbl.get(get);
+                    return Bytes.toString(r.getValue(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString")));
+                }
+            }
+        }
+        return null;
     }
 }

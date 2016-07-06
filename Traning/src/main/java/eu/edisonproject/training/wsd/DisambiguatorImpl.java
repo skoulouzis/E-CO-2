@@ -7,7 +7,6 @@ package eu.edisonproject.training.wsd;
 
 import eu.edisonproject.training.utility.term.avro.TermFactory;
 import eu.edisonproject.training.utility.term.avro.Term;
-import static eu.edisonproject.training.wsd.BabelNet.synsetTblName;
 import eu.edisonproject.utility.commons.ValueComparator;
 import java.io.BufferedReader;
 import java.io.File;
@@ -28,9 +27,6 @@ import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.hadoop.hbase.client.Table;
-import org.apache.lucene.search.similarities.DefaultSimilarity;
-import org.apache.lucene.search.similarities.TFIDFSimilarity;
 import org.json.simple.parser.ParseException;
 
 import org.apache.hadoop.conf.Configuration;
@@ -38,20 +34,14 @@ import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.HColumnDescriptor;
-import org.apache.hadoop.hbase.ZooKeeperConnectionException;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
-import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Table;
-import org.apache.hadoop.hbase.filter.BinaryComparator;
-import org.apache.hadoop.hbase.filter.ColumnPrefixFilter;
-import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
-import org.apache.hadoop.hbase.filter.RowFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 
 /**
@@ -71,7 +61,7 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
     private String stopWordsPath;
     private String itemsFilePath;
     private Connection conn;
-    public static final TableName termsTblName = TableName.valueOf("terms");
+    public static final TableName TERMS_TBL_NAME = TableName.valueOf("terms");
 
     /**
      *
@@ -355,9 +345,9 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         List<String> families = new ArrayList<>();
         families.add("jsonString");
         families.add("ambiguousTerm");
-        createTable(termsTblName, families);
+        createTable(TERMS_TBL_NAME, families);
         try (Admin admin = getConn().getAdmin()) {
-            try (Table tbl = getConn().getTable(termsTblName)) {
+            try (Table tbl = getConn().getTable(TERMS_TBL_NAME)) {
                 for (Term t : terms) {
                     Put put = new Put(Bytes.toBytes(t.getUid().toString()));
                     String jsonStr = TermFactory.term2Json(t).toJSONString();
@@ -366,14 +356,14 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
                     tbl.put(put);
                 }
             }
-            admin.flush(termsTblName);
+            admin.flush(TERMS_TBL_NAME);
         }
     }
 
     protected Set<String> getPossibleTermsFromDB(String term) throws IOException {
         try (Admin admin = getConn().getAdmin()) {
-            if (admin.tableExists(termsTblName)) {
-                try (Table tbl = getConn().getTable(termsTblName)) {
+            if (admin.tableExists(TERMS_TBL_NAME)) {
+                try (Table tbl = getConn().getTable(TERMS_TBL_NAME)) {
                     Scan scan = new Scan();
                     scan.addFamily(Bytes.toBytes("ambiguousTerm"));
                     scan.addFamily(Bytes.toBytes("jsonString"));
