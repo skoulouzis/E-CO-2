@@ -210,33 +210,34 @@ public class TermFactory {
         return obj;
     }
 
-//    public static Term create(JSONObject page, String originalTerm) {
-//        String title = (String) page.get("title");
-//        Long pageid = (Long) page.get("pageid");
-//        String extract = (String) page.get("extract");
-//        String url = null;
-//        Term t = null;
-//        if (extract != null) {
-//
-//            t = new Term();
-//            t.setLemma(title.toLowerCase());
-//            t.setUrl(url);
-//            List<CharSequence> glosses = new ArrayList<>();
-//            glosses.add(extract.toLowerCase());
-//            t.setGlosses(glosses);
-//            t.setUid(String.valueOf(pageid));
-//            url = "https://en.wikipedia.org/?curid=" + t.getUid();
-//            t.setUrl(url);
-//            t.setOriginalTerm(originalTerm);
-//        }
-//        return t;
-//    }
+    public static Term create(JSONObject page, String originalTerm) {
+        String title = (String) page.get("title");
+        Long pageid = (Long) page.get("pageid");
+        String extract = (String) page.get("extract");
+        String url = null;
+        Term t = null;
+        if (extract != null) {
+
+            t = new Term();
+            t.setLemma(title.toLowerCase());
+            t.setUrl(url);
+            List<CharSequence> glosses = new ArrayList<>();
+            glosses.add(extract.toLowerCase());
+            t.setGlosses(glosses);
+            t.setUid(String.valueOf(pageid));
+            url = "https://en.wikipedia.org/?curid=" + t.getUid();
+            t.setUrl(url);
+            t.setOriginalTerm(originalTerm);
+        }
+        return t;
+    }
 //    public static Term create(File file) throws IOException, ParseException {
 //        try (FileReader fr = new FileReader(file)) {
 //            String jsonStr = FileUtils.readFile(fr);
 //            return create(jsonStr);
 //        }
 //    }
+
     public static Set<Term> create(Set<String> terms) throws IOException, ParseException {
         Set<Term> te = new HashSet<>();
         for (String s : terms) {

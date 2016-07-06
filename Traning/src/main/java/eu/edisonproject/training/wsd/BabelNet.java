@@ -538,7 +538,6 @@ public class BabelNet extends DisambiguatorImpl {
     }
 
     private List<String> getFromWordIDDB(String word) throws IOException {
-
         try (Admin admin = getConn().getAdmin()) {
             if (admin.tableExists(WORDS_TBL_NAME)) {
                 try (Table tbl = getConn().getTable(WORDS_TBL_NAME)) {

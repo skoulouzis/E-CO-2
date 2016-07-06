@@ -18,6 +18,7 @@ package eu.edisonproject.training.wsd.test;
 import eu.edisonproject.training.utility.term.avro.Term;
 import eu.edisonproject.training.wsd.BabelNet;
 import eu.edisonproject.training.wsd.DisambiguatorImpl;
+import eu.edisonproject.training.wsd.WikipediaOnline;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
@@ -45,7 +46,7 @@ public class Main {
             String itemsFilePath = ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv";
             prop.setProperty("itemset.file", itemsFilePath);
 
-            DisambiguatorImpl d = new BabelNet();
+            DisambiguatorImpl d = new WikipediaOnline();
             d.configure(prop);
             Term t = d.getTerm("python");
             System.err.println(t.getGlosses());
