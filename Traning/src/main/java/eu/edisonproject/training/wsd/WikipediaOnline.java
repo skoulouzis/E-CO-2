@@ -52,7 +52,7 @@ public class WikipediaOnline extends Wikipedia {
 
     @Override
     public Term getTerm(String term) throws IOException, ParseException, UnsupportedEncodingException, FileNotFoundException {
-        Term dis = super.getTerm(term);
+        Term dis = null;
         if (dis == null) {
             Set<Term> possibleTerms = null;
             try {
@@ -78,10 +78,21 @@ public class WikipediaOnline extends Wikipedia {
     protected Set<Term> getTermNodeByLemma(String lemma) throws MalformedURLException, IOException, ParseException, UnsupportedEncodingException, InterruptedException, ExecutionException {
 
         Set<String> jsonTerms = getPossibleTermsFromDB(lemma);
-        if (jsonTerms != null) {
-            return TermFactory.create(jsonTerms);
+
+        if (jsonTerms != null && !jsonTerms.isEmpty()) {
+            Set<Term> terms = TermFactory.create(jsonTerms);
+            Set<Term> wikiTerms = new HashSet<>();
+
+            for (Term t : terms) {
+                if (t.getUrl().toString().contains(new URL(page).getHost())) {
+                    wikiTerms.add(t);
+                }
+            }
+            if (!wikiTerms.isEmpty()) {
+                return wikiTerms;
+            }
         }
-        
+
         URL url;
         String jsonString;
 

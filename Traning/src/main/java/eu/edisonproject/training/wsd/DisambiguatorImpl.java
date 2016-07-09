@@ -7,7 +7,10 @@ package eu.edisonproject.training.wsd;
 
 import eu.edisonproject.training.utility.term.avro.TermFactory;
 import eu.edisonproject.training.utility.term.avro.Term;
+import eu.edisonproject.training.utility.term.avro.TermAvroSerializer;
 import eu.edisonproject.utility.commons.ValueComparator;
+import eu.edisonproject.utility.text.processing.Cleaner;
+import eu.edisonproject.utility.text.processing.Stemming;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,7 +18,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -49,10 +52,6 @@ import org.apache.hadoop.hbase.util.Bytes;
  * @author S. Koulouzis
  */
 public class DisambiguatorImpl implements Disambiguator, Callable {
-
-    private static Collection<? extends String> tokenize(CharSequence s, boolean b) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
     private Integer limit;
     private Double minimumSimilarity;
@@ -158,7 +157,7 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
             for (String jsonTerm : termsStr) {
                 possibaleTerms.add(TermFactory.create(jsonTerm));
             }
-            return disambiguate(term, possibaleTerms, termsStr, 0);
+            return disambiguate(term, possibaleTerms, termsStr, getMinimumSimilarity());
         } else {
             return null;
         }
@@ -211,9 +210,38 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         return stopWordsPath;
     }
 
-    protected Term disambiguate(String term, Set<Term> possibleTerms, Set<String> ngarms, double minimumSimilarity) {
+    protected Term disambiguate(String term, Set<Term> possibleTerms, Set<String> ngarms, double minimumSimilarity) throws IOException, ParseException {
+        TermAvroSerializer ts = new TermAvroSerializer(".." + File.separator + "etc" + File.separator + "Avro Document" + File.separator + term + "_possibleTerms.avro", Term.SCHEMA$);
+        List<CharSequence> empty = new ArrayList<>();
+        empty.add("EMPTY");
+        for (Term t : possibleTerms) {
+            List<CharSequence> nuid = t.getNuids();
+            if (nuid == null || nuid.isEmpty() || nuid.contains(null)) {
+                t.setNuids(empty);
+            }
 
-        return null;
+            List<CharSequence> buids = t.getBuids();
+            if (buids == null || buids.isEmpty() || buids.contains(null)) {
+                t.setBuids(empty);
+            }
+            List<CharSequence> alt = t.getAltLables();
+            if (alt == null || alt.isEmpty() || alt.contains(null)) {
+                t.setAltLables(empty);
+            }
+            List<CharSequence> gl = t.getGlosses();
+            if (gl == null || gl.isEmpty() || gl.contains(null)) {
+                t.setGlosses(empty);
+            }
+            ts.serialize(t);
+        }
+//        possibleTerms = tf_idf_Disambiguation(possibleTerms, ngarms, term, getMinimumSimilarity(), true);
+
+        Term dis = null;
+        if (possibleTerms != null && possibleTerms.size() == 1) {
+            dis = possibleTerms.iterator().next();
+        }
+
+        return dis;
     }
 
     private Set<Term> tf_idf_Disambiguation(Set<Term> possibleTerms, Set<String> nGrams, String lemma, double confidence, boolean matchTitle) throws IOException, ParseException {
@@ -260,11 +288,14 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         for (CharSequence key : featureVectors.keySet()) {
             Double similarity = cosineSimilarity(contextVector, featureVectors.get(key));
 
-            for (Term t : possibleTerms) {
-                if (t.getUid().equals(key)) {
+            Cleaner stemer = new Stemming();
 
-                    String stemTitle = stem(t.getLemma());
-                    String stemLema = stem(lemma);
+//            for (Term t : possibleTerms) {
+//                if (t.getUid().equals(key)) {
+//                    stemer.setDescription(t.getLemma().toString());
+//                    String stemTitle = stemer.execute();
+//                    stemer.setDescription(lemma);
+//                    String stemLema = stemer.execute();
 //                    List<String> subTokens = new ArrayList<>();
 //                    if (!t.getLemma().toLowerCase().startsWith("(") && t.getLemma().toLowerCase().contains("(") && t.getLemma().toLowerCase().contains(")")) {
 //                        int index1 = t.getLemma().toLowerCase().indexOf("(") + 1;
@@ -302,11 +333,11 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
 //                    if (intersection.isEmpty()) {
 //                        similarity -= 0.1;
 //                    }
-                    int dist = edu.stanford.nlp.util.StringUtils.editDistance(stemTitle, stemLema);
-                    similarity = similarity - (dist * 0.05);
-                    t.setConfidence(similarity);
-                }
-            }
+//                    int dist = edu.stanford.nlp.util.StringUtils.editDistance(stemTitle, stemLema);
+//                    similarity = similarity - (dist * 0.05);
+//                    t.setConfidence(similarity);
+//                }
+//            }
             scoreMap.put(key, similarity);
         }
 
@@ -397,14 +428,16 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
     }
 
     private static Set<String> getDocument(Term term) throws IOException, MalformedURLException, ParseException {
-
+        Cleaner stemer = new Stemming();
         Set<String> doc = new HashSet<>();
 
         List<CharSequence> g = term.getGlosses();
         if (g != null) {
             for (CharSequence s : g) {
                 if (s != null) {
-                    doc.addAll(tokenize(s, true));
+                    stemer.setDescription(s.toString());
+                    String stemed = stemer.execute();
+                    doc.addAll(Arrays.asList(stemed.split(" ")));
                 }
             }
         }
@@ -412,7 +445,9 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         if (al != null) {
             for (CharSequence s : al) {
                 if (s != null) {
-                    doc.addAll(tokenize(s, true));
+                    stemer.setDescription(s.toString());
+                    String stemed = stemer.execute();
+                    doc.addAll(Arrays.asList(stemed.split(" ")));
                 }
             }
         }
@@ -420,23 +455,124 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         if (cat != null) {
             for (CharSequence s : cat) {
                 if (s != null) {
-                    doc.addAll(tokenize(s, true));
+                    stemer.setDescription(s.toString());
+                    String stemed = stemer.execute();
+                    doc.addAll(Arrays.asList(stemed.split(" ")));
                 }
             }
         }
         return doc;
     }
 
-    private double tfIdf(List<String> doc, List<List<String>> allDocs, String term) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private double tfIdf(List<String> doc, List<List<String>> docs, String term) {
+        return tf(doc, term) * idf(docs, term);
     }
 
-    private Double cosineSimilarity(Map<String, Double> contextVector, Map<String, Double> get) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private static double idf(List<List<String>> docs, String term) {
+        double n = 0;
+        for (List<String> doc : docs) {
+            for (String word : doc) {
+                if (term.equalsIgnoreCase(word)) {
+                    n++;
+                    break;
+                }
+            }
+        }
+        if (n <= 0) {
+            n = 1;
+        }
+        return Math.log(docs.size() / n);
     }
 
-    private String stem(CharSequence lemma) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private static double tf(List<String> doc, String term) {
+        double result = 0;
+        for (String word : doc) {
+            if (term.equalsIgnoreCase(word)) {
+                result++;
+            }
+        }
+        return result / (double) doc.size();
+    }
+
+    //Code From org.apache.commons.text.similarity. 
+    /**
+     * Calculates the cosine similarity for two given vectors.
+     *
+     * @param leftVector left vector
+     * @param rightVector right vector
+     * @return cosine similarity between the two vectors
+     */
+    public static Double cosineSimilarity(Map<String, Double> leftVector, Map<String, Double> rightVector) {
+        if (leftVector == null || rightVector == null) {
+            throw new IllegalArgumentException("Vectors must not be null");
+        }
+
+        Set<String> intersection = getIntersection(leftVector, rightVector);
+
+//        System.err.println(leftVector);
+//        System.err.println(rightVector);
+        double dotProduct = dot(leftVector, rightVector, intersection);
+        double d1 = 0.0d;
+        for (Double value : leftVector.values()) {
+            d1 += Math.pow(value, 2);
+        }
+        double d2 = 0.0d;
+        for (Double value : rightVector.values()) {
+            d2 += Math.pow(value, 2);
+        }
+        double cosineSimilarity;
+        if (d1 <= 0.0 || d2 <= 0.0) {
+            cosineSimilarity = 0.0;
+        } else {
+            double a = Math.sqrt(d1) * Math.sqrt(d2);
+            cosineSimilarity = (dotProduct / a);
+        }
+        return cosineSimilarity;
+
+    }
+
+    /**
+     * Returns a set with strings common to the two given maps.
+     *
+     * @param leftVector left vector map
+     * @param rightVector right vector map
+     * @return common strings
+     */
+    private static Set<String> getIntersection(Map<String, Double> leftVector,
+            Map<String, Double> rightVector) {
+
+//        ValueComparator bvc = new ValueComparator(leftVector);
+//        TreeMap<String, Double> Lsorted_map = new TreeMap(bvc);
+//        Lsorted_map.putAll(leftVector);
+//
+//        bvc = new ValueComparator(rightVector);
+//        TreeMap<String, Double> Rsorted_map = new TreeMap(bvc);
+//        Rsorted_map.putAll(rightVector);
+//
+//        SortedSet<String> Lkeys = new TreeSet<>(leftVector.keySet());
+//        SortedSet<String> Rkeys = new TreeSet<>(rightVector.keySet());
+        Set<String> intersection = new HashSet<>(leftVector.keySet());
+        intersection.retainAll(rightVector.keySet());
+        return intersection;
+    }
+
+    /**
+     * Computes the dot product of two vectors. It ignores remaining elements.
+     * It means that if a vector is longer than other, then a smaller part of it
+     * will be used to compute the dot product.
+     *
+     * @param leftVector left vector
+     * @param rightVector right vector
+     * @param intersection common elements
+     * @return the dot product
+     */
+    private static double dot(Map<String, Double> leftVector, Map<String, Double> rightVector,
+            Set<String> intersection) {
+        Double dotProduct = 0.0;
+        for (String key : intersection) {
+            dotProduct += leftVector.get(key) * rightVector.get(key);
+        }
+        return dotProduct;
     }
 
     /**

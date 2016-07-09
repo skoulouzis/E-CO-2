@@ -44,10 +44,9 @@ public class TermFactory {
         Cleaner stemer = new Stemming();
 
         JSONArray categoriesArray = (JSONArray) jSynet.get("categories");
-        List<CharSequence> categories = null;
+        List<CharSequence> categories = new ArrayList<>();
         if (categoriesArray != null) {
 
-            categories = new ArrayList<>();
             for (Object o : categoriesArray) {
                 JSONObject cat = (JSONObject) o;
                 String lang = (String) cat.get("language");
@@ -56,14 +55,14 @@ public class TermFactory {
                     categories.add(category);
                 }
             }
+        } else {
+            categories.add("EMPTY");
         }
 
         JSONArray glossesArray = (JSONArray) jSynet.get("glosses");
 
-        List<CharSequence> glosses = null;
+        List<CharSequence> glosses = new ArrayList<>();
         if (glossesArray != null) {
-            glosses = new ArrayList<>();
-
             for (Object o : glossesArray) {
                 JSONObject gloss = (JSONObject) o;
                 String lang = (String) gloss.get("language");
@@ -72,6 +71,8 @@ public class TermFactory {
                     glosses.add(g);
                 }
             }
+        } else {
+            glosses.add("EMPTY");
         }
 
         JSONArray senses = (JSONArray) jSynet.get("senses");
@@ -80,7 +81,6 @@ public class TermFactory {
                 JSONObject jo2 = (JSONObject) o2;
                 JSONObject synsetID = (JSONObject) jo2.get("synsetID");
                 String babelNetID = (String) synsetID.get("id");
-
                 String lang = (String) jo2.get("language");
 
 //                String lemma1, lemma2;
@@ -168,13 +168,39 @@ public class TermFactory {
 
     public static Term create(String jsonStr) throws IOException, ParseException {
         Term term = new Term();
+        List<CharSequence> empty = new ArrayList<>();
+        empty.add("EMPTY");
+
         term.setLemma(getLemma(jsonStr));
         term.setUrl(getURL(jsonStr));
         term.setUid(getUID(jsonStr));
-        term.setAltLables(getAltLables(jsonStr));
-        term.setBuids(getBroaderUIDS(jsonStr));
-        term.setNuids(getNarrowerUIDS(jsonStr));
-        term.setCategories(getCategories(jsonStr));
+        List<CharSequence> alt = getAltLables(jsonStr);
+        if (alt == null || alt.isEmpty()) {
+            term.setAltLables(empty);
+        } else {
+            term.setAltLables(alt);
+        }
+
+        List<CharSequence> buid = getBroaderUIDS(jsonStr);
+        if (buid == null || buid.isEmpty()) {
+            term.setBuids(empty);
+        } else {
+            term.setBuids(buid);
+        }
+        List<CharSequence> nuid = getNarrowerUIDS(jsonStr);
+        if (nuid == null || nuid.isEmpty()) {
+            term.setNuids(empty);
+        } else {
+            term.setNuids(nuid);
+        }
+
+        List<CharSequence> cat = getCategories(jsonStr);
+        if (cat == null || cat.isEmpty()) {
+            term.setCategories(empty);
+        } else {
+            term.setCategories(cat);
+        }
+
 //        term.setForeignKey(getForeignKey(jsonStr));
         term.setGlosses(getGlosses(jsonStr));
 //        term.setIsFromDictionary(IsFromDictionary(jsonStr));
@@ -193,17 +219,35 @@ public class TermFactory {
 
     public static JSONObject term2Json(Term t) {
         JSONObject obj = new JSONObject();
+        List<String> empty = new ArrayList<>();
+        empty.add("EMPTY");
         obj.put("uid", t.getUid());
         obj.put("lemma", t.getLemma());
-        obj.put("altLables", t.getAltLables());
-        obj.put("buids", t.getBuids());
-        obj.put("categories", t.getCategories());
-//        obj.put("foreignKey", t.getForeignKey());
-        obj.put("glosses", t.getGlosses());
-//        obj.put("isFromDictionary", t.getIsFromDictionary());
-//                    obj.put("narrower", t.getNarrower());
-        obj.put("narrowerUIDS", t.getNuids());
-//  obj.put("narrowerUIDS", t.getSynonyms());
+        if (t.getAltLables() == null) {
+            obj.put("altLables", empty);
+        } else {
+            obj.put("altLables", t.getAltLables());
+        }
+        if (t.getBuids() == null) {
+            obj.put("buids", empty);
+        } else {
+            obj.put("buids", t.getBuids());
+        }
+        if (t.getCategories() == null) {
+            obj.put("categories", empty);
+        } else {
+            obj.put("categories", t.getCategories());
+        }
+        if (t.getGlosses() == null) {
+            obj.put("glosses", empty);
+        } else {
+            obj.put("glosses", t.getGlosses());
+        }
+        if (t.getNuids() == null) {
+            obj.put("nuids", empty);
+        } else {
+            obj.put("nuids", t.getNuids());
+        }
         obj.put("confidence", t.getConfidence());
         obj.put("originalTerm", t.getOriginalTerm());
         obj.put("url", t.getUrl());

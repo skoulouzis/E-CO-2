@@ -10,7 +10,6 @@ import eu.edisonproject.training.utility.term.avro.TermFactory;
 import eu.edisonproject.utility.file.CSVFileReader;
 import eu.edisonproject.utility.text.processing.Cleaner;
 import eu.edisonproject.utility.text.processing.Stemming;
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -25,13 +24,11 @@ import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -46,40 +43,39 @@ public class Wikidata extends DisambiguatorImpl {
 
 //    private static Map<String, Set<String>> termCache;
 //    private static Map<String, Set<String>> titlesCache;
-    private static final String[] EXCLUDED_CAT = new String[]{
-        "articles needing",
-        "articles lacking",
-        "articles with",
-        "articles containing",
-        "articles to",
-        "article disambiguation",
-        "articles incorporating",
-        "articles covered",
-        "articles created",
-        "articles that",
-        "cs1 ",
-        "disambiguation pages",
-        "set index articles",
-        "copied and pasted articles",
-        "cleanup tagged articles",
-        "pages needing",
-        "pages lacking",
-        "pages with",
-        "pages using",
-        "disambiguation pages",
-        "use dmy dates",
-        "use mdy dates",
-        "all stub articles",
-        "orphaned articles",
-        "wikipedia introduction",
-        "wikipedia articles",
-        "wikipedia external",
-        "wikipedia indefinitely",
-        "wikipedia spam",
-        "on wikidata"
-    };
+//    private static final String[] EXCLUDED_CAT = new String[]{
+//        "articles needing",
+//        "articles lacking",
+//        "articles with",
+//        "articles containing",
+//        "articles to",
+//        "article disambiguation",
+//        "articles incorporating",
+//        "articles covered",
+//        "articles created",
+//        "articles that",
+//        "cs1 ",
+//        "disambiguation pages",
+//        "set index articles",
+//        "copied and pasted articles",
+//        "cleanup tagged articles",
+//        "pages needing",
+//        "pages lacking",
+//        "pages with",
+//        "pages using",
+//        "disambiguation pages",
+//        "use dmy dates",
+//        "use mdy dates",
+//        "all stub articles",
+//        "orphaned articles",
+//        "wikipedia introduction",
+//        "wikipedia articles",
+//        "wikipedia external",
+//        "wikipedia indefinitely",
+//        "wikipedia spam",
+//        "on wikidata"
+//    };
     private final String page = "https://www.wikidata.org/w/api.php";
-    private File cacheDBFile;
 
     @Override
     public void configure(Properties properties) {
@@ -109,28 +105,38 @@ public class Wikidata extends DisambiguatorImpl {
     }
 
     private Set<Term> getTermNodeByLemma(String lemma) throws MalformedURLException, IOException, ParseException, InterruptedException, ExecutionException {
-        Set<Term> terms;
+
         Set<String> termsStr = getPossibleTermsFromDB(lemma);
-        if (termsStr != null) {
-            return TermFactory.create(termsStr);
-        }
-        if (termsStr != null) {
-            terms = TermFactory.create(termsStr);
-            Set<Term> possibleTerms = new HashSet<>();
+        if (termsStr != null && !termsStr.isEmpty()) {
+            Set<Term> terms = TermFactory.create(termsStr);
+            Set<Term> wikiTerms = new HashSet<>();
+
             for (Term t : terms) {
-                boolean add = true;
-                for (CharSequence g : t.getGlosses()) {
-                    if (g != null && g.toString().contains("Wikimedia disambiguation page")) {
-                        add = false;
-                        break;
-                    }
-                }
-                if (add) {
-                    possibleTerms.add(t);
+                if (t.getUrl().toString().contains(new URL(page).getHost())) {
+                    wikiTerms.add(t);
                 }
             }
-            return possibleTerms;
+            if (!wikiTerms.isEmpty()) {
+                return wikiTerms;
+            }
         }
+//        if (termsStr != null) {
+//            Set<Term> terms = TermFactory.create(termsStr);
+//            Set<Term> possibleTerms = new HashSet<>();
+//            for (Term t : terms) {
+//                boolean add = true;
+//                for (CharSequence g : t.getGlosses()) {
+//                    if (g != null && g.toString().contains("Wikimedia disambiguation page")) {
+//                        add = false;
+//                        break;
+//                    }
+//                }
+//                if (add) {
+//                    possibleTerms.add(t);
+//                }
+//            }
+//            return possibleTerms;
+//        }
 
         String query = lemma.replaceAll("_", " ");
         query = URLEncoder.encode(query, "UTF-8");
@@ -138,7 +144,7 @@ public class Wikidata extends DisambiguatorImpl {
         URL url = new URL(page + "?action=wbsearchentities&format=json&language=en&continue=" + i + "&limit=50&search=" + query);
         System.err.println(url);
         String jsonString = IOUtils.toString(url);
-        terms = getCandidateTerms(jsonString, lemma);
+        Set<Term> terms = getCandidateTerms(jsonString, lemma);
 
         addPossibleTermsToDB(lemma, terms);
 

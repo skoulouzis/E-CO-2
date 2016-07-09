@@ -58,6 +58,7 @@ public class BabelNet extends DisambiguatorImpl {
     public static final TableName SYNSET_TBL_NAME = TableName.valueOf("synset");
     public static final TableName WORDS_TBL_NAME = TableName.valueOf("words");
     public static final TableName DISAMBIGUATE_TBL_NAME = TableName.valueOf("disambiguate");
+    private String page = "http://babelnet.org/synset?word=";
 
     @Override
     public Term getTerm(String term) throws IOException, ParseException, UnsupportedEncodingException, FileNotFoundException {
@@ -82,20 +83,34 @@ public class BabelNet extends DisambiguatorImpl {
         return dis;
     }
 
-    private Set<Term> getTermNodeByLemma(String term) throws IOException, ParseException, UnsupportedEncodingException, FileNotFoundException {
+    private Set<Term> getTermNodeByLemma(String lemma) throws IOException, ParseException, UnsupportedEncodingException, FileNotFoundException {
         try {
             String language = "EN";
+            Set<String> jsonTerms = getPossibleTermsFromDB(lemma);
 
-            List<String> ids = getcandidateWordIDs(language, term);
+            if (jsonTerms != null && !jsonTerms.isEmpty()) {
+                 Set<Term> babelTerms = new HashSet<>();
+                Set<Term> terms = TermFactory.create(jsonTerms);
+                for (Term t : terms) {
+                    if (t.getUrl().toString().contains(new URL(page).getHost())) {
+                        babelTerms.add(t);
+                    }
+                }
+                if(!babelTerms.isEmpty()){
+                    return babelTerms;
+                }
+            }
+
+            List<String> ids = getcandidateWordIDs(language, lemma);
             Set<Term> nodes = new HashSet<>();
             if (ids != null) {
                 for (String id : ids) {
                     String synet = getBabelnetSynset(id, language);
                     String url = null;
-                    Term node = TermFactory.create(synet, language, term, null, url);
+                    Term node = TermFactory.create(synet, language, lemma, null, url);
                     if (node != null) {
                         try {
-                            url = "http://babelnet.org/synset?word=" + URLEncoder.encode(node.getUid().toString(), "UTF-8");
+                            url = page + URLEncoder.encode(node.getUid().toString(), "UTF-8");
                             node.setUrl(url);
                             List<Term> h = getHypernyms(language, node);
                             if (h != null && !h.isEmpty()) {
@@ -103,16 +118,24 @@ public class BabelNet extends DisambiguatorImpl {
                                 for (Term t : h) {
                                     broaderUIDS.add(t.getUid());
                                 }
+                                if (broaderUIDS.isEmpty()) {
+                                    broaderUIDS.add("EMPTY");
+                                }
                                 node.setBuids(broaderUIDS);
                             }
                         } catch (Exception ex) {
                             Logger.getLogger(BabelNet.class.getName()).log(Level.WARNING, null, ex);
                         }
+                        List<CharSequence> nuid = node.getNuids();
+                        if (nuid == null || nuid.isEmpty()) {
+                            nuid = new ArrayList<>();
+                            nuid.add("EMPTY");
+                        }
                         nodes.add(node);
                     }
                 }
             }
-            addPossibleTermsToDB(term, nodes);
+            addPossibleTermsToDB(lemma, nodes);
             return nodes;
         } catch (InterruptedException ex) {
             Logger.getLogger(BabelNet.class.getName()).log(Level.SEVERE, null, ex);
@@ -545,7 +568,9 @@ public class BabelNet extends DisambiguatorImpl {
                     get.addFamily(Bytes.toBytes("csvIds"));
                     Result r = tbl.get(get);
                     String csvIds = Bytes.toString(r.getValue(Bytes.toBytes("csvIds"), Bytes.toBytes("csvIds")));
-                    return Arrays.asList(csvIds.split(","));
+                    if (csvIds != null) {
+                        return Arrays.asList(csvIds.split(","));
+                    }
                 }
             }
         }
