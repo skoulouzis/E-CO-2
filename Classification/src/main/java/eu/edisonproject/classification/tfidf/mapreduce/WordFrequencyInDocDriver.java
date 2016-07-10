@@ -130,7 +130,7 @@ public class WordFrequencyInDocDriver {
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(args[2])));
         String line;
         while ((line = br.readLine()) != null) {
-            String[] components = line.split(",");
+            String[] components = line.split("/");
             itemset.add(components[0]);
         }
         Configuration conf = new Configuration();
