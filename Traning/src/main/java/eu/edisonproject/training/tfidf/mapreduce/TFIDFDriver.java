@@ -81,6 +81,7 @@ public class TFIDFDriver implements ITFIDFDriver {
         this.contextName = contextName + ".csv";
         this.allWords = new LinkedList<String>();
         this.transactionValues = new LinkedList<List<String>>();
+        wordTfidf = new HashMap<>();
     }
 
     @Override
