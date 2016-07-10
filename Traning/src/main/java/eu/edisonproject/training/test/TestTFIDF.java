@@ -23,14 +23,14 @@ import eu.edisonproject.training.tfidf.mapreduce.TFIDFDriver;
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
  */
 public class TestTFIDF {
-    
-    public static void main(String[] args){
-        String contextName="";
-        String inputPath="";
+
+    public static void main(String[] args) {
+        String contextName = "";
+        String inputPath = "";
         ITFIDFDriver tfidfDriver = new TFIDFDriver(contextName);
         tfidfDriver.executeTFIDF(inputPath);
         tfidfDriver.computeMean();
         tfidfDriver.driveProcessResizeVector();
     }
-    
+
 }

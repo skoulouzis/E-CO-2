@@ -18,6 +18,8 @@ package eu.edisonproject.training.wsd.test;
 import eu.edisonproject.training.utility.term.avro.Term;
 import eu.edisonproject.training.wsd.BabelNet;
 import eu.edisonproject.training.wsd.DisambiguatorImpl;
+import eu.edisonproject.training.wsd.MetaDisambiguator;
+import eu.edisonproject.training.wsd.Wikidata;
 import eu.edisonproject.training.wsd.WikipediaOnline;
 import java.io.File;
 import java.io.IOException;
@@ -40,13 +42,16 @@ public class Main {
         try {
             Properties prop = new Properties();
             prop.setProperty("bablenet.key", "f4212b8f-161e-42cc-88a9-3d06b515c4a1");
-            prop.setProperty("minimum.similarity", "0.3");
+            prop.setProperty("minimum.similarity", "-99");
             prop.setProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
             prop.setProperty("max.ngrams", "4");
             String itemsFilePath = ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv";
+//            String itemsFilePath = ".." + File.separator + "documentation" + File.separator + "results" + File.separator + "itemset.csv";
             prop.setProperty("itemset.file", itemsFilePath);
+            prop.setProperty("disambiguators", "eu.edisonproject.training.wsd.BabelNet,eu.edisonproject.training.wsd.WikipediaOnline,eu.edisonproject.training.wsd.Wikidata");
+            prop.setProperty("execute.sequentially", "true");
 
-            DisambiguatorImpl d = new WikipediaOnline();
+            DisambiguatorImpl d = new MetaDisambiguator();
             d.configure(prop);
             Term t = d.getTerm("python");
             System.err.println(t.getGlosses());
