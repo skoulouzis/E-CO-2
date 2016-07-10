@@ -16,11 +16,8 @@
 package eu.edisonproject.training.wsd.test;
 
 import eu.edisonproject.training.utility.term.avro.Term;
-import eu.edisonproject.training.wsd.BabelNet;
 import eu.edisonproject.training.wsd.DisambiguatorImpl;
 import eu.edisonproject.training.wsd.MetaDisambiguator;
-import eu.edisonproject.training.wsd.Wikidata;
-import eu.edisonproject.training.wsd.WikipediaOnline;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;

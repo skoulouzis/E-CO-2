@@ -30,6 +30,10 @@ import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.avro.file.DataFileReader;
+import org.apache.avro.io.DatumReader;
+import org.apache.avro.specific.SpecificDatumReader;
+
 import org.json.simple.parser.ParseException;
 
 import org.apache.hadoop.conf.Configuration;
@@ -211,7 +215,8 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
     }
 
     protected Term disambiguate(String term, Set<Term> possibleTerms, Set<String> ngarms, double minimumSimilarity) throws IOException, ParseException {
-        TermAvroSerializer ts = new TermAvroSerializer(".." + File.separator + "etc" + File.separator + "Avro Document" + File.separator + term + "_possibleTerms.avro", Term.SCHEMA$);
+        String filePath = ".." + File.separator + "etc" + File.separator + "Avro Document" + File.separator + term + File.separator + term + ".avro";
+        TermAvroSerializer ts = new TermAvroSerializer(filePath, Term.SCHEMA$);
         List<CharSequence> empty = new ArrayList<>();
         empty.add("EMPTY");
         for (Term t : possibleTerms) {
@@ -234,8 +239,17 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
             }
             ts.serialize(t);
         }
-//        possibleTerms = tf_idf_Disambiguation(possibleTerms, ngarms, term, getMinimumSimilarity(), true);
 
+        DatumReader<Term> termDatumReader = new SpecificDatumReader<>(Term.class);
+        DataFileReader<Term> dataFileReader;
+        dataFileReader = new DataFileReader<>(new File(filePath), termDatumReader);
+        while (dataFileReader.hasNext()) {
+            //Count the number of rows inside the .avro
+            Term ttt = dataFileReader.next();
+
+        }
+
+//        possibleTerms = tf_idf_Disambiguation(possibleTerms, ngarms, term, getMinimumSimilarity(), true);
         Term dis = null;
         if (possibleTerms != null && possibleTerms.size() == 1) {
             dis = possibleTerms.iterator().next();

@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 import org.apache.avro.file.DataFileReader;
 import org.apache.avro.io.DatumReader;
 import org.apache.avro.specific.SpecificDatumReader;
+//import org.apache.avro.hadoop.io.AvroSerialization;
 
 /**
  *
@@ -82,6 +83,7 @@ public class TFIDFDriver implements ITFIDFDriver {
         this.transactionValues = new LinkedList<List<String>>();
     }
 
+    @Override
     public void executeTFIDF(String inputPath) {
         INPUT_PATH1 = inputPath;
         int numberOfDocuments = 0;
@@ -90,7 +92,7 @@ public class TFIDFDriver implements ITFIDFDriver {
         if (file.isDirectory()) {
             filesInDir = file.listFiles();
             for (File fileSplit : filesInDir) {
-                DatumReader<Term> termDatumReader = new SpecificDatumReader<Term>(Term.class);
+                DatumReader<Term> termDatumReader = new SpecificDatumReader<>(Term.class);
                 DataFileReader<Term> dataFileReader;
                 try {
                     dataFileReader = new DataFileReader<Term>(fileSplit, termDatumReader);
@@ -143,6 +145,7 @@ public class TFIDFDriver implements ITFIDFDriver {
             
     
 
+    @Override
     public void driveProcessResizeVector() {
         // Read the output from avro file
         readAvro();
@@ -240,6 +243,7 @@ public class TFIDFDriver implements ITFIDFDriver {
         return this.threshold;
     }
 
+    @Override
     public void computeMean() {
         double meanTfidf = 0.0;
         Collection<Double> values = wordTfidf.values();

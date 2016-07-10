@@ -2,11 +2,12 @@ package eu.edisonproject.training.utility.term.avro;
 
 import java.io.File;
 import java.io.IOException;
-
 import org.apache.avro.Schema;
 import org.apache.avro.file.DataFileWriter;
 import org.apache.avro.io.DatumWriter;
 import org.apache.avro.specific.SpecificDatumWriter;
+
+
 
 public class TermAvroSerializer {
 

@@ -17,6 +17,7 @@ package eu.edisonproject.training.test;
 
 import eu.edisonproject.training.tfidf.mapreduce.ITFIDFDriver;
 import eu.edisonproject.training.tfidf.mapreduce.TFIDFDriver;
+import java.io.File;
 
 /**
  *
@@ -25,8 +26,8 @@ import eu.edisonproject.training.tfidf.mapreduce.TFIDFDriver;
 public class TestTFIDF {
 
     public static void main(String[] args) {
-        String contextName = "";
-        String inputPath = "";
+        String contextName = "python";
+        String inputPath = ".." + File.separator + "etc" + File.separator + "Avro Document" + File.separator + "python";
         ITFIDFDriver tfidfDriver = new TFIDFDriver(contextName);
         tfidfDriver.executeTFIDF(inputPath);
         tfidfDriver.computeMean();
