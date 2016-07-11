@@ -239,6 +239,7 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
             }
             ts.serialize(t);
         }
+        ts.close();
 
         DatumReader<Term> termDatumReader = new SpecificDatumReader<>(Term.class);
         DataFileReader<Term> dataFileReader;
