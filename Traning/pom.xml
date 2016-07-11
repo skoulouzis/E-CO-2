@@ -12,7 +12,27 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
-    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.avro</groupId>
+                <artifactId>avro-maven-plugin</artifactId>
+                <version>1.7.7</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>schema</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>${project.basedir}/../</sourceDirectory>
+                            <outputDirectory>${project.basedir}/target/generated-sources/</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
     
     <dependencies>
     
@@ -53,57 +73,57 @@
             <type>jar</type>
         </dependency>
         
-<!--       <dependency>
+        <!--       <dependency>
             <groupId>org.apache.avro</groupId>
             <artifactId>avro</artifactId>
             <version>1.7.4</version>
             <type>jar</type>
         </dependency>-->
         
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>org.apache.avro</groupId>
             <artifactId>avro-mapred</artifactId>
             <version>1.7.6-cdh5.7.1</version>
             <type>jar</type>
         </dependency>-->
         
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-hdfs</artifactId>
             <version>2.6.0-cdh5.7.1</version>
         </dependency>-->
         
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-mapreduce-client-app</artifactId>
             <version>2.6.0-cdh5.7.1</version>
         </dependency>-->
         
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-mapreduce-client-common</artifactId>
             <version>2.6.0-cdh5.7.1</version>
         </dependency>-->
         
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-mapreduce-client-core</artifactId>
             <version>2.6.0-cdh5.7.1</version>
         </dependency>-->
         
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-mapreduce-client-jobclient</artifactId>
             <version>2.6.0-cdh5.7.1</version>
         </dependency>-->
         
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-core</artifactId>
             <version>2.6.0-mr1-cdh5.7.1</version>
         </dependency>-->
         
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-common</artifactId>
             <version>2.6.0-cdh5.7.1</version>
@@ -115,11 +135,11 @@
             <artifactId>hadoop-client</artifactId>
             <version>2.7.2</version>
         </dependency>
-        <dependency>
+        <!--        <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-mapreduce-client-core</artifactId>
             <version>2.7.2</version>
-        </dependency>
+        </dependency>-->
         
 
         
@@ -128,18 +148,29 @@
             <artifactId>hbase-client</artifactId>
             <version>1.1.2</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro-mapred</artifactId>
-            <version>1.8.1</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
+        <!--       <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-core</artifactId>
             <version>2.6.0-mr1-cdh5.7.1</version>
             <type>jar</type>
+        </dependency>-->
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+            <version>1.7.7</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro-mapred</artifactId>
+            <version>1.7.7</version>
+            
+            <classifier>hadoop2</classifier>
+        </dependency>
+        <!--        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-core</artifactId>
+            <version>1.1.0</version>
+        </dependency>-->
     </dependencies>
     
     

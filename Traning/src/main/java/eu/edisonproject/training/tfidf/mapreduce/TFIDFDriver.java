@@ -15,8 +15,9 @@
  */
 package eu.edisonproject.training.tfidf.mapreduce;
 
+import term.avro.Term;
 import eu.edisonproject.training.tfidf.avro.TfidfDocument;
-import eu.edisonproject.training.utility.term.avro.Term;
+import eu.edisonproject.utility.file.ReaderFile;
 import eu.edisonproject.utility.file.WriterFile;
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +31,7 @@ import java.util.logging.Logger;
 import org.apache.avro.file.DataFileReader;
 import org.apache.avro.io.DatumReader;
 import org.apache.avro.specific.SpecificDatumReader;
+import org.apache.hadoop.util.ToolRunner;
 //import org.apache.avro.hadoop.io.AvroSerialization;
 
 /**
@@ -43,27 +45,27 @@ public class TFIDFDriver implements ITFIDFDriver {
     //where to read the data for MapReduce#1
     private String INPUT_PATH1;
     //where to put the data in hdfs when MapReduce#1 will finish
-    private String OUTPUT_PATH1 = ".." + File.separator + "etc" + File.separator + "1-word-freq";
+    private String OUTPUT_PATH1 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "1-word-freq";
 
     // where to read the data for the MapReduce#2
-    private String INPUT_PATH2 = ".." + File.separator + "etc" + File.separator + "1-word-freq";
+    private String INPUT_PATH2 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "1-word-freq";
     // where to put the data in hdfs when the MapReduce#2 will finish
-    private String OUTPUT_PATH2 = ".." + File.separator + "etc" + File.separator + "2-word-counts";
+    private String OUTPUT_PATH2 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "2-word-counts";
 
     // where to read the data for the MapReduce#3
-    private String INPUT_PATH3 = ".." + File.separator + "etc" + File.separator + "2-word-counts";
+    private String INPUT_PATH3 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "2-word-counts";
     // where to put the data in hdfs when the MapReduce#3 will finish
-    private String OUTPUT_PATH3 = ".." + File.separator + "etc" + File.separator + "3-tf-idf";
+    private String OUTPUT_PATH3 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "3-tf-idf";
 
     // where to read the data for the MapReduce#4.
-    private String INPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "3-tf-idf";
+    private String INPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "3-tf-idf";
     // where to put the data in hdfs when the MapReduce# will finish
-    private String OUTPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "4-tf-idf-document";
+    private String OUTPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "4-tf-idf-document";
 
     // where to put the csv with the tfidf
-    private String TFIDFCSV_PATH = ".." + File.separator + "etc" + File.separator + "5-csv";
+    private String TFIDFCSV_PATH = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "5-csv";
     // where to put the csv with the context vector
-    private String CONTEXT_PATH = ".." + File.separator + " etc" + File.separator + "6-context-vector";
+    private String CONTEXT_PATH = ".." + File.separator + " etc" + File.separator + "Training" + File.separator + "6-context-vector";
 
     // the name of the context (categories) that it is under analysis
     private String contextName;
@@ -106,45 +108,31 @@ public class TFIDFDriver implements ITFIDFDriver {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                System.out.println(numberOfDocuments);
 
             }
 
             try {
-                WordFrequencyInDocDriver wf = new WordFrequencyInDocDriver();
-                String[] args = {INPUT_PATH1, OUTPUT_PATH1, INPUT_ITEMSET};
-                wf.runWordFrequencyInDocDriver(args);
+                String[] args1 = {INPUT_PATH1, OUTPUT_PATH1, INPUT_ITEMSET};
+                ToolRunner.run(new WordFrequencyInDocDriver(), args1);
+
+                String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};
+                ToolRunner.run(new WordCountsForDocsDriver(), args2);
+
+                String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(numberOfDocuments)};
+                ToolRunner.run(new WordsInCorpusTFIDFDriver(), args3);
+
+                String[] args4 = {INPUT_PATH4, OUTPUT_PATH4};
+                ToolRunner.run(new WordsGroupByTitleDriver(), args4);
             } catch (Exception ex) {
-                Logger.getLogger(TFIDFDriver.class.getName()).log(Level.SEVERE, "Word Frequency In Doc Driver fail", ex);
-            }
-            try {
-                WordCountsForDocsDriver wc = new WordCountsForDocsDriver();
-                String[] args = {INPUT_PATH2, OUTPUT_PATH2};
-                wc.runWordCountsForDocsDriver(args);
-            } catch (Exception ex) {
-                Logger.getLogger(TFIDFDriver.class.getName()).log(Level.SEVERE, "Word Counts For Docs Driver fail", ex);
-            }
-            try {
-                WordsInCorpusTFIDFDriver wtfidf = new WordsInCorpusTFIDFDriver();
-                String[] args = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(numberOfDocuments)};
-                wtfidf.runWordsInCorpusTFIDFDriver(args);
-            } catch (Exception ex) {
-                Logger.getLogger(TFIDFDriver.class.getName()).log(Level.SEVERE, "Words in Corpus TFIDF Driver fail", ex);
-            }
-            try {
-                WordsGroupByTitleDriver wtfidf = new WordsGroupByTitleDriver();
-                String[] args = {INPUT_PATH4, OUTPUT_PATH4};
-                wtfidf.runWordsGroupByTitleDriver(args);
-            } catch (Exception ex) {
-                Logger.getLogger(TFIDFDriver.class.getName()).log(Level.SEVERE, "Word Group By Title Driver fail", ex);
+                Logger.getLogger(TFIDFDriver.class.getName()).log(Level.SEVERE, "TFIDF fail", ex);
             }
 
         } else {
             Logger.getLogger(TFIDFDriver.class.getName()).log(Level.SEVERE, "You must specify the input folder not a specific document", file);
         }
-        
+
     }
-            
-    
 
     @Override
     public void driveProcessResizeVector() {
@@ -187,36 +175,30 @@ public class TFIDFDriver implements ITFIDFDriver {
         File file = new File(OUTPUT_PATH4);
         File[] filesInDir = file.listFiles();
         for (File f : filesInDir) {
-            if (f.getName().contains(".avro")) {
-                //deserializing		
-                DatumReader<TfidfDocument> tfidfDatumReader = new SpecificDatumReader<TfidfDocument>(TfidfDocument.class);
-                DataFileReader<TfidfDocument> dataFileReader;
-                try {
-                    dataFileReader = new DataFileReader<TfidfDocument>(f, tfidfDatumReader);
-                    TfidfDocument tfidfDoc = null;
-                    while (dataFileReader.hasNext()) {
-                        //Reuse user object by passing it to next(). This saves us from
-                        // allocating and garbage collecting many objects for files with
-                        // many items.
-                        List<String> values = new LinkedList<>();
-                        for (int i = 0; i < tfidfDoc.getWords().size(); i++) {
-                            String word = tfidfDoc.getWords().get(i).toString();
-                            String value = tfidfDoc.getValues().get(i).toString();
-                            if (allWords.contains(word)) {
-                                values.add(allWords.indexOf(word), value);
-                            } else {
-                                allWords.add(word);
-                                values.add(allWords.indexOf(word), value);
-                            }
+            if (f.getName().contains("part")) {
+                ReaderFile rf = new ReaderFile(f.getPath());
+                String text = rf.readFileWithN();
+                String[] fields = text.split("\n");
+                for (String field : fields) {
+                    //Reuse user object by passing it to next(). This saves us from
+                    // allocating and garbage collecting many objects for files with
+                    // many items.
+                    List<String> values = new LinkedList<>();
+                    String[] keyValue = field.split("\t");
+                    String[] pairWordValue = keyValue[1].split(" ");
+                    for (String pair : pairWordValue) {
+                        String[] s = pair.split(":");
+                        String word = s[0];
+                        String value = s[1];
+                        if (allWords.contains(word)) {
+                            values.add(allWords.indexOf(word)+":"+ value);
+                        } else {
+                            allWords.add(word);
+                            values.add(allWords.indexOf(word)+":"+value);
                         }
-                        transactionValues.add(values);
-
-                        tfidfDoc = dataFileReader.next(tfidfDoc);
-                        System.out.println(tfidfDoc);
-
                     }
-                } catch (IOException ex) {
-                    Logger.getLogger(TFIDFDriver.class.getName()).log(Level.SEVERE, null, ex);
+                    transactionValues.add(values);
+
                 }
 
             }

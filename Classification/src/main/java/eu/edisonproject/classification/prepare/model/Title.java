@@ -20,7 +20,12 @@ public class Title extends Extractor{
 		}*/
 		
 		this.getJp().setTitle(normalizeTitle(this.getFilePath()));
+                this.getJp().setDocumentId(normalizeId(this.getFilePath()));
 	}
+        
+        public String normalizeId(String path){
+            return path.substring(path.indexOf("_"));
+        }
 	
 	public String normalizeTitle(String title){
 		String normalized_title=title.toLowerCase();

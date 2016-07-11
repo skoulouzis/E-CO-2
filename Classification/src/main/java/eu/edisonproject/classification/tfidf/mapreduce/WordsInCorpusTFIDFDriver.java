@@ -19,8 +19,7 @@ package eu.edisonproject.classification.tfidf.mapreduce;
  *
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
  */
-import eu.edisonproject.classification.avro.Tfidf;
-import eu.edisonproject.classification.avro.TfidfDocument;
+import tfidf.avro.Tfidf;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -33,39 +32,40 @@ import org.apache.avro.mapreduce.AvroJob;
 import org.apache.avro.mapreduce.AvroKeyValueInputFormat;
 import org.apache.avro.mapreduce.AvroKeyValueOutputFormat;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.util.Tool;
 
-public class WordsInCorpusTFIDFDriver{
+public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
 
-    public static class WordsInCorpusTFIDFMapper extends Mapper<AvroKey<Text>, AvroValue<Text>, Text, Text> {
+    public static class WordsInCorpusTFIDFMapper extends Mapper<LongWritable, Text, Text, Text> {
 
         public WordsInCorpusTFIDFMapper() {
         }
 
-        protected void map(AvroKey<Text> key, AvroValue<Text> value, Context context) throws IOException, InterruptedException {
+        protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             /*
-			 * keyValues[0] --> word
-			 * keyValues[1] --> date
-			 * keyValues[2] --> title/document
-			 * 
-			 * value --> n/N
+            *   key word@documentId@title@date
+            *   value n/N
              */
-            String[] keyValues = key.toString().split("@");
-            String valueString = value.toString();
+            String[] pairKeyValue = value.toString().split("\t");
+            String[] keyValues = pairKeyValue[0].toString().split("@");
+            String valueString = pairKeyValue[1];
 
-            context.write(new Text(keyValues[0]), new Text(keyValues[2] + "=" + valueString + "=" + keyValues[1]));
+            context.write(new Text(keyValues[0]), new Text(keyValues[1] + "@" + keyValues[2] + "@" + keyValues[3] + "@" + valueString));
 
         }
     } // end of mapper class
 
 //	public static class WordsInCorpusTFIDFReducer extends Reducer<Text, Text, AvroKey<Text>, AvroValue<Tfidf>> {
-    public static class WordsInCorpusTFIDFReducer extends Reducer<Text, Text, AvroKey<Text>, AvroValue<Tfidf>> {
+    public static class WordsInCorpusTFIDFReducer extends Reducer<Text, Text, Text, Text> {
 
         private static final DecimalFormat DF = new DecimalFormat("###.########");
 
@@ -86,9 +86,9 @@ public class WordsInCorpusTFIDFDriver{
             int numberOfDocumentsInCorpusWhereKeyAppears = 0;
             Map<String, String> tempFrequencies = new HashMap<String, String>();
             for (Text val : values) {
-                String[] documentAndFrequencies = val.toString().split("=");
+                String[] documentAndFrequencies = val.toString().split("@");
                 numberOfDocumentsInCorpusWhereKeyAppears++;
-                tempFrequencies.put(documentAndFrequencies[0] + "@" + documentAndFrequencies[2], documentAndFrequencies[1]);
+                tempFrequencies.put(documentAndFrequencies[0] + "@" + documentAndFrequencies[1] + "@" + documentAndFrequencies[2], documentAndFrequencies[3]);
             }
 
             String lineValue = "";
@@ -111,20 +111,19 @@ public class WordsInCorpusTFIDFDriver{
 
                 lineValue += documentFields[0] + ";" + key.toString() + ";" + DF.format(tfIdf) + "\n";
 
-                Tfidf tfidfJson = new Tfidf();
-                tfidfJson.setDocumentId(documentFields[0]+"@"+documentFields[1]);
-                tfidfJson.setWord(key.toString());
-                tfidfJson.setTfidf(DF.format(tfIdf));
+                String newKey = documentFields[0] + "@" + documentFields[1];
+                String newValue = key.toString() + "/" + DF.format(tfIdf);
 
-                context.write(new AvroKey<Text>(new Text(String.valueOf(count++))), new AvroValue<Tfidf>(tfidfJson));
+                context.write(new Text(newKey), new Text(newValue));
 
             }
         }
     } // end of reducer class
     //changed run(String[]) in runWordsInCorpusTFIDFDriver(String[])
-    public int runWordsInCorpusTFIDFDriver(String[] rawArgs) throws Exception {
+
+    public int run(String[] rawArgs) throws Exception {
         Configuration conf = new Configuration();
-        Job job = new Job(conf,"WordsInCorpusTFIDFDriver");
+        Job job = new Job(conf, "WordsInCorpusTFIDFDriver");
 
         job.setJarByClass(WordsInCorpusTFIDFDriver.class);
         //This row must be changed
@@ -137,18 +136,20 @@ public class WordsInCorpusTFIDFDriver{
         FileOutputFormat.setOutputPath(job, outPath);
         outPath.getFileSystem(conf).delete(outPath, true);
 
-        job.setInputFormatClass(AvroKeyValueInputFormat.class);
         job.setMapperClass(WordsInCorpusTFIDFMapper.class);
-        AvroJob.setInputKeySchema(job, Schema.create(Schema.Type.STRING));
-        AvroJob.setInputValueSchema(job, Schema.create(Schema.Type.STRING));
+//        job.setInputFormatClass(AvroKeyValueInputFormat.class);
+//        job.setMapperClass(WordsInCorpusTFIDFMapper.class);
+//        AvroJob.setInputKeySchema(job, Schema.create(Schema.Type.STRING));
+//        AvroJob.setInputValueSchema(job, Schema.create(Schema.Type.STRING));       
+//        
+//        job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
+//        job.setReducerClass(WordsInCorpusTFIDFReducer.class);
+//        AvroJob.setOutputKeySchema(job, Schema.create(Schema.Type.STRING));
+//        AvroJob.setOutputValueSchema(job, Tfidf.getClassSchema());
 
-        job.setMapOutputKeyClass(Text.class);
-        job.setMapOutputValueClass(Text.class);
-       
-        job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(Text.class);
         job.setReducerClass(WordsInCorpusTFIDFReducer.class);
-        AvroJob.setOutputKeySchema(job, Schema.create(Schema.Type.STRING));
-        AvroJob.setOutputValueSchema(job, Tfidf.getClassSchema());
 
         return (job.waitForCompletion(true) ? 0 : 1);
     }

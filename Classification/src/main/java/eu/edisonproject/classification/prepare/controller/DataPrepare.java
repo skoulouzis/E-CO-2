@@ -1,5 +1,6 @@
 package eu.edisonproject.classification.prepare.controller;
 
+import document.avro.Document;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -20,7 +21,6 @@ import eu.edisonproject.utility.text.processing.StopWord;
 import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
 import eu.edisonproject.classification.prepare.model.Text;
 import eu.edisonproject.classification.prepare.model.Title;
-import eu.edisonproject.classification.avro.Document;
 import eu.edisonproject.classification.avro.DocumentAvroSerializer;
 import eu.edisonproject.utility.file.ReaderFile;
 
@@ -64,9 +64,9 @@ public class DataPrepare implements IDataPrepare {
             for (File subFolder : filesInDir) {
                 File[] files = subFolder.listFiles();
                 Arrays.sort(filesInDir);
-                String newOutputFolder = outputFolder + File.separator + subFolder.getName() + LocalDate.now().toString();
+               // String newOutputFolder = outputFolder + File.separator + subFolder.getName() + LocalDate.now().toString();
                 //create a new Folder
-                new File(newOutputFolder).mkdir();
+                //new File(newOutputFolder).mkdir();
                 for (File f : files) {
                     documentObject = new DocumentObject();
                     extract(this.getDocumentObject(), f.getPath());
@@ -78,12 +78,13 @@ public class DataPrepare implements IDataPrepare {
                     documentObjectList.add(this.getDocumentObject());
 
                     davro = new Document();
+                    davro.setDocumentId(documentObject.getDocumentId());
                     davro.setTitle(documentObject.getTitle());
                     davro.setDate(documentObject.getDate().toString());
                     davro.setDescription(documentObject.getDescription());
 
                     if (dAvroSerializer == null) {
-                        dAvroSerializer = new DocumentAvroSerializer(newOutputFolder + File.separator + documentObject.getTitle() + ".avro", davro.getSchema());
+                        dAvroSerializer = new DocumentAvroSerializer(outputFolder + File.separator + documentObject.getTitle() + ".avro", davro.getSchema());
                     }
                     dAvroSerializer.serialize(davro);
                     f.delete();
@@ -95,7 +96,8 @@ public class DataPrepare implements IDataPrepare {
                     dAvroSerializer = null;
                 }
             }
-        }
+        }else
+            System.out.println("NOT A DIRECTORY");
 
     }
 

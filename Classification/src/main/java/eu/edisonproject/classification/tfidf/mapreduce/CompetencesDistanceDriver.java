@@ -20,7 +20,7 @@ package eu.edisonproject.classification.tfidf.mapreduce;
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
  */
 import eu.edisonproject.classification.avro.Distances;
-import eu.edisonproject.classification.avro.Tfidf;
+import tfidf.avro.Tfidf;
 import eu.edisonproject.classification.avro.TfidfDocument;
 import eu.edisonproject.classification.distance.CosineSimilarityMatrix;
 import java.io.BufferedReader;
@@ -43,16 +43,19 @@ import org.apache.avro.mapreduce.AvroJob;
 import org.apache.avro.mapreduce.AvroKeyValueInputFormat;
 import org.apache.avro.mapreduce.AvroKeyValueOutputFormat;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.util.Tool;
 
-public class CompetencesDistanceDriver {
+public class CompetencesDistanceDriver extends Configured implements Tool{
 
     private static List<HashMap<String, Double>> listOfCompetencesVector;
 
@@ -79,12 +82,12 @@ public class CompetencesDistanceDriver {
         }
     }
 
-    public static class CompetencesDistanceMapper extends Mapper<AvroKey<Text>, AvroValue<Tfidf>, Text, Text> {
+    public static class CompetencesDistanceMapper extends Mapper<LongWritable, Text, Text, Text> {
 
         public CompetencesDistanceMapper() {
         }
 
-        protected void map(AvroKey<Text> key, AvroValue<Tfidf> value, Context context) throws IOException, InterruptedException {
+        protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             /*
 			 * keyValues[0] --> word
 			 * keyValues[1] --> date
@@ -92,17 +95,17 @@ public class CompetencesDistanceDriver {
 			 * 
 			 * value --> n/N
              */
-            Tfidf tfidfJson = value.datum();
-            String documentID = tfidfJson.getDocumentId().toString();
-            String word = tfidfJson.getWord().toString();
-            String tfidf = tfidfJson.getTfidf().toString();
+            String[] keyValues = value.toString().split("\t");
+            String documentID = keyValues[0];
+            String word = keyValues[1].split("/")[0];
+            String tfidf = keyValues[1].split("/")[1];
 
             context.write(new Text(documentID), new Text(word + "@" + tfidf));
 
         }
     } // end of mapper class
 
-    public static class CompetencesDistanceReducer extends Reducer<Text, Text, AvroKey<Distances>, AvroValue<Text>> {
+    public static class CompetencesDistanceReducer extends Reducer<Text, Text, Text, Text> {
 
         public CompetencesDistanceReducer() {
         }
@@ -135,17 +138,20 @@ public class CompetencesDistanceDriver {
                 distances.add(cosineFunction.computeDistance(competence.values(), documentToCompetenceSpace.values()));
 
             }
-            String[] docIdAndDate = text.toString().split("@");
-            Distances distanceDocument = new Distances();
-            distanceDocument.setDocumentId(docIdAndDate[0]);
-            distanceDocument.setDate(docIdAndDate[1]);
-            distanceDocument.setDistances(distances);
-
-            context.write(new AvroKey<Distances>(distanceDocument), new AvroValue<Text>(new Text()));
+//            String[] docIdAndDate = text.toString().split("@");
+//            Distances distanceDocument = new Distances();
+//            distanceDocument.setDocumentId(docIdAndDate[0]);
+//            distanceDocument.setDate(docIdAndDate[1]);
+//            distanceDocument.setDistances(distances);
+//            D
+            String distancesString ="";
+            for(Double d: distances)
+                distancesString+=d+",";
+            context.write(new Text(text), new Text(distancesString));
 
         }
-        
-/*        private static Put resultToPut(ImmutableBytesWritable key, Result result) throws IOException {
+
+        /*        private static Put resultToPut(ImmutableBytesWritable key, Result result) throws IOException {
   		Put put = new Put(key.get());
  		for (KeyValue kv : result.raw()) {
 			put.add(kv);
@@ -154,7 +160,7 @@ public class CompetencesDistanceDriver {
    	}*/
     } // end of reducer class
 
-    public int runWordsGroupByTitleDriver(String[] args) throws Exception {
+    public int run(String[] args) throws Exception {
         Configuration conf = HBaseConfiguration.create();
         //Configuration conf = new Configuration();
         Job job = new Job(conf, "WordsGroupByTitleDriver");
@@ -180,13 +186,37 @@ public class CompetencesDistanceDriver {
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);
 
-        job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
+//        job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
+//        job.setReducerClass(CompetencesDistanceReducer.class);
+//        AvroJob.setOutputKeySchema(job, TfidfDocument.SCHEMA$);
+//        AvroJob.setOutputValueSchema(job, Schema.create(Schema.Type.STRING));
+//        
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(Integer.class);
         job.setReducerClass(CompetencesDistanceReducer.class);
-        AvroJob.setOutputKeySchema(job, TfidfDocument.SCHEMA$);
-        AvroJob.setOutputValueSchema(job, Schema.create(Schema.Type.STRING));
-
+        
         //TableMapReduceUtil.initTableReducerJob("Distance", CompetencesDistanceReducer.class, job);
         return (job.waitForCompletion(true) ? 0 : 1);
+
+//        HBaseConfiguration conf = HBaseConfiguration.create();
+//        Job job = new Job(conf, "JOB_NAME");
+//        job.setJarByClass(yourclass.class);
+//        job.setMapperClass(yourMapper.class);
+//        job.setMapOutputKeyClass(Text.class);
+//        job.setMapOutputValueClass(Intwritable.class);
+//        FileInputFormat.setInputPaths(job, new Path(inputPath));
+//        TableMapReduceUtil.initTableReducerJob(TABLE,
+//                yourReducer.class, job);
+//        job.setReducerClass(yourReducer.class);
+//        job.waitForCompletion(true);
+
+//class yourReducer
+//        extends
+//        TableReducer<Text, IntWritable, 
+//        ImmutableBytesWritable>
+//{
+////@override reduce()
+//}
     }
 
 }

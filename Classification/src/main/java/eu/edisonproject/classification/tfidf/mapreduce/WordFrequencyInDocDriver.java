@@ -19,8 +19,9 @@ package eu.edisonproject.classification.tfidf.mapreduce;
  *
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
  */
-import eu.edisonproject.classification.avro.Document;
+import document.avro.Document;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -35,7 +36,7 @@ import org.apache.avro.mapred.AvroValue;
 import org.apache.avro.mapreduce.AvroJob;
 import org.apache.avro.mapreduce.AvroKeyInputFormat;
 import org.apache.avro.mapreduce.AvroKeyValueOutputFormat;
-import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.NullWritable;
@@ -45,8 +46,10 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
 
-public class WordFrequencyInDocDriver {
+public class WordFrequencyInDocDriver extends Configured implements Tool {
 
     // where to read the frequent itemset
     // private static final String ITEMSET_PATH = ".." + File.separator + "etc" + File.separator + "itemset.csv";
@@ -61,20 +64,22 @@ public class WordFrequencyInDocDriver {
 
         public WordFrequencyInDocMapper() {
         }
-   
+
         protected void map(AvroKey<Document> key, NullWritable value, Context context)
                 throws IOException, InterruptedException {
-            String title = key.datum().getTitle().toString();
-            String description = key.datum().getDescription().toString();
-            String date = key.datum().getDate().toString();
 
-            description = description.toLowerCase();
+            String documentId = key.datum().getDocumentId().toString();
+            String title = key.datum().getTitle().toString();
+            String description = key.datum().getDescription().toString().toLowerCase();
+            String date = key.datum().getDate().toString();
 
             for (String s : itemset) {
                 if (description.contains(s)) {
                     while (description.contains(s)) {
                         StringBuilder valueBuilder = new StringBuilder();
                         valueBuilder.append(s);
+                        valueBuilder.append("@");
+                        valueBuilder.append(documentId);
                         valueBuilder.append("@");
                         valueBuilder.append(title);
                         valueBuilder.append("@");
@@ -95,6 +100,8 @@ public class WordFrequencyInDocDriver {
                 StringBuilder valueBuilder = new StringBuilder();
                 valueBuilder.append(matchedKey);
                 valueBuilder.append("@");
+                valueBuilder.append(documentId);
+                valueBuilder.append("@");
                 valueBuilder.append(title);
                 valueBuilder.append("@");
                 valueBuilder.append(date);
@@ -105,7 +112,7 @@ public class WordFrequencyInDocDriver {
         }
     }
 
-    public static class WordFrequencyInDocReducer extends Reducer<Text, IntWritable, AvroKey<Text>, AvroValue<Integer>> {
+    public static class WordFrequencyInDocReducer extends Reducer<Text, IntWritable, Text, Integer> { //AvroKey<Text>, AvroValue<Integer>> {
 
         public WordFrequencyInDocReducer() {
         }
@@ -118,14 +125,13 @@ public class WordFrequencyInDocDriver {
             }
             System.out.println(key.toString());
             System.out.println(sum.toString());
-            context.write(new AvroKey<Text>(key), new AvroValue<Integer>(sum));
-
+            //context.write(new AvroKey<Text>(key), new AvroValue<Integer>(sum));
+            context.write(key, sum);
         }
     } // end of reducer class
 
-    // runWordFrequencyInDocDriver --> run (args[])
-    public int runWordFrequencyInDocDriver(String[] args) throws Exception {
-
+    @Override
+    public int run(String[] args) throws Exception {
         itemset = new LinkedList<String>();
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(args[2])));
         String line;
@@ -133,30 +139,29 @@ public class WordFrequencyInDocDriver {
             String[] components = line.split("/");
             itemset.add(components[0]);
         }
-        Configuration conf = new Configuration();
-        Job job = new Job(conf, "WordFrequencyInDocDriver");
-
+        Job job = new Job(getConf());
         job.setJarByClass(WordFrequencyInDocDriver.class);
         job.setJobName("Word Frequency In Doc Driver");
 
-        Path inPath = new Path(args[0]);
-        Path outPath = new Path(args[1]);
+        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
-        FileInputFormat.setInputPaths(job, inPath);
-        FileOutputFormat.setOutputPath(job, outPath);
-        outPath.getFileSystem(conf).delete(outPath, true);
+        new Path(args[1]).getFileSystem(super.getConf()).delete(new Path(args[1]), true);
 
         job.setInputFormatClass(AvroKeyInputFormat.class);
         job.setMapperClass(WordFrequencyInDocMapper.class);
         AvroJob.setInputKeySchema(job, Document.getClassSchema());
-
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(IntWritable.class);
-        job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
-        job.setReducerClass(WordFrequencyInDocReducer.class);
-        AvroJob.setOutputKeySchema(job, Schema.create(Schema.Type.STRING));
-        AvroJob.setOutputValueSchema(job, Schema.create(Schema.Type.INT));
 
+        //job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
+        //job.setReducerClass(WordFrequencyInDocReducer.class);
+        //AvroJob.setOutputKeySchema(job, Schema.create(Schema.Type.STRING));
+        //AvroJob.setOutputValueSchema(job, Schema.create(Schema.Type.INT));
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(Integer.class);
+        job.setReducerClass(WordFrequencyInDocReducer.class);
         return (job.waitForCompletion(true) ? 0 : 1);
     }
+
 }

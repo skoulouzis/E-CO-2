@@ -16,7 +16,7 @@
 package eu.edisonproject.classification.tfidf.mapreduce;
 
 import eu.edisonproject.classification.avro.Distances;
-import eu.edisonproject.classification.avro.Document;
+import document.avro.Document;
 import eu.edisonproject.utility.file.WriterFile;
 import java.io.File;
 import java.io.IOException;
@@ -28,8 +28,10 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.avro.file.DataFileReader;
+import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.io.DatumReader;
 import org.apache.avro.specific.SpecificDatumReader;
+import org.apache.hadoop.util.ToolRunner;
 
 /**
  *
@@ -42,24 +44,24 @@ public class TFIDFDriver implements ITFIDFDriver {
     //where to read the data for MapReduce#1
     private String INPUT_PATH1;
     //where to put the data in hdfs when MapReduce#1 will finish
-    private final String OUTPUT_PATH1 = ".." + File.separator + "etc" + File.separator + "classification" + File.separator + "1-word-freq";
+    private final String OUTPUT_PATH1 = ".." + File.separator + "etc" + File.separator + "Classification" + File.separator + "1-word-freq";
 
     // where to read the data for the MapReduce#2
-    private final String INPUT_PATH2 = ".." + File.separator + "etc" + File.separator + "classification" + File.separator + "1-word-freq";
+    private final String INPUT_PATH2 = ".." + File.separator + "etc" + File.separator + "Classification" + File.separator + "1-word-freq";
     // where to put the data in hdfs when the MapReduce#2 will finish
-    private final String OUTPUT_PATH2 = ".." + File.separator + "etc" + File.separator + "classification" + File.separator + "2-word-counts";
+    private final String OUTPUT_PATH2 = ".." + File.separator + "etc" + File.separator + "Classification" + File.separator + "2-word-counts";
 
     // where to read the data for the MapReduce#3
-    private final String INPUT_PATH3 = ".." + File.separator + "etc" + File.separator + "classification" + File.separator + "2-word-counts";
+    private final String INPUT_PATH3 = ".." + File.separator + "etc" + File.separator + "Classification" + File.separator + "2-word-counts";
     // where to put the data in hdfs when the MapReduce#3 will finish
-    private final String OUTPUT_PATH3 = ".." + File.separator + "etc" + File.separator + "classification" + File.separator + "3-tf-idf";
+    private final String OUTPUT_PATH3 = ".." + File.separator + "etc" + File.separator + "Classification" + File.separator + "3-tf-idf";
 
     // where to read the data for the MapReduce#4.
-    private final String INPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "classification" + File.separator + "3-tf-idf";
+    private final String INPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "Classification" + File.separator + "3-tf-idf";
     // where to put the data in hdfs when the MapReduce# will finish
-    private final String OUTPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "classification" + File.separator + "4-tf-idf-document";
+    private final String OUTPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "Classification" + File.separator + "4-tf-idf-document";
 
-    private final String TFIDFCSV_PATH = ".." + File.separator + "etc" + File.separator + "classification" + File.separator + "5-tf-idf-csv";
+    private final String TFIDFCSV_PATH = ".." + File.separator + "etc" + File.separator + "Classification" + File.separator + "5-tf-idf-csv";
     // where to put the csv with the tfidf
     private final String COMPETENCES_PATH = ".." + File.separator + "etc" + File.separator + "training" + File.separator + "competences";
 
@@ -85,10 +87,10 @@ public class TFIDFDriver implements ITFIDFDriver {
         if (file.isDirectory()) {
             filesInDir = file.listFiles();
             for (File fileSplit : filesInDir) {
-                DatumReader<Document> documentDatumReader = new SpecificDatumReader<Document>(Document.class);
+                DatumReader<Document> documentDatumReader = new SpecificDatumReader<>(Document.class);
                 DataFileReader<Document> dataFileReader;
                 try {
-                    dataFileReader = new DataFileReader<Document>(fileSplit, documentDatumReader);
+                    dataFileReader = new DataFileReader<>(fileSplit, documentDatumReader);
 
                     while (dataFileReader.hasNext()) {
                         //Count the number of rows inside the .avro
@@ -100,34 +102,19 @@ public class TFIDFDriver implements ITFIDFDriver {
                 }
 
             }
+            System.out.println("Number of Documents "+numberOfDocuments);
 
             try {
-                WordFrequencyInDocDriver wf = new WordFrequencyInDocDriver();
-                String[] args = {INPUT_PATH1, OUTPUT_PATH1, INPUT_ITEMSET};
-                wf.runWordFrequencyInDocDriver(args);
+                String[] args1 = {INPUT_PATH1, OUTPUT_PATH1, INPUT_ITEMSET};
+                ToolRunner.run(new WordFrequencyInDocDriver(), args1);
+                String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};
+                ToolRunner.run(new WordCountsForDocsDriver(), args2);
+                String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(numberOfDocuments)};
+                ToolRunner.run(new WordsInCorpusTFIDFDriver(),args3);
+                String[] args4 = {INPUT_PATH4, OUTPUT_PATH4, COMPETENCES_PATH};
+                ToolRunner.run(new CompetencesDistanceDriver(),args4);
             } catch (Exception ex) {
-                Logger.getLogger(TFIDFDriver.class.getName()).log(Level.SEVERE, "Word Frequency In Doc Driver fail", ex);
-            }
-            try {
-                WordCountsForDocsDriver wc = new WordCountsForDocsDriver();
-                String[] args = {INPUT_PATH2, OUTPUT_PATH2};
-                wc.runWordCountsForDocsDriver(args);
-            } catch (Exception ex) {
-                Logger.getLogger(TFIDFDriver.class.getName()).log(Level.SEVERE, "Word Counts For Docs Driver fail", ex);
-            }
-            try {
-                WordsInCorpusTFIDFDriver wtfidf = new WordsInCorpusTFIDFDriver();
-                String[] args = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(numberOfDocuments)};
-                wtfidf.runWordsInCorpusTFIDFDriver(args);
-            } catch (Exception ex) {
-                Logger.getLogger(TFIDFDriver.class.getName()).log(Level.SEVERE, "Words in Corpus TFIDF Driver fail", ex);
-            }
-            try {
-                CompetencesDistanceDriver wtfidf = new CompetencesDistanceDriver();
-                String[] args = {INPUT_PATH4, OUTPUT_PATH4, COMPETENCES_PATH};
-                wtfidf.runWordsGroupByTitleDriver(args);
-            } catch (Exception ex) {
-                Logger.getLogger(TFIDFDriver.class.getName()).log(Level.SEVERE, "Word Group By Title Driver fail", ex);
+                Logger.getLogger(TFIDFDriver.class.getName()).log(Level.SEVERE, "MapReduce Fail", ex);
             }
         }else{
             Logger.getLogger(TFIDFDriver.class.getName()).log(Level.SEVERE, "You must specify the input folder not a specific document", file);

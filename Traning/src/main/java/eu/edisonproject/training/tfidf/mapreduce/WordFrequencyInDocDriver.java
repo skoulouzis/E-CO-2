@@ -45,10 +45,11 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import term.avro.Term;
+import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.util.Tool;
 
-import eu.edisonproject.training.utility.term.avro.Term;
-
-public class WordFrequencyInDocDriver{
+public class WordFrequencyInDocDriver extends Configured implements Tool{
 
     // where to read the frequent itemset
    // private static final String ITEMSET_PATH = ".." + File.separator + "etc" + File.separator + "itemset.csv";
@@ -62,6 +63,7 @@ public class WordFrequencyInDocDriver{
     // hashmap for the itemset
     private static List<String> itemset;
 
+    
     public static class WordFrequencyInDocMapper extends Mapper<AvroKey<Term>, NullWritable, Text, IntWritable> {
 
         public WordFrequencyInDocMapper() {
@@ -130,7 +132,8 @@ public class WordFrequencyInDocDriver{
     } // end of reducer class
 
     // runWordFrequencyInDocDriver --> run (args[])
-    public int runWordFrequencyInDocDriver(String[] args) throws Exception {
+    @Override
+    public int run(String[] args) throws Exception {
 
         itemset = new LinkedList<String>();
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(args[2])));
@@ -139,18 +142,14 @@ public class WordFrequencyInDocDriver{
             String[] components = line.split("/");
             itemset.add(components[0]);
         }
-        Configuration conf = new Configuration();
-        Job job = new Job(conf, "WordFrequencyInDocDriver");
+        Job job = new Job(getConf());
 
         job.setJarByClass(WordFrequencyInDocDriver.class);
         job.setJobName("Word Frequency In Doc Driver");
 
-        Path inPath = new Path(args[0]);
-        Path outPath = new Path(args[1]);
-
-        FileInputFormat.setInputPaths(job, inPath);
-        FileOutputFormat.setOutputPath(job, outPath);
-        outPath.getFileSystem(conf).delete(outPath, true);
+        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+        new Path(args[1]).getFileSystem(super.getConf()).delete(new Path(args[1]), true);
 
         job.setInputFormatClass(AvroKeyInputFormat.class);
         job.setMapperClass(WordFrequencyInDocMapper.class);
@@ -158,16 +157,24 @@ public class WordFrequencyInDocDriver{
 
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(IntWritable.class);
-        /*Here it is possible put the combiner class
-		job.setCombinerClass(AvroAverageCombiner.class);
-         */
-        job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
+        
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(Integer.class);
         job.setReducerClass(WordFrequencyInDocReducer.class);
-        AvroJob.setOutputKeySchema(job, Schema.create(Schema.Type.STRING));
-        AvroJob.setOutputValueSchema(job, Schema.create(Schema.Type.INT));
+//        job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
+//        job.setReducerClass(WordFrequencyInDocReducer.class);
+//        AvroJob.setOutputKeySchema(job, Schema.create(Schema.Type.STRING));
+//        AvroJob.setOutputValueSchema(job, Schema.create(Schema.Type.INT));
 
         return (job.waitForCompletion(true) ? 0 : 1);
 
+        
+
+        //job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
+        //job.setReducerClass(WordFrequencyInDocReducer.class);
+        //AvroJob.setOutputKeySchema(job, Schema.create(Schema.Type.STRING));
+        //AvroJob.setOutputValueSchema(job, Schema.create(Schema.Type.INT));
+        
     }
 
 }

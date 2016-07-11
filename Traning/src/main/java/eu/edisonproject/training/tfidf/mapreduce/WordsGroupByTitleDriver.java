@@ -32,23 +32,26 @@ import org.apache.avro.mapreduce.AvroJob;
 import org.apache.avro.mapreduce.AvroKeyValueInputFormat;
 import org.apache.avro.mapreduce.AvroKeyValueOutputFormat;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.util.Tool;
 
-public class WordsGroupByTitleDriver {
+public class WordsGroupByTitleDriver extends Configured implements Tool{
 
     
-    public static class WordsGroupByTitleMapper extends Mapper<AvroKey<Text>, AvroValue<Tfidf>, Text, Text> {
+    public static class WordsGroupByTitleMapper extends Mapper<LongWritable, Text, Text, Text> {
 
         public WordsGroupByTitleMapper() {
         }
 
-        protected void map(AvroKey<Text> key, AvroValue<Tfidf> value, Context context) throws IOException, InterruptedException {
+        protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             /*
 			 * keyValues[0] --> word
 			 * keyValues[1] --> date
@@ -56,17 +59,17 @@ public class WordsGroupByTitleDriver {
 			 * 
 			 * value --> n/N
              */
-            Tfidf tfidfJson = value.datum();
-            String documentID = tfidfJson.getDocumentId().toString();
-            String word = tfidfJson.getWord().toString();
-            String tfidf = tfidfJson.getTfidf().toString();
+            String[] lineKeyValue = value.toString().split("\t");
+            String documentID = lineKeyValue[0].split("/")[0];
+            String word = lineKeyValue[0].split("/")[1];
+            String tfidf = lineKeyValue[1];
 
             context.write(new Text(documentID), new Text(word + "@" + tfidf));
 
         }
     } // end of mapper class
 
-    public static class WordsGroupByTitleReducer extends Reducer<Text, Text, AvroKey<TfidfDocument>, AvroValue<Text>> {
+    public static class WordsGroupByTitleReducer extends Reducer<Text, Text, Text, Text> {
 
         public WordsGroupByTitleReducer() {}
 
@@ -74,24 +77,26 @@ public class WordsGroupByTitleDriver {
             //The object are grouped for them documentId    
             List<CharSequence> wordToWrite = new LinkedList<>();
             List<CharSequence> valuesToWrite = new LinkedList<>();
-
+            String pairWordValue="";
             for (Text value : values) {
                 String[] line = value.toString().split("@");
-                wordToWrite.add(line[0]);
-                valuesToWrite.add(line[1]);
+                pairWordValue+=line[0]+":"+line[1]+" ";
+//                wordToWrite.add(line[0]);
+//                valuesToWrite.add(line[1]);
             }
-
-            TfidfDocument tfidfDocument = new TfidfDocument();
-            tfidfDocument.setDocumentId(text.toString());
-            tfidfDocument.setWords(wordToWrite);
-            tfidfDocument.setValues(valuesToWrite);
-            
-            context.write(new AvroKey<TfidfDocument>(tfidfDocument), new AvroValue<Text>(new Text()));
+//
+//            TfidfDocument tfidfDocument = new TfidfDocument();
+//            tfidfDocument.setDocumentId(text.toString());
+//            tfidfDocument.setWords(wordToWrite);
+//            tfidfDocument.setValues(valuesToWrite);
+//          
+            context.write(new Text(text.toString()), new Text(pairWordValue));
+            //context.write(new AvroKey<TfidfDocument>(tfidfDocument), new AvroValue<Text>(new Text()));
 
         }
     } // end of reducer class
 
-    public int runWordsGroupByTitleDriver(String[] args) throws Exception {
+    public int run(String[] args) throws Exception {
         //Configuration config = HBaseConfiguration.create();
         Configuration conf = new Configuration();
         Job job = new Job(conf,"WordsGroupByTitleDriver");
@@ -100,27 +105,23 @@ public class WordsGroupByTitleDriver {
         //This row must be changed
         job.setJobName("Words Group By Title Driver");
 
-        Path inPath = new Path(args[0]);
+         Path inPath = new Path(args[0]);
         Path outPath = new Path(args[1]);
 
         FileInputFormat.setInputPaths(job, inPath);
         FileOutputFormat.setOutputPath(job, outPath);
         outPath.getFileSystem(conf).delete(outPath, true);
 
-        job.setInputFormatClass(AvroKeyValueInputFormat.class);
         job.setMapperClass(WordsGroupByTitleMapper.class);
-        AvroJob.setInputKeySchema(job, Schema.create(Schema.Type.STRING));
-        AvroJob.setInputValueSchema(job, Tfidf.getClassSchema());
-
-        job.setMapOutputKeyClass(Text.class);
-        job.setMapOutputValueClass(Text.class);
         
-        job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(Text.class);
         job.setReducerClass(WordsGroupByTitleReducer.class);
-        AvroJob.setOutputKeySchema(job, TfidfDocument.SCHEMA$);
-        AvroJob.setOutputValueSchema(job, Schema.create(Schema.Type.STRING));
+//        job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
+//        job.setReducerClass(WordsGroupByTitleReducer.class);
+//        AvroJob.setOutputKeySchema(job, TfidfDocument.SCHEMA$);
+//        AvroJob.setOutputValueSchema(job, Schema.create(Schema.Type.STRING));
 
-        //TableMapReduceUtil.initTableReducerJob("Distance", CompetencesDistanceReducer.class, job);
         return (job.waitForCompletion(true) ? 0 : 1);
     }
 

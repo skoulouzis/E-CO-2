@@ -19,6 +19,7 @@ package eu.edisonproject.classification.avro;
  *
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
  */
+import document.avro.Document;
 import java.io.File;
 import java.io.IOException;
 
