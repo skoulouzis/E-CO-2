@@ -56,7 +56,7 @@ public class TermFactory {
                 }
             }
         } else {
-            categories.add("EMPTY");
+            categories.add("");
         }
 
         JSONArray glossesArray = (JSONArray) jSynet.get("glosses");
@@ -72,7 +72,7 @@ public class TermFactory {
                 }
             }
         } else {
-            glosses.add("EMPTY");
+            glosses.add("");
         }
 
         JSONArray senses = (JSONArray) jSynet.get("senses");
@@ -169,7 +169,7 @@ public class TermFactory {
     public static Term create(String jsonStr) throws IOException, ParseException {
         Term term = new Term();
         List<CharSequence> empty = new ArrayList<>();
-        empty.add("EMPTY");
+        empty.add("");
 
         term.setLemma(getLemma(jsonStr));
         term.setUrl(getURL(jsonStr));
@@ -220,7 +220,7 @@ public class TermFactory {
     public static JSONObject term2Json(Term t) {
         JSONObject obj = new JSONObject();
         List<String> empty = new ArrayList<>();
-        empty.add("EMPTY");
+        empty.add("");
         obj.put("uid", t.getUid());
         obj.put("lemma", t.getLemma());
         if (t.getAltLables() == null) {
@@ -335,7 +335,7 @@ public class TermFactory {
         List<CharSequence> list = new ArrayList<>();
         org.json.simple.JSONArray ja = (org.json.simple.JSONArray) jsonObject.get(field);
         if (ja == null) {
-            list.add("EMPTY");
+            list.add("");
         } else {
 
             for (Object elem : ja) {

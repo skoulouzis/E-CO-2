@@ -119,7 +119,7 @@ public class BabelNet extends DisambiguatorImpl {
                                     broaderUIDS.add(t.getUid());
                                 }
                                 if (broaderUIDS.isEmpty()) {
-                                    broaderUIDS.add("EMPTY");
+                                    broaderUIDS.add("");
                                 }
                                 node.setBuids(broaderUIDS);
                             }
@@ -129,7 +129,7 @@ public class BabelNet extends DisambiguatorImpl {
                         List<CharSequence> nuid = node.getNuids();
                         if (nuid == null || nuid.isEmpty()) {
                             nuid = new ArrayList<>();
-                            nuid.add("EMPTY");
+                            nuid.add("");
                         }
                         nodes.add(node);
                     }

@@ -216,9 +216,9 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
 
     protected Term disambiguate(String term, Set<Term> possibleTerms, Set<String> ngarms, double minimumSimilarity) throws IOException, ParseException {
         String filePath = ".." + File.separator + "etc" + File.separator + "Avro Document" + File.separator + term + File.separator + term + ".avro";
-        TermAvroSerializer ts = new TermAvroSerializer(filePath, Term.SCHEMA$);
+        TermAvroSerializer ts = new TermAvroSerializer(filePath, Term.getClassSchema());
         List<CharSequence> empty = new ArrayList<>();
-        empty.add("EMPTY");
+        empty.add("");
         for (Term t : possibleTerms) {
             List<CharSequence> nuid = t.getNuids();
             if (nuid == null || nuid.isEmpty() || nuid.contains(null)) {
@@ -236,6 +236,10 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
             List<CharSequence> gl = t.getGlosses();
             if (gl == null || gl.isEmpty() || gl.contains(null)) {
                 t.setGlosses(empty);
+            }
+            List<CharSequence> cat = t.getCategories();
+            if (cat == null || cat.contains(null)) {
+                t.setCategories(empty);
             }
             ts.serialize(t);
         }
