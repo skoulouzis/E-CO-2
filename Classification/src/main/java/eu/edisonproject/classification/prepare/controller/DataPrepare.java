@@ -11,10 +11,12 @@ import org.apache.lucene.analysis.util.CharArraySet;
 import org.jsoup.Jsoup;
 
 import eu.edisonproject.utility.text.processing.Cleaner;
+
 import eu.edisonproject.classification.prepare.model.Date;
 import eu.edisonproject.classification.prepare.model.Extractor;
 import eu.edisonproject.classification.prepare.model.DocumentObject;
 import eu.edisonproject.utility.text.processing.StopWord;
+
 import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
 import eu.edisonproject.classification.prepare.model.Text;
 import eu.edisonproject.classification.prepare.model.Title;

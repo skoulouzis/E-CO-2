@@ -1,0 +1,391 @@
+2016-07-11 09:23:47 NativeCodeLoader [WARN] Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+2016-07-11 09:23:47 deprecation [INFO] session.id is deprecated. Instead, use dfs.metrics.session-id
+2016-07-11 09:23:47 JvmMetrics [INFO] Initializing JVM Metrics with processName=JobTracker, sessionId=
+2016-07-11 09:23:48 JobResourceUploader [WARN] Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+2016-07-11 09:23:48 JobResourceUploader [WARN] No job jar file set.  User classes may not be found. See Job or Job#setJar(String).
+2016-07-11 09:23:48 FileInputFormat [INFO] Total input paths to process : 1
+2016-07-11 09:23:48 JobSubmitter [INFO] number of splits:1
+2016-07-11 09:23:48 JobSubmitter [INFO] Submitting tokens for job: job_local1826707233_0001
+2016-07-11 09:23:49 Job [INFO] The url to track the job: http://localhost:8080/
+2016-07-11 09:23:49 Job [INFO] Running job: job_local1826707233_0001
+2016-07-11 09:23:49 LocalJobRunner [INFO] OutputCommitter set in config null
+2016-07-11 09:23:49 FileOutputCommitter [INFO] File Output Committer Algorithm version is 1
+2016-07-11 09:23:49 LocalJobRunner [INFO] OutputCommitter is org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter
+2016-07-11 09:23:49 LocalJobRunner [INFO] Waiting for map tasks
+2016-07-11 09:23:49 LocalJobRunner [INFO] Starting task: attempt_local1826707233_0001_m_000000_0
+2016-07-11 09:23:49 FileOutputCommitter [INFO] File Output Committer Algorithm version is 1
+2016-07-11 09:23:49 Task [INFO]  Using ResourceCalculatorProcessTree : [ ]
+2016-07-11 09:23:49 MapTask [INFO] Processing split: file:/home/michele/NetBeansProjects/E-CO-2/etc/Avro Document/python/python.avro:0+576
+2016-07-11 09:23:49 MapTask [INFO] (EQUATOR) 0 kvi 26214396(104857584)
+2016-07-11 09:23:49 MapTask [INFO] mapreduce.task.io.sort.mb: 100
+2016-07-11 09:23:49 MapTask [INFO] soft limit at 83886080
+2016-07-11 09:23:49 MapTask [INFO] bufstart = 0; bufvoid = 104857600
+2016-07-11 09:23:49 MapTask [INFO] kvstart = 26214396; length = 6553600
+2016-07-11 09:23:49 MapTask [INFO] Map output collector class = org.apache.hadoop.mapred.MapTask$MapOutputBuffer
+2016-07-11 09:23:49 LocalJobRunner [INFO] 
+2016-07-11 09:23:49 MapTask [INFO] Starting flush of map output
+2016-07-11 09:23:49 Task [INFO] Task:attempt_local1826707233_0001_m_000000_0 is done. And is in the process of committing
+2016-07-11 09:23:49 LocalJobRunner [INFO] map
+2016-07-11 09:23:49 Task [INFO] Task 'attempt_local1826707233_0001_m_000000_0' done.
+2016-07-11 09:23:49 LocalJobRunner [INFO] Finishing task: attempt_local1826707233_0001_m_000000_0
+2016-07-11 09:23:49 LocalJobRunner [INFO] map task executor complete.
+2016-07-11 09:23:49 LocalJobRunner [INFO] Waiting for reduce tasks
+2016-07-11 09:23:49 LocalJobRunner [INFO] Starting task: attempt_local1826707233_0001_r_000000_0
+2016-07-11 09:23:49 FileOutputCommitter [INFO] File Output Committer Algorithm version is 1
+2016-07-11 09:23:49 Task [INFO]  Using ResourceCalculatorProcessTree : [ ]
+2016-07-11 09:23:49 ReduceTask [INFO] Using ShuffleConsumerPlugin: org.apache.hadoop.mapreduce.task.reduce.Shuffle@4071e032
+2016-07-11 09:23:49 MergeManagerImpl [INFO] MergerManager: memoryLimit=633077760, maxSingleShuffleLimit=158269440, mergeThreshold=417831328, ioSortFactor=10, memToMemMergeOutputsThreshold=10
+2016-07-11 09:23:49 EventFetcher [INFO] attempt_local1826707233_0001_r_000000_0 Thread started: EventFetcher for fetching Map Completion Events
+2016-07-11 09:23:49 LocalFetcher [INFO] localfetcher#1 about to shuffle output of map attempt_local1826707233_0001_m_000000_0 decomp: 2 len: 6 to MEMORY
+2016-07-11 09:23:49 InMemoryMapOutput [INFO] Read 2 bytes from map-output for attempt_local1826707233_0001_m_000000_0
+2016-07-11 09:23:49 MergeManagerImpl [INFO] closeInMemoryFile -> map-output of size: 2, inMemoryMapOutputs.size() -> 1, commitMemory -> 0, usedMemory ->2
+2016-07-11 09:23:49 EventFetcher [INFO] EventFetcher is interrupted.. Returning
+2016-07-11 09:23:49 LocalJobRunner [INFO] 1 / 1 copied.
+2016-07-11 09:23:49 MergeManagerImpl [INFO] finalMerge called with 1 in-memory map-outputs and 0 on-disk map-outputs
+2016-07-11 09:23:49 Merger [INFO] Merging 1 sorted segments
+2016-07-11 09:23:49 Merger [INFO] Down to the last merge-pass, with 0 segments left of total size: 0 bytes
+2016-07-11 09:23:49 MergeManagerImpl [INFO] Merged 1 segments, 2 bytes to disk to satisfy reduce memory limit
+2016-07-11 09:23:49 MergeManagerImpl [INFO] Merging 1 files, 6 bytes from disk
+2016-07-11 09:23:49 MergeManagerImpl [INFO] Merging 0 segments, 0 bytes from memory into reduce
+2016-07-11 09:23:49 Merger [INFO] Merging 1 sorted segments
+2016-07-11 09:23:49 Merger [INFO] Down to the last merge-pass, with 0 segments left of total size: 0 bytes
+2016-07-11 09:23:49 LocalJobRunner [INFO] 1 / 1 copied.
+2016-07-11 09:23:49 deprecation [INFO] mapred.skip.on is deprecated. Instead, use mapreduce.job.skiprecords
+2016-07-11 09:23:49 Task [INFO] Task:attempt_local1826707233_0001_r_000000_0 is done. And is in the process of committing
+2016-07-11 09:23:49 LocalJobRunner [INFO] 1 / 1 copied.
+2016-07-11 09:23:49 Task [INFO] Task attempt_local1826707233_0001_r_000000_0 is allowed to commit now
+2016-07-11 09:23:49 FileOutputCommitter [INFO] Saved output of task 'attempt_local1826707233_0001_r_000000_0' to file:/home/michele/NetBeansProjects/E-CO-2/etc/1-word-freq/_temporary/0/task_local1826707233_0001_r_000000
+2016-07-11 09:23:49 LocalJobRunner [INFO] reduce > reduce
+2016-07-11 09:23:49 Task [INFO] Task 'attempt_local1826707233_0001_r_000000_0' done.
+2016-07-11 09:23:49 LocalJobRunner [INFO] Finishing task: attempt_local1826707233_0001_r_000000_0
+2016-07-11 09:23:49 LocalJobRunner [INFO] reduce task executor complete.
+2016-07-11 09:23:50 Job [INFO] Job job_local1826707233_0001 running in uber mode : false
+2016-07-11 09:23:50 Job [INFO]  map 100% reduce 100%
+2016-07-11 09:23:50 Job [INFO] Job job_local1826707233_0001 completed successfully
+2016-07-11 09:23:50 Job [INFO] Counters: 30
+	File System Counters
+		FILE: Number of bytes read=2748
+		FILE: Number of bytes written=571688
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+	Map-Reduce Framework
+		Map input records=0
+		Map output records=0
+		Map output bytes=0
+		Map output materialized bytes=6
+		Input split bytes=144
+		Combine input records=0
+		Combine output records=0
+		Reduce input groups=0
+		Reduce shuffle bytes=6
+		Reduce input records=0
+		Reduce output records=0
+		Spilled Records=0
+		Shuffled Maps =1
+		Failed Shuffles=0
+		Merged Map outputs=1
+		GC time elapsed (ms)=0
+		Total committed heap usage (bytes)=823132160
+	Shuffle Errors
+		BAD_ID=0
+		CONNECTION=0
+		IO_ERROR=0
+		WRONG_LENGTH=0
+		WRONG_MAP=0
+		WRONG_REDUCE=0
+	File Input Format Counters 
+		Bytes Read=1152
+	File Output Format Counters 
+		Bytes Written=274
+2016-07-11 09:23:50 JvmMetrics [INFO] Cannot initialize JVM Metrics with processName=JobTracker, sessionId= - already initialized
+2016-07-11 09:23:50 JobResourceUploader [WARN] Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+2016-07-11 09:23:50 JobResourceUploader [WARN] No job jar file set.  User classes may not be found. See Job or Job#setJar(String).
+2016-07-11 09:23:50 FileInputFormat [INFO] Total input paths to process : 1
+2016-07-11 09:23:50 JobSubmitter [INFO] number of splits:1
+2016-07-11 09:23:50 JobSubmitter [INFO] Submitting tokens for job: job_local444716529_0002
+2016-07-11 09:23:50 Job [INFO] The url to track the job: http://localhost:8080/
+2016-07-11 09:23:50 Job [INFO] Running job: job_local444716529_0002
+2016-07-11 09:23:50 LocalJobRunner [INFO] OutputCommitter set in config null
+2016-07-11 09:23:50 FileOutputCommitter [INFO] File Output Committer Algorithm version is 1
+2016-07-11 09:23:50 LocalJobRunner [INFO] OutputCommitter is org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter
+2016-07-11 09:23:50 LocalJobRunner [INFO] Waiting for map tasks
+2016-07-11 09:23:50 LocalJobRunner [INFO] Starting task: attempt_local444716529_0002_m_000000_0
+2016-07-11 09:23:50 FileOutputCommitter [INFO] File Output Committer Algorithm version is 1
+2016-07-11 09:23:50 Task [INFO]  Using ResourceCalculatorProcessTree : [ ]
+2016-07-11 09:23:50 MapTask [INFO] Processing split: file:/home/michele/NetBeansProjects/E-CO-2/etc/1-word-freq/part-r-00000.avro:0+262
+2016-07-11 09:23:50 MapTask [INFO] (EQUATOR) 0 kvi 26214396(104857584)
+2016-07-11 09:23:50 MapTask [INFO] mapreduce.task.io.sort.mb: 100
+2016-07-11 09:23:50 MapTask [INFO] soft limit at 83886080
+2016-07-11 09:23:50 MapTask [INFO] bufstart = 0; bufvoid = 104857600
+2016-07-11 09:23:50 MapTask [INFO] kvstart = 26214396; length = 6553600
+2016-07-11 09:23:50 MapTask [INFO] Map output collector class = org.apache.hadoop.mapred.MapTask$MapOutputBuffer
+2016-07-11 09:23:50 LocalJobRunner [INFO] 
+2016-07-11 09:23:50 MapTask [INFO] Starting flush of map output
+2016-07-11 09:23:50 Task [INFO] Task:attempt_local444716529_0002_m_000000_0 is done. And is in the process of committing
+2016-07-11 09:23:50 LocalJobRunner [INFO] map
+2016-07-11 09:23:50 Task [INFO] Task 'attempt_local444716529_0002_m_000000_0' done.
+2016-07-11 09:23:50 LocalJobRunner [INFO] Finishing task: attempt_local444716529_0002_m_000000_0
+2016-07-11 09:23:50 LocalJobRunner [INFO] map task executor complete.
+2016-07-11 09:23:50 LocalJobRunner [INFO] Waiting for reduce tasks
+2016-07-11 09:23:50 LocalJobRunner [INFO] Starting task: attempt_local444716529_0002_r_000000_0
+2016-07-11 09:23:50 FileOutputCommitter [INFO] File Output Committer Algorithm version is 1
+2016-07-11 09:23:50 Task [INFO]  Using ResourceCalculatorProcessTree : [ ]
+2016-07-11 09:23:50 ReduceTask [INFO] Using ShuffleConsumerPlugin: org.apache.hadoop.mapreduce.task.reduce.Shuffle@5c59083e
+2016-07-11 09:23:50 MergeManagerImpl [INFO] MergerManager: memoryLimit=633077760, maxSingleShuffleLimit=158269440, mergeThreshold=417831328, ioSortFactor=10, memToMemMergeOutputsThreshold=10
+2016-07-11 09:23:50 EventFetcher [INFO] attempt_local444716529_0002_r_000000_0 Thread started: EventFetcher for fetching Map Completion Events
+2016-07-11 09:23:50 LocalFetcher [INFO] localfetcher#2 about to shuffle output of map attempt_local444716529_0002_m_000000_0 decomp: 2 len: 6 to MEMORY
+2016-07-11 09:23:50 InMemoryMapOutput [INFO] Read 2 bytes from map-output for attempt_local444716529_0002_m_000000_0
+2016-07-11 09:23:50 MergeManagerImpl [INFO] closeInMemoryFile -> map-output of size: 2, inMemoryMapOutputs.size() -> 1, commitMemory -> 0, usedMemory ->2
+2016-07-11 09:23:50 EventFetcher [INFO] EventFetcher is interrupted.. Returning
+2016-07-11 09:23:50 LocalJobRunner [INFO] 1 / 1 copied.
+2016-07-11 09:23:50 MergeManagerImpl [INFO] finalMerge called with 1 in-memory map-outputs and 0 on-disk map-outputs
+2016-07-11 09:23:50 Merger [INFO] Merging 1 sorted segments
+2016-07-11 09:23:50 Merger [INFO] Down to the last merge-pass, with 0 segments left of total size: 0 bytes
+2016-07-11 09:23:50 MergeManagerImpl [INFO] Merged 1 segments, 2 bytes to disk to satisfy reduce memory limit
+2016-07-11 09:23:50 MergeManagerImpl [INFO] Merging 1 files, 6 bytes from disk
+2016-07-11 09:23:50 MergeManagerImpl [INFO] Merging 0 segments, 0 bytes from memory into reduce
+2016-07-11 09:23:50 Merger [INFO] Merging 1 sorted segments
+2016-07-11 09:23:50 Merger [INFO] Down to the last merge-pass, with 0 segments left of total size: 0 bytes
+2016-07-11 09:23:50 LocalJobRunner [INFO] 1 / 1 copied.
+2016-07-11 09:23:50 Task [INFO] Task:attempt_local444716529_0002_r_000000_0 is done. And is in the process of committing
+2016-07-11 09:23:50 LocalJobRunner [INFO] 1 / 1 copied.
+2016-07-11 09:23:50 Task [INFO] Task attempt_local444716529_0002_r_000000_0 is allowed to commit now
+2016-07-11 09:23:50 FileOutputCommitter [INFO] Saved output of task 'attempt_local444716529_0002_r_000000_0' to file:/home/michele/NetBeansProjects/E-CO-2/etc/2-word-counts/_temporary/0/task_local444716529_0002_r_000000
+2016-07-11 09:23:50 LocalJobRunner [INFO] reduce > reduce
+2016-07-11 09:23:50 Task [INFO] Task 'attempt_local444716529_0002_r_000000_0' done.
+2016-07-11 09:23:50 LocalJobRunner [INFO] Finishing task: attempt_local444716529_0002_r_000000_0
+2016-07-11 09:23:50 LocalJobRunner [INFO] reduce task executor complete.
+2016-07-11 09:23:51 Job [INFO] Job job_local444716529_0002 running in uber mode : false
+2016-07-11 09:23:51 Job [INFO]  map 100% reduce 100%
+2016-07-11 09:23:51 Job [INFO] Job job_local444716529_0002 completed successfully
+2016-07-11 09:23:51 Job [INFO] Counters: 30
+	File System Counters
+		FILE: Number of bytes read=4334
+		FILE: Number of bytes written=1139137
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+	Map-Reduce Framework
+		Map input records=0
+		Map output records=0
+		Map output bytes=0
+		Map output materialized bytes=6
+		Input split bytes=141
+		Combine input records=0
+		Combine output records=0
+		Reduce input groups=0
+		Reduce shuffle bytes=6
+		Reduce input records=0
+		Reduce output records=0
+		Spilled Records=0
+		Shuffled Maps =1
+		Failed Shuffles=0
+		Merged Map outputs=1
+		GC time elapsed (ms)=0
+		Total committed heap usage (bytes)=1033895936
+	Shuffle Errors
+		BAD_ID=0
+		CONNECTION=0
+		IO_ERROR=0
+		WRONG_LENGTH=0
+		WRONG_MAP=0
+		WRONG_REDUCE=0
+	File Input Format Counters 
+		Bytes Read=552
+	File Output Format Counters 
+		Bytes Written=277
+2016-07-11 09:23:51 JvmMetrics [INFO] Cannot initialize JVM Metrics with processName=JobTracker, sessionId= - already initialized
+2016-07-11 09:23:51 JobResourceUploader [WARN] Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+2016-07-11 09:23:51 JobResourceUploader [WARN] No job jar file set.  User classes may not be found. See Job or Job#setJar(String).
+2016-07-11 09:23:51 FileInputFormat [INFO] Total input paths to process : 1
+2016-07-11 09:23:51 JobSubmitter [INFO] number of splits:1
+2016-07-11 09:23:51 JobSubmitter [INFO] Submitting tokens for job: job_local155176934_0003
+2016-07-11 09:23:51 Job [INFO] The url to track the job: http://localhost:8080/
+2016-07-11 09:23:51 Job [INFO] Running job: job_local155176934_0003
+2016-07-11 09:23:51 LocalJobRunner [INFO] OutputCommitter set in config null
+2016-07-11 09:23:51 FileOutputCommitter [INFO] File Output Committer Algorithm version is 1
+2016-07-11 09:23:51 LocalJobRunner [INFO] OutputCommitter is org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter
+2016-07-11 09:23:51 LocalJobRunner [INFO] Waiting for map tasks
+2016-07-11 09:23:51 LocalJobRunner [INFO] Starting task: attempt_local155176934_0003_m_000000_0
+2016-07-11 09:23:51 FileOutputCommitter [INFO] File Output Committer Algorithm version is 1
+2016-07-11 09:23:51 Task [INFO]  Using ResourceCalculatorProcessTree : [ ]
+2016-07-11 09:23:51 MapTask [INFO] Processing split: file:/home/michele/NetBeansProjects/E-CO-2/etc/2-word-counts/part-r-00000.avro:0+265
+2016-07-11 09:23:51 MapTask [INFO] (EQUATOR) 0 kvi 26214396(104857584)
+2016-07-11 09:23:51 MapTask [INFO] mapreduce.task.io.sort.mb: 100
+2016-07-11 09:23:51 MapTask [INFO] soft limit at 83886080
+2016-07-11 09:23:51 MapTask [INFO] bufstart = 0; bufvoid = 104857600
+2016-07-11 09:23:51 MapTask [INFO] kvstart = 26214396; length = 6553600
+2016-07-11 09:23:51 MapTask [INFO] Map output collector class = org.apache.hadoop.mapred.MapTask$MapOutputBuffer
+2016-07-11 09:23:51 LocalJobRunner [INFO] 
+2016-07-11 09:23:51 MapTask [INFO] Starting flush of map output
+2016-07-11 09:23:51 Task [INFO] Task:attempt_local155176934_0003_m_000000_0 is done. And is in the process of committing
+2016-07-11 09:23:51 LocalJobRunner [INFO] map
+2016-07-11 09:23:51 Task [INFO] Task 'attempt_local155176934_0003_m_000000_0' done.
+2016-07-11 09:23:51 LocalJobRunner [INFO] Finishing task: attempt_local155176934_0003_m_000000_0
+2016-07-11 09:23:51 LocalJobRunner [INFO] map task executor complete.
+2016-07-11 09:23:51 LocalJobRunner [INFO] Waiting for reduce tasks
+2016-07-11 09:23:51 LocalJobRunner [INFO] Starting task: attempt_local155176934_0003_r_000000_0
+2016-07-11 09:23:51 FileOutputCommitter [INFO] File Output Committer Algorithm version is 1
+2016-07-11 09:23:51 Task [INFO]  Using ResourceCalculatorProcessTree : [ ]
+2016-07-11 09:23:51 ReduceTask [INFO] Using ShuffleConsumerPlugin: org.apache.hadoop.mapreduce.task.reduce.Shuffle@5ec2995
+2016-07-11 09:23:51 MergeManagerImpl [INFO] MergerManager: memoryLimit=633077760, maxSingleShuffleLimit=158269440, mergeThreshold=417831328, ioSortFactor=10, memToMemMergeOutputsThreshold=10
+2016-07-11 09:23:51 EventFetcher [INFO] attempt_local155176934_0003_r_000000_0 Thread started: EventFetcher for fetching Map Completion Events
+2016-07-11 09:23:51 LocalFetcher [INFO] localfetcher#3 about to shuffle output of map attempt_local155176934_0003_m_000000_0 decomp: 2 len: 6 to MEMORY
+2016-07-11 09:23:51 InMemoryMapOutput [INFO] Read 2 bytes from map-output for attempt_local155176934_0003_m_000000_0
+2016-07-11 09:23:51 MergeManagerImpl [INFO] closeInMemoryFile -> map-output of size: 2, inMemoryMapOutputs.size() -> 1, commitMemory -> 0, usedMemory ->2
+2016-07-11 09:23:51 EventFetcher [INFO] EventFetcher is interrupted.. Returning
+2016-07-11 09:23:51 LocalJobRunner [INFO] 1 / 1 copied.
+2016-07-11 09:23:51 MergeManagerImpl [INFO] finalMerge called with 1 in-memory map-outputs and 0 on-disk map-outputs
+2016-07-11 09:23:51 Merger [INFO] Merging 1 sorted segments
+2016-07-11 09:23:51 Merger [INFO] Down to the last merge-pass, with 0 segments left of total size: 0 bytes
+2016-07-11 09:23:51 MergeManagerImpl [INFO] Merged 1 segments, 2 bytes to disk to satisfy reduce memory limit
+2016-07-11 09:23:51 MergeManagerImpl [INFO] Merging 1 files, 6 bytes from disk
+2016-07-11 09:23:51 MergeManagerImpl [INFO] Merging 0 segments, 0 bytes from memory into reduce
+2016-07-11 09:23:51 Merger [INFO] Merging 1 sorted segments
+2016-07-11 09:23:51 Merger [INFO] Down to the last merge-pass, with 0 segments left of total size: 0 bytes
+2016-07-11 09:23:51 LocalJobRunner [INFO] 1 / 1 copied.
+2016-07-11 09:23:51 Task [INFO] Task:attempt_local155176934_0003_r_000000_0 is done. And is in the process of committing
+2016-07-11 09:23:51 LocalJobRunner [INFO] 1 / 1 copied.
+2016-07-11 09:23:51 Task [INFO] Task attempt_local155176934_0003_r_000000_0 is allowed to commit now
+2016-07-11 09:23:51 FileOutputCommitter [INFO] Saved output of task 'attempt_local155176934_0003_r_000000_0' to file:/home/michele/NetBeansProjects/E-CO-2/etc/3-tf-idf/_temporary/0/task_local155176934_0003_r_000000
+2016-07-11 09:23:51 LocalJobRunner [INFO] reduce > reduce
+2016-07-11 09:23:51 Task [INFO] Task 'attempt_local155176934_0003_r_000000_0' done.
+2016-07-11 09:23:51 LocalJobRunner [INFO] Finishing task: attempt_local155176934_0003_r_000000_0
+2016-07-11 09:23:51 LocalJobRunner [INFO] reduce task executor complete.
+2016-07-11 09:23:52 Job [INFO] Job job_local155176934_0003 running in uber mode : false
+2016-07-11 09:23:52 Job [INFO]  map 100% reduce 100%
+2016-07-11 09:23:52 Job [INFO] Job job_local155176934_0003 completed successfully
+2016-07-11 09:23:52 Job [INFO] Counters: 30
+	File System Counters
+		FILE: Number of bytes read=5936
+		FILE: Number of bytes written=1707320
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+	Map-Reduce Framework
+		Map input records=0
+		Map output records=0
+		Map output bytes=0
+		Map output materialized bytes=6
+		Input split bytes=143
+		Combine input records=0
+		Combine output records=0
+		Reduce input groups=0
+		Reduce shuffle bytes=6
+		Reduce input records=0
+		Reduce output records=0
+		Spilled Records=0
+		Shuffled Maps =1
+		Failed Shuffles=0
+		Merged Map outputs=1
+		GC time elapsed (ms)=0
+		Total committed heap usage (bytes)=1300234240
+	Shuffle Errors
+		BAD_ID=0
+		CONNECTION=0
+		IO_ERROR=0
+		WRONG_LENGTH=0
+		WRONG_MAP=0
+		WRONG_REDUCE=0
+	File Input Format Counters 
+		Bytes Read=558
+	File Output Format Counters 
+		Bytes Written=440
+2016-07-11 09:23:52 JvmMetrics [INFO] Cannot initialize JVM Metrics with processName=JobTracker, sessionId= - already initialized
+2016-07-11 09:23:52 JobResourceUploader [WARN] Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+2016-07-11 09:23:52 JobResourceUploader [WARN] No job jar file set.  User classes may not be found. See Job or Job#setJar(String).
+2016-07-11 09:23:52 FileInputFormat [INFO] Total input paths to process : 1
+2016-07-11 09:23:52 JobSubmitter [INFO] number of splits:1
+2016-07-11 09:23:52 JobSubmitter [INFO] Submitting tokens for job: job_local391178709_0004
+2016-07-11 09:23:52 Job [INFO] The url to track the job: http://localhost:8080/
+2016-07-11 09:23:52 Job [INFO] Running job: job_local391178709_0004
+2016-07-11 09:23:52 LocalJobRunner [INFO] OutputCommitter set in config null
+2016-07-11 09:23:52 FileOutputCommitter [INFO] File Output Committer Algorithm version is 1
+2016-07-11 09:23:52 LocalJobRunner [INFO] OutputCommitter is org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter
+2016-07-11 09:23:52 LocalJobRunner [INFO] Waiting for map tasks
+2016-07-11 09:23:52 LocalJobRunner [INFO] Starting task: attempt_local391178709_0004_m_000000_0
+2016-07-11 09:23:52 FileOutputCommitter [INFO] File Output Committer Algorithm version is 1
+2016-07-11 09:23:52 Task [INFO]  Using ResourceCalculatorProcessTree : [ ]
+2016-07-11 09:23:52 MapTask [INFO] Processing split: file:/home/michele/NetBeansProjects/E-CO-2/etc/3-tf-idf/part-r-00000.avro:0+428
+2016-07-11 09:23:52 MapTask [INFO] (EQUATOR) 0 kvi 26214396(104857584)
+2016-07-11 09:23:52 MapTask [INFO] mapreduce.task.io.sort.mb: 100
+2016-07-11 09:23:52 MapTask [INFO] soft limit at 83886080
+2016-07-11 09:23:52 MapTask [INFO] bufstart = 0; bufvoid = 104857600
+2016-07-11 09:23:52 MapTask [INFO] kvstart = 26214396; length = 6553600
+2016-07-11 09:23:52 MapTask [INFO] Map output collector class = org.apache.hadoop.mapred.MapTask$MapOutputBuffer
+2016-07-11 09:23:52 LocalJobRunner [INFO] 
+2016-07-11 09:23:52 MapTask [INFO] Starting flush of map output
+2016-07-11 09:23:52 Task [INFO] Task:attempt_local391178709_0004_m_000000_0 is done. And is in the process of committing
+2016-07-11 09:23:52 LocalJobRunner [INFO] map
+2016-07-11 09:23:52 Task [INFO] Task 'attempt_local391178709_0004_m_000000_0' done.
+2016-07-11 09:23:52 LocalJobRunner [INFO] Finishing task: attempt_local391178709_0004_m_000000_0
+2016-07-11 09:23:52 LocalJobRunner [INFO] map task executor complete.
+2016-07-11 09:23:52 LocalJobRunner [INFO] Waiting for reduce tasks
+2016-07-11 09:23:52 LocalJobRunner [INFO] Starting task: attempt_local391178709_0004_r_000000_0
+2016-07-11 09:23:52 FileOutputCommitter [INFO] File Output Committer Algorithm version is 1
+2016-07-11 09:23:52 Task [INFO]  Using ResourceCalculatorProcessTree : [ ]
+2016-07-11 09:23:52 ReduceTask [INFO] Using ShuffleConsumerPlugin: org.apache.hadoop.mapreduce.task.reduce.Shuffle@5dd157b6
+2016-07-11 09:23:52 MergeManagerImpl [INFO] MergerManager: memoryLimit=633077760, maxSingleShuffleLimit=158269440, mergeThreshold=417831328, ioSortFactor=10, memToMemMergeOutputsThreshold=10
+2016-07-11 09:23:52 EventFetcher [INFO] attempt_local391178709_0004_r_000000_0 Thread started: EventFetcher for fetching Map Completion Events
+2016-07-11 09:23:52 LocalFetcher [INFO] localfetcher#4 about to shuffle output of map attempt_local391178709_0004_m_000000_0 decomp: 2 len: 6 to MEMORY
+2016-07-11 09:23:52 InMemoryMapOutput [INFO] Read 2 bytes from map-output for attempt_local391178709_0004_m_000000_0
+2016-07-11 09:23:52 MergeManagerImpl [INFO] closeInMemoryFile -> map-output of size: 2, inMemoryMapOutputs.size() -> 1, commitMemory -> 0, usedMemory ->2
+2016-07-11 09:23:52 EventFetcher [INFO] EventFetcher is interrupted.. Returning
+2016-07-11 09:23:52 LocalJobRunner [INFO] 1 / 1 copied.
+2016-07-11 09:23:52 MergeManagerImpl [INFO] finalMerge called with 1 in-memory map-outputs and 0 on-disk map-outputs
+2016-07-11 09:23:52 Merger [INFO] Merging 1 sorted segments
+2016-07-11 09:23:52 Merger [INFO] Down to the last merge-pass, with 0 segments left of total size: 0 bytes
+2016-07-11 09:23:52 MergeManagerImpl [INFO] Merged 1 segments, 2 bytes to disk to satisfy reduce memory limit
+2016-07-11 09:23:52 MergeManagerImpl [INFO] Merging 1 files, 6 bytes from disk
+2016-07-11 09:23:52 MergeManagerImpl [INFO] Merging 0 segments, 0 bytes from memory into reduce
+2016-07-11 09:23:52 Merger [INFO] Merging 1 sorted segments
+2016-07-11 09:23:52 Merger [INFO] Down to the last merge-pass, with 0 segments left of total size: 0 bytes
+2016-07-11 09:23:52 LocalJobRunner [INFO] 1 / 1 copied.
+2016-07-11 09:23:52 Task [INFO] Task:attempt_local391178709_0004_r_000000_0 is done. And is in the process of committing
+2016-07-11 09:23:52 LocalJobRunner [INFO] 1 / 1 copied.
+2016-07-11 09:23:52 Task [INFO] Task attempt_local391178709_0004_r_000000_0 is allowed to commit now
+2016-07-11 09:23:52 FileOutputCommitter [INFO] Saved output of task 'attempt_local391178709_0004_r_000000_0' to file:/home/michele/NetBeansProjects/E-CO-2/etc/4-tf-idf-document/_temporary/0/task_local391178709_0004_r_000000
+2016-07-11 09:23:52 LocalJobRunner [INFO] reduce > reduce
+2016-07-11 09:23:52 Task [INFO] Task 'attempt_local391178709_0004_r_000000_0' done.
+2016-07-11 09:23:52 LocalJobRunner [INFO] Finishing task: attempt_local391178709_0004_r_000000_0
+2016-07-11 09:23:52 LocalJobRunner [INFO] reduce task executor complete.
+2016-07-11 09:23:53 Job [INFO] Job job_local391178709_0004 running in uber mode : false
+2016-07-11 09:23:53 Job [INFO]  map 100% reduce 100%
+2016-07-11 09:23:53 Job [INFO] Job job_local391178709_0004 completed successfully
+2016-07-11 09:23:53 Job [INFO] Counters: 30
+	File System Counters
+		FILE: Number of bytes read=8180
+		FILE: Number of bytes written=2276760
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+	Map-Reduce Framework
+		Map input records=0
+		Map output records=0
+		Map output bytes=0
+		Map output materialized bytes=6
+		Input split bytes=138
+		Combine input records=0
+		Combine output records=0
+		Reduce input groups=0
+		Reduce shuffle bytes=6
+		Reduce input records=0
+		Reduce output records=0
+		Spilled Records=0
+		Shuffled Maps =1
+		Failed Shuffles=0
+		Merged Map outputs=1
+		GC time elapsed (ms)=0
+		Total committed heap usage (bytes)=1510998016
+	Shuffle Errors
+		BAD_ID=0
+		CONNECTION=0
+		IO_ERROR=0
+		WRONG_LENGTH=0
+		WRONG_MAP=0
+		WRONG_REDUCE=0
+	File Input Format Counters 
+		Bytes Read=884
+	File Output Format Counters 
+		Bytes Written=508
