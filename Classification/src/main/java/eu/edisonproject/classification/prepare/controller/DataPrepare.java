@@ -49,7 +49,7 @@ public class DataPrepare implements IDataPrepare {
     public CharArraySet loadStopWords() {
         fileReader = new ReaderFile(".." + File.separator + "etc" + File.separator + "stopwords.csv");
 
-        String[] stopWord = fileReader.readFile().split("\n");
+        String[] stopWord = fileReader.readFileWithN().split("\n");
         final List<String> stopWords = Arrays.asList(stopWord);
         return new CharArraySet(stopWords, false);
     }
@@ -87,7 +87,6 @@ public class DataPrepare implements IDataPrepare {
                         dAvroSerializer = new DocumentAvroSerializer(outputFolder + File.separator + documentObject.getTitle() + ".avro", davro.getSchema());
                     }
                     dAvroSerializer.serialize(davro);
-                    f.delete();
 
                 }
 
@@ -118,10 +117,11 @@ public class DataPrepare implements IDataPrepare {
     }
 
     public void clean(String description) {
+        System.out.println("DESCRIZIONE"+description);
         Cleaner cleanStopWord = new StopWord(this.getStopWordArraySet());
-        cleanStopWord.setDescription(description);
+        cleanStopWord.setDescription("DESCRIZIONE PULITA "+description);
         documentObject.setDescription(cleanStopWord.execute());
-
+        System.out.println(documentObject.getDescription());
         Cleaner cleanStanfordLemmatizer = new StanfordLemmatizer();
         cleanStanfordLemmatizer.setDescription(documentObject.getDescription());
         documentObject.setDescription(cleanStanfordLemmatizer.execute());

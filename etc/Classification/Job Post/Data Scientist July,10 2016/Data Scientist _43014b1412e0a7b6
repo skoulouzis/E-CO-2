@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<!-- saved from url=(0050)https://stage-bvp-new.duoconsulting.com/about/news -->
+<html class="js js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths jPanelMenu" lang="en"><!--<![endif]-->
+<head><meta http-equiv="Content-Type" content="text/html;url=http://jobs.bvp.com/UTF-8"/>
+
+    <meta http-equiv="X-UA-Compatible" content="http://jobs.bvp.com/IE=edge"/><script type="text/javascript">window.NREUM||(NREUM={}),__nr_require=function(e,t,n){function r(n){if(!t[n]){var o=t[n]={exports:{}};e[n][0].call(o.exports,function(t){var o=e[n][1][t];return r(o||t)},o,o.exports)}return t[n].exports}if("function"==typeof __nr_require)return __nr_require;for(var o=0;o<n.length;o++)r(n[o]);return r}({1:[function(e,t,n){function r(e,t){return function(){o(e,[(new Date).getTime()].concat(a(arguments)),null,t)}}var o=e("handle"),i=e(2),a=e(3);"undefined"==typeof window.newrelic&&(newrelic=NREUM);var u=["setPageViewName","setCustomAttribute","finished","addToTrace","inlineHit"],c=["addPageAction"],f="api-";i(u,function(e,t){newrelic[t]=r(f+t,"api")}),i(c,function(e,t){newrelic[t]=r(f+t)}),t.exports=newrelic,newrelic.noticeError=function(e){"string"==typeof e&&(e=new Error(e)),o("err",[e,(new Date).getTime()])}},{}],2:[function(e,t,n){function r(e,t){var n=[],r="",i=0;for(r in e)o.call(e,r)&&(n[i]=t(r,e[r]),i+=1);return n}var o=Object.prototype.hasOwnProperty;t.exports=r},{}],3:[function(e,t,n){function r(e,t,n){t||(t=0),"undefined"==typeof n&&(n=e?e.length:0);for(var r=-1,o=n-t||0,i=Array(0>o?0:o);++r<o;)i[r]=e[t+r];return i}t.exports=r},{}],ee:[function(e,t,n){function r(){}function o(e){function t(e){return e&&e instanceof r?e:e?u(e,a,i):i()}function n(n,r,o){e&&e(n,r,o);for(var i=t(o),a=l(n),u=a.length,c=0;u>c;c++)a[c].apply(i,r);var s=f[g[n]];return s&&s.push([m,n,r,i]),i}function p(e,t){w[e]=l(e).concat(t)}function l(e){return w[e]||[]}function d(e){return s[e]=s[e]||o(n)}function v(e,t){c(e,function(e,n){t=t||"feature",g[n]=t,t in f||(f[t]=[])})}var w={},g={},m={on:p,emit:n,get:d,listeners:l,context:t,buffer:v};return m}function i(){return new r}var a="nr@context",u=e("gos"),c=e(2),f={},s={},p=t.exports=o();p.backlog=f},{}],gos:[function(e,t,n){function r(e,t,n){if(o.call(e,t))return e[t];var r=n();if(Object.defineProperty&&Object.keys)try{return Object.defineProperty(e,t,{value:r,writable:!0,enumerable:!1}),r}catch(i){}return e[t]=r,r}var o=Object.prototype.hasOwnProperty;t.exports=r},{}],handle:[function(e,t,n){function r(e,t,n,r){o.buffer([e],r),o.emit(e,t,n)}var o=e("ee").get("handle");t.exports=r,r.ee=o},{}],id:[function(e,t,n){function r(e){var t=typeof e;return!e||"object"!==t&&"function"!==t?-1:e===window?0:a(e,i,function(){return o++})}var o=1,i="nr@id",a=e("gos");t.exports=r},{}],loader:[function(e,t,n){function r(){if(!w++){var e=v.info=NREUM.info,t=s.getElementsByTagName("script")[0];if(e&&e.licenseKey&&e.applicationID&&t){c(l,function(t,n){e[t]||(e[t]=n)});var n="https"===p.split(":")[0]||e.sslForHttp;v.proto=n?"https://":"http://",u("mark",["onload",a()],null,"api");var r=s.createElement("script");r.src=v.proto+e.agent,t.parentNode.insertBefore(r,t)}}}function o(){"complete"===s.readyState&&i()}function i(){u("mark",["domContent",a()],null,"api")}function a(){return(new Date).getTime()}var u=e("handle"),c=e(2),f=window,s=f.document;NREUM.o={ST:setTimeout,CT:clearTimeout,XHR:f.XMLHttpRequest,REQ:f.Request,EV:f.Event,PR:f.Promise,MO:f.MutationObserver},e(1);var p=""+location,l={beacon:"bam.nr-data.net",errorBeacon:"bam.nr-data.net",agent:"js-agent.newrelic.com/nr-943.min.js"},d=window.XMLHttpRequest&&XMLHttpRequest.prototype&&XMLHttpRequest.prototype.addEventListener&&!/CriOS/.test(navigator.userAgent),v=t.exports={offset:a(),origin:p,features:{},xhrWrappable:d};s.addEventListener?(s.addEventListener("DOMContentLoaded",i,!1),f.addEventListener("load",r,!1)):(s.attachEvent("onreadystatechange",o),f.attachEvent("onload",r)),u("mark",["firstbyte",a()],null,"api");var w=0},{}]},{},["loader"]);</script>
+
+    <meta name="viewport" content="http://jobs.bvp.com/width=device-width, initial-scale=1"/>
+  <link rel="stylesheet" href="http://jobs.bvp.com/system-menu.css" type="text/css" media="all"/>
+     <link rel="stylesheet" href="http://jobs.bvp.com/font-awesome.min.css" type="text/css" media="all"/>
+     <link rel="stylesheet" href="http://jobs.bvp.com/hl_style.css" type="text/css" media="all"/>
+     <link rel="stylesheet" href="http://jobs.bvp.com/global.css" type="text/css" media="all"/>
+<link rel="shortcut icon" href="http://www.bvp.com/sites/all/themes/bvp_2015/favicon.ico" type="image/vnd.microsoft.icon"/>
+<meta name="generator" content="http://jobs.bvp.com/Drupal 7 (http://drupal.org)"/>
+<link rel="canonical" href="http://www.bvp.com/news"/>
+<link rel="shortlink" href="http://www.bvp.com/node/4"/>
+
+    <title>CAREERS - Bessemer Venture Partners</title>
+
+    <style type="text/css" media="all">
+@import url("http://www.bvp.com/modules/system/system.base.css?nx9dax");
+
+@import url("http://www.bvp.com/modules/system/system.messages.css?nx9dax");
+@import url("http://www.bvp.com/modules/system/system.theme.css?nx9dax");
+</style>
+<style type="text/css" media="all">
+@import url("http://www.bvp.com/sites/all/modules/contrib/date/date_api/date.css?nx9dax");
+@import url("http://www.bvp.com/sites/all/modules/contrib/date/date_popup/themes/datepicker.1.7.css?nx9dax");
+@import url("http://www.bvp.com/modules/field/theme/field.css?nx9dax");
+@import url("http://www.bvp.com/modules/node/node.css?nx9dax");
+@import url("http://www.bvp.com/modules/search/search.css?nx9dax");
+@import url("http://www.bvp.com/modules/user/user.css?nx9dax");
+@import url("http://www.bvp.com/sites/all/modules/contrib/views/css/views.css?nx9dax");
+</style>
+<style type="text/css" media="all">
+@import url("http://www.bvp.com/sites/all/modules/contrib/ctools/css/ctools.css?nx9dax");
+</style>
+
+
+    <!--[if lte IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!--[if lt IE 9]>
+      <script src="/sites/all/themes/bvp_2015/js/vendor/respond.min.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript" src="http://jobs.bvp.com/vc_includes/jquery.min.js"></script>
+<script type="text/javascript" src="http://jobs.bvp.com/vc_includes/jquery.once.js"></script>
+<script type="text/javascript" src="http://jobs.bvp.com/vc_includes/drupal.js"></script>
+<script type="text/javascript" src="http://jobs.bvp.com/vc_includes/modernizr.js"></script>
+<script type="text/javascript" src="http://jobs.bvp.com/vc_includes/chosen.jquery.min.js"></script>
+<script type="text/javascript" src="http://jobs.bvp.com/vc_includes/jpanelmenu.js"></script>
+<script type="text/javascript" src="http://jobs.bvp.com/vc_includes/jcarousel.min.js"></script>
+<script type="text/javascript" src="http://jobs.bvp.com/vc_includes/easyfader.js"></script>
+<script type="text/javascript" src="http://jobs.bvp.com/vc_includes/jcarousellite_1.0.1.min.js"></script>
+<script type="text/javascript" src="http://jobs.bvp.com/vc_includes/scripts.global.js"></script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+jQuery.extend(Drupal.settings, {"basePath":"\/","pathPrefix":"","ajaxPageState":{"theme":"bvp_2015","theme_token":"OE9FPay0iiz45_7DRbwkQ5gqHj5RuL29T1kkemrn3UQ","js":{"sites\/all\/modules\/contrib\/jquery_update\/replace\/jquery\/1.10\/jquery.min.js":1,"misc\/jquery.once.js":1,"misc\/drupal.js":1,"sites\/all\/themes\/bvp_2015\/js\/vendor\/modernizr.js":1,"sites\/all\/themes\/bvp_2015\/js\/vendor\/chosen\/chosen.jquery.min.js":1,"sites\/all\/themes\/bvp_2015\/js\/vendor\/jpanelmenu\/jpanelmenu.js":1,"sites\/all\/themes\/bvp_2015\/js\/vendor\/jcarousel.min.js":1,"sites\/all\/themes\/bvp_2015\/js\/vendor\/easyfader.js":1,"sites\/all\/themes\/bvp_2015\/js\/vendor\/jcarousellite\/jcarousellite_1.0.1.min.js":1,"sites\/all\/themes\/bvp_2015\/js\/scripts.global.js":1},"css":{"modules\/system\/system.base.css":1,"modules\/system\/system.menus.css":1,"modules\/system\/system.messages.css":1,"modules\/system\/system.theme.css":1,"sites\/all\/modules\/contrib\/date\/date_api\/date.css":1,"sites\/all\/modules\/contrib\/date\/date_popup\/themes\/datepicker.1.7.css":1,"modules\/field\/theme\/field.css":1,"modules\/node\/node.css":1,"modules\/search\/search.css":1,"modules\/user\/user.css":1,"sites\/all\/modules\/contrib\/views\/css\/views.css":1,"sites\/all\/modules\/contrib\/ctools\/css\/ctools.css":1,"sites\/all\/themes\/bvp_2015\/fonts\/fontawesome\/font-awesome.css":1,"sites\/all\/themes\/bvp_2015\/css\/global.css":1}},"better_exposed_filters":{"views":{"news":{"displays":{"news_list":{"filters":[]}}}}},"urlIsAjaxTrusted":{"\/about\/news":true}});
+//--><!]]>
+</script>
+
+  </head>
+  <body class="html not-front not-logged-in no-sidebars page-node page-node- page-node-4 node-type-landing-page" data-menu-position="closed">
+
+
+
+    <div role="document" class="page">
+
+  <!-- Header -->
+      <header id="header">
+      <div class="logo">
+        <a href="http://www.bvp.com/"><img src="http://jobs.bvp.com/vc_includes/b-logo.png" alt=""/></a>
+      </div> 
+      <div class="row">
+          <!-- IPO Counter goes here -->
+                    <!-- Hamburger Menu -->
+          <div class="mobile-menu-wrapper">
+            <a class="menu-trigger" href="http://www.bvp.com/about/news#"><span></span></a>
+          </div>
+        <div class="header-right">
+                      <div class="region region-header">
+    <div id="block-bvp-core-bvp-main-menu" class="block block-bvp-core">
+
+    
+  <div class="content">
+    <ul class="menu"><li class="first expanded"><a href="http://www.bvp.com/about">About</a><ul class="menu"><li class="first leaf"><a href="http://www.bvp.com/about">History</a></li>
+<li class="leaf"><a href="http://www.bvp.com/strategy">Strategy</a></li>
+<li class="leaf"><a href="http://www.bvp.com/about/news">News</a></li>
+<li class="leaf"><a href="http://www.bvp.com/about/blog">Blog</a></li>
+<li class="last leaf"><a href="http://www.bvp.com/about/contact">Contact</a></li>
+</ul></li>
+<li class="expanded"><a href="http://www.bvp.com/portfolio" class="active">Companies</a><ul class="menu"><li class="first leaf"><a href="http://www.bvp.com/portfolio" class="active">Investments</a></li>
+<li class="leaf"><a href="http://www.bvp.com/portfolio/anti-portfolio">Anti-Portfolio</a></li>
+<li class="leaf"><a href="http://www.bvp.com/portfolio/top-exits">Top Exits</a></li>
+<li class="last leaf"><a href="http://jobs.bvp.com/" title="">Find a Career</a></li>
+</ul></li>
+<li class="collapsed"><a href="http://www.bvp.com/team">Team</a></li>
+<li class="expanded"><a href="http://www.bvp.com/strategy" title="">Strategies</a><ul class="menu"><li class="first leaf"><a href="http://www.bvp.com/cloud-computing">Cloud Computing</a></li>
+<li class="leaf"><a href="http://www.bvp.com/cyber-security">Cyber Security</a></li>
+<li class="leaf"><a href="http://www.bvp.com/financial-services">Financial Services</a></li>
+<li class="leaf"><a href="http://www.bvp.com/healthcare">Healthcare</a></li>
+<li class="leaf"><a href="http://www.bvp.com/industry-software">Industry Software</a></li>
+<li class="leaf"><a href="http://www.bvp.com/infrastructure-2-0">Infrastructure 2.0</a></li>
+<li class="leaf"><a href="http://www.bvp.com/marketplaces">Marketplaces</a></li>
+<li class="leaf"><a href="http://www.bvp.com/mobile">Mobile</a></li>
+<li class="leaf"><a href="http://www.bvp.com/space-tech">Space Tech</a></li>
+<li class="leaf"><a href="http://www.bvp.com/india-opportunities">India Opportunities</a></li>
+<li class="last leaf"><a href="http://www.bvp.com/israel-opportunities">Israel Opportunities</a></li>
+</ul></li>
+<li class="last leaf"><a href="http://www.bvp.com/funded_solutions">BVP Funded</a></li>
+</ul>  </div>
+</div>
+  </div>
+          <div class="search-box">
+            <form action="http://www.bvp.com/about/news" method="post" id="search-block-form" accept-charset="UTF-8"><div>
+            <div class="container-inline">
+      <h2 class="element-invisible">Search form</h2>
+    <div class="form-item form-type-textfield form-item-search-block-form">
+  <label class="element-invisible" for="edit-search-block-form--2">Search </label>
+ <input title="Enter the terms you wish to search for." placeholder="Search BVP..." type="text" id="edit-search-block-form--2" name="search_block_form" value="" size="15" maxlength="128" class="form-text"/>
+</div>
+<div class="form-actions form-wrapper" id="edit-actions"><input type="submit" id="edit-submit" name="op" value="Search" class="form-submit"/></div><input type="hidden" name="form_build_id" value="form-HTqR74R-X_ng7U1ZHW3EwpcCWb2y_jo7haMZ3Vwu8Bs"/>
+<input type="hidden" name="form_id" value="search_block_form"/>
+</div>
+</div></form>            <a href="http://www.bvp.com/about/news#" class="search-button"></a>
+          </div>
+        </div>
+      </div>
+    </header> 	   <section class="mobile-header" style="display: none;">
+      <div class="region region-mobile-header">
+    <div id="block-bvp-core-bvp-mobile-menu" class="block block-bvp-core">
+
+    
+  <div class="content">
+    <ul class="menu"><li class="first expanded"><a href="http://www.bvp.com/about">About</a><ul class="menu"><li class="first leaf"><a href="http://www.bvp.com/about">History</a></li>
+<li class="leaf"><a href="http://www.bvp.com/strategy">Strategy</a></li>
+<li class="leaf"><a href="http://www.bvp.com/about/news">News</a></li>
+<li class="leaf"><a href="http://www.bvp.com/about/blog">Blog</a></li>
+<li class="last leaf"><a href="http://www.bvp.com/about/contact">Contact</a></li>
+</ul></li>
+<li class="expanded"><a href="http://www.bvp.com/portfolio" class="active">Companies</a><ul class="menu"><li class="first leaf"><a href="http://www.bvp.com/portfolio" class="active">Investments</a></li>
+<li class="leaf"><a href="http://www.bvp.com/portfolio/anti-portfolio">Anti-Portfolio</a></li>
+<li class="leaf"><a href="http://www.bvp.com/portfolio/top-exits">Top Exits</a></li>
+<li class="last leaf"><a href="http://jobs.bvp.com/" title="">Find a Career</a></li>
+</ul></li>
+<li class="collapsed"><a href="http://www.bvp.com/team">Team</a></li>
+<li class="expanded"><a href="http://www.bvp.com/strategy" title="">Strategies</a><ul class="menu"><li class="first leaf"><a href="http://www.bvp.com/cloud-computing">Cloud Computing</a></li>
+<li class="leaf"><a href="http://www.bvp.com/cyber-security">Cyber Security</a></li>
+<li class="leaf"><a href="http://www.bvp.com/financial-services">Financial Services</a></li>
+<li class="leaf"><a href="http://www.bvp.com/healthcare">Healthcare</a></li>
+<li class="leaf"><a href="http://www.bvp.com/industry-software">Industry Software</a></li>
+<li class="leaf"><a href="http://www.bvp.com/infrastructure-2-0">Infrastructure 2.0</a></li>
+<li class="leaf"><a href="http://www.bvp.com/marketplaces">Marketplaces</a></li>
+<li class="leaf"><a href="http://www.bvp.com/mobile">Mobile</a></li>
+<li class="leaf"><a href="http://www.bvp.com/space-tech">Space Tech</a></li>
+<li class="leaf"><a href="http://www.bvp.com/india-opportunities">India Opportunities</a></li>
+<li class="last leaf"><a href="http://www.bvp.com/israel-opportunities">Israel Opportunities</a></li>
+</ul></li>
+<li class="last leaf"><a href="http://www.bvp.com/funded_solutions">BVP Funded</a></li>
+</ul>  </div>
+</div>
+<div id="block-bvp-core-bvp-mobile-info" class="block block-bvp-core">
+
+    
+  <div class="content">
+    <div class="footer-logo"><img src="http://jobs.bvp.com/vc_includes/logo_white.png" alt=""/></div><div class="social-links"><a href="https://www.facebook.com/bessemervp" class="fa fa-facebook" target="_blank"></a><a href="https://twitter.com/bessemervp" class="fa fa-twitter" target="_blank"></a><a href="https://www.linkedin.com/company/16754" class="fa fa-linkedin" target="_blank"></a><a href="https://www.pinterest.com/bessemervp/" class="fa fa-pinterest" target="_blank"></a></div><div><p class="copyright">© 2015 Bessmer Venture Partners</p>
+<p class="rights">All Rights Reserved</p>
+<p class="links"><a href="http://www.bvp.com/terms-conditions">Terms &amp; Conditions</a> | <a href="http://www.bvp.com/privacy-policy">Privacy Policy</a></p>
+</div>  </div>
+</div>
+  </div>
+  </section>
+  
+  
+   
+ 
+  <!-- Main -->
+<main role="main">
+      <a id="main-content"></a>
+        <div class="region region-content">
+    <div id="block-system-main" class="block block-system">
+
+    
+  <div class="content">
+    <div class="layout-landing-page">
+  
+  <div class="row-2">
+    <div class="panel-pane pane-views-panes pane-portfolio-portfolio-list">
+  
+      
+  
+  <div class="view view-portfolio view-id-portfolio view-display-id-portfolio_list view-dom-id-cd61d749dd6a5094209c5f312a774f4c jquery-once-2-processed">
+        
+      <div class="view-content">
+      
+      <div class='jobslink'><a href="http://jobs.bvp.com/careers_home.php">&laquo; View all jobs</a></div>
+                <div class='jobtitle'><strong>Data Scientist</strong> at <strong>Pinterest</strong></div>
+                <div class='location'>
+                San Francisco, CA, US                </div>
+                <div class='detaillinks'>
+                <a href="http://jobs.bvp.com/jobapply.php?jobid=514826">Apply for this job</a>
+                </div>
+                <div class='detailtext'>
+                As a Data Scientist on Pinterest&#039;s Product Science team, you love data and want to use it to improve people’s lives. You’ll use your engineering, data wrangling, and analytical expertise to influence the direction of the product with your data-driven feature ideas. You&#039;ll jump into analysis on everything from latency and availability to new user experience to marketing channels, turning terabytes of raw logs into insights.<br/>
+What you’ll do:<br/>
+<br/>
+Figure out what problems are important and then answer them by collecting, analyzing, and synthesizing findings from data<br/>
+Perform strategic analysis on key components of our product: what drives user engagement? How does content circulate through Pinterest?<br/>
+Knit closely with product, engineering, and user research teams and present to executives and feature teams to influence strategy<br/>
+Provide thought leadership on metrics, features, and products to the entire company<br/>
+Drive the collection of new data and the understanding of existing data sources<br/>
+What we’re looking for:<br/>
+<br/>
+4+ years&#039; experience in data analysis focused on product changes<br/>
+Ability to manipulate large data sets with high dimensionality and complexity<br/>
+Belief in reproducible analysis, e.g. via R or iPython; fluency in SQL and at least one scripting language such as Python<br/>
+Familiarity with or willingness to learn large-scale distributed computing tools (Hadoop, Hive, etc.)<br/>
+The uncanny ability to identify unreasonable results and a well-tuned sense of skepticism                </div>
+                <div class='detaillinks2'>
+                <a href="http://jobs.bvp.com/jobapply.php?jobid=514826">Apply for this job</a>
+                </div>
+                		<div id="poweredByStartUpHire"><div style="text-align: center; font-family: tahoma, arial, sans serif; margin-top: 8px; font-size: 11px; font-weight:normal"><span style="color: #999">Powered by </span><a target='_' href='http://www.ventureloop.com/ventureloop/aboutus.php'>VentureLoop</a> - <a class='colorlink' href='http://www.ventureloop.com/ventureloop/login.php'>Partner Company Sign In</a></div></div>
+
+      
+      
+     </div>
+  
+  
+      
+  
+  
+  
+  
+  
+  
+</div>
+  
+  </div>
+  </div>
+  
+  
+  
+  
+  
+  
+</div>  </div>
+</div>
+  </div>
+  </main>
+  <!-- end Main -->
+
+  <!-- Footer -->
+<footer role="contentinfo">
+    <div class="footer-bkgrnd-left"></div>
+    <div class="footer-bkgrnd-right"></div>
+    <div class="row">
+      <div class="footer-left">
+          <div class="region region-footer-left">
+    <div id="block-bvp-core-bvp-footer-info" class="block block-bvp-core">
+
+    
+  <div class="content">
+    <div class="footer-logo"><img src="http://jobs.bvp.com/vc_includes/logo_white.png" alt=""/></div><div><p class="copyright">© 2015 Bessmer Venture Partners</p>
+<p class="rights">All Rights Reserved</p>
+<p class="links"><a href="http://www.bvp.com/terms-conditions">Terms &amp; Conditions</a> | <a href="http://www.bvp.com/privacy-policy">Privacy Policy</a></p>
+</div><div class="social-links"><a href="https://www.facebook.com/bessemervp" class="fa fa-facebook" target="_blank"></a><a href="https://twitter.com/bessemervp" class="fa fa-twitter" target="_blank"></a><a href="https://www.linkedin.com/company/16754" class="fa fa-linkedin" target="_blank"></a><a href="https://www.pinterest.com/bessemervp/" class="fa fa-pinterest" target="_blank"></a></div>  </div>
+</div>
+  </div>
+      </div>
+      <div class="footer-right">
+          <div class="region region-footer-right">
+    <div id="block-bvp-core-bvp-strategy-menu" class="block block-bvp-core">
+
+    
+  <div class="content">
+    <h3>Strategies</h3>
+<ul class="menu"><li class="first leaf"><a href="http://www.bvp.com/cloud-computing">Cloud Computing</a></li>
+<li class="leaf"><a href="http://www.bvp.com/cyber-security">Cyber Security</a></li>
+<li class="leaf"><a href="http://www.bvp.com/financial-services">Financial Services</a></li>
+<li class="leaf"><a href="http://www.bvp.com/healthcare">Healthcare</a></li>
+<li class="leaf"><a href="http://www.bvp.com/industry-software">Industry Software</a></li>
+<li class="leaf"><a href="http://www.bvp.com/infrastructure-2-0">Infrastructure 2.0</a></li>
+<li class="leaf"><a href="http://www.bvp.com/marketplaces">Marketplaces</a></li>
+<li class="leaf"><a href="http://www.bvp.com/mobile">Mobile</a></li>
+<li class="leaf"><a href="http://www.bvp.com/space-tech">Space Tech</a></li>
+<li class="leaf"><a href="http://www.bvp.com/india-opportunities">India Opportunities</a></li>
+<li class="last leaf"><a href="http://www.bvp.com/israel-opportunities">Israel Opportunities</a></li>
+</ul>  </div>
+</div>
+<div id="block-bvp-core-bvp-portco-menu" class="block block-bvp-core">
+
+    
+  <div class="content">
+    <h3>Companies</h3>
+<ul class="menu"><li class="first leaf"><a href="http://www.bvp.com/portfolio" class="active">Investments</a></li>
+<li class="leaf"><a href="http://www.bvp.com/portfolio/anti-portfolio">Anti-Portfolio</a></li>
+<li class="leaf"><a href="http://www.bvp.com/portfolio/top-exits">Top Exits</a></li>
+<li class="last leaf"><a href="http://jobs.bvp.com/" title="">Find a Career</a></li>
+</ul>  </div>
+</div>
+<div id="block-bvp-core-bvp-contact-menu" class="block block-bvp-core">
+
+    
+  <div class="content">
+    <h3>Contact</h3>
+<ul class="menu"><li class="first leaf"><a href="http://www.bvp.com/contact/boston">Boston</a></li>
+<li class="leaf"><a href="http://www.bvp.com/contact/new-york">New York</a></li>
+<li class="leaf"><a href="http://www.bvp.com/contact/san-francisco">San Francisco</a></li>
+<li class="leaf"><a href="http://www.bvp.com/contact/silicon-valley">Silicon Valley</a></li>
+<li class="leaf"><a href="http://www.bvp.com/contact/bangalore">India</a></li>
+<li class="last leaf"><a href="http://www.bvp.com/contact/israel">Israel</a></li>
+</ul>  </div>
+</div>
+  </div>
+      </div>
+    </div>
+  </footer>  <!-- end Footer -->
+
+  <!-- Page Bottom -->
+  <div class="page-bottom">
+    <div class="row">
+        <div class="region region-bottom">
+    <div id="block-bvp-core-bvp-footer-contact-menu" class="block block-bvp-core">
+
+    
+  <div class="content">
+    <span class="business-plans"><strong>Business plans:</strong> <a href="mailto:businessplans@bvp.com">businessplans@bvp.com</a></span>
+<span class="separator">|</span><span class="press"><strong>Press inquiries:</strong> <a href="mailto:press@bvp.com">press@bvp.com</a></span>
+<span class="separator">|</span><span class="website"><strong>Website comments:</strong> <a href="mailto:webmaster@bvp.com">webmaster@bvp.com</a></span>
+<span class="separator">|</span><span class="brand"><strong><a href="https://stage-bvp-new.duoconsulting.com/about/contact">Download brand assets</a></strong></span>
+  </div>
+</div>
+  </div>
+    </div>
+  </div>
+  <!-- end Footer -->
+
+</div>
+
+<section class="mobile-header" style="display: none; width: 250px; z-index: -1;" id="jPanelMenu-menu">
+      <div class="region region-mobile-header">
+    <div id="block-bvp-core-bvp-mobile-menu" class="block block-bvp-core">
+
+    
+  <div class="content">
+    <ul class="menu"><li class="first expanded"><a href="https://stage-bvp-new.duoconsulting.com/about">About</a><ul class="menu"><li class="first leaf"><a href="https://stage-bvp-new.duoconsulting.com/about">History</a></li>
+<li class="leaf"><a href="https://stage-bvp-new.duoconsulting.com/strategy">Strategy</a></li>
+<li class="leaf"><a href="http://jobs.bvp.com/vc_includes/News _ Bessemer Venture Partners.html">News</a></li>
+<li class="leaf"><a href="https://stage-bvp-new.duoconsulting.com/about/blog">Blog</a></li>
+<li class="last leaf"><a href="https://stage-bvp-new.duoconsulting.com/about/contact">Contact</a></li>
+</ul></li>
+<li class="expanded"><a href="https://stage-bvp-new.duoconsulting.com/portfolio" class="active">Companies</a><ul class="menu"><li class="first leaf"><a href="https://stage-bvp-new.duoconsulting.com/portfolio" class="active">Investments</a></li>
+<li class="leaf"><a href="https://stage-bvp-new.duoconsulting.com/portfolio/anti-portfolio">Anti-Portfolio</a></li>
+<li class="leaf"><a href="https://stage-bvp-new.duoconsulting.com/portfolio/top-exits">Top Exits</a></li>
+<li class="last leaf"><a href="http://jobs.bvp.com/" title="">Find a Career</a></li>
+</ul></li>
+<li class="collapsed"><a href="https://stage-bvp-new.duoconsulting.com/team">Team</a></li>
+<li class="expanded"><a href="https://stage-bvp-new.duoconsulting.com/strategy" title="">Strategies</a><ul class="menu"><li class="first leaf"><a href="https://stage-bvp-new.duoconsulting.com/cloud-computing">Cloud Computing</a></li>
+<li class="leaf"><a href="https://stage-bvp-new.duoconsulting.com/cyber-security">Cyber Security</a></li>
+<li class="leaf"><a href="https://stage-bvp-new.duoconsulting.com/financial-services">Financial Services</a></li>
+<li class="leaf"><a href="https://stage-bvp-new.duoconsulting.com/healthcare">Healthcare</a></li>
+<li class="leaf"><a href="https://stage-bvp-new.duoconsulting.com/industry-software">Industry Software</a></li>
+<li class="leaf"><a href="https://stage-bvp-new.duoconsulting.com/infrastructure-2-0">Infrastructure 2.0</a></li>
+<li class="leaf"><a href="https://stage-bvp-new.duoconsulting.com/marketplaces">Marketplaces</a></li>
+<li class="leaf"><a href="https://stage-bvp-new.duoconsulting.com/mobile">Mobile</a></li>
+<li class="leaf"><a href="https://stage-bvp-new.duoconsulting.com/space-tech">Space Tech</a></li>
+<li class="leaf"><a href="https://stage-bvp-new.duoconsulting.com/india-opportunities">India Opportunities</a></li>
+<li class="last leaf"><a href="https://stage-bvp-new.duoconsulting.com/israel-opportunities">Israel Opportunities</a></li>
+</ul></li>
+<li class="last leaf"><a href="https://stage-bvp-new.duoconsulting.com/funded_solutions">BVP Funded</a></li>
+</ul>  </div>
+</div>
+<div id="block-bvp-core-bvp-mobile-info" class="block block-bvp-core">
+
+    
+  <div class="content">
+    <div class="footer-logo"><img src="http://jobs.bvp.com/vc_includes/logo_white.png" alt=""/></div><div class="social-links"><a href="https://www.facebook.com/bessemervp" class="fa fa-facebook" target="_blank"></a><a href="https://twitter.com/bessemervp" class="fa fa-twitter" target="_blank"></a><a href="https://www.linkedin.com/company/16754" class="fa fa-linkedin" target="_blank"></a><a href="https://www.pinterest.com/bessemervp/" class="fa fa-pinterest" target="_blank"></a></div><div><p class="copyright">© 2015 Bessmer Venture Partners</p>
+<p class="rights">All Rights Reserved</p>
+<p class="links"><a href="https://stage-bvp-new.duoconsulting.com/terms-conditions">Terms &amp; Conditions</a> | <a href="https://stage-bvp-new.duoconsulting.com/privacy-policy">Privacy Policy</a></p>
+</div>  </div>
+</div>
+  </div>
+  </section>
+
+    
+    
+<!-- Page -->
+
+<!-- end Page -->
+
+      <script>
+    (function ($, Drupal, window, document, undefined) {
+      var jPM = $.jPanelMenu({
+        menu: '.mobile-header',
+        trigger: '.menu-trigger',
+        direction: 'right',
+        closeOnContentClick: false
+      });
+      jPM.on();
+    })(jQuery, Drupal, this, this.document);
+  </script>
+  <script type="text/javascript" src="http://jobs.bvp.com/vc_includes/jpanelmenu.js"></script>
+
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+var _gaq = _gaq || [];_gaq.push(["_setAccount", "UA-30179951-2"]);_gaq.push(["_trackPageview"]);(function() {var ga = document.createElement("script");ga.type = "text/javascript";ga.async = true;ga.src = ("https:" == document.location.protocol ? "https://ssl" : "http://www") + ".google-analytics.com/ga.js";var s = document.getElementsByTagName("script")[0];s.parentNode.insertBefore(ga, s);})();
+//--><!]]>
+</script>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-23593478-7']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+    <style id="jPanelMenu-style-master">body{width:100%}.jPanelMenu,body{overflow-x:hidden}#jPanelMenu-menu{display:block;position:fixed;top:0;right:0;height:100%;z-index:-1;overflow-x:hidden;overflow-y:scroll;-webkit-overflow-scrolling:touch}.jPanelMenu-panel{position:static;right:0;top:0;z-index:2;width:100%;background:rgb(255, 255, 255)}</style>
+  
+
+<script type="text/javascript">window.NREUM||(NREUM={});NREUM.info={"beacon":"bam.nr-data.net","licenseKey":"bfbd9b689f","applicationID":"1756935","transactionName":"NFRVNRYAC0FQUkQMXg0eYhMNTg9dU1VVEVAKXRkRDBE=","queueTime":0,"applicationTime":5,"atts":"GBNWQ14aGE8=","errorBeacon":"bam.nr-data.net","agent":""}</script></body></html>

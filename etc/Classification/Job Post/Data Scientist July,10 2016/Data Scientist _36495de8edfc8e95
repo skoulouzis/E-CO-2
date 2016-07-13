@@ -1,0 +1,442 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link type="text/css" rel="stylesheet" href="https://staticchk.tbe.taleo.net/chk01/ats/cacheable/R16-04-21-17-37-20-16.A2_prod/css/UIv8/jquery/Classic/ui.core.css"/>
+<link type="text/css" rel="stylesheet" href="https://staticchk.tbe.taleo.net/chk01/ats/cacheable/R16-04-21-17-37-20-16.A2_prod/css/UIv8/jquery/Classic/ui.theme.css"/>
+<link type="text/css" rel="stylesheet" href="https://staticchk.tbe.taleo.net/chk01/ats/cacheable/R16-04-21-17-37-20-16.A2_prod/css/UIv8/jquery/Classic/ui.datepicker.css"/>
+<link type="text/css" rel="stylesheet" href="https://staticchk.tbe.taleo.net/chk01/ats/cacheable/R16-04-21-17-37-20-16.A2_prod/css/UIv8/jquery/Classic/ui.dialog.css"/>
+
+
+<style type="text/css">
+
+    select:focus, a:focus {
+        outline: #1e90ff solid 2px
+    }
+
+    input[type=submit] {
+        background: #00438C;
+    }
+
+    input[type=button] {
+        background: #00438C;
+    }
+
+    input[type=submit]:hover {
+        background: #1e31ff;
+    }
+
+    input[type=button]:hover {
+        background: #1e31ff;
+    }
+
+    input[type=submit]:focus {
+        background: #1e90ff;
+    }
+
+    input[type=button]:focus {
+        background: #1e90ff
+    }
+
+    .ui-dialog .ui-dialog-buttonpane {
+        text-align: right;
+    }
+
+    .ui-dialog .ui-dialog-buttonpane button {
+        float: none;
+    }
+
+        /*a.ui-dialog-titlebar-close.ui-corner-all.ui-state-focus {*/
+        /*border: 1px solid #000;*/
+        /*}*/
+
+</style>
+
+
+
+<style type="text/css">
+    .alert-error {
+        color: #990000;
+        font-weight: bold;
+    }
+
+    td.top {
+        vertical-align: top !important;
+    }
+
+    td.left {
+        float: none;
+        text-align: left;
+    }
+
+    td.right {
+        float: none;
+        text-align: right;
+    }
+
+    .nowrapFormLabel {
+        white-space: nowrap;
+        text-align: right;
+    }
+
+    h1 {
+        font-size: 120%
+    }
+
+    h2 {
+        font-size: 110%
+    }
+
+    h3 {
+        font-size: 100%
+    }
+
+    .hidden-accessibility-text {
+        position: absolute;
+        left: -2000px;
+        top: 0;
+        width: 1;
+        height: 1;
+        overflow: hidden;
+        font-size: 0.1em;
+    }
+
+    .ofcc305table TD, .ofcc305table TH, .ofcc305table textarea,
+    .ofcc305table textfield, .ofcc305table select,
+    .ofcc305table input, .ofcc305table a {
+        font-size:12px !important;
+        font-family:Arial,sans-serif,Helvetica !important;
+    }
+
+    #cws-search-results th, #cws-job-alerts th {
+        border-top: #CCCCCC 2px solid;
+        border-bottom: #CCCCCC 2px solid;
+    }
+
+    #cws-search-results tr:last-of-type td, #cws-job-alerts tr:last-of-type td {
+        border-bottom: #CCCCCC 2px solid;
+        padding-bottom: 3px;
+    }
+</style>
+
+<HTML lang='en' style=""><HEAD><META http-equiv="Content-Type" content="text/html;url=http://chk.tbe.taleo.net/chk01/ats/careers/ISO-8859-1"/><SCRIPT id="whlb_overrideScript" type="text/javascript">document.write = function() {};</SCRIPT><BASE id="whlb_baseElement" href="http://www.campsystems.com/"/>
+<head>
+<meta http-equiv="Content-Type" content="text/html;url=http://www.campsystems.com/utf-8"/>
+<title>Careers</title>
+<link rel="stylesheet" type="text/css" href="http://www.campsystems.com/Portals/_default/Skins/Camp/skin.css"/>
+</head>
+
+<body>
+<!--skin wrap begins-->
+<div class="skinWrapper">
+                <!--container begins-->
+                <div class="container">
+                <!--skin header section begins-->
+                <div class="skinheader" style="padding-top:25px;"> 
+            <!--logo section begins-->
+            <div class="campLogo">                   
+                <a href="http://www.campsystems.com"><img src="http://www.campsystems.com/images/campLogo.png" width="215" height="75" alt="camp Logo"/></a>
+            </div>
+            <!--logo section ends-->
+        </div>
+        <!--skin header section ends-->
+        
+        <!--main content section begins-->
+        <div class="contentpane">
+                <!--main body section begins-->
+            <div class="bodyMain">
+                <div class="padAll">
+                                         
+                    <P whlb_selected="true"><div id='taleoContent' class="plain">
+<script type='text/javascript' src="https://staticchk.tbe.taleo.net/chk01/ats/cacheable/R16-04-21-17-37-20-16.A2_prod/js/UIv8/tbe-basic-cws.js"></script>
+<script type='text/javascript' src="https://staticchk.tbe.taleo.net/chk01/ats/cacheable/R16-04-21-17-37-20-16.A2_prod/dwr-cws/engine.js"></script>
+<script type='text/javascript' src="https://staticchk.tbe.taleo.net/chk01/ats/cacheable/R16-04-21-17-37-20-16.A2_prod/dwr-cws/interface/CwsDWRFacade.js"></script>
+<script type='text/javascript'> CwsDWRFacade._path = 'http://chk.tbe.taleo.net/chk01/ats/dwr-cws';
+var DWRFacade = CwsDWRFacade; </script>
+<script type="text/javascript">
+var timer;
+var calendarArray = new Array ();
+function startSessionTimer(){
+	timer=setTimeout("sessionAboutToEnd()", 86100000);
+}
+function sessionAboutToEnd(){
+	var oHead = document.getElementsByTagName('head')[0];
+	loadScript(oHead, 'https://staticchk.tbe.taleo.net/chk01/ats/cacheable/R16-04-21-17-37-20-16.A2_prod/js/UIv8/engine.js',  function() {
+		var answer = confirm("Your session is about to expire. Would you like to continue your session?");
+		if(answer){
+			dwr.engine.setErrorHandler( function(errorString, exception) {
+				window.location = "https://chk.tbe.taleo.net/chk01/ats/sessionTimedOut.jsp?locale=enUS"
+			});
+			CwsDWRFacade.refreshSession();
+			clearTimeout(timer);
+			startSessionTimer();
+		} else {
+			window.location = "https://chk.tbe.taleo.net/chk01/ats/sessionTimedOut.jsp?locale=enUS";
+		}
+	});
+}
+startSessionTimer();</script>
+
+
+
+
+
+
+<table border="0" cellspacing="0" cellpadding="2" width='100%' role='presentation'>
+<tr>
+<td colspan="2"><hr width='100%' size='1' color='silver'/></td></tr><tr><td colspan="2"><h1>Sr. Data Scientist</h1></td>
+</tr>
+<tr>
+<td class='nowrapFormLabel width160 top'>Location:</td>
+<td class='formFieldNormal top' colspan="1" style='width: 100%'><b>Merrimack, NH</b></td>
+</tr>
+<tr>
+<td class='nowrapFormLabel width160 top'>Company Order Number:</td>
+<td class='formFieldNormal top' colspan="1" style='width: 100%'><b>447</b></td>
+</tr>
+<tr>
+</tr><tr><td colspan="2"><hr width='100%' size='1' color='silver'/></td></tr>
+<tr><td colspan="2"><h1>Description</h1></td></tr>
+<tr><td colspan="2"><p><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;">CAMP Systems is the leading provider of aircraft compliance and health management services to the global business aviation industry.&nbsp; </span></span><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;">CAMP is the pre-eminent brand in its industry and is the exclusive recommended service provider for virtually all of the business aircraft manufacturers in the world including Boeing, Bombardier, Cessna, Dassault, Embraer, Hawker, and HondaJet.&nbsp; Our services are delivered through a &ldquo;SaaS plus content&rdquo; model and we support over 16,000 aircraft worldwide.</span></span><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;">&nbsp; CAMP has grown from a single location company with $12MM in revenue in 2001, to well over $100MM in revenue and 700 employees in 12 locations around the world.</span></span></p>
+
+<p style="margin: 0in 0in 2pt;">&nbsp;</p>
+
+<p style="margin: 0in 0in 2pt;"><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;">CAMP has recently expanded its business via several acquisitions, which has created opportunities to introduce new products and services that capitalize on the synergies between CAMP&rsquo;s lines of business.&nbsp; CAMP is currently seeking a Sr. Data&nbsp;Scientist to work at our Merrimack, NH location.&nbsp; The successful candidate will be part of our product proof of concept team, working to analyze CAMP&rsquo;s data assets and determine ways in which that data can be turned into specific products and services that deliver business value and that support CAMP&rsquo;s executive level product strategy.</span></span></p>
+
+<p>&nbsp;</p>
+
+<p><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;">CAMP is an exciting company to work for, not only because of its future growth prospects, but also because of its culture.&nbsp; Smart, motivated people, who want to take initiative, are given the opportunity and freedom to make things happen.&nbsp; We are located in Merrimack, NH - an hour from Boston, and a half hour from the Massachusetts tech corridor.&nbsp; </span></span><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;">CAMP is a portfolio company of GTCR, a Chicago-based private equity firm.</span></span></p>
+
+<p>&nbsp;</p>
+
+<p style="margin: 0in 0in 4pt;"><strong><u><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;">Responsibilities</span></span></u></strong><strong><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;">:</span></span></strong></p>
+
+<p style="color: rgb(0, 0, 0); font-family: Times New Roman,serif; font-size: 10pt; font-style: normal; font-weight: normal; margin-top: 0in; margin-bottom: 0pt;">&nbsp;</p>
+
+<p style="color: rgb(0, 0, 0); font-family: Times New Roman,serif; font-size: 10pt; font-style: normal; font-weight: normal; margin-top: 0in; margin-bottom: 0pt;">&nbsp;</p>
+
+<ul>
+	<li style="font-style: normal; font-weight: normal;">
+	</li><p style="font-style: normal; font-weight: normal; margin-top: 0in; margin-bottom: 0pt;"><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;"><span style="color: black;">Analyze and assess CAMP&rsquo;s data assets to determine the feasibility of products and services that support CAMP&rsquo;s executive level product strategy</span></span></span></p>
+	
+	<li style="color: black; font-family: Arial,sans-serif; font-size: 11pt; font-style: normal; font-weight: normal;">
+	</li><p style="color: rgb(0, 0, 0); font-family: Times New Roman,serif; font-size: 10pt; font-style: normal; font-weight: normal; margin-top: 0in; margin-bottom: 0pt;"><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;"><span style="color: black;">Identify gaps and weaknesses in the dataset and propose relevant solutions</span></span></span></p>
+	
+	<li style="color: black; font-family: Arial,sans-serif; font-size: 11pt; font-style: normal; font-weight: normal;">
+	</li><p style="color: rgb(0, 0, 0); font-family: Times New Roman,serif; font-size: 10pt; font-style: normal; font-weight: normal; margin-top: 0in; margin-bottom: 0pt;"><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;"><span style="color: black;">Work as part of CAMP&rsquo;s product proof of concept team to prototype new products and services</span></span></span></p>
+	
+	<li style="color: black; font-family: Arial,sans-serif; font-size: 11pt; font-style: normal; font-weight: normal;">
+	</li><p style="color: rgb(0, 0, 0); font-family: Times New Roman,serif; font-size: 10pt; font-style: normal; font-weight: normal; margin-top: 0in; margin-bottom: 0pt;"><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;"><span style="color: black;">Propose additional ways in which data can be leveraged to provide business value</span></span></span></p>
+	
+	<li style="color: black; font-family: Arial,sans-serif; font-size: 11pt; font-style: normal; font-weight: normal;">
+	</li><p style="color: rgb(0, 0, 0); font-family: Times New Roman,serif; font-size: 10pt; font-style: normal; font-weight: normal; margin-top: 0in; margin-bottom: 0pt;"><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;"><span style="color: black;">Help to define data frameworks that support product realization requirements</span></span></span></p>
+	
+	<li style="color: black; font-family: Arial,sans-serif; font-size: 11pt; font-style: normal; font-weight: normal;">
+	</li><p style="color: rgb(0, 0, 0); font-family: Times New Roman,serif; font-size: 10pt; font-style: normal; font-weight: normal; margin-top: 0in; margin-bottom: 0pt;"><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;"><span style="color: black;">Support various other data analysis projects as needed</span></span></span></p>
+
+	<p style="color: rgb(0, 0, 0); font-family: Times New Roman,serif; font-size: 10pt; font-style: normal; font-weight: normal; margin-top: 0in; margin-bottom: 0pt;">&nbsp;</p>
+
+	<p style="color: rgb(0, 0, 0); font-family: Times New Roman,serif; font-size: 10pt; font-style: normal; font-weight: normal; margin-top: 0in; margin-bottom: 4pt;"><strong><u><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;">Qualifications</span></span></u></strong><strong><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;">:</span></span></strong></p>
+	
+	<li style="color: black; font-family: Arial,sans-serif; font-size: 11pt; font-style: normal; font-weight: normal;">
+	</li><p style="color: rgb(0, 0, 0); font-family: Times New Roman,serif; font-size: 10pt; font-style: normal; font-weight: normal; margin-top: 0in; margin-bottom: 0pt;"><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;"><span style="color: black;">Bachelor&rsquo;s Degree in business, statistics, mathematics, or related subjects;</span></span></span></p>
+	
+	<li style="color: black; font-family: Arial,sans-serif; font-size: 11pt; font-style: normal; font-weight: normal;">
+	</li><p style="color: rgb(0, 0, 0); font-family: Times New Roman,serif; font-size: 10pt; font-style: normal; font-weight: normal; margin-top: 0in; margin-bottom: 0pt;"><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;"><span style="color: black;">5 to 10 years experience in a related capacity</span></span></span></p>
+	
+	<li style="color: black; font-family: Arial,sans-serif; font-size: 11pt; font-style: normal; font-weight: normal;">
+	</li><p style="color: rgb(0, 0, 0); font-family: Times New Roman,serif; font-size: 10pt; font-style: normal; font-weight: normal; margin-top: 0in; margin-bottom: 0pt;"><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;"><span style="color: black;">Demonstrated ability to analyze large datasets and extract information that enables business decisions</span></span></span></p>
+	
+	<li style="color: black; font-family: Arial,sans-serif; font-size: 11pt; font-style: normal; font-weight: normal;">
+	</li><p style="color: rgb(0, 0, 0); font-family: Times New Roman,serif; font-size: 10pt; font-style: normal; font-weight: normal; margin-top: 0in; margin-bottom: 0pt;"><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;"><span style="color: black;">Strong background in data analysis techniques and tools</span></span></span></p>
+	
+	<li style="color: black; font-family: Arial,sans-serif; font-size: 11pt; font-style: normal; font-weight: normal;">
+	</li><p style="color: rgb(0, 0, 0); font-family: Times New Roman,serif; font-size: 10pt; font-style: normal; font-weight: normal; margin-top: 0in; margin-bottom: 0pt;"><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;"><span style="color: black;">Experience working with business intelligence and data warehousing products and technologies</span></span></span></p>
+	
+	<li style="color: black; font-family: Arial,sans-serif; font-size: 11pt; font-style: normal; font-weight: normal;">
+	</li><p style="color: rgb(0, 0, 0); font-family: Times New Roman,serif; font-size: 10pt; font-style: normal; font-weight: normal; margin-top: 0in; margin-bottom: 0pt;"><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;"><span style="color: black;">Must be driven to provide business value from analysis and manipulation of information</span></span></span></p>
+	
+	<li style="color: black; font-family: Arial,sans-serif; font-size: 11pt; font-style: normal; font-weight: normal;">
+	</li><p style="color: rgb(0, 0, 0); font-family: Times New Roman,serif; font-size: 10pt; font-style: normal; font-weight: normal; margin-top: 0in; margin-bottom: 0pt;"><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;"><span style="color: black;">Experience in information management businesses</span></span></span></p>
+	
+	<li style="color: black; font-family: Arial,sans-serif; font-size: 11pt; font-style: normal; font-weight: normal;">
+	</li><p style="color: rgb(0, 0, 0); font-family: Times New Roman,serif; font-size: 10pt; font-style: normal; font-weight: normal; margin-top: 0in; margin-bottom: 0pt;"><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;"><span style="color: black;">Experience with agile and scrum processes and methods is a plus</span></span></span></p>
+	
+	<li style="color: black; font-family: Arial,sans-serif; font-size: 11pt; font-style: normal; font-weight: normal;">
+	</li><p style="color: rgb(0, 0, 0); font-family: Times New Roman,serif; font-size: 10pt; font-style: normal; font-weight: normal; margin-top: 0in; margin-bottom: 0pt;"><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;"><span style="color: black;">Proven ability to work in a collaborative environment - consulting frequently with team members to understand all issues, ideas, and suggestions</span></span></span></p>
+	
+	<li style="color: black; font-family: Arial,sans-serif; font-size: 11pt; font-style: normal; font-weight: normal;">
+	</li><p style="color: rgb(0, 0, 0); font-family: Times New Roman,serif; font-size: 10pt; font-style: normal; font-weight: normal; margin-top: 0in; margin-bottom: 0pt;"><span style="font-size: 11pt;"><span style="font-family: arial,sans-serif;"><span style="color: black;">Excellent communication and interpersonal skills</span></span></span></p>
+	
+</ul>
+
+<p style="margin: 0in 0in 8pt;"><span style="color: rgb(0, 0, 0);"><span style="font-size: 14px;"><strong><span style="font-family: arial,sans-serif;">Benefits:</span></strong></span></span></p>
+
+<p style="margin: 0in 0in 8pt;"><span style="color: rgb(0, 0, 0);"><span style="font-size: 14px;"><span style="font-family: arial,sans-serif;">&nbsp;CAMP offers a competitive salary and a comprehensive benefits package including: Medical, Dental, Vision, Life Insurance, LTD, 401k with Match, and Tuition Assistance. </span></span></span></p>
+
+<p style="margin: 0in 0in 8pt;">&nbsp;</p>
+
+<p style="margin: 0in 0in 8pt;"><span style="color: rgb(0, 0, 0);"><span style="font-size: 14px;"><span style="font-family: arial,sans-serif;">&quot;CAMP Systems International, Inc. is an Affirmative Action/Equal Opportunity Employer M/F/D/V&quot;</span></span></span></p></td></tr>
+
+<tr>
+</tr><tr><td class='left'><br/>
+<form action='http://chk.tbe.taleo.net/chk01/ats/careers/apply.jsp?org=CAMPSYSTEMS&cws=1&rid=447' method='post' name='apply'>
+<input type='hidden' name='act' value='addCart'/>
+<input type='hidden' name='org' value='CAMPSYSTEMS'/>
+<input type='hidden' name='cws' value='1'/>
+<input type='hidden' name='_csrf' value='v1:;1462355522153:;CGVwLP/Oum0QQesDYkMnXEpjjnrI+Xwcbgf9+LlcLoY='/><input type='submit' name='tbe_cws_submit' value='Apply for this Position' style="
+padding:2px;margin-right:5px;
+color:#FFFFFF;
+border-left: 2px solid #11A9F7;
+border-bottom:1px solid #333333;
+border-right:1px solid #333333;
+border-top:2px solid #11A9F7;
+font-size: 10px;
+font-weight: bold;
+font-family:Verdana;" tabIndex="7"/></form></td>
+
+<td align='right' colspan="1"><br/>
+<form action='http://chk.tbe.taleo.net/chk01/ats/careers/email.jsp?org=CAMPSYSTEMS&cws=1' method='post' name='send'>
+<input type='hidden' name='org' value='CAMPSYSTEMS'/>
+<input type='hidden' name='cws' value='1'/>
+<input type='hidden' name='rid' value='447'/>
+<input type='hidden' name='_csrf' value='v1:;1462355522153:;CGVwLP/Oum0QQesDYkMnXEpjjnrI+Xwcbgf9+LlcLoY='/><input type='submit' name='tbe_cws_submit' value='Send to a Friend' style="
+padding:2px;margin-right:5px;
+color:#FFFFFF;
+border-left: 2px solid #11A9F7;
+border-bottom:1px solid #333333;
+border-right:1px solid #333333;
+border-top:2px solid #11A9F7;
+font-size: 10px;
+font-weight: bold;
+font-family:Verdana;" tabIndex="8"/></form>
+</td></tr>
+
+<tr>
+<td colspan="2" width='100%'><br/></td>
+</tr>
+<tr>
+<td colspan="2"><hr width='100%' size='1' color='silver'/>
+<h1><span class='head1'>Are you a returning applicant?</span></h1></td>
+</tr>
+<tr>
+<form action='http://chk.tbe.taleo.net/chk01/ats/careers/applyModal.jsp?org=CAMPSYSTEMS&cws=1' method='post' name='TBE_theForm'>
+<input type='hidden' name='org' value='CAMPSYSTEMS'/>
+<input type='hidden' name='cws' value='1'/>
+<input type='hidden' name='rid' value='447'/>
+<input type='hidden' name='currentTime' value='1462355522153'/>
+<input type='hidden' name='signature' value='5Xkllj9lz2yPt2NHyf6vKzl3ZrEfQTCSmE9Fo/1fzo4='/>
+<input type='hidden' name='et' value='CAND'/>
+<input type='hidden' name='act' value='addCart'/>
+<input type='hidden' name='_csrf' value='v1:;1462355522153:;CGVwLP/Oum0QQesDYkMnXEpjjnrI+Xwcbgf9+LlcLoY='/><tr><td colspan="2">
+<table border="0" cellpadding="2" cellspacing="0" role="presentation"><tr>
+<td nowrap="null" colspan="2">Previous Applicants:</td>
+</tr>
+<tr>
+<td nowrap="null" align='right'><label for='email'>Email:</label></td>
+<td class='nowrap'><input type='text' id='email' name='email' maxlength="50" autocomplete='off' tabindex='20'/></td>
+</tr>
+<input type='text' style='display:none'/>
+<input type='password' style='display:none'/>
+<tr>
+<td nowrap="null" align='right'><label for='cwsPassword'>Password:</label></td>
+<td class='nowrap'><input type='password' id='cwsPassword' name='cwsPassword' maxlength="30" autocomplete='off' tabindex='21'/></td>
+</tr>
+<tr><td nowrap="null" colspan="2">
+<input type='submit' name='tbe_cws_submit' value='Add to My Jobs' style="
+padding:2px;margin-right:5px;
+color:#FFFFFF;
+border-left: 2px solid #11A9F7;
+border-bottom:1px solid #333333;
+border-right:1px solid #333333;
+border-top:2px solid #11A9F7;
+font-size: 10px;
+font-weight: bold;
+font-family:Verdana;" tabIndex="22"/></td></tr>
+<tr><td nowrap="null" colspan="2"><br/>
+If you do not remember your password <a href='http://chk.tbe.taleo.net/chk01/ats/careers/forgotID.jsp?org=CAMPSYSTEMS&cws=1' tabIndex='23'>click here</a>.<br/><br/></td></tr>
+</table>
+</td></tr></form>
+</tr>
+<tr>
+<td colspan="2" width='100%'><a tabindex='26' href='http://chk.tbe.taleo.net/chk01/ats/careers/searchResults.jsp?org=CAMPSYSTEMS&cws=1' title='Back to Search Results'>Back to Search Results</a><br/><br/></td>
+</tr>
+<tr>
+<td colspan="2" width='100%'><a tabindex='27' href='http://chk.tbe.taleo.net/chk01/ats/careers/jobSearch.jsp?org=CAMPSYSTEMS&cws=1&rid=447' title='New Search'>New Search</a><br/><br/></td>
+</tr>
+<tr>
+<td colspan="2" width='100%'><br/><div align='right'><img src='http://tbe.taleo.net/graphics/Taleo_powered_by_small.gif' alt='Powered By Taleo' border='0'/></div><br/><br/></td>
+</tr>
+</table>
+
+
+
+
+
+
+
+
+
+    <script type="text/javascript">
+        //jQuery Calendar
+        jQuery(document).ready(function($) {
+	$('.jquerycalendar').datepicker({
+altField:'',altFormat:'',appendText:'',buttonImage:'https://staticchk.tbe.taleo.net/chk01/ats/cacheable/R16-04-21-17-37-20-16.A2_prod/img/UIv8/calendar.gif',buttonImageOnly:true,buttonText:'Calendar',changeMonth:true,changeYear:true,closeText:'\'Close\'',constrainInput:true,currentText:'Today',dateFormat:'mm/dd/yy',monthYearDateFormat:'MM/yy',dayNames:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],dayNamesShort:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],dayNamesMin:['Su','Mo','Tu','We','Th','Fr','Sa'],defaultDate:null,duration:'normal',firstDay:0,gotoCurrent:false,hideIfNoPrevNext:false,isRTL:false,maxDate:null,minDate:null,monthNames:['January','February','March','April','May','June','July','August','September','October','November','December'],monthNamesShort:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],navigationAsDateFormat:false,nextText:'Next',numberOfMonths:1,prevText:'Previous',shortYearCutoff:'+10',showAnim:'show',showButtonPanel:false,showCurrentAtPos:0,showMonthAfterYear:false,showOn:'button',showOptions:{},showOtherMonths:false,stepMonths:1,yearRange:'1940:2030'});});
+    </script>
+
+</div></P>
+                   
+                    
+                </div>
+            </div>
+            <!--main body section ends-->
+           
+        </div>
+        <!--main content section ends-->
+    </div>
+    <!--container ends-->
+</div>
+<!--skin wrap ends-->
+</body>
+</HEAD></HTML>
+
+
+
