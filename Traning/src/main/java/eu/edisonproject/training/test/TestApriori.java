@@ -29,9 +29,9 @@ public class TestApriori {
 
 	public static void main(String[] args) {
 		String absolutePath = ".."+File.separator+"documentation";
-		String inputPath = absolutePath+File.separator+"Apriori documents"+File.separator;
-		String outputPath = absolutePath+File.separator+"results"+File.separator;
-		String stopwordPath = absolutePath+File.separator+"stopwords.csv";
+		String inputPath =  ".."+File.separator+"documentation"+File.separator+"Apriori documents"+File.separator;
+		String outputPath = ".."+File.separator+"etc"+File.separator+"Training"+File.separator;
+		String stopwordPath = ".."+File.separator+"etc"+File.separator+"stopwords.csv";
 		DataPrepare dataPrepare = new DataPrepare(inputPath,outputPath,stopwordPath);
 		dataPrepare.execute();
 	}
