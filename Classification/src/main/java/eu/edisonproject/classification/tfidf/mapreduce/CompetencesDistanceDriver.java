@@ -19,7 +19,7 @@ package eu.edisonproject.classification.tfidf.mapreduce;
  *
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
  */
-import eu.edisonproject.classification.avro.Distances;
+import distances.avro.Distances;
 import tfidf.avro.Tfidf;
 import eu.edisonproject.classification.avro.TfidfDocument;
 import eu.edisonproject.classification.distance.CosineSimilarityMatrix;
@@ -55,7 +55,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 
-public class CompetencesDistanceDriver extends Configured implements Tool{
+public class CompetencesDistanceDriver extends Configured implements Tool {
 
     private static List<HashMap<String, Double>> listOfCompetencesVector;
 
@@ -69,7 +69,7 @@ public class CompetencesDistanceDriver extends Configured implements Tool{
                 BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f.getAbsolutePath())));
                 String line = "";
                 while ((line = br.readLine()) != null) {
-                    String[] value = line.split(",");
+                    String[] value = line.split(";");
                     competenceFile.put(value[0], Double.parseDouble(value[1]));
                 }
             } catch (FileNotFoundException ex) {
@@ -119,7 +119,7 @@ public class CompetencesDistanceDriver extends Configured implements Tool{
 
             for (Text value : values) {
                 String[] line = value.toString().split("@");
-                documentWords.put(line[0], Double.parseDouble(line[1]));
+                documentWords.put(line[0], Double.parseDouble(line[1].replace(",", ".")));
             }
 
             List<Double> distances = new LinkedList<Double>();
@@ -138,15 +138,18 @@ public class CompetencesDistanceDriver extends Configured implements Tool{
                 distances.add(cosineFunction.computeDistance(competence.values(), documentToCompetenceSpace.values()));
 
             }
-//            String[] docIdAndDate = text.toString().split("@");
-//            Distances distanceDocument = new Distances();
-//            distanceDocument.setDocumentId(docIdAndDate[0]);
-//            distanceDocument.setDate(docIdAndDate[1]);
-//            distanceDocument.setDistances(distances);
-//            D
-            String distancesString ="";
-            for(Double d: distances)
-                distancesString+=d+",";
+            System.out.println(text);
+            String[] docIdAndDate = text.toString().split("@");
+            Distances distanceDocument = new Distances();
+            distanceDocument.setTitle(docIdAndDate[1]);
+            distanceDocument.setDocumentId(docIdAndDate[0]);
+            distanceDocument.setDate(docIdAndDate[2]);
+            distanceDocument.setDistanceArray(distances);
+
+            String distancesString = "";
+            for (Double d : distances) {
+                distancesString += d + ";";
+            }
             context.write(new Text(text), new Text(distancesString));
 
         }
@@ -178,23 +181,20 @@ public class CompetencesDistanceDriver extends Configured implements Tool{
         FileOutputFormat.setOutputPath(job, outPath);
         outPath.getFileSystem(conf).delete(outPath, true);
 
-        job.setInputFormatClass(AvroKeyValueInputFormat.class);
         job.setMapperClass(CompetencesDistanceMapper.class);
-        AvroJob.setInputKeySchema(job, Schema.create(Schema.Type.STRING));
-        AvroJob.setInputValueSchema(job, Tfidf.getClassSchema());
+//        job.setInputFormatClass(AvroKeyValueInputFormat.class);
+//        job.setMapperClass(CompetencesDistanceMapper.class);
+//        AvroJob.setInputKeySchema(job, Schema.create(Schema.Type.STRING));
+//        AvroJob.setInputValueSchema(job, Tfidf.getClassSchema());
 
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);
 
-//        job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
-//        job.setReducerClass(CompetencesDistanceReducer.class);
-//        AvroJob.setOutputKeySchema(job, TfidfDocument.SCHEMA$);
-//        AvroJob.setOutputValueSchema(job, Schema.create(Schema.Type.STRING));
-//        
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(Integer.class);
-        job.setReducerClass(CompetencesDistanceReducer.class);
         
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(Text.class);
+        job.setReducerClass(CompetencesDistanceReducer.class);
+
         //TableMapReduceUtil.initTableReducerJob("Distance", CompetencesDistanceReducer.class, job);
         return (job.waitForCompletion(true) ? 0 : 1);
 
@@ -209,7 +209,6 @@ public class CompetencesDistanceDriver extends Configured implements Tool{
 //                yourReducer.class, job);
 //        job.setReducerClass(yourReducer.class);
 //        job.waitForCompletion(true);
-
 //class yourReducer
 //        extends
 //        TableReducer<Text, IntWritable, 

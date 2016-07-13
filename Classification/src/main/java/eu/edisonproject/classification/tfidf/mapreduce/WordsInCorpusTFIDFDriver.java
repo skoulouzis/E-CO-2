@@ -111,7 +111,7 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
 
                 lineValue += documentFields[0] + ";" + key.toString() + ";" + DF.format(tfIdf) + "\n";
 
-                String newKey = documentFields[0] + "@" + documentFields[1];
+                String newKey = documentFields[0] + "@" + documentFields[1]+"@"+documentFields[2];
                 String newValue = key.toString() + "/" + DF.format(tfIdf);
 
                 context.write(new Text(newKey), new Text(newValue));

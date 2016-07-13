@@ -15,8 +15,9 @@
  */
 package eu.edisonproject.classification.tfidf.mapreduce;
 
-import eu.edisonproject.classification.avro.Distances;
+import distances.avro.Distances;
 import document.avro.Document;
+import eu.edisonproject.utility.file.ReaderFile;
 import eu.edisonproject.utility.file.WriterFile;
 import java.io.File;
 import java.io.IOException;
@@ -59,11 +60,11 @@ public class TFIDFDriver implements ITFIDFDriver {
     // where to read the data for the MapReduce#4.
     private final String INPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "Classification" + File.separator + "3-tf-idf";
     // where to put the data in hdfs when the MapReduce# will finish
-    private final String OUTPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "Classification" + File.separator + "4-tf-idf-document";
+    private final String OUTPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "Classification" + File.separator + "4-distances";
 
-    private final String TFIDFCSV_PATH = ".." + File.separator + "etc" + File.separator + "Classification" + File.separator + "5-tf-idf-csv";
+    private final String DISTANCES_VECTOR_PATH = ".." + File.separator + "etc" + File.separator + "Classification" + File.separator + "5-tf-idf-csv";
     // where to put the csv with the tfidf
-    private final String COMPETENCES_PATH = ".." + File.separator + "etc" + File.separator + "training" + File.separator + "competences";
+    private final String COMPETENCES_PATH = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "6-context-vector";
 
     private final String contextName;
     private final String finalOutputPath;
@@ -71,7 +72,11 @@ public class TFIDFDriver implements ITFIDFDriver {
 
     public TFIDFDriver(String contextName) {
         this.contextName = contextName + ".csv";
-        this.finalOutputPath = COMPETENCES_PATH + File.separator + contextName;
+        this.distancesValues = new LinkedList<>();
+        File f = new File(DISTANCES_VECTOR_PATH);
+        if(!f.exists())
+            f.mkdir();
+        this.finalOutputPath = DISTANCES_VECTOR_PATH + File.separator + contextName;
     }
 
     /**
@@ -122,48 +127,40 @@ public class TFIDFDriver implements ITFIDFDriver {
 
     }
 
-    public void driveProcessResizeVector() {
-        // Read the output from avro file
-        readAvro();
-        printCSV();
-    }
+//    public void drivePrintIntoCSV() {
+//        // Read the output from avro file
+//        readDistancesOutput();
+//        printCSV();
+//    }
 
-    public void printCSV() {
+//    public void printCSV() {
+//        WriterFile fileWriter = new WriterFile(finalOutputPath);
+//        String text = "";
+//        for (Distances d : distancesValues) {
+//            text += d.getDocumentId() + " ," + d.getDate() + " ,";
+//            for (Double distance : d.getDistanceArray()) {
+//                text += d + ",";
+//            }
+//            text += "\n";
+//        }
+//        fileWriter.writeFile(text);
+//    }
+
+    public void readDistancesOutputAndPrintCSV() {
+        ReaderFile rf = new ReaderFile(OUTPUT_PATH4+File.separator+"part-r-00000");
+        String text = rf.readFileWithN();
+        String[] textLine = text.split("\n");
         WriterFile fileWriter = new WriterFile(finalOutputPath);
-        String text = "";
-        for (Distances d : distancesValues) {
-            text += d.getDocumentId() + " ," + d.getDate() + " ,";
-            for (Double distance : d.getDistances()) {
-                text += d + ",";
-            }
-            text += "\n";
+        String textToPrint = "";
+        for(String line: textLine){
+            String[] keyValue = line.split("\t");
+            String[] field = keyValue[0].split("@");
+            String[] distances = keyValue[1].split(";");
+            textToPrint+=field[1]+";"+field[0]+";"+field[2]+";";
+            for(String d: distances)
+                textToPrint+=d+";";
+            textToPrint+="\n";
         }
-        fileWriter.writeFile(text);
-    }
-
-    public void readAvro() {
-        File file = new File(OUTPUT_PATH4);
-        File[] filesInDir = file.listFiles();
-        for (File f : filesInDir) {
-            if (f.getName().contains(".avro")) {
-                //deserializing		
-                DatumReader<Distances> distanceDatumReader = new SpecificDatumReader<>(Distances.class);
-                DataFileReader<Distances> dataFileReader;
-                try {
-                    dataFileReader = new DataFileReader<>(f, distanceDatumReader);
-                    Distances distanceDoc = null;
-                    while (dataFileReader.hasNext()) {
-                        //Reuse user object by passing it to next(). This saves us from
-                        // allocating and garbage collecting many objects for files with
-                        // many items.
-                        distanceDoc = dataFileReader.next();
-                        distancesValues.add(distanceDoc);
-                    }
-                } catch (IOException ex) {
-                    Logger.getLogger(TFIDFDriver.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
-            }
-        }
+        fileWriter.writeFile(textToPrint);
     }
 }
