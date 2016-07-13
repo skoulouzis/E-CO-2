@@ -51,14 +51,6 @@ import org.apache.hadoop.util.Tool;
 
 public class WordFrequencyInDocDriver extends Configured implements Tool{
 
-    // where to read the frequent itemset
-   // private static final String ITEMSET_PATH = ".." + File.separator + "etc" + File.separator + "itemset.csv";
-
-    // where to put the data in hdfs when we're done
-    //private static final String OUTPUT_PATH = ".." + File.separator + "etc" + File.separator + "1-word-freq";
-
-    // where to read the data from.
-    //private static final String INPUT_PATH = ".." + File.separator + "etc" + File.separator + "input";
 
     // hashmap for the itemset
     private static List<String> itemset;
@@ -88,7 +80,6 @@ public class WordFrequencyInDocDriver extends Configured implements Tool{
                         valueBuilder.append(s);
                         valueBuilder.append("@");
                         valueBuilder.append(uid);
-                        System.out.println(valueBuilder.toString());
                         context.write(new Text(valueBuilder.toString()), new IntWritable(1));
                         description = description.replaceFirst(s, "");
                     }
@@ -124,8 +115,6 @@ public class WordFrequencyInDocDriver extends Configured implements Tool{
             for (IntWritable val : values) {
                 sum += val.get();
             }
-            System.out.println(key.toString());
-            System.out.println(sum.toString());
             context.write(new AvroKey<Text>(key), new AvroValue<Integer>(sum));
 
         }
@@ -161,20 +150,9 @@ public class WordFrequencyInDocDriver extends Configured implements Tool{
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Integer.class);
         job.setReducerClass(WordFrequencyInDocReducer.class);
-//        job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
-//        job.setReducerClass(WordFrequencyInDocReducer.class);
-//        AvroJob.setOutputKeySchema(job, Schema.create(Schema.Type.STRING));
-//        AvroJob.setOutputValueSchema(job, Schema.create(Schema.Type.INT));
 
         return (job.waitForCompletion(true) ? 0 : 1);
 
-        
-
-        //job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
-        //job.setReducerClass(WordFrequencyInDocReducer.class);
-        //AvroJob.setOutputKeySchema(job, Schema.create(Schema.Type.STRING));
-        //AvroJob.setOutputValueSchema(job, Schema.create(Schema.Type.INT));
-        
     }
 
 }

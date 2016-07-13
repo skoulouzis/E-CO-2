@@ -80,7 +80,7 @@ public class WordsGroupByTitleDriver extends Configured implements Tool{
             String pairWordValue="";
             for (Text value : values) {
                 String[] line = value.toString().split("@");
-                pairWordValue+=line[0]+":"+line[1]+" ";
+                pairWordValue+=line[0]+":"+line[1]+"/";
 //                wordToWrite.add(line[0]);
 //                valuesToWrite.add(line[1]);
             }

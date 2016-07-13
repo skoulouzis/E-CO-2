@@ -30,7 +30,6 @@ public class TestTFIDF {
         String inputPath = ".." + File.separator + "etc" + File.separator + "Avro Document" + File.separator + "python";
         ITFIDFDriver tfidfDriver = new TFIDFDriver(contextName);
         tfidfDriver.executeTFIDF(inputPath);
-        tfidfDriver.computeMean();
         tfidfDriver.driveProcessResizeVector();
     }
 
