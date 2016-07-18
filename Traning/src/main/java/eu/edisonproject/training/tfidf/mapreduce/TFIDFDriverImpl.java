@@ -38,48 +38,48 @@ import org.apache.hadoop.util.ToolRunner;
  *
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
  */
-public class TFIDFDriver implements ITFIDFDriver {
+public class TFIDFDriverImpl implements ITFIDFDriver {
 
     //where to read the frequent itemset
-    private String INPUT_ITEMSET = ".." + File.separator + "etc" + File.separator + "itemset.csv";
+    private final String INPUT_ITEMSET = ".." + File.separator + "etc" + File.separator + "itemset.csv";
     //where to read the data for MapReduce#1
     private String INPUT_PATH1;
     //where to put the data in hdfs when MapReduce#1 will finish
-    private String OUTPUT_PATH1 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "1-word-freq";
+    private final String OUTPUT_PATH1 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "1-word-freq";
 
     // where to read the data for the MapReduce#2
-    private String INPUT_PATH2 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "1-word-freq";
+    private final String INPUT_PATH2 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "1-word-freq";
     // where to put the data in hdfs when the MapReduce#2 will finish
-    private String OUTPUT_PATH2 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "2-word-counts";
+    private final String OUTPUT_PATH2 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "2-word-counts";
 
     // where to read the data for the MapReduce#3
-    private String INPUT_PATH3 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "2-word-counts";
+    private final String INPUT_PATH3 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "2-word-counts";
     // where to put the data in hdfs when the MapReduce#3 will finish
-    private String OUTPUT_PATH3 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "3-tf-idf";
+    private final String OUTPUT_PATH3 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "3-tf-idf";
 
     // where to read the data for the MapReduce#4.
-    private String INPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "3-tf-idf";
+    private final String INPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "3-tf-idf";
     // where to put the data in hdfs when the MapReduce# will finish
-    private String OUTPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "4-tf-idf-document";
+    public static final String OUTPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "4-tf-idf-document";
 
     // where to put the csv with the tfidf
-    private String TFIDFCSV_PATH = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "5-csv";
+    private final String TFIDFCSV_PATH = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "5-csv";
     // where to put the csv with the context vector
-    private String CONTEXT_PATH = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "6-context-vector";
+    private final String CONTEXT_PATH = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "6-context-vector";
 
     // the name of the context (categories) that it is under analysis
-    private String contextName;
+    private final String contextName;
 
     // the list of all words
-    private List<String> allWords;
+    private final List<String> allWords;
     // the list of all value for each transaction
-    private List<String[]> transactionValues;
+    private final List<String[]> transactionValues;
 
     private HashMap<String, Double> wordTfidf;
 
     private double threshold;
 
-    public TFIDFDriver(String contextName) {
+    public TFIDFDriverImpl(String contextName) {
         this.contextName = contextName + ".csv";
         this.allWords = new LinkedList<String>();
         this.transactionValues = new LinkedList<String[]>();
@@ -124,11 +124,11 @@ public class TFIDFDriver implements ITFIDFDriver {
                 String[] args4 = {INPUT_PATH4, OUTPUT_PATH4};
                 ToolRunner.run(new WordsGroupByTitleDriver(), args4);
             } catch (Exception ex) {
-                Logger.getLogger(TFIDFDriver.class.getName()).log(Level.SEVERE, "TFIDF fail", ex);
+                Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, "TFIDF fail", ex);
             }
 
         } else {
-            Logger.getLogger(TFIDFDriver.class.getName()).log(Level.SEVERE, "You must specify the input folder not a specific document", file);
+            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, "You must specify the input folder not a specific document", file);
         }
 
     }

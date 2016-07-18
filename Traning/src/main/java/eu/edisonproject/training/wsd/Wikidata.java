@@ -5,8 +5,8 @@
  */
 package eu.edisonproject.training.wsd;
 
-import eu.edisonproject.training.utility.term.avro.Term;
-import eu.edisonproject.training.utility.term.avro.TermFactory;
+import eu.edisonproject.utility.commons.Term;
+import eu.edisonproject.utility.commons.TermFactory;
 import eu.edisonproject.utility.file.CSVFileReader;
 import eu.edisonproject.utility.text.processing.Cleaner;
 import eu.edisonproject.utility.text.processing.Stemming;

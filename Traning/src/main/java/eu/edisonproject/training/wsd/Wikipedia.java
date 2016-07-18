@@ -5,7 +5,7 @@
  */
 package eu.edisonproject.training.wsd;
 
-import eu.edisonproject.training.utility.term.avro.Term;
+import eu.edisonproject.utility.commons.Term;
 import eu.edisonproject.utility.file.CSVFileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

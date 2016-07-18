@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  *
@@ -41,6 +42,24 @@ public class CSVFileReader {
             }
         }
         return map;
+    }
+
+    public static Map<CharSequence, Map<String, Double>> tfidfResult2Map(String path) throws IOException {
+        Map<CharSequence, Map<String, Double>> featureVectors = new HashMap<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(new File(path)))) {
+            for (String text; (text = br.readLine()) != null;) {
+                String[] parts = text.split("\t");
+                String id = parts[0];
+                String[] vector = parts[1].split("/");
+                Map<String, Double> featureVector = new TreeMap<>();
+                for (int i = 0; i < vector.length / 2; i++) {
+                    String[] termValuePair = vector[i].split(":");
+                    featureVector.put(termValuePair[0], Double.valueOf(termValuePair[1]));
+                }
+                featureVectors.put(id, featureVector);
+            }
+        }
+        return featureVectors;
     }
 
     public static Set<String> getNGramsForTerm(String term, String itemsFilePath, String delimeter, String wordSeperator) throws IOException {

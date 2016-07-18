@@ -5,10 +5,13 @@
  */
 package eu.edisonproject.training.wsd;
 
-import eu.edisonproject.training.utility.term.avro.TermFactory;
-import eu.edisonproject.training.utility.term.avro.Term;
-import eu.edisonproject.training.utility.term.avro.TermAvroSerializer;
+import eu.edisonproject.training.tfidf.mapreduce.ITFIDFDriver;
+import eu.edisonproject.training.tfidf.mapreduce.TFIDFDriverImpl;
+import eu.edisonproject.utility.commons.Term;
+import eu.edisonproject.utility.commons.TermAvroSerializer;
+import eu.edisonproject.utility.commons.TermFactory;
 import eu.edisonproject.utility.commons.ValueComparator;
+import eu.edisonproject.utility.file.CSVFileReader;
 import eu.edisonproject.utility.text.processing.Cleaner;
 import eu.edisonproject.utility.text.processing.Stemming;
 import java.io.BufferedReader;
@@ -49,6 +52,12 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.filter.BinaryComparator;
+import org.apache.hadoop.hbase.filter.ColumnPrefixFilter;
+import org.apache.hadoop.hbase.filter.CompareFilter;
+import org.apache.hadoop.hbase.filter.Filter;
+import org.apache.hadoop.hbase.filter.RowFilter;
+import org.apache.hadoop.hbase.filter.ValueFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 
 /**
@@ -161,7 +170,10 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
             for (String jsonTerm : termsStr) {
                 possibaleTerms.add(TermFactory.create(jsonTerm));
             }
-            return disambiguate(term, possibaleTerms, termsStr, getMinimumSimilarity());
+            String delimeter = ",";
+            String wordSeperator = "_";
+            Set<String> ngarms = CSVFileReader.getNGramsForTerm(term, getItemsFilePath(), delimeter, wordSeperator);
+            return disambiguate(term, possibaleTerms, ngarms, getMinimumSimilarity());
         } else {
             return null;
         }
@@ -236,6 +248,8 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
             List<CharSequence> gl = t.getGlosses();
             if (gl == null || gl.isEmpty() || gl.contains(null)) {
                 t.setGlosses(empty);
+            } else {
+
             }
             List<CharSequence> cat = t.getCategories();
             if (cat == null || cat.contains(null)) {
@@ -243,24 +257,88 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
             }
             ts.serialize(t);
         }
+        Term context = new Term();
+        context.setUid("context");
+        StringBuilder glosses = new StringBuilder();
+        context.setLemma(term);
+        context.setOriginalTerm(term);
+        context.setUrl("empty");
+        for (String n : ngarms) {
+            glosses.append(n).append(" ");
+        }
+        List<CharSequence> contextGlosses = new ArrayList<>();
+        contextGlosses.add(glosses.toString());
+        context.setGlosses(contextGlosses);
+        List<CharSequence> nuid = context.getNuids();
+        if (nuid == null || nuid.isEmpty() || nuid.contains(null)) {
+            context.setNuids(empty);
+        }
+
+        List<CharSequence> buids = context.getBuids();
+        if (buids == null || buids.isEmpty() || buids.contains(null)) {
+            context.setBuids(empty);
+        }
+        List<CharSequence> alt = context.getAltLables();
+        if (alt == null || alt.isEmpty() || alt.contains(null)) {
+            context.setAltLables(empty);
+        }
+        List<CharSequence> gl = context.getGlosses();
+        if (gl == null || gl.isEmpty() || gl.contains(null)) {
+            context.setGlosses(empty);
+        }
+        List<CharSequence> cat = context.getCategories();
+        if (cat == null || cat.contains(null)) {
+            context.setCategories(empty);
+        }
+        ts.serialize(context);
         ts.close();
 
-        DatumReader<Term> termDatumReader = new SpecificDatumReader<>(Term.class);
-        DataFileReader<Term> dataFileReader;
-        dataFileReader = new DataFileReader<>(new File(filePath), termDatumReader);
-        while (dataFileReader.hasNext()) {
-            //Count the number of rows inside the .avro
-            Term ttt = dataFileReader.next();
+        ITFIDFDriver tfidfDriver = new TFIDFDriverImpl(term);
+        tfidfDriver.executeTFIDF(new File(filePath).getParent());
 
+        Map<CharSequence, Map<String, Double>> featureVectors = CSVFileReader.tfidfResult2Map(TFIDFDriverImpl.OUTPUT_PATH4 + File.separator + "part-r-00000");
+        Map<String, Double> contextVector = featureVectors.remove("context");
+
+        Map<CharSequence, Double> scoreMap = new HashMap<>();
+        for (CharSequence key : featureVectors.keySet()) {
+            Double similarity = cosineSimilarity(contextVector, featureVectors.get(key));
+            scoreMap.put(key, similarity);
+        }
+        if (scoreMap.isEmpty()) {
+            return null;
+        }
+
+        ValueComparator bvc = new ValueComparator(scoreMap);
+        TreeMap<CharSequence, Double> sorted_map = new TreeMap(bvc);
+        sorted_map.putAll(scoreMap);
+//        System.err.println(sorted_map);
+
+        Iterator<CharSequence> it = sorted_map.keySet().iterator();
+        CharSequence winner = it.next();
+
+        Double s1 = scoreMap.get(winner);
+        if (s1 < getMinimumSimilarity()) {
+            return null;
+        }
+
+        Set<Term> terms = new HashSet<>();
+        for (Term t : possibleTerms) {
+            if (t.getUid().equals(winner)) {
+                terms.add(t);
+            }
+        }
+        if (!terms.isEmpty()) {
+            return terms.iterator().next();
+        } else {
+            Logger.getLogger(DisambiguatorImpl.class.getName()).log(Level.INFO, "No winner");
+            return null;
         }
 
 //        possibleTerms = tf_idf_Disambiguation(possibleTerms, ngarms, term, getMinimumSimilarity(), true);
-        Term dis = null;
-        if (possibleTerms != null && possibleTerms.size() == 1) {
-            dis = possibleTerms.iterator().next();
-        }
-
-        return dis;
+//        Term dis = null;
+//        if (possibleTerms != null && possibleTerms.size() == 1) {
+//            dis = possibleTerms.iterator().next();
+//        }
     }
 
     private Set<Term> tf_idf_Disambiguation(Set<Term> possibleTerms, Set<String> nGrams, String lemma, double confidence, boolean matchTitle) throws IOException, ParseException {
@@ -307,8 +385,7 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         for (CharSequence key : featureVectors.keySet()) {
             Double similarity = cosineSimilarity(contextVector, featureVectors.get(key));
 
-            Cleaner stemer = new Stemming();
-
+//            Cleaner stemer = new Stemming();
 //            for (Term t : possibleTerms) {
 //                if (t.getUid().equals(key)) {
 //                    stemer.setDescription(t.getLemma().toString());
@@ -414,20 +491,26 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         try (Admin admin = getConn().getAdmin()) {
             if (admin.tableExists(TERMS_TBL_NAME)) {
                 try (Table tbl = getConn().getTable(TERMS_TBL_NAME)) {
+                    //shell query: 'scan 'terms', { COLUMNS => 'ambiguousTerm:ambiguousTerm', FILTER => "ValueFilter( =, 'binary:python' )" }'
                     Scan scan = new Scan();
                     scan.addFamily(Bytes.toBytes("ambiguousTerm"));
                     scan.addFamily(Bytes.toBytes("jsonString"));
 
+//                    BinaryComparator bc = new BinaryComparator(Bytes.toBytes(term));
+//                    Filter filter = new ValueFilter(CompareFilter.CompareOp.EQUAL, bc);
+//                    scan.setFilter(filter);
                     ResultScanner resultScanner = tbl.getScanner(scan);
                     Iterator<Result> results = resultScanner.iterator();
                     Set<String> jsonTerms = new HashSet<>();
                     while (results.hasNext()) {
                         Result r = results.next();
 
-                        String ambiguousTerm = Bytes.toString(r.getValue(Bytes.toBytes("ambiguousTerm"), Bytes.toBytes("ambiguousTerm")));
+                        String ambiguousTerm = Bytes.toString(r.getValue(Bytes.toBytes("ambiguousTerm"),
+                                Bytes.toBytes("ambiguousTerm")));
                         if (ambiguousTerm.equals(term)) {
 //                String uid = Bytes.toString(r.getRow());
-                            String jsonStr = Bytes.toString(r.getValue(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString")));
+                            String jsonStr = Bytes.toString(r.getValue(Bytes.toBytes("jsonString"),
+                                    Bytes.toBytes("jsonString")));
                             jsonTerms.add(jsonStr);
                         }
 
@@ -612,6 +695,5 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
                 admin.createTable(tableDescriptor);
             }
         }
-
     }
 }

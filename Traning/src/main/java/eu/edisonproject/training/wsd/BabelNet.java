@@ -5,9 +5,9 @@
  */
 package eu.edisonproject.training.wsd;
 
-import eu.edisonproject.training.utility.term.avro.TermFactory;
 import edu.stanford.nlp.util.Pair;
-import eu.edisonproject.training.utility.term.avro.Term;
+import eu.edisonproject.utility.commons.Term;
+import eu.edisonproject.utility.commons.TermFactory;
 import eu.edisonproject.utility.commons.ValueComparator;
 import eu.edisonproject.utility.file.CSVFileReader;
 import java.util.Properties;
@@ -58,7 +58,7 @@ public class BabelNet extends DisambiguatorImpl {
     public static final TableName SYNSET_TBL_NAME = TableName.valueOf("synset");
     public static final TableName WORDS_TBL_NAME = TableName.valueOf("words");
     public static final TableName DISAMBIGUATE_TBL_NAME = TableName.valueOf("disambiguate");
-    private String page = "http://babelnet.org/synset?word=";
+    private static final String page = "http://babelnet.org/synset?word=";
 
     @Override
     public Term getTerm(String term) throws IOException, ParseException, UnsupportedEncodingException, FileNotFoundException {
@@ -597,7 +597,6 @@ public class BabelNet extends DisambiguatorImpl {
             }
             admin.flush(WORDS_TBL_NAME);
         }
-
     }
 
     private void putInDisambiguateDB(String sentence, String jsonString) throws IOException {

@@ -5,7 +5,8 @@
  */
 package eu.edisonproject.training.wsd;
 
-import eu.edisonproject.training.utility.term.avro.Term;
+
+import eu.edisonproject.utility.commons.Term;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;

@@ -16,7 +16,7 @@
 package eu.edisonproject.training.test;
 
 import eu.edisonproject.training.tfidf.mapreduce.ITFIDFDriver;
-import eu.edisonproject.training.tfidf.mapreduce.TFIDFDriver;
+import eu.edisonproject.training.tfidf.mapreduce.TFIDFDriverImpl;
 import java.io.File;
 
 /**
@@ -28,7 +28,7 @@ public class TestTFIDF {
     public static void main(String[] args) {
         String contextName = "python";
         String inputPath = ".." + File.separator + "etc" + File.separator + "Avro Document" + File.separator + "python";
-        ITFIDFDriver tfidfDriver = new TFIDFDriver(contextName);
+        ITFIDFDriver tfidfDriver = new TFIDFDriverImpl(contextName);
         tfidfDriver.executeTFIDF(inputPath);
         tfidfDriver.driveProcessResizeVector();
     }

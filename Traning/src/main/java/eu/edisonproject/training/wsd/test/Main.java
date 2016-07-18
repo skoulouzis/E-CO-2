@@ -15,9 +15,9 @@
  */
 package eu.edisonproject.training.wsd.test;
 
-import eu.edisonproject.training.utility.term.avro.Term;
 import eu.edisonproject.training.wsd.DisambiguatorImpl;
 import eu.edisonproject.training.wsd.MetaDisambiguator;
+import eu.edisonproject.utility.commons.Term;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;

@@ -15,11 +15,11 @@
  */
 package eu.edisonproject.training.term.extraction.test;
 
-import eu.edisonproject.training.utility.term.avro.Term;
-import eu.edisonproject.training.utility.term.avro.TermAvroSerializer;
 import eu.edisonproject.training.wsd.BabelNet;
 import eu.edisonproject.training.wsd.DisambiguatorImpl;
-import eu.edisonproject.training.utility.term.avro.TermFactory;
+import eu.edisonproject.utility.commons.Term;
+import eu.edisonproject.utility.commons.TermAvroSerializer;
+import eu.edisonproject.utility.commons.TermFactory;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
