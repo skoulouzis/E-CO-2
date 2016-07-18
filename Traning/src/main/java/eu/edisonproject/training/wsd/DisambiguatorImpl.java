@@ -231,6 +231,7 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         TermAvroSerializer ts = new TermAvroSerializer(filePath, Term.getClassSchema());
         List<CharSequence> empty = new ArrayList<>();
         empty.add("");
+        Cleaner stemer = new Stemming();
         for (Term t : possibleTerms) {
             List<CharSequence> nuid = t.getNuids();
             if (nuid == null || nuid.isEmpty() || nuid.contains(null)) {
@@ -249,6 +250,14 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
             if (gl == null || gl.isEmpty() || gl.contains(null)) {
                 t.setGlosses(empty);
             } else {
+                StringBuilder glosses = new StringBuilder();
+                for (String n : ngarms) {
+                    glosses.append(n).append(" ");
+                }
+                gl = new ArrayList<>();
+                stemer.setDescription(glosses.toString());
+                gl.add(stemer.execute());
+                t.setGlosses(gl);
 
             }
             List<CharSequence> cat = t.getCategories();
@@ -267,7 +276,9 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
             glosses.append(n).append(" ");
         }
         List<CharSequence> contextGlosses = new ArrayList<>();
-        contextGlosses.add(glosses.toString());
+        stemer.setDescription(glosses.toString());
+
+        contextGlosses.add(stemer.execute());
         context.setGlosses(contextGlosses);
         List<CharSequence> nuid = context.getNuids();
         if (nuid == null || nuid.isEmpty() || nuid.contains(null)) {
