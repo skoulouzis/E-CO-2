@@ -75,7 +75,7 @@ public class Wikidata extends DisambiguatorImpl {
 //        "wikipedia spam",
 //        "on wikidata"
 //    };
-    private final String page = "https://www.wikidata.org/w/api.php";
+    private final String PAGE = "https://www.wikidata.org/w/api.php";
 
     @Override
     public void configure(Properties properties) {
@@ -88,7 +88,7 @@ public class Wikidata extends DisambiguatorImpl {
     public Term getTerm(String term) throws IOException, ParseException, MalformedURLException {
         Set<Term> possibleTerms = null;
         try {
-            possibleTerms = getTermNodeByLemma(term);
+            possibleTerms = getCandidates(term);
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Wikipedia.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -104,21 +104,23 @@ public class Wikidata extends DisambiguatorImpl {
         return dis;
     }
 
-    private Set<Term> getTermNodeByLemma(String lemma) throws MalformedURLException, IOException, ParseException, InterruptedException, ExecutionException {
+    @Override
+    public Set<Term> getCandidates(String lemma) throws MalformedURLException, IOException, ParseException, InterruptedException, ExecutionException {
 
-        Set<String> termsStr = getPossibleTermsFromDB(lemma);
+        Set<String> termsStr = getPossibleTermsFromDB(lemma, new URL(PAGE).getHost());
         if (termsStr != null && !termsStr.isEmpty()) {
             Set<Term> terms = TermFactory.create(termsStr);
-            Set<Term> wikiTerms = new HashSet<>();
+            return terms;
+//            Set<Term> wikiTerms = new HashSet<>();
 
-            for (Term t : terms) {
-                if (t.getUrl().toString().contains(new URL(page).getHost())) {
-                    wikiTerms.add(t);
-                }
-            }
-            if (!wikiTerms.isEmpty()) {
-                return wikiTerms;
-            }
+//            for (Term t : terms) {
+//                if (t.getUrl().toString().contains(new URL(PAGE).getHost())) {
+//                    wikiTerms.add(t);
+//                }
+//            }
+//            if (!wikiTerms.isEmpty()) {
+//                return wikiTerms;
+//            }
         }
 //        if (termsStr != null) {
 //            Set<Term> terms = TermFactory.create(termsStr);
@@ -126,7 +128,7 @@ public class Wikidata extends DisambiguatorImpl {
 //            for (Term t : terms) {
 //                boolean add = true;
 //                for (CharSequence g : t.getGlosses()) {
-//                    if (g != null && g.toString().contains("Wikimedia disambiguation page")) {
+//                    if (g != null && g.toString().contains("Wikimedia disambiguation PAGE")) {
 //                        add = false;
 //                        break;
 //                    }
@@ -141,22 +143,21 @@ public class Wikidata extends DisambiguatorImpl {
         String query = lemma.replaceAll("_", " ");
         query = URLEncoder.encode(query, "UTF-8");
         int i = 0;
-        URL url = new URL(page + "?action=wbsearchentities&format=json&language=en&continue=" + i + "&limit=50&search=" + query);
-        System.err.println(url);
+        URL url = new URL(PAGE + "?action=wbsearchentities&format=json&language=en&continue=" + i + "&limit=50&search=" + query);
+        Logger.getLogger(Wikidata.class.getName()).log(Level.FINE, url.toString());
         String jsonString = IOUtils.toString(url);
-        Set<Term> terms = getCandidateTerms(jsonString, lemma);
+        Set<Term> terms = queryTerms(jsonString, lemma);
 
         addPossibleTermsToDB(lemma, terms);
 
         return terms;
     }
 
-    private Set<Term> getCandidateTerms(String jsonString, String originalTerm) throws ParseException, IOException, MalformedURLException, InterruptedException, ExecutionException {
+    private Set<Term> queryTerms(String jsonString, String originalTerm) throws ParseException, IOException, MalformedURLException, InterruptedException, ExecutionException {
         Set<Term> terms = new HashSet<>();
 
         JSONObject jsonObj = (JSONObject) JSONValue.parseWithException(jsonString);
         JSONArray search = (JSONArray) jsonObj.get("search");
-        Cleaner stemer = new Stemming();
 
         for (Object obj : search) {
             JSONObject jObj = (JSONObject) obj;
@@ -253,8 +254,8 @@ public class Wikidata extends DisambiguatorImpl {
             Set<Future<Map<CharSequence, List<CharSequence>>>> set1 = new HashSet<>();
             String prop = "P31";
             for (Term t : terms) {
-                URL url = new URL(page + "?action=wbgetclaims&format=json&props=&property=" + prop + "&entity=" + t.getUid());
-                System.err.println(url);
+                URL url = new URL(PAGE + "?action=wbgetclaims&format=json&props=&property=" + prop + "&entity=" + t.getUid());
+                Logger.getLogger(Wikidata.class.getName()).log(Level.FINE, url.toString());
                 WikiRequestor req = new WikiRequestor(url, t.getUid().toString(), 1);
                 Future<Map<CharSequence, List<CharSequence>>> future = pool.submit(req);
                 set1.add(future);
@@ -288,8 +289,8 @@ public class Wikidata extends DisambiguatorImpl {
             Set<Future<Map<CharSequence, List<CharSequence>>>> set1 = new HashSet<>();
             String prop = "P910";
             for (Term t : terms) {
-                URL url = new URL(page + "?action=wbgetclaims&format=json&props=&property=" + prop + "&entity=" + t.getUid());
-                System.err.println(url);
+                URL url = new URL(PAGE + "?action=wbgetclaims&format=json&props=&property=" + prop + "&entity=" + t.getUid());
+                Logger.getLogger(Wikidata.class.getName()).log(Level.FINE, url.toString());
                 WikiRequestor req = new WikiRequestor(url, t.getUid().toString(), 1);
                 Future<Map<CharSequence, List<CharSequence>>> future = pool.submit(req);
                 set1.add(future);
@@ -316,8 +317,8 @@ public class Wikidata extends DisambiguatorImpl {
             for (Term t : terms) {
                 List<CharSequence> catIDs = map.get(t.getUid());
                 for (CharSequence catID : catIDs) {
-                    URL url = new URL(page + "?action=wbgetentities&format=json&props=labels&languages=en&ids=" + catID);
-                    System.err.println(url);
+                    URL url = new URL(PAGE + "?action=wbgetentities&format=json&props=labels&languages=en&ids=" + catID);
+                    Logger.getLogger(Wikidata.class.getName()).log(Level.FINE, url.toString());
                     WikiRequestor req = new WikiRequestor(url, t.getUid().toString(), 2);
                     Future<Map<CharSequence, List<CharSequence>>> future = pool.submit(req);
                     set2.add(future);
@@ -341,8 +342,8 @@ public class Wikidata extends DisambiguatorImpl {
     }
 
     private List<String> getNumProperty(String id, String prop) throws MalformedURLException, IOException, ParseException {
-        URL url = new URL(page + "?action=wbgetclaims&format=json&props=&property=" + prop + "&entity=" + id);
-        System.err.println(url);
+        URL url = new URL(PAGE + "?action=wbgetclaims&format=json&props=&property=" + prop + "&entity=" + id);
+        Logger.getLogger(Wikidata.class.getName()).log(Level.FINE, url.toString());
         String jsonString = IOUtils.toString(url);
         JSONObject jsonObj = (JSONObject) JSONValue.parseWithException(jsonString);
 
@@ -386,7 +387,7 @@ public class Wikidata extends DisambiguatorImpl {
 //    }
 //    private String getLabel(String id) throws MalformedURLException, IOException, ParseException {
 //
-//        URL url = new URL(page + "?action=wbgetentities&format=json&props=labels&languages=en&ids=" + id);
+//        URL url = new URL(PAGE + "?action=wbgetentities&format=json&props=labels&languages=en&ids=" + id);
 //        System.err.println(url);
 //        String jsonString = IOUtils.toString(url);
 //        JSONObject jsonObj = (JSONObject) JSONValue.parseWithException(jsonString);

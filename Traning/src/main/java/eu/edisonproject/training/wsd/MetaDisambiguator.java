@@ -5,9 +5,10 @@
  */
 package eu.edisonproject.training.wsd;
 
-
 import eu.edisonproject.utility.commons.Term;
+import eu.edisonproject.utility.file.CSVFileReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -99,19 +100,23 @@ public class MetaDisambiguator extends DisambiguatorImpl {
         return null;
     }
 
-    private Term getTermSequentially(String term) throws IOException, ParseException {
+    private Term getTermSequentially(String term) throws IOException, ParseException, MalformedURLException, InterruptedException, ExecutionException {
         Set<Term> possibleTerms = new HashSet();
         for (Disambiguator s : disambiguators) {
-//            long start = System.currentTimeMillis();
-            Term t = s.getTerm(term);
-
-//            Logger.getLogger(MetaDisambiguator.class.getName()).log(Level.INFO, "Elapsed: {0}. {1}", new Object[]{System.currentTimeMillis() - start, s.getClass().getName()});
-            if (t != null) {
-                possibleTerms.add(t);
+            try {
+                possibleTerms.addAll(s.getCandidates(term));
+            } catch (IOException ex) {
+                if (!ex.getMessage().contains("Your key is not valid")) {
+                    throw ex;
+                }
             }
         }
-        Term dis = getWinner(possibleTerms, getMinimumSimilarity());
-//        Term dis = SemanticUtils.disambiguate(term, possibleTerms, allTermsDictionaryPath, minimumSimilarity, true);
+        String delimeter = ",";
+        String wordSeperator = "_";
+        Set<String> ngarms = CSVFileReader.getNGramsForTerm(term, getItemsFilePath(), delimeter, wordSeperator);
+
+        Term dis = disambiguate(term, possibleTerms, ngarms, getMinimumSimilarity());
+//        Term dis = getWinner(possibleTerms, getMinimumSimilarity());
         if (dis == null) {
             Logger.getLogger(MetaDisambiguator.class.getName()).log(Level.INFO, "Couldn''''t figure out what ''{0}'' means", term);
         } else {

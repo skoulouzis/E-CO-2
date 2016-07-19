@@ -12,8 +12,10 @@ import eu.edisonproject.utility.commons.TermAvroSerializer;
 import eu.edisonproject.utility.commons.TermFactory;
 import eu.edisonproject.utility.commons.ValueComparator;
 import eu.edisonproject.utility.file.CSVFileReader;
-import eu.edisonproject.utility.text.processing.Cleaner;
+import eu.edisonproject.utility.file.ConfigHelper;
+import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
 import eu.edisonproject.utility.text.processing.Stemming;
+import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,11 +33,9 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.avro.file.DataFileReader;
-import org.apache.avro.io.DatumReader;
-import org.apache.avro.specific.SpecificDatumReader;
 
 import org.json.simple.parser.ParseException;
 
@@ -53,12 +53,16 @@ import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.filter.BinaryComparator;
-import org.apache.hadoop.hbase.filter.ColumnPrefixFilter;
 import org.apache.hadoop.hbase.filter.CompareFilter;
+import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
+import org.apache.hadoop.hbase.filter.FamilyFilter;
 import org.apache.hadoop.hbase.filter.Filter;
-import org.apache.hadoop.hbase.filter.RowFilter;
+import org.apache.hadoop.hbase.filter.FilterList;
+import org.apache.hadoop.hbase.filter.PrefixFilter;
+import org.apache.hadoop.hbase.filter.SubstringComparator;
 import org.apache.hadoop.hbase.filter.ValueFilter;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.lucene.analysis.util.CharArraySet;
 
 /**
  *
@@ -70,10 +74,13 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
     private Double minimumSimilarity;
     private Integer lineOffset;
     private String termToProcess;
-    private String stopWordsPath;
+    private static String stopWordsPath;
     private String itemsFilePath;
     private Connection conn;
     public static final TableName TERMS_TBL_NAME = TableName.valueOf("terms");
+    protected StopWord tokenizer;
+    protected StanfordLemmatizer lematizer;
+    protected Stemming stemer;
 
     /**
      *
@@ -160,11 +167,15 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
             Logger.getLogger(DisambiguatorImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        CharArraySet stopwordsCharArray = new CharArraySet(ConfigHelper.loadStopWords(stopWordsPath), true);
+        tokenizer = new StopWord(stopwordsCharArray);
+        lematizer = new StanfordLemmatizer();
+        stemer = new Stemming();
     }
 
     @Override
     public Term getTerm(String term) throws IOException, ParseException {
-        Set<String> termsStr = getPossibleTermsFromDB(term);
+        Set<String> termsStr = getPossibleTermsFromDB(term, null);
         if (termsStr != null) {
             Set<Term> possibaleTerms = new HashSet<>();
             for (String jsonTerm : termsStr) {
@@ -227,129 +238,11 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
     }
 
     protected Term disambiguate(String term, Set<Term> possibleTerms, Set<String> ngarms, double minimumSimilarity) throws IOException, ParseException {
-        String filePath = ".." + File.separator + "etc" + File.separator + "Avro Document" + File.separator + term + File.separator + term + ".avro";
-        TermAvroSerializer ts = new TermAvroSerializer(filePath, Term.getClassSchema());
-        List<CharSequence> empty = new ArrayList<>();
-        empty.add("");
-        Cleaner stemer = new Stemming();
-        for (Term t : possibleTerms) {
-            List<CharSequence> nuid = t.getNuids();
-            if (nuid == null || nuid.isEmpty() || nuid.contains(null)) {
-                t.setNuids(empty);
-            }
-
-            List<CharSequence> buids = t.getBuids();
-            if (buids == null || buids.isEmpty() || buids.contains(null)) {
-                t.setBuids(empty);
-            }
-            List<CharSequence> alt = t.getAltLables();
-            if (alt == null || alt.isEmpty() || alt.contains(null)) {
-                t.setAltLables(empty);
-            }
-            List<CharSequence> gl = t.getGlosses();
-            if (gl == null || gl.isEmpty() || gl.contains(null)) {
-                t.setGlosses(empty);
-            } else {
-                StringBuilder glosses = new StringBuilder();
-                for (String n : ngarms) {
-                    glosses.append(n).append(" ");
-                }
-                gl = new ArrayList<>();
-                stemer.setDescription(glosses.toString());
-                gl.add(stemer.execute());
-                t.setGlosses(gl);
-
-            }
-            List<CharSequence> cat = t.getCategories();
-            if (cat == null || cat.contains(null)) {
-                t.setCategories(empty);
-            }
-            ts.serialize(t);
+        Set<Term> dis = tf_idf_Disambiguation(possibleTerms, ngarms, term, getMinimumSimilarity(), true);
+        if (dis != null) {
+            return dis.iterator().next();
         }
-        Term context = new Term();
-        context.setUid("context");
-        StringBuilder glosses = new StringBuilder();
-        context.setLemma(term);
-        context.setOriginalTerm(term);
-        context.setUrl("empty");
-        for (String n : ngarms) {
-            glosses.append(n).append(" ");
-        }
-        List<CharSequence> contextGlosses = new ArrayList<>();
-        stemer.setDescription(glosses.toString());
-
-        contextGlosses.add(stemer.execute());
-        context.setGlosses(contextGlosses);
-        List<CharSequence> nuid = context.getNuids();
-        if (nuid == null || nuid.isEmpty() || nuid.contains(null)) {
-            context.setNuids(empty);
-        }
-
-        List<CharSequence> buids = context.getBuids();
-        if (buids == null || buids.isEmpty() || buids.contains(null)) {
-            context.setBuids(empty);
-        }
-        List<CharSequence> alt = context.getAltLables();
-        if (alt == null || alt.isEmpty() || alt.contains(null)) {
-            context.setAltLables(empty);
-        }
-        List<CharSequence> gl = context.getGlosses();
-        if (gl == null || gl.isEmpty() || gl.contains(null)) {
-            context.setGlosses(empty);
-        }
-        List<CharSequence> cat = context.getCategories();
-        if (cat == null || cat.contains(null)) {
-            context.setCategories(empty);
-        }
-        ts.serialize(context);
-        ts.close();
-
-        ITFIDFDriver tfidfDriver = new TFIDFDriverImpl(term);
-        tfidfDriver.executeTFIDF(new File(filePath).getParent());
-
-        Map<CharSequence, Map<String, Double>> featureVectors = CSVFileReader.tfidfResult2Map(TFIDFDriverImpl.OUTPUT_PATH4 + File.separator + "part-r-00000");
-        Map<String, Double> contextVector = featureVectors.remove("context");
-
-        Map<CharSequence, Double> scoreMap = new HashMap<>();
-        for (CharSequence key : featureVectors.keySet()) {
-            Double similarity = cosineSimilarity(contextVector, featureVectors.get(key));
-            scoreMap.put(key, similarity);
-        }
-        if (scoreMap.isEmpty()) {
-            return null;
-        }
-
-        ValueComparator bvc = new ValueComparator(scoreMap);
-        TreeMap<CharSequence, Double> sorted_map = new TreeMap(bvc);
-        sorted_map.putAll(scoreMap);
-//        System.err.println(sorted_map);
-
-        Iterator<CharSequence> it = sorted_map.keySet().iterator();
-        CharSequence winner = it.next();
-
-        Double s1 = scoreMap.get(winner);
-        if (s1 < getMinimumSimilarity()) {
-            return null;
-        }
-
-        Set<Term> terms = new HashSet<>();
-        for (Term t : possibleTerms) {
-            if (t.getUid().equals(winner)) {
-                terms.add(t);
-            }
-        }
-        if (!terms.isEmpty()) {
-            return terms.iterator().next();
-        } else {
-            Logger.getLogger(DisambiguatorImpl.class.getName()).log(Level.INFO, "No winner");
-            return null;
-        }
-
-//        possibleTerms = tf_idf_Disambiguation(possibleTerms, ngarms, term, getMinimumSimilarity(), true);
-//        Term dis = null;
-//        if (possibleTerms != null && possibleTerms.size() == 1) {
-//            dis = possibleTerms.iterator().next();
-//        }
+        return null;
     }
 
     private Set<Term> tf_idf_Disambiguation(Set<Term> possibleTerms, Set<String> nGrams, String lemma, double confidence, boolean matchTitle) throws IOException, ParseException {
@@ -363,18 +256,27 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         }
 
         Set<String> contextDoc = new HashSet<>();
+        StringBuilder ngString = new StringBuilder();
         for (String s : nGrams) {
             if (s.contains("_")) {
                 String[] parts = s.split("_");
                 for (String token : parts) {
                     if (token.length() >= 1 && !token.contains(lemma)) {
-                        contextDoc.add(token);
+//                        contextDoc.add(token);
+                        ngString.append(token).append(" ");
                     }
                 }
             } else if (s.length() >= 1 && !s.contains(lemma)) {
-                contextDoc.add(s);
+                ngString.append(s).append(" ");
+//                contextDoc.add(s);
             }
         }
+        tokenizer.setDescription(ngString.toString());
+        String cleanText = tokenizer.execute();
+        lematizer.setDescription(cleanText);
+        String lematizedText = lematizer.execute();
+        contextDoc.addAll(Arrays.asList(lematizedText.split(" ")));
+
         docs.put("context", new ArrayList<>(contextDoc));
 
         Map<CharSequence, Map<String, Double>> featureVectors = new HashMap<>();
@@ -391,60 +293,37 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         }
 
         Map<String, Double> contextVector = featureVectors.remove("context");
-
         Map<CharSequence, Double> scoreMap = new HashMap<>();
         for (CharSequence key : featureVectors.keySet()) {
             Double similarity = cosineSimilarity(contextVector, featureVectors.get(key));
 
-//            Cleaner stemer = new Stemming();
-//            for (Term t : possibleTerms) {
-//                if (t.getUid().equals(key)) {
-//                    stemer.setDescription(t.getLemma().toString());
-//                    String stemTitle = stemer.execute();
-//                    stemer.setDescription(lemma);
-//                    String stemLema = stemer.execute();
+            for (Term t : possibleTerms) {
+                if (t.getUid().equals(key) && matchTitle) {
+                    stemer.setDescription(t.getLemma().toString());
+                    String stemTitle = stemer.execute();
+                    stemer.setDescription(lemma);
+                    String stemLema = stemer.execute();
 //                    List<String> subTokens = new ArrayList<>();
-//                    if (!t.getLemma().toLowerCase().startsWith("(") && t.getLemma().toLowerCase().contains("(") && t.getLemma().toLowerCase().contains(")")) {
-//                        int index1 = t.getLemma().toLowerCase().indexOf("(") + 1;
-//                        int index2 = t.getLemma().toLowerCase().indexOf(")");
-//                        String sub = t.getLemma().toLowerCase().substring(index1, index2);
+//                    if (!t.getLemma().toString().toLowerCase().startsWith("(") && t.getLemma().toString().toLowerCase().contains("(") && t.getLemma().toLowerCase().contains(")")) {
+//                        int index1 = t.getLemma().toString().toLowerCase().indexOf("(") + 1;
+//                        int index2 = t.getLemma().toString().toLowerCase().indexOf(")");
+//                        String sub = t.getLemma().toString().toLowerCase().substring(index1, index2);
 //                        subTokens.addAll(tokenize(sub, true));
 //                    }
-//
-//                    List<String> nTokens = new ArrayList<>();
-//                    for (String s : nGrams) {
-//                        if (s.contains("_")) {
-//                            String[] parts = s.split("_");
-//                            for (String token : parts) {
-//                                nTokens.addAll(tokenize(token, true));
-//                            }
-//                        } else {
-//                            nTokens.addAll(tokenize(s, true));
-//                        }
-//                    }
-//                    if (t.getCategories() != null) {
-//                        for (String s : t.getCategories()) {
-//                            if (s != null && s.contains("_")) {
-//                                String[] parts = s.split("_");
-//                                for (String token : parts) {
-//                                    subTokens.addAll(tokenize(token, true));
-//                                }
-//                            } else if (s != null) {
-//                                subTokens.addAll(tokenize(s, true));
-//                            }
-//                        }
-//                    }
-////                    System.err.println(t.getGlosses());
-//                    Set<String> intersection = new HashSet<>(nTokens);
-//                    intersection.retainAll(subTokens);
-//                    if (intersection.isEmpty()) {
-//                        similarity -= 0.1;
-//                    }
-//                    int dist = edu.stanford.nlp.util.StringUtils.editDistance(stemTitle, stemLema);
-//                    similarity = similarity - (dist * 0.05);
-//                    t.setConfidence(similarity);
-//                }
-//            }
+                    double factor = 0.0008;
+                    if (stemTitle.length() > stemLema.length()) {
+                        if (stemTitle.contains(stemLema)) {
+                            factor = 0.0004;
+                        }
+                    } else if (stemLema.contains(stemTitle)) {
+                        factor = 0.0004;
+                    }
+                    int dist = edu.stanford.nlp.util.StringUtils.editDistance(stemTitle, stemLema);
+                    similarity = similarity - (dist * factor);
+                    t.setConfidence(similarity);
+
+                }
+            }
             scoreMap.put(key, similarity);
         }
 
@@ -498,18 +377,23 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         }
     }
 
-    protected Set<String> getPossibleTermsFromDB(String term) throws IOException {
+    protected Set<String> getPossibleTermsFromDB(String term, CharSequence url) throws IOException {
         try (Admin admin = getConn().getAdmin()) {
             if (admin.tableExists(TERMS_TBL_NAME)) {
                 try (Table tbl = getConn().getTable(TERMS_TBL_NAME)) {
                     //shell query: 'scan 'terms', { COLUMNS => 'ambiguousTerm:ambiguousTerm', FILTER => "ValueFilter( =, 'binary:python' )" }'
                     Scan scan = new Scan();
-                    scan.addFamily(Bytes.toBytes("ambiguousTerm"));
-                    scan.addFamily(Bytes.toBytes("jsonString"));
+//                    scan.addFamily(Bytes.toBytes("ambiguousTerm"));
+//                    scan.addFamily(Bytes.toBytes("jsonString"));
 
-//                    BinaryComparator bc = new BinaryComparator(Bytes.toBytes(term));
-//                    Filter filter = new ValueFilter(CompareFilter.CompareOp.EQUAL, bc);
-//                    scan.setFilter(filter);
+                    List<Filter> filterList = new ArrayList<>();
+                    ValueFilter valueFilter = new ValueFilter(CompareOp.EQUAL, new SubstringComparator(term));
+                    filterList.add(valueFilter);
+
+                    FilterList filter = new FilterList(FilterList.Operator.MUST_PASS_ALL, filterList);
+
+                    scan.setFilter(filter);
+
                     ResultScanner resultScanner = tbl.getScanner(scan);
                     Iterator<Result> results = resultScanner.iterator();
                     Set<String> jsonTerms = new HashSet<>();
@@ -518,10 +402,13 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
 
                         String ambiguousTerm = Bytes.toString(r.getValue(Bytes.toBytes("ambiguousTerm"),
                                 Bytes.toBytes("ambiguousTerm")));
-                        if (ambiguousTerm.equals(term)) {
-//                String uid = Bytes.toString(r.getRow());
-                            String jsonStr = Bytes.toString(r.getValue(Bytes.toBytes("jsonString"),
-                                    Bytes.toBytes("jsonString")));
+                        String jsonStr = Bytes.toString(r.getValue(Bytes.toBytes("jsonString"),
+                                Bytes.toBytes("jsonString")));
+                        if (url != null) {
+                            if (ambiguousTerm != null && ambiguousTerm.equals(term) && jsonStr.contains(url)) {
+                                jsonTerms.add(jsonStr);
+                            }
+                        } else if (ambiguousTerm != null && ambiguousTerm.equals(term)) {
                             jsonTerms.add(jsonStr);
                         }
 
@@ -540,37 +427,53 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         return itemsFilePath;
     }
 
-    private static Set<String> getDocument(Term term) throws IOException, MalformedURLException, ParseException {
-        Cleaner stemer = new Stemming();
+    private Set<String> getDocument(Term term) throws IOException, MalformedURLException, ParseException {
         Set<String> doc = new HashSet<>();
 
         List<CharSequence> g = term.getGlosses();
         if (g != null) {
             for (CharSequence s : g) {
-                if (s != null) {
-                    stemer.setDescription(s.toString());
-                    String stemed = stemer.execute();
-                    doc.addAll(Arrays.asList(stemed.split(" ")));
+                if (s != null && s.length() > 0) {
+                    s = s.toString().replaceAll("_", " ");
+                    tokenizer.setDescription(s.toString());
+                    String cleanText = tokenizer.execute();
+                    lematizer.setDescription(cleanText);
+                    String lematizedText = lematizer.execute();
+
+//                    cleaner.setDescription(s.toString());
+//                    String stemed = cleaner.execute();
+                    doc.addAll(Arrays.asList(lematizedText.split(" ")));
                 }
             }
         }
         List<CharSequence> al = term.getAltLables();
         if (al != null) {
             for (CharSequence s : al) {
-                if (s != null) {
-                    stemer.setDescription(s.toString());
-                    String stemed = stemer.execute();
-                    doc.addAll(Arrays.asList(stemed.split(" ")));
+                if (s != null && s.length() > 0) {
+//                    cleaner.setDescription(s.toString());
+//                    String stemed = cleaner.execute();
+                    s = s.toString().replaceAll("_", " ");
+                    tokenizer.setDescription(s.toString());
+                    String cleanText = tokenizer.execute();
+                    lematizer.setDescription(cleanText);
+                    String lematizedText = lematizer.execute();
+
+                    doc.addAll(Arrays.asList(lematizedText.split(" ")));
                 }
             }
         }
         List<CharSequence> cat = term.getCategories();
         if (cat != null) {
             for (CharSequence s : cat) {
-                if (s != null) {
-                    stemer.setDescription(s.toString());
-                    String stemed = stemer.execute();
-                    doc.addAll(Arrays.asList(stemed.split(" ")));
+                if (s != null && s.length() > 0) {
+                    s = s.toString().replaceAll("_", " ");
+//                    cleaner.setDescription(s.toString());
+//                    String stemed = cleaner.execute();
+                    tokenizer.setDescription(s.toString());
+                    String cleanText = tokenizer.execute();
+                    lematizer.setDescription(cleanText);
+                    String lematizedText = lematizer.execute();
+                    doc.addAll(Arrays.asList(lematizedText.split(" ")));
                 }
             }
         }
@@ -706,5 +609,122 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
                 admin.createTable(tableDescriptor);
             }
         }
+    }
+
+    private Term getTermFromDB(CharSequence winner) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private Term mapreduceDisambiguate(String term, Set<Term> possibleTerms, Set<String> ngarms, double minimumSimilarity) throws IOException {
+        String filePath = ".." + File.separator + "etc" + File.separator + "Avro Document" + File.separator + term + File.separator + term + ".avro";
+        TermAvroSerializer ts = new TermAvroSerializer(filePath, Term.getClassSchema());
+        List<CharSequence> empty = new ArrayList<>();
+        empty.add("");
+        for (Term t : possibleTerms) {
+            List<CharSequence> nuid = t.getNuids();
+            if (nuid == null || nuid.isEmpty() || nuid.contains(null)) {
+                t.setNuids(empty);
+            }
+
+            List<CharSequence> buids = t.getBuids();
+            if (buids == null || buids.isEmpty() || buids.contains(null)) {
+                t.setBuids(empty);
+            }
+            List<CharSequence> alt = t.getAltLables();
+            if (alt == null || alt.isEmpty() || alt.contains(null)) {
+                t.setAltLables(empty);
+            }
+            List<CharSequence> gl = t.getGlosses();
+            if (gl == null || gl.isEmpty() || gl.contains(null)) {
+                t.setGlosses(empty);
+            } else {
+                StringBuilder glosses = new StringBuilder();
+                for (String n : ngarms) {
+                    glosses.append(n).append(" ");
+                }
+                gl = new ArrayList<>();
+                stemer.setDescription(glosses.toString());
+                gl.add(stemer.execute());
+                t.setGlosses(gl);
+
+            }
+            List<CharSequence> cat = t.getCategories();
+            if (cat == null || cat.contains(null)) {
+                t.setCategories(empty);
+            }
+            ts.serialize(t);
+        }
+        Term context = new Term();
+        context.setUid("context");
+        StringBuilder glosses = new StringBuilder();
+        context.setLemma(term);
+        context.setOriginalTerm(term);
+        context.setUrl("empty");
+        for (String n : ngarms) {
+            glosses.append(n).append(" ");
+        }
+        List<CharSequence> contextGlosses = new ArrayList<>();
+        stemer.setDescription(glosses.toString());
+
+        contextGlosses.add(stemer.execute());
+        context.setGlosses(contextGlosses);
+        List<CharSequence> nuid = context.getNuids();
+        if (nuid == null || nuid.isEmpty() || nuid.contains(null)) {
+            context.setNuids(empty);
+        }
+
+        List<CharSequence> buids = context.getBuids();
+        if (buids == null || buids.isEmpty() || buids.contains(null)) {
+            context.setBuids(empty);
+        }
+        List<CharSequence> alt = context.getAltLables();
+        if (alt == null || alt.isEmpty() || alt.contains(null)) {
+            context.setAltLables(empty);
+        }
+        List<CharSequence> gl = context.getGlosses();
+        if (gl == null || gl.isEmpty() || gl.contains(null)) {
+            context.setGlosses(empty);
+        }
+        List<CharSequence> cat = context.getCategories();
+        if (cat == null || cat.contains(null)) {
+            context.setCategories(empty);
+        }
+        ts.serialize(context);
+        ts.close();
+
+        ITFIDFDriver tfidfDriver = new TFIDFDriverImpl(term);
+        tfidfDriver.executeTFIDF(new File(filePath).getParent());
+
+        Map<CharSequence, Map<String, Double>> featureVectors = CSVFileReader.tfidfResult2Map(TFIDFDriverImpl.OUTPUT_PATH4 + File.separator + "part-r-00000");
+        Map<String, Double> contextVector = featureVectors.remove("context");
+
+        Map<CharSequence, Double> scoreMap = new HashMap<>();
+        for (CharSequence key : featureVectors.keySet()) {
+            Double similarity = cosineSimilarity(contextVector, featureVectors.get(key));
+            scoreMap.put(key, similarity);
+        }
+        if (scoreMap.isEmpty()) {
+            return null;
+        }
+
+        ValueComparator bvc = new ValueComparator(scoreMap);
+        TreeMap<CharSequence, Double> sorted_map = new TreeMap(bvc);
+        sorted_map.putAll(scoreMap);
+
+        Iterator<CharSequence> it = sorted_map.keySet().iterator();
+        CharSequence winner = it.next();
+
+        Double s1 = scoreMap.get(winner);
+        if (s1 < getMinimumSimilarity()) {
+            return null;
+        }
+
+        return getTermFromDB(winner);
+
+    }
+
+    @Override
+    public Set<Term> getCandidates(String lemma) throws MalformedURLException, IOException, ParseException, InterruptedException, ExecutionException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

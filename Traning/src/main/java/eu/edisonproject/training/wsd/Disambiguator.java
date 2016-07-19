@@ -5,11 +5,13 @@
  */
 package eu.edisonproject.training.wsd;
 
-
 import eu.edisonproject.utility.commons.Term;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import org.json.simple.parser.ParseException;
 
 /**
@@ -18,9 +20,11 @@ import org.json.simple.parser.ParseException;
  */
 public interface Disambiguator {
 
-    public List<Term> disambiguateTerms(String filterredDictionary) throws IOException,ParseException;
+    public List<Term> disambiguateTerms(String filterredDictionary) throws IOException, ParseException;
 
     public void configure(Properties properties);
 
     public Term getTerm(String term) throws IOException, ParseException;
+
+    public Set<Term> getCandidates(String lemma) throws MalformedURLException, IOException, ParseException, InterruptedException, ExecutionException;
 }

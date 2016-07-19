@@ -46,7 +46,6 @@ public class WikipediaOnline extends Wikipedia {
 
     @Override
     public void configure(Properties properties) {
-
         super.configure(properties);
     }
 
@@ -56,7 +55,7 @@ public class WikipediaOnline extends Wikipedia {
         if (dis == null) {
             Set<Term> possibleTerms = null;
             try {
-                possibleTerms = getTermNodeByLemma(term);
+                possibleTerms = getCandidates(term);
             } catch (InterruptedException | ExecutionException | IOException | ParseException ex) {
                 Logger.getLogger(WikipediaOnline.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -75,22 +74,23 @@ public class WikipediaOnline extends Wikipedia {
     }
 
     @Override
-    protected Set<Term> getTermNodeByLemma(String lemma) throws MalformedURLException, IOException, ParseException, UnsupportedEncodingException, InterruptedException, ExecutionException {
+    public Set<Term> getCandidates(String lemma) throws MalformedURLException, IOException, ParseException, UnsupportedEncodingException, InterruptedException, ExecutionException {
 
-        Set<String> jsonTerms = getPossibleTermsFromDB(lemma);
+        Set<String> jsonTerms = getPossibleTermsFromDB(lemma, new URL(PAGE).getHost());
 
         if (jsonTerms != null && !jsonTerms.isEmpty()) {
             Set<Term> terms = TermFactory.create(jsonTerms);
-            Set<Term> wikiTerms = new HashSet<>();
+            return terms;
+//            Set<Term> wikiTerms = new HashSet<>();
 
-            for (Term t : terms) {
-                if (t.getUrl().toString().contains(new URL(page).getHost())) {
-                    wikiTerms.add(t);
-                }
-            }
-            if (!wikiTerms.isEmpty()) {
-                return wikiTerms;
-            }
+//            for (Term t : terms) {
+//                if (t.getUrl().toString().contains(new URL(PAGE).getHost())) {
+//                    wikiTerms.add(t);
+//                }
+//            }
+//            if (!wikiTerms.isEmpty()) {
+//                return wikiTerms;
+//            }
         }
 
         URL url;
@@ -112,12 +112,12 @@ public class WikipediaOnline extends Wikipedia {
                 titles.setLength(titles.length());
                 jsonString = null;
                 if (jsonString == null) {
-                    url = new URL(page + "?format=json&redirects&action=query&prop=extracts&exlimit=max&explaintext&exintro&titles=" + titles.toString());
-                    System.err.println(url);
+                    url = new URL(PAGE + "?format=json&redirects&action=query&prop=extracts&exlimit=max&explaintext&exintro&titles=" + titles.toString());
+                    Logger.getLogger(WikipediaOnline.class.getName()).log(Level.FINE, url.toString());
                     jsonString = IOUtils.toString(url);
                     titles = new StringBuilder();
                 }
-                terms.addAll(getCandidateTerms(jsonString, lemma));
+                terms.addAll(queryTerms(jsonString, lemma));
             }
             i++;
         }
@@ -125,7 +125,7 @@ public class WikipediaOnline extends Wikipedia {
         return terms;
     }
 
-    private Set<Term> getCandidateTerms(String jsonString, String originalTerm) throws ParseException, IOException, MalformedURLException, InterruptedException, ExecutionException {
+    private Set<Term> queryTerms(String jsonString, String originalTerm) throws ParseException, IOException, MalformedURLException, InterruptedException, ExecutionException {
         Set<Term> terms = new HashSet<>();
         Set<Term> termsToReturn = new HashSet<>();
         JSONObject jsonObj = (JSONObject) JSONValue.parseWithException(jsonString);
@@ -178,8 +178,8 @@ public class WikipediaOnline extends Wikipedia {
         Map<CharSequence, List<CharSequence>> cats = new HashMap<>();
         Set<Future<Map<CharSequence, List<CharSequence>>>> set = new HashSet<>();
         for (Term t : terms) {
-            URL url = new URL(page + "?action=query&format=json&prop=categories&pageids=" + t.getUid());
-            System.err.println(url);
+            URL url = new URL(PAGE + "?action=query&format=json&prop=categories&pageids=" + t.getUid());
+            Logger.getLogger(WikipediaOnline.class.getName()).log(Level.FINE, url.toString());
             WikiRequestor req = new WikiRequestor(url, t.getUid().toString(), 0);
             Future<Map<CharSequence, List<CharSequence>>> future = pool.submit(req);
             set.add(future);
@@ -203,11 +203,11 @@ public class WikipediaOnline extends Wikipedia {
     private Set<Term> getReferToTerms(String g, String lemma) throws IOException, ParseException, MalformedURLException, InterruptedException, ExecutionException {
         String titles = getReferToTitles(g);
         if (titles.length() > 0 && !titles.equals(prevTitles)) {
-            URL url = new URL(page + "?format=json&redirects&action=query&prop=extracts&exlimit=max&explaintext&exintro&titles=" + titles);
-            System.err.println(url);
+            URL url = new URL(PAGE + "?format=json&redirects&action=query&prop=extracts&exlimit=max&explaintext&exintro&titles=" + titles);
+            Logger.getLogger(WikipediaOnline.class.getName()).log(Level.FINE, url.toString());
             String jsonString = IOUtils.toString(url);
             prevTitles = titles;
-            return getCandidateTerms(jsonString, lemma);
+            return queryTerms(jsonString, lemma);
         }
         return null;
     }

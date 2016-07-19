@@ -50,8 +50,9 @@ public class Main {
 
             DisambiguatorImpl d = new MetaDisambiguator();
             d.configure(prop);
-            Term t = d.getTerm("python");
+            Term t = d.getTerm("spark");
             System.err.println(t.getGlosses());
+
         } catch (IOException | ParseException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }

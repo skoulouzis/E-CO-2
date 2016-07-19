@@ -29,7 +29,7 @@ import org.json.simple.parser.ParseException;
  */
 class Wikipedia extends DisambiguatorImpl {
 
-    protected final String page = "https://en.wikipedia.org/w/api.php";
+    protected final String PAGE = "https://en.wikipedia.org/w/api.php";
 
     public static final String[] EXCLUDED_CAT = new String[]{
         "articles needing",
@@ -71,7 +71,7 @@ class Wikipedia extends DisambiguatorImpl {
     public Term getTerm(String term) throws IOException, ParseException, MalformedURLException, UnsupportedEncodingException {
         Set<Term> possibleTerms = null;
         try {
-            possibleTerms = getTermNodeByLemma(term);
+            possibleTerms = getCandidates(term);
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Wikipedia.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -87,7 +87,8 @@ class Wikipedia extends DisambiguatorImpl {
         return dis;
     }
 
-    protected Set<Term> getTermNodeByLemma(String lemma) throws MalformedURLException, IOException, ParseException, UnsupportedEncodingException, InterruptedException, ExecutionException {
+    @Override
+    public Set<Term> getCandidates(String lemma) throws MalformedURLException, IOException, ParseException, UnsupportedEncodingException, InterruptedException, ExecutionException {
         return null;
     }
 
@@ -95,8 +96,8 @@ class Wikipedia extends DisambiguatorImpl {
         String URLquery = lemma.replaceAll("_", " ");
         URLquery = URLEncoder.encode(URLquery, "UTF-8");
         //sroffset=10
-        URL url = new URL(page + "?action=query&format=json&redirects&list=search&srlimit=500&srsearch=" + URLquery);
-        System.err.println(url);
+        URL url = new URL(PAGE + "?action=query&format=json&redirects&list=search&srlimit=500&srsearch=" + URLquery);
+        Logger.getLogger(Wikipedia.class.getName()).log(Level.FINE, url.toString());
         String jsonString = IOUtils.toString(url);
 
         Set<String> titles = new TreeSet<>();

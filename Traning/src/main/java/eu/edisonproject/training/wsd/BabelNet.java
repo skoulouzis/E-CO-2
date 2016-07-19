@@ -58,16 +58,16 @@ public class BabelNet extends DisambiguatorImpl {
     public static final TableName SYNSET_TBL_NAME = TableName.valueOf("synset");
     public static final TableName WORDS_TBL_NAME = TableName.valueOf("words");
     public static final TableName DISAMBIGUATE_TBL_NAME = TableName.valueOf("disambiguate");
-    private static final String page = "http://babelnet.org/synset?word=";
+    private static final String PAGE = "http://babelnet.org/synset?word=";
 
     @Override
     public Term getTerm(String term) throws IOException, ParseException, UnsupportedEncodingException, FileNotFoundException {
-        Term dis = super.getTerm(term);
+        Term dis = null;//super.getTerm(term);
         if (dis == null) {
             String delimeter = ",";
             String wordSeperator = "_";
             Set<String> ngarms = CSVFileReader.getNGramsForTerm(term, getItemsFilePath(), delimeter, wordSeperator);
-            Set<Term> possibleTerms = getTermNodeByLemma(term);
+            Set<Term> possibleTerms = getCandidates(term);
             dis = super.disambiguate(term, possibleTerms, ngarms, getMinimumSimilarity());
             if (dis == null) {
                 possibleTerms = babelNetDisambiguation("EN", term, ngarms);
@@ -83,22 +83,24 @@ public class BabelNet extends DisambiguatorImpl {
         return dis;
     }
 
-    private Set<Term> getTermNodeByLemma(String lemma) throws IOException, ParseException, UnsupportedEncodingException, FileNotFoundException {
+    @Override
+    public Set<Term> getCandidates(String lemma) throws IOException, ParseException, UnsupportedEncodingException, FileNotFoundException {
         try {
             String language = "EN";
-            Set<String> jsonTerms = getPossibleTermsFromDB(lemma);
+            Set<String> jsonTerms = getPossibleTermsFromDB(lemma,new URL(PAGE).getHost());
 
             if (jsonTerms != null && !jsonTerms.isEmpty()) {
-                 Set<Term> babelTerms = new HashSet<>();
+//                Set<Term> babelTerms = new HashSet<>();
                 Set<Term> terms = TermFactory.create(jsonTerms);
-                for (Term t : terms) {
-                    if (t.getUrl().toString().contains(new URL(page).getHost())) {
-                        babelTerms.add(t);
-                    }
-                }
-                if(!babelTerms.isEmpty()){
-                    return babelTerms;
-                }
+                return terms;
+//                for (Term t : terms) {
+//                    if (t.getUrl().toString().contains(new URL(PAGE).getHost())) {
+//                        babelTerms.add(t);
+//                    }
+//                }
+//                if (!babelTerms.isEmpty()) {
+//                    return babelTerms;
+//                }
             }
 
             List<String> ids = getcandidateWordIDs(language, lemma);
@@ -110,7 +112,7 @@ public class BabelNet extends DisambiguatorImpl {
                     Term node = TermFactory.create(synet, language, lemma, null, url);
                     if (node != null) {
                         try {
-                            url = page + URLEncoder.encode(node.getUid().toString(), "UTF-8");
+                            url = PAGE + URLEncoder.encode(node.getUid().toString(), "UTF-8");
                             node.setUrl(url);
                             List<Term> h = getHypernyms(language, node);
                             if (h != null && !h.isEmpty()) {
@@ -155,7 +157,7 @@ public class BabelNet extends DisambiguatorImpl {
 
         if (json == null) {
             URL url = new URL("http://babelnet.io/v2/getSynset?id=" + id + "&filterLangs=" + lan + "&langs=" + lan + "&key=" + this.key);
-            System.err.println(url);
+            Logger.getLogger(BabelNet.class.getName()).log(Level.FINE, url.toString());
             json = IOUtils.toString(url);
             handleKeyLimitException(json);
 
@@ -190,7 +192,7 @@ public class BabelNet extends DisambiguatorImpl {
         if (ids == null || ids.isEmpty()) {
             ids = new ArrayList<>();
             URL url = new URL("http://babelnet.io/v2/getSynsetIds?word=" + word + "&langs=" + language + "&key=" + this.key);
-            System.err.println(url);
+            Logger.getLogger(BabelNet.class.getName()).log(Level.FINE, url.toString());
             String genreJson = IOUtils.toString(url);
             int count = 0;
             try {
@@ -291,7 +293,7 @@ public class BabelNet extends DisambiguatorImpl {
         String genreJson = getFromEdgesDB(id);
         if (genreJson == null) {
             URL url = new URL("http://babelnet.io/v2/getEdges?id=" + id + "&key=" + this.key);
-            System.err.println(url);
+            Logger.getLogger(BabelNet.class.getName()).log(Level.FINE, url.toString());
             genreJson = IOUtils.toString(url);
             handleKeyLimitException(genreJson);
             if (genreJson != null) {
@@ -462,7 +464,7 @@ public class BabelNet extends DisambiguatorImpl {
         }
         if (genreJson == null) {
             URL url = new URL("http://babelfy.io/v1/disambiguate?text=" + query + "&lang=" + language + "&key=" + key);
-            System.err.println(url);
+            Logger.getLogger(BabelNet.class.getName()).log(Level.FINE, url.toString());
             genreJson = IOUtils.toString(url);
             handleKeyLimitException(genreJson);
             if (!genreJson.isEmpty() || genreJson.length() < 1) {
