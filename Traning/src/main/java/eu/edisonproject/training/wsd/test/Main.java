@@ -20,6 +20,7 @@ import eu.edisonproject.training.wsd.MetaDisambiguator;
 import eu.edisonproject.utility.commons.Term;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,11 +48,14 @@ public class Main {
             prop.setProperty("itemset.file", itemsFilePath);
             prop.setProperty("disambiguators", "eu.edisonproject.training.wsd.BabelNet,eu.edisonproject.training.wsd.WikipediaOnline,eu.edisonproject.training.wsd.Wikidata");
             prop.setProperty("execute.sequentially", "true");
+            prop.setProperty("num.of.terms", "5");
 
             DisambiguatorImpl d = new MetaDisambiguator();
             d.configure(prop);
-            Term t = d.getTerm("spark");
-            System.err.println(t.getGlosses());
+            String dictinaryPath = ".." + File.separator + "etc" + File.separator + "databases.csv";
+            List<Term> terms = d.disambiguateTerms(dictinaryPath);
+            
+            
 
         } catch (IOException | ParseException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);

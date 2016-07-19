@@ -310,13 +310,15 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
 //                        String sub = t.getLemma().toString().toLowerCase().substring(index1, index2);
 //                        subTokens.addAll(tokenize(sub, true));
 //                    }
-                    double factor = 0.0008;
+                    double factor = 0.1;
                     if (stemTitle.length() > stemLema.length()) {
                         if (stemTitle.contains(stemLema)) {
-                            factor = 0.0004;
+                            factor = 0.05;
                         }
-                    } else if (stemLema.contains(stemTitle)) {
-                        factor = 0.0004;
+                    } else if (stemLema.length() > stemTitle.length()) {
+                        if (stemLema.contains(stemTitle)) {
+                            factor = 0.05;
+                        }
                     }
                     int dist = edu.stanford.nlp.util.StringUtils.editDistance(stemTitle, stemLema);
                     similarity = similarity - (dist * factor);
