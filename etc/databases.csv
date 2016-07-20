@@ -110,6 +110,7 @@ mongodb_postgresql,1.0
 mongodb,1.0
 mongo,1.0
 microsoft_sql,1.0
+microsoft_sql_server,1.0
 microsoft_azure_sql_database,1.0
 microsoft_azure_sql,1.0
 microsoft_azure,1.0

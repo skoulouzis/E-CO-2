@@ -15,6 +15,8 @@
  */
 package eu.edisonproject.utility.file;
 
+import eu.edisonproject.utility.text.processing.Cleaner;
+import eu.edisonproject.utility.text.processing.Stemming;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -32,13 +34,19 @@ import java.util.TreeMap;
 public class CSVFileReader {
 
     private static Map<String, Set<String>> nGramsMap;
+    private static Cleaner STEMER = new Stemming();
 
     public static Map<String, String> csvFileToMap(String csvFilePath, String delimeter) throws IOException {
         Map<String, String> map = new HashMap<>();
         try (BufferedReader br = new BufferedReader(new FileReader(new File(csvFilePath)))) {
             for (String text; (text = br.readLine()) != null;) {
-                String[] parts = text.split(delimeter);
-                map.put(parts[0], parts[1]);
+                if (text.contains(delimeter)) {
+                    String[] parts = text.split(delimeter);
+                    map.put(parts[0], parts[1]);
+                } else {
+                    map.put(text, "0");
+                }
+
             }
         }
         return map;
@@ -80,36 +88,40 @@ public class CSVFileReader {
                 } else {
                     keyword = line;
                 }
-                boolean found = false;
-                if (keyword.contains(wordSeperator) && keyword.contains(term) && !keyword.equals(term)) {
+//                boolean found = false;
+                STEMER.setDescription(keyword.replaceAll("_", " "));
+                String stemKeyword = STEMER.execute();
 
-                    String[] parts = keyword.split(wordSeperator);
-                    StringBuilder sb = new StringBuilder();
-                    int i = 0;
+                STEMER.setDescription(term.replaceAll("_", " "));
+                String stemTerm = STEMER.execute().trim();
+
+                if (keyword.contains(wordSeperator) && stemKeyword.contains(stemTerm)) {
+//                    String[] parts = stemKeyword.split(" ");
+//                    StringBuilder sb = new StringBuilder();
+//                    int i = 0;
+//                    for (String p : parts) {
+//                        if (p.equals(stemTerm)) {
+//                            found = true;
+//                            break;
+//                        }
+//                        if (i > 0 && i < parts.length - 1) {
+//                            sb.append(" ");
+//                        }
+//                        sb.append(p);
+//                        if (sb.toString().contains(stemTerm)) {
+//                            found = true;
+//                            break;
+//                        }
+//                        i++;
+//                    }
+//                    if (found) {
+                    String[] parts = keyword.replaceAll(term, "").split(wordSeperator);
                     for (String p : parts) {
-                        if (p.equals(term)) {
-                            found = true;
-                            break;
-                        }
-                        if (i > 0 && i < parts.length - 1) {
-                            sb.append("_");
-                        }
-                        sb.append(p);
-
-                        if (sb.toString().equals(term)) {
-                            found = true;
-                            break;
-                        }
-                        i++;
-                    }
-                    if (found) {
-                        parts = keyword.replaceAll(term, "").split(wordSeperator);
-                        for (String p : parts) {
-                            if (p.length() > 0) {
-                                nGrams.add(p);
-                            }
+                        if (p.length() > 0) {
+                            nGrams.add(p);
                         }
                     }
+//                    }
                 }
             }
         }

@@ -268,7 +268,7 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
 
     private Set<Term> tf_idf_Disambiguation(Set<Term> possibleTerms, Set<String> nGrams, String lemma, double confidence, boolean matchTitle) throws IOException, ParseException {
 
-        if (nGrams.size() < 10) {
+        if (nGrams.size() < 7) {
             LOGGER.log(Level.WARNING, "Found only {0} n-grams for {1}. Not enough for disambiguation.", new Object[]{nGrams.size(), lemma});
             return null;
         }
@@ -338,20 +338,19 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
 //                        String sub = t.getLemma().toString().toLowerCase().substring(index1, index2);
 //                        subTokens.addAll(tokenize(sub, true));
 //                    }
-                    double factor = 0.1;
+                    double factor = 0.2;
                     if (stemTitle.length() > stemLema.length()) {
                         if (stemTitle.contains(stemLema)) {
-                            factor = 0.05;
+                            factor = 0.08;
                         }
                     } else if (stemLema.length() > stemTitle.length()) {
                         if (stemLema.contains(stemTitle)) {
-                            factor = 0.05;
+                            factor = 0.08;
                         }
                     }
                     int dist = edu.stanford.nlp.util.StringUtils.editDistance(stemTitle, stemLema);
                     similarity = similarity - (dist * factor);
                     t.setConfidence(similarity);
-
                 }
             }
             scoreMap.put(key, similarity);
@@ -679,7 +678,7 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
                 t.setGlosses(empty);
             } else {
                 StringBuilder glosses = new StringBuilder();
-                for (String n : ngarms) {
+                for (CharSequence n : gl) {
                     glosses.append(n).append(" ");
                 }
                 gl = new ArrayList<>();

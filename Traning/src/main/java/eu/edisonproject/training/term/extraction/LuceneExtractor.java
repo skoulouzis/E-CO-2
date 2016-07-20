@@ -5,6 +5,7 @@ import eu.edisonproject.utility.file.ConfigHelper;
 import eu.edisonproject.utility.text.processing.Cleaner;
 import eu.edisonproject.utility.text.processing.NGramGenerator;
 import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
+import eu.edisonproject.utility.text.processing.Stemming;
 import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,10 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -35,6 +33,7 @@ public class LuceneExtractor implements TermExtractor {
     Cleaner ng;
     private Cleaner tokenizer;
     private Cleaner lematizer;
+    private Stemming stemer;
 
     @Override
     public void configure(Properties prop) {
@@ -60,56 +59,41 @@ public class LuceneExtractor implements TermExtractor {
     @Override
     public Map<String, Double> termXtraction(String inDir) throws IOException, FileNotFoundException, MalformedURLException {
         File dir = new File(inDir);
-        Map<String, Double> termDictionaray = new HashMap();
-        List<String> terms = new ArrayList<>();
-        int count = 0;
-
-        CharArraySet stopwordsCharArray = new CharArraySet(ConfigHelper.loadStopWords(stopWordsPath), true);
-        tokenizer = new StopWord(stopwordsCharArray);
-        lematizer = new StanfordLemmatizer();
-        ng = new NGramGenerator(stopwordsCharArray, maxNgrams);
 
         try {
+            int count = 0;
+            CharArraySet stopwordsCharArray = new CharArraySet(ConfigHelper.loadStopWords(stopWordsPath), true);
+            tokenizer = new StopWord(stopwordsCharArray);
+            lematizer = new StanfordLemmatizer();
+            stemer = new Stemming();
+
+            ng = new NGramGenerator(stopwordsCharArray, maxNgrams);
+
+            Map<String, String> itemsMap = CSVFileReader.csvFileToMap(itemsFilePath, ",");
             if (dir.isDirectory()) {
                 for (File f : dir.listFiles()) {
                     count++;
                     Logger.getLogger(LuceneExtractor.class.getName()).log(Level.INFO, "{0}: {1} of {2}", new Object[]{f.getName(), count, dir.list().length});
                     if (FilenameUtils.getExtension(f.getName()).endsWith("txt")) {
-                        terms.addAll(extractFromFile(f));
+                        return extractFromFile(f, itemsMap);
                     }
                 }
             } else if (dir.isFile()) {
                 if (FilenameUtils.getExtension(dir.getName()).endsWith("txt")) {
-                    terms.addAll(extractFromFile(dir));
+                    return extractFromFile(dir, itemsMap);
                 }
 
             }
 
-            Map<String, String> itemsMap = CSVFileReader.csvFileToMap(itemsFilePath, "/");
-            for (String term : terms) {
-                String t = term.replaceAll("_", " ");
-                if (itemsMap.containsKey(t)) {
-                    Double tf;
-                    if (termDictionaray.containsKey(t)) {
-                        tf = termDictionaray.get(t);
-                        tf++;
-                    } else {
-                        tf = 1.0;
-                    }
-                    termDictionaray.put(t, tf);
-                }
-            }
             //Indicate null to garbage collector
-            itemsMap = null;
-            terms = null;
             System.gc();
         } catch (Exception ex) {
             Logger.getLogger(LuceneExtractor.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return termDictionaray;
+        return null;
     }
 
-    private HashSet<String> extractFromFile(File f) throws IOException, MalformedURLException, Exception {
+    private Map<String, Double> extractFromFile(File f, Map<String, String> itemsMap) throws IOException, MalformedURLException, Exception {
 
         StringBuilder fileContents = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new FileReader(f))) {
@@ -131,16 +115,32 @@ public class LuceneExtractor implements TermExtractor {
         ng.setDescription(lematizedText);
         String ngText = ng.execute();
         ngText += lematizedText;
-        HashSet<String> set = new HashSet<>();
+        Map<String, Double> termDictionaray = new HashMap();
+        ngText = ngText.trim();
 
         for (String term : ngText.split(" ")) {
-            set.add(term);
+//            stemer.setDescription(term);
+//            String stemTerm = stemer.execute();
+//            if (itemsMap.containsKey(term)) {
+
+            term = term.toLowerCase().trim().replaceAll(" ", "_");
+            if (term.endsWith("_")) {
+                term = term.substring(0, term.lastIndexOf("_"));
+            }
+
+            Double tf;
+            if (termDictionaray.containsKey(term)) {
+                tf = termDictionaray.get(term);
+                tf++;
+            } else {
+                tf = 1.0;
+            }
+            termDictionaray.put(term, tf);
+//            }
         }
 
-        return set;
+        return termDictionaray;
 
     }
-
-   
 
 }

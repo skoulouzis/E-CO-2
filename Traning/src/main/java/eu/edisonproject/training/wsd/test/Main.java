@@ -18,13 +18,17 @@ package eu.edisonproject.training.wsd.test;
 import eu.edisonproject.training.wsd.DisambiguatorImpl;
 import eu.edisonproject.training.wsd.MetaDisambiguator;
 import eu.edisonproject.utility.commons.Term;
+import eu.edisonproject.utility.commons.TermAvroSerializer;
 import eu.edisonproject.utility.file.ConfigHelper;
+import eu.edisonproject.utility.text.processing.Stemming;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.io.FilenameUtils;
 import org.json.simple.parser.ParseException;
 
 /**
@@ -57,8 +61,56 @@ public class Main {
             String dictinaryPath = ".." + File.separator + "etc" + File.separator + "databases.csv";
             List<Term> terms = d.disambiguateTerms(dictinaryPath);
 
+            String context = FilenameUtils.removeExtension(dictinaryPath.substring(dictinaryPath.lastIndexOf(File.separator) + 1));
+            saveTerms2Avro(terms, context);
+
         } catch (IOException | ParseException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    private static void saveTerms2Avro(List<Term> terms, String context) {
+
+        String filePath = ".." + File.separator + "etc" + File.separator + "Avro Document" + File.separator + "Databases" + File.separator + context + ".avro";
+        TermAvroSerializer ts = new TermAvroSerializer(filePath, Term.getClassSchema());
+        List<CharSequence> empty = new ArrayList<>();
+        empty.add("");
+        Stemming stemer = new Stemming();
+        for (Term t : terms) {
+            List<CharSequence> nuid = t.getNuids();
+            if (nuid == null || nuid.isEmpty() || nuid.contains(null)) {
+                t.setNuids(empty);
+            }
+
+            List<CharSequence> buids = t.getBuids();
+            if (buids == null || buids.isEmpty() || buids.contains(null)) {
+                t.setBuids(empty);
+            }
+            List<CharSequence> alt = t.getAltLables();
+            if (alt == null || alt.isEmpty() || alt.contains(null)) {
+                t.setAltLables(empty);
+            }
+            List<CharSequence> gl = t.getGlosses();
+            if (gl == null || gl.isEmpty() || gl.contains(null)) {
+                t.setGlosses(empty);
+            } else {
+                StringBuilder glosses = new StringBuilder();
+                for (CharSequence n : gl) {
+                    glosses.append(n).append(" ");
+                }
+                gl = new ArrayList<>();
+                stemer.setDescription(glosses.toString());
+                gl.add(stemer.execute());
+                t.setGlosses(gl);
+
+            }
+            List<CharSequence> cat = t.getCategories();
+            if (cat == null || cat.contains(null)) {
+                t.setCategories(empty);
+            }
+            ts.serialize(t);
+        }
+        ts.close();
+
     }
 }
