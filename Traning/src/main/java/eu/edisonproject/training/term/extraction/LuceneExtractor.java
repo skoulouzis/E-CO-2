@@ -53,7 +53,7 @@ public class LuceneExtractor implements TermExtractor {
 
         itemsFilePath = System.getProperty("itemset.file");
         if (itemsFilePath == null) {
-            itemsFilePath = prop.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "itemset.csv");
+            itemsFilePath = prop.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv");
         }
     }
 

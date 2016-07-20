@@ -63,27 +63,13 @@ public class Main {
 
     public static void main(String args[]) {
         try {
-            testDisambiguators();
 //            hBaseExample();
 //            testAvroSerializer();
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    private static void testDisambiguators() throws IOException, ParseException {
-        Properties prop = new Properties();
-        prop.setProperty("bablenet.key", "07e1f9b6-4aa3-435d-8046-ee016333ade5");
-        prop.setProperty("minimum.similarity", "0.3");
-        prop.setProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
-        prop.setProperty("max.ngrams", "4");
-        String itemsFilePath = ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv";
-        prop.setProperty("itemset.file", itemsFilePath);
-        DisambiguatorImpl d = new BabelNet();
-        d.configure(prop);
-        Term t = d.getTerm("python");
-        System.err.println(t.getGlosses());
-    }
+    
 
     private static void hBaseExample() throws ZooKeeperConnectionException, IOException, ParseException {
         Configuration config = HBaseConfiguration.create();

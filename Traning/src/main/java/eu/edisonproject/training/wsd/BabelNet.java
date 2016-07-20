@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
@@ -59,6 +60,7 @@ public class BabelNet extends DisambiguatorImpl {
     public static final TableName WORDS_TBL_NAME = TableName.valueOf("words");
     public static final TableName DISAMBIGUATE_TBL_NAME = TableName.valueOf("disambiguate");
     private static final String PAGE = "http://babelnet.org/synset?word=";
+    private static final Logger LOGGER = Logger.getLogger(BabelNet.class.getName());
 
     @Override
     public Term getTerm(String term) throws IOException, ParseException, UnsupportedEncodingException, FileNotFoundException {
@@ -87,7 +89,7 @@ public class BabelNet extends DisambiguatorImpl {
     public Set<Term> getCandidates(String lemma) throws IOException, ParseException, UnsupportedEncodingException, FileNotFoundException {
         try {
             String language = "EN";
-            Set<String> jsonTerms = getPossibleTermsFromDB(lemma,new URL(PAGE).getHost());
+            Set<String> jsonTerms = getPossibleTermsFromDB(lemma, new URL(PAGE).getHost());
 
             if (jsonTerms != null && !jsonTerms.isEmpty()) {
 //                Set<Term> babelTerms = new HashSet<>();
@@ -126,7 +128,7 @@ public class BabelNet extends DisambiguatorImpl {
                                 node.setBuids(broaderUIDS);
                             }
                         } catch (Exception ex) {
-                            Logger.getLogger(BabelNet.class.getName()).log(Level.WARNING, null, ex);
+                            LOGGER.log(Level.WARNING, null, ex);
                         }
                         List<CharSequence> nuid = node.getNuids();
                         if (nuid == null || nuid.isEmpty()) {
@@ -140,7 +142,7 @@ public class BabelNet extends DisambiguatorImpl {
             addPossibleTermsToDB(lemma, nodes);
             return nodes;
         } catch (InterruptedException ex) {
-            Logger.getLogger(BabelNet.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
         return null;
     }
@@ -157,7 +159,7 @@ public class BabelNet extends DisambiguatorImpl {
 
         if (json == null) {
             URL url = new URL("http://babelnet.io/v2/getSynset?id=" + id + "&filterLangs=" + lan + "&langs=" + lan + "&key=" + this.key);
-            Logger.getLogger(BabelNet.class.getName()).log(Level.FINE, url.toString());
+            LOGGER.log(Level.FINE, url.toString());
             json = IOUtils.toString(url);
             handleKeyLimitException(json);
 
@@ -177,6 +179,14 @@ public class BabelNet extends DisambiguatorImpl {
         keysStr = properties.getProperty("bablenet.key");
         keys = keysStr.split(",");
         key = keys[keyIndex];
+
+        Level level = Level.parse(properties.getProperty("log.level", "INFO"));
+        Handler[] handlers
+                = Logger.getLogger("").getHandlers();
+        for (int index = 0; index < handlers.length; index++) {
+            handlers[index].setLevel(level);
+        }
+        LOGGER.setLevel(level);
     }
 
     private List<String> getcandidateWordIDs(String language, String word) throws IOException, ParseException, FileNotFoundException, InterruptedException {
@@ -192,7 +202,7 @@ public class BabelNet extends DisambiguatorImpl {
         if (ids == null || ids.isEmpty()) {
             ids = new ArrayList<>();
             URL url = new URL("http://babelnet.io/v2/getSynsetIds?word=" + word + "&langs=" + language + "&key=" + this.key);
-            Logger.getLogger(BabelNet.class.getName()).log(Level.FINE, url.toString());
+            LOGGER.log(Level.FINE, url.toString());
             String genreJson = IOUtils.toString(url);
             int count = 0;
             try {
@@ -246,13 +256,13 @@ public class BabelNet extends DisambiguatorImpl {
                 keyIndex = 0;
             }
             key = keys[keyIndex];
-            Logger.getLogger(BabelNet.class.getName()).log(Level.FINE, "Switch to: {0}", keyIndex);
+            LOGGER.log(Level.FINE, "Switch to: {0}", keyIndex);
             throw new IOException(genreJson);
         }
     }
 
 //    private void saveCache() throws FileNotFoundException, IOException, InterruptedException {
-//        Logger.getLogger(BabelNet.class.getName()).log(Level.FINE, "Saving cache");
+//       LOGGER.log(Level.FINE, "Saving cache");
 //        if (db != null) {
 //            if (!db.isClosed()) {
 //                commitDB();
@@ -293,7 +303,7 @@ public class BabelNet extends DisambiguatorImpl {
         String genreJson = getFromEdgesDB(id);
         if (genreJson == null) {
             URL url = new URL("http://babelnet.io/v2/getEdges?id=" + id + "&key=" + this.key);
-            Logger.getLogger(BabelNet.class.getName()).log(Level.FINE, url.toString());
+            LOGGER.log(Level.FINE, url.toString());
             genreJson = IOUtils.toString(url);
             handleKeyLimitException(genreJson);
             if (genreJson != null) {
@@ -405,10 +415,10 @@ public class BabelNet extends DisambiguatorImpl {
                     try {
                         termPair = babelNetDisambiguation(language, lemma, clearNg);
                     } catch (Exception ex1) {
-//                        Logger.getLogger(BabelNet.class.getName()).log(Level.WARNING, ex1, null);
+//                       LOGGER.log(Level.WARNING, ex1, null);
                     }
                 } else {
-                    Logger.getLogger(BabelNet.class.getName()).log(Level.WARNING, null, ex);
+                    LOGGER.log(Level.WARNING, null, ex);
                 }
             }
             if (termPair != null) {
@@ -464,7 +474,7 @@ public class BabelNet extends DisambiguatorImpl {
         }
         if (genreJson == null) {
             URL url = new URL("http://babelfy.io/v1/disambiguate?text=" + query + "&lang=" + language + "&key=" + key);
-            Logger.getLogger(BabelNet.class.getName()).log(Level.FINE, url.toString());
+            LOGGER.log(Level.FINE, url.toString());
             genreJson = IOUtils.toString(url);
             handleKeyLimitException(genreJson);
             if (!genreJson.isEmpty() || genreJson.length() < 1) {

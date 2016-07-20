@@ -74,16 +74,39 @@ public class CSVFileReader {
         try (BufferedReader br = new BufferedReader(new FileReader(itemsFilePath))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String keyword = line.split(delimeter)[0];
-                if (keyword.contains(wordSeperator) && keyword.contains(term)) {
-                    String[] parts = keyword.split(term);
+                String keyword;
+                if (line.contains(delimeter)) {
+                    keyword = line.split(delimeter)[0];
+                } else {
+                    keyword = line;
+                }
+                boolean found = false;
+                if (keyword.contains(wordSeperator) && keyword.contains(term) && !keyword.equals(term)) {
+
+                    String[] parts = keyword.split(wordSeperator);
+                    StringBuilder sb = new StringBuilder();
+                    int i = 0;
                     for (String p : parts) {
-                        if (p.length() >= 1) {
-                            String[] defs = p.split(wordSeperator);
-                            for (String d : defs) {
-                                if (d.length() >= 1) {
-                                    nGrams.add(d);
-                                }
+                        if (p.equals(term)) {
+                            found = true;
+                            break;
+                        }
+                        if (i > 0 && i < parts.length - 1) {
+                            sb.append("_");
+                        }
+                        sb.append(p);
+
+                        if (sb.toString().equals(term)) {
+                            found = true;
+                            break;
+                        }
+                        i++;
+                    }
+                    if (found) {
+                        parts = keyword.replaceAll(term, "").split(wordSeperator);
+                        for (String p : parts) {
+                            if (p.length() > 0) {
+                                nGrams.add(p);
                             }
                         }
                     }

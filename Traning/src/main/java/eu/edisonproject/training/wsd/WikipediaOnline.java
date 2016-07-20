@@ -27,6 +27,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
@@ -43,10 +44,19 @@ public class WikipediaOnline extends Wikipedia {
 
     public static final TableName WIKIPEDIA_TERMS_TBL_NAME = TableName.valueOf("wikipedia_terms");
     private String prevTitles = "";
+    private static final Logger LOGGER = Logger.getLogger(WikipediaOnline.class.getName());
 
     @Override
     public void configure(Properties properties) {
         super.configure(properties);
+
+        Level level = Level.parse(properties.getProperty("log.level", "INFO"));
+        Handler[] handlers
+                = Logger.getLogger("").getHandlers();
+        for (int index = 0; index < handlers.length; index++) {
+            handlers[index].setLevel(level);
+        }
+        LOGGER.setLevel(level);
     }
 
     @Override
@@ -57,16 +67,16 @@ public class WikipediaOnline extends Wikipedia {
             try {
                 possibleTerms = getCandidates(term);
             } catch (InterruptedException | ExecutionException | IOException | ParseException ex) {
-                Logger.getLogger(WikipediaOnline.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
             String delimeter = ",";
             String wordSeperator = "_";
             Set<String> ngarms = CSVFileReader.getNGramsForTerm(term, getItemsFilePath(), delimeter, wordSeperator);
             dis = super.disambiguate(term, possibleTerms, ngarms, getMinimumSimilarity());
             if (dis == null) {
-                Logger.getLogger(WikipediaOnline.class.getName()).log(Level.INFO, "Couldn''''t figure out what ''{0}'' means", term);
+                LOGGER.log(Level.INFO, "Couldn''''t figure out what ''{0}'' means", term);
             } else {
-                Logger.getLogger(WikipediaOnline.class.getName()).log(Level.INFO, "Term: {0}. Confidence: {1} URL: {2}", new Object[]{dis, dis.getConfidence(), dis.getUrl()});
+                LOGGER.log(Level.INFO, "Term: {0}. Confidence: {1} URL: {2}", new Object[]{dis, dis.getConfidence(), dis.getUrl()});
             }
             return dis;
         }
@@ -113,7 +123,7 @@ public class WikipediaOnline extends Wikipedia {
                 jsonString = null;
                 if (jsonString == null) {
                     url = new URL(PAGE + "?format=json&redirects&action=query&prop=extracts&exlimit=max&explaintext&exintro&titles=" + titles.toString());
-                    Logger.getLogger(WikipediaOnline.class.getName()).log(Level.FINE, url.toString());
+                    LOGGER.log(Level.FINE, url.toString());
                     jsonString = IOUtils.toString(url);
                     titles = new StringBuilder();
                 }
@@ -179,7 +189,7 @@ public class WikipediaOnline extends Wikipedia {
         Set<Future<Map<CharSequence, List<CharSequence>>>> set = new HashSet<>();
         for (Term t : terms) {
             URL url = new URL(PAGE + "?action=query&format=json&prop=categories&pageids=" + t.getUid());
-            Logger.getLogger(WikipediaOnline.class.getName()).log(Level.FINE, url.toString());
+            LOGGER.log(Level.FINE, url.toString());
             WikiRequestor req = new WikiRequestor(url, t.getUid().toString(), 0);
             Future<Map<CharSequence, List<CharSequence>>> future = pool.submit(req);
             set.add(future);
@@ -188,7 +198,7 @@ public class WikipediaOnline extends Wikipedia {
 
         for (Future<Map<CharSequence, List<CharSequence>>> future : set) {
             while (!future.isDone()) {
-//                Logger.getLogger(WikipediaOnline.class.getName()).log(Level.INFO, "Task is not completed yet....");
+//                LOGGER.log(Level.INFO, "Task is not completed yet....");
                 Thread.currentThread().sleep(10);
             }
             Map<CharSequence, List<CharSequence>> c = future.get();
@@ -204,7 +214,7 @@ public class WikipediaOnline extends Wikipedia {
         String titles = getReferToTitles(g);
         if (titles.length() > 0 && !titles.equals(prevTitles)) {
             URL url = new URL(PAGE + "?format=json&redirects&action=query&prop=extracts&exlimit=max&explaintext&exintro&titles=" + titles);
-            Logger.getLogger(WikipediaOnline.class.getName()).log(Level.FINE, url.toString());
+            LOGGER.log(Level.FINE, url.toString());
             String jsonString = IOUtils.toString(url);
             prevTitles = titles;
             return queryTerms(jsonString, lemma);

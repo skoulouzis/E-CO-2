@@ -15,8 +15,15 @@
  */
 package eu.edisonproject.utility.file;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.lucene.analysis.util.CharArraySet;
 
 /**
@@ -31,5 +38,28 @@ public class ConfigHelper {
         final List<String> stopWords = Arrays.asList(stopWord);
 
         return new CharArraySet(stopWords, false);
+    }
+
+    public static Properties getProperties(String propertiesPath) throws IOException {
+        Logger.getLogger(ConfigHelper.class.getName()).log(Level.INFO, "Reading properties from: {0}", propertiesPath);
+        InputStream in = null;
+        try {
+            if (new File(propertiesPath).exists() && new File(propertiesPath).isFile()) {
+                in = new FileInputStream(propertiesPath);
+            } else {
+                ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+                in = classLoader.getResourceAsStream(propertiesPath);
+            }
+            Properties properties = new Properties();
+            properties.load(in);
+            return properties;
+        } catch (IOException ex) {
+            Logger.getLogger(ConfigHelper.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+        }
+        return null;
     }
 }

@@ -18,9 +18,11 @@ import eu.edisonproject.utility.text.processing.Stemming;
 import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +36,9 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.json.simple.parser.ParseException;
@@ -47,18 +51,15 @@ import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
+import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Table;
-import org.apache.hadoop.hbase.filter.BinaryComparator;
-import org.apache.hadoop.hbase.filter.CompareFilter;
 import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
-import org.apache.hadoop.hbase.filter.FamilyFilter;
 import org.apache.hadoop.hbase.filter.Filter;
 import org.apache.hadoop.hbase.filter.FilterList;
-import org.apache.hadoop.hbase.filter.PrefixFilter;
 import org.apache.hadoop.hbase.filter.SubstringComparator;
 import org.apache.hadoop.hbase.filter.ValueFilter;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -81,6 +82,7 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
     protected StopWord tokenizer;
     protected StanfordLemmatizer lematizer;
     protected Stemming stemer;
+    private static final Logger LOGGER = Logger.getLogger(DisambiguatorImpl.class.getName());
 
     /**
      *
@@ -92,7 +94,7 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
      */
     @Override
     public List<Term> disambiguateTerms(String filterredDictionary) throws IOException, FileNotFoundException, ParseException {
-//        Logger.getLogger(DisambiguatorImpl.class.getName()).log(Level.INFO, "filterredDictionary: " + filterredDictionary);
+        LOGGER.log(Level.FINE, "filterredDictionary: {0}", filterredDictionary);
         List<Term> terms = new ArrayList<>();
 
         File dictionary = new File(filterredDictionary);
@@ -100,9 +102,9 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         int lineCount = 1;
         try (BufferedReader br = new BufferedReader(new FileReader(dictionary))) {
             for (String line; (line = br.readLine()) != null;) {
-//                Logger.getLogger(DisambiguatorImpl.class.getName()).log(Level.INFO, "line: " + line);
+//                LOGGER.log(Level.FINE, "line: {0}", line);
                 if (lineCount >= getLineOffset()) {
-//                    Logger.getLogger(DisambiguatorImpl.class.getName()).log(Level.INFO, "Processing: " + line);
+
                     String[] parts = line.split(",");
                     String term = parts[0];
 //                Integer score = Integer.valueOf(parts[1]);
@@ -111,6 +113,7 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
                         if (count > getLimit()) {
                             break;
                         }
+                        LOGGER.log(Level.FINE, "Processing: {0}  at line: {1}", new Object[]{line, lineCount});
                         Term tt = getTerm(term);
                         if (tt != null) {
                             terms.add(tt);
@@ -120,7 +123,7 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
                 lineCount++;
             }
         } catch (Exception ex) {
-            Logger.getLogger(DisambiguatorImpl.class.getName()).log(Level.WARNING, "Failed while processing line " + lineCount, ex);
+            LOGGER.log(Level.WARNING, "Failed while processing line: " + lineCount + " from: " + filterredDictionary, ex);
         } finally {
             return terms;
         }
@@ -157,20 +160,38 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
 
         itemsFilePath = System.getProperty("itemset.file");
         if (itemsFilePath == null) {
-            itemsFilePath = properties.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "itemset.csv");
+            itemsFilePath = properties.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv");
         }
 
         Configuration config = HBaseConfiguration.create();
         try {
             conn = ConnectionFactory.createConnection(config);
         } catch (IOException ex) {
-            Logger.getLogger(DisambiguatorImpl.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
 
         CharArraySet stopwordsCharArray = new CharArraySet(ConfigHelper.loadStopWords(stopWordsPath), true);
         tokenizer = new StopWord(stopwordsCharArray);
         lematizer = new StanfordLemmatizer();
         stemer = new Stemming();
+
+//        try {
+//            String logPropFile = properties.getProperty("logging.properties.file", ".." + File.separator + "etc" + File.separator + "log.properties");
+//            FileInputStream fis = new FileInputStream(logPropFile);
+//            LogManager.getLogManager().readConfiguration(fis);
+//        } catch (FileNotFoundException ex) {
+//            Logger.getLogger(DisambiguatorImpl.class.getName()).log(Level.WARNING, null, ex);
+//        } catch (IOException | SecurityException ex) {
+//            Logger.getLogger(DisambiguatorImpl.class.getName()).log(Level.WARNING, null, ex);
+//        }
+        Level level = Level.parse(properties.getProperty("log.level", "INFO"));
+
+        Handler[] handlers
+                = Logger.getLogger("").getHandlers();
+        for (int index = 0; index < handlers.length; index++) {
+            handlers[index].setLevel(level);
+        }
+        LOGGER.setLevel(level);
     }
 
     @Override
@@ -246,6 +267,12 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
     }
 
     private Set<Term> tf_idf_Disambiguation(Set<Term> possibleTerms, Set<String> nGrams, String lemma, double confidence, boolean matchTitle) throws IOException, ParseException {
+
+        if (nGrams.size() < 10) {
+            LOGGER.log(Level.WARNING, "Found only {0} n-grams for {1}. Not enough for disambiguation.", new Object[]{nGrams.size(), lemma});
+            return null;
+        }
+
         List<List<String>> allDocs = new ArrayList<>();
         Map<CharSequence, List<String>> docs = new HashMap<>();
 
@@ -275,7 +302,8 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         String cleanText = tokenizer.execute();
         lematizer.setDescription(cleanText);
         String lematizedText = lematizer.execute();
-        contextDoc.addAll(Arrays.asList(lematizedText.split(" ")));
+        List<String> ngList = Arrays.asList(lematizedText.split(" "));
+        contextDoc.addAll(ngList);
 
         docs.put("context", new ArrayList<>(contextDoc));
 
@@ -355,7 +383,7 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         if (!terms.isEmpty()) {
             return terms;
         } else {
-            Logger.getLogger(DisambiguatorImpl.class.getName()).log(Level.INFO, "No winner");
+            LOGGER.log(Level.INFO, "No winner");
             return null;
         }
     }
@@ -401,17 +429,20 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
                     Set<String> jsonTerms = new HashSet<>();
                     while (results.hasNext()) {
                         Result r = results.next();
-
                         String ambiguousTerm = Bytes.toString(r.getValue(Bytes.toBytes("ambiguousTerm"),
                                 Bytes.toBytes("ambiguousTerm")));
                         String jsonStr = Bytes.toString(r.getValue(Bytes.toBytes("jsonString"),
                                 Bytes.toBytes("jsonString")));
-                        if (url != null) {
-                            if (ambiguousTerm != null && ambiguousTerm.equals(term) && jsonStr.contains(url)) {
+                        if (jsonStr != null) {
+                            if (url != null) {
+                                if (ambiguousTerm != null && ambiguousTerm.equals(term) && jsonStr.contains(url)) {
+                                    jsonTerms.add(jsonStr);
+                                }
+                            } else if (ambiguousTerm != null && ambiguousTerm.equals(term)) {
                                 jsonTerms.add(jsonStr);
                             }
-                        } else if (ambiguousTerm != null && ambiguousTerm.equals(term)) {
-                            jsonTerms.add(jsonStr);
+                        } else {
+                            deleteEntryFromTerms(r.getRow());
                         }
 
                     }
@@ -420,6 +451,13 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
             }
         }
         return null;
+    }
+
+    private void deleteEntryFromTerms(byte[] id) throws IOException {
+        try (Table tbl = getConn().getTable(TERMS_TBL_NAME)) {
+            Delete d = new Delete(id);
+            tbl.delete(d);
+        }
     }
 
     /**
@@ -729,4 +767,5 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
     public Set<Term> getCandidates(String lemma) throws MalformedURLException, IOException, ParseException, InterruptedException, ExecutionException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
 }

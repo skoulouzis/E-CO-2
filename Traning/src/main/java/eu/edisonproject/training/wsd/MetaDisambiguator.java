@@ -60,11 +60,11 @@ public class MetaDisambiguator extends DisambiguatorImpl {
     public Term getTerm(String term) throws IOException, ParseException {
         try {
             term = term.replaceAll(" ", "_");
-            if (sequentially) {
-                return getTermSequentially(term);
-            } else {
-                return getTermConcurrently(term);
-            }
+//            if (sequentially) {
+            return getTermSequentially(term);
+//            } else {
+//                return getTermConcurrently(term);
+//            }
         } catch (ParseException | InterruptedException | ExecutionException ex) {
             if (ex instanceof IOException && ex.getMessage().contains("Your key is not valid or the daily requests limit has been reached")) {
                 Logger.getLogger(MetaDisambiguator.class.getName()).log(Level.WARNING, null, ex);
@@ -125,42 +125,41 @@ public class MetaDisambiguator extends DisambiguatorImpl {
         return dis;
     }
 
-    private Term getTermConcurrently(String term) throws InterruptedException, ExecutionException {
-        Set<Term> possibleTerms = new HashSet();
-
-        ExecutorService pool = new ThreadPoolExecutor(disambiguators.size(), disambiguators.size(),
-                5000L, TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<>(disambiguators.size(), true), new ThreadPoolExecutor.CallerRunsPolicy());
-
-        Set<Future<Term>> set = new HashSet<>();
-        for (int i = 0; i < disambiguators.size(); i++) {
-            DisambiguatorImpl s = disambiguators.get(i);
-            s.setTermToProcess(term);
-            Future<Term> future = pool.submit(s);
-            set.add(future);
-        }
-
-        for (Future<Term> future : set) {
-            while (!future.isDone()) {
-//                Logger.getLogger(MetaDisambiguator.class.getName()).log(Level.INFO, "Task is not completed yet....");
-                Thread.currentThread().sleep(100);
-            }
-            Term t = future.get();
-            if (t != null) {
-                possibleTerms.add(t);
-            }
-        }
-        pool.shutdown();
-
-        Term dis = getWinner(possibleTerms, getMinimumSimilarity());
-//        Term dis = SemanticUtils.disambiguate(term, possibleTerms, allTermsDictionaryPath, minimumSimilarity, true);
-        if (dis == null) {
-            Logger.getLogger(MetaDisambiguator.class.getName()).log(Level.INFO, "Couldn''''t figure out what ''{0}'' means", term);
-        } else {
-            Logger.getLogger(MetaDisambiguator.class.getName()).log(Level.INFO, "Term: {0}. Confidence: {1} URL: {3} Glosses: {2}  ", new Object[]{dis, dis.getConfidence(), dis.getGlosses(), dis.getUrl()});
-        }
-
-        return dis;
-
-    }
+//    private Term getTermConcurrently(String term) throws InterruptedException, ExecutionException {
+//        Set<Term> possibleTerms = new HashSet();
+//
+//        ExecutorService pool = new ThreadPoolExecutor(disambiguators.size(), disambiguators.size(),
+//                5000L, TimeUnit.MILLISECONDS,
+//                new ArrayBlockingQueue<>(disambiguators.size(), true), new ThreadPoolExecutor.CallerRunsPolicy());
+//
+//        Set<Future<Term>> set = new HashSet<>();
+//        for (int i = 0; i < disambiguators.size(); i++) {
+//            DisambiguatorImpl s = disambiguators.get(i);
+//            s.setTermToProcess(term);
+//            Future<Term> future = pool.submit(s);
+//            set.add(future);
+//        }
+//
+//        for (Future<Term> future : set) {
+//            while (!future.isDone()) {
+////                Logger.getLogger(MetaDisambiguator.class.getName()).log(Level.INFO, "Task is not completed yet....");
+//                Thread.currentThread().sleep(100);
+//            }
+//            Term t = future.get();
+//            if (t != null) {
+//                possibleTerms.add(t);
+//            }
+//        }
+//        pool.shutdown();
+//
+//        Term dis = getWinner(possibleTerms, getMinimumSimilarity());
+////        Term dis = SemanticUtils.disambiguate(term, possibleTerms, allTermsDictionaryPath, minimumSimilarity, true);
+//        if (dis == null) {
+//            Logger.getLogger(MetaDisambiguator.class.getName()).log(Level.INFO, "Couldn''''t figure out what ''{0}'' means", term);
+//        } else {
+//            Logger.getLogger(MetaDisambiguator.class.getName()).log(Level.INFO, "Term: {0}. Confidence: {1} URL: {3} Glosses: {2}  ", new Object[]{dis, dis.getConfidence(), dis.getGlosses(), dis.getUrl()});
+//        }
+//
+//        return dis;
+//    }
 }
