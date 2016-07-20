@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 import org.apache.avro.file.DataFileReader;
 import org.apache.avro.io.DatumReader;
 import org.apache.avro.specific.SpecificDatumReader;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.hadoop.util.ToolRunner;
 //import org.apache.avro.hadoop.io.AvroSerialization;
 
@@ -60,7 +61,7 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
     // where to read the data for the MapReduce#4.
     private final String INPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "3-tf-idf";
     // where to put the data in hdfs when the MapReduce# will finish
-    public static final String OUTPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "4-tf-idf-document";
+    public static String OUTPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "4-tf-idf-document";
 
     // where to put the csv with the tfidf
     private final String TFIDFCSV_PATH = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "5-csv";
@@ -95,20 +96,21 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
         if (file.isDirectory()) {
             filesInDir = file.listFiles();
             for (File fileSplit : filesInDir) {
-                DatumReader<Term> termDatumReader = new SpecificDatumReader<>(Term.class);
-                DataFileReader<Term> dataFileReader;
-                try {
-                    dataFileReader = new DataFileReader<Term>(fileSplit, termDatumReader);
+                if (FilenameUtils.getExtension(fileSplit.getName()).endsWith(".avro")) {
+                    DatumReader<Term> termDatumReader = new SpecificDatumReader<>(Term.class);
+                    DataFileReader<Term> dataFileReader;
+                    try {
+                        dataFileReader = new DataFileReader<Term>(fileSplit, termDatumReader);
 
-                    while (dataFileReader.hasNext()) {
-                        //Count the number of rows inside the .avro
-                        dataFileReader.next();
-                        numberOfDocuments++;
+                        while (dataFileReader.hasNext()) {
+                            //Count the number of rows inside the .avro
+                            dataFileReader.next();
+                            numberOfDocuments++;
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
-
             }
 
             try {

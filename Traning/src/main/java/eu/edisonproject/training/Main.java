@@ -61,7 +61,7 @@ public class Main {
     public static void main(String args[]) {
         Options options = new Options();
         Option operation = new Option("op", "operation", true, "type of operation to perform. "
-                + "For term extraction use 'x'. For word sense disambiguation use 'w'. ");
+                + "For term extraction use 'x'. For word sense disambiguation use 'w'. For tf-idf vector extraction use 't'");
         operation.setRequired(true);
         options.addOption(operation);
 
@@ -100,6 +100,8 @@ public class Main {
                 case "w":
                     wsd(cmd.getOptionValue("input"), cmd.getOptionValue("output"));
                     break;
+                case "t":
+                    calculateTFIDF(cmd.getOptionValue("input"), cmd.getOptionValue("output"));
                 default:
                     System.out.println(helpmasg);
             }
@@ -149,12 +151,8 @@ public class Main {
         d.configure(prop);
         List<Term> terms = d.disambiguateTerms(in);
 
-//        String contextName = FilenameUtils.removeExtension(in.substring(in.lastIndexOf(File.separator) + 1));
         saveTerms2Avro(terms, out);
 
-//        ITFIDFDriver tfidfDriver = new TFIDFDriverImpl(contextName);
-//        tfidfDriver.executeTFIDF(out);
-//        tfidfDriver.driveProcessResizeVector();
     }
 
     private static void saveTerms2Avro(List<Term> terms, String out) {
@@ -197,6 +195,21 @@ public class Main {
             ts.serialize(t);
         }
         ts.close();
+
+    }
+
+    private static void calculateTFIDF(String in, String out) {
+        String contextName = FilenameUtils.removeExtension(in.substring(in.lastIndexOf(File.separator) + 1));
+        ITFIDFDriver tfidfDriver = new TFIDFDriverImpl(contextName);
+        File inFile = new File(in);
+        TFIDFDriverImpl.OUTPUT_PATH4 = out;
+        if (inFile.isFile()) {
+            tfidfDriver.executeTFIDF(inFile.getParent());
+        } else {
+            tfidfDriver.executeTFIDF(inFile.getAbsolutePath());
+        }
+
+        tfidfDriver.driveProcessResizeVector();
 
     }
 
