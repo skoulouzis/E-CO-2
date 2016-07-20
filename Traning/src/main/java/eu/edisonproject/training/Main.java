@@ -16,6 +16,8 @@
 package eu.edisonproject.training;
 
 import eu.edisonproject.training.term.extraction.TermExtractor;
+import eu.edisonproject.training.tfidf.mapreduce.ITFIDFDriver;
+import eu.edisonproject.training.tfidf.mapreduce.TFIDFDriverImpl;
 import eu.edisonproject.training.wsd.DisambiguatorImpl;
 import eu.edisonproject.training.wsd.MetaDisambiguator;
 import eu.edisonproject.utility.commons.Term;
@@ -40,15 +42,16 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.apache.commons.io.FilenameUtils;
 
 /**
- * Example usage for training : 
- * -op t -i $HOME/Downloads/Databases/dictionary.csv \
- * -o $HOME/Downloads/D2.1_Table5_Skills_and_knowledge_Big_Data_platforms_and_tools/Databases/Databases.avro
- * 
+ * Example usage for training : -op t -i
+ * $HOME/Downloads/Databases/dictionary.csv \ -o
+ * $HOME/Downloads/D2.1_Table5_Skills_and_knowledge_Big_Data_platforms_and_tools/Databases/Databases.avro
+ *
  * for term extraction:
- * 
- * 
+ *
+ *
  * @author S. Koulouzis
  */
 public class Main {
@@ -58,7 +61,7 @@ public class Main {
     public static void main(String args[]) {
         Options options = new Options();
         Option operation = new Option("op", "operation", true, "type of operation to perform. "
-                + "For term extraction use 'x'. For training use 't' ");
+                + "For term extraction use 'x'. For word sense disambiguation use 'w'. ");
         operation.setRequired(true);
         options.addOption(operation);
 
@@ -94,9 +97,11 @@ public class Main {
                 case "x":
                     termExtraxtion(cmd.getOptionValue("input"), cmd.getOptionValue("output"));
                     break;
-                case "t":
+                case "w":
                     wsd(cmd.getOptionValue("input"), cmd.getOptionValue("output"));
                     break;
+                default:
+                    System.out.println(helpmasg);
             }
 
         } catch (Exception ex) {
@@ -144,9 +149,12 @@ public class Main {
         d.configure(prop);
         List<Term> terms = d.disambiguateTerms(in);
 
-//        String context = FilenameUtils.removeExtension(in.substring(in.lastIndexOf(File.separator) + 1));
+//        String contextName = FilenameUtils.removeExtension(in.substring(in.lastIndexOf(File.separator) + 1));
         saveTerms2Avro(terms, out);
 
+//        ITFIDFDriver tfidfDriver = new TFIDFDriverImpl(contextName);
+//        tfidfDriver.executeTFIDF(out);
+//        tfidfDriver.driveProcessResizeVector();
     }
 
     private static void saveTerms2Avro(List<Term> terms, String out) {

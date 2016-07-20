@@ -15,10 +15,6 @@
  */
 package eu.edisonproject.training.tfidf.mapreduce;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-
 /**
  *
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
