@@ -18,7 +18,7 @@ public class TestTFIDF {
         String inputPath = ".."+File.separator+"etc"+File.separator+"Classification"+File.separator+"Avro Document"+File.separator;
         TFIDFDriver tfidfDriver = new TFIDFDriver("post");
         tfidfDriver.executeTFIDF(inputPath);
-        tfidfDriver.readDistancesOutputAndPrintCSV();
+        //tfidfDriver.readDistancesOutputAndPrintCSV();
     }
     
 }

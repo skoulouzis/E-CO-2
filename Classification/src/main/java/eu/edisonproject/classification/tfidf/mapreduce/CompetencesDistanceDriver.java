@@ -20,8 +20,6 @@ package eu.edisonproject.classification.tfidf.mapreduce;
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
  */
 import distances.avro.Distances;
-import tfidf.avro.Tfidf;
-import eu.edisonproject.classification.avro.TfidfDocument;
 import eu.edisonproject.classification.distance.CosineSimilarityMatrix;
 import java.io.BufferedReader;
 import java.io.File;
@@ -36,16 +34,16 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.avro.Schema;
-import org.apache.avro.mapred.AvroKey;
-import org.apache.avro.mapred.AvroValue;
-import org.apache.avro.mapreduce.AvroJob;
-import org.apache.avro.mapreduce.AvroKeyValueInputFormat;
-import org.apache.avro.mapreduce.AvroKeyValueOutputFormat;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
+import org.apache.hadoop.hbase.mapreduce.TableMapReduceUtil;
+import org.apache.hadoop.hbase.mapreduce.TableReducer;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -59,6 +57,20 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 
     private static List<HashMap<String, Double>> listOfCompetencesVector;
 
+    private static String[] data_analytics = {"predictive analytics","statistical techniques",
+        "analytics for decision making","data blending","big data analytics platform"};
+    private static String[] data_management_curation = {"data management plan","develop data models",
+        "data collection and integration","data visualization","repository of analysis history"};
+    private static String[] data_science_engineering = {"engineering principles","big data computational solutions",
+        "analysis tools for decision making","relational and non-relational databases","security service management",
+        "agile development"};
+    private static String[] scientific_research_methods = {"systematic study","devise new applications",
+        "develop innovative ideas","strategies into action plans","contribute research objectives"};
+    private static String[] domain_knowledge = {"business process","improve existing services",
+        "participate financial decisions","analytic support to other organisation","analyse data for marketing",
+        "analyse customer data"};
+    
+    
     private void readCompetences(String arg) {
         File fileDir = new File(arg);
         File[] listOfCompetencesFile = fileDir.listFiles();
@@ -105,12 +117,11 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
         }
     } // end of mapper class
 
-    public static class CompetencesDistanceReducer extends Reducer<Text, Text, Text, Text> {
+    public static class CompetencesDistanceReducer extends TableReducer<Text, Text, ImmutableBytesWritable> {
 
         public CompetencesDistanceReducer() {
         }
 
-        @Override
         protected void reduce(Text text, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             //The object are grouped for them documentId
             HashMap<String, Double> documentWords = new HashMap<>();
@@ -146,11 +157,45 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
             distanceDocument.setDate(docIdAndDate[2]);
             distanceDocument.setDistanceArray(distances);
 
-            String distancesString = "";
-            for (Double d : distances) {
-                distancesString += d + ";";
+//            String distancesString = "";
+//            for (Double d : distances) {
+//                distancesString += d + ";";
+//            }
+
+//            Put put = new Put(key.get());
+            Put put = new Put(Bytes.toBytes(docIdAndDate[0]));
+           // put.add(Bytes.toBytes("details"), Bytes.toBytes("total"), Bytes.toBytes(sum));
+            // column family info
+            put.add(Bytes.toBytes("info"), Bytes.toBytes("title"), Bytes.toBytes(docIdAndDate[1]));
+            put.add(Bytes.toBytes("info"), Bytes.toBytes("date"), Bytes.toBytes(docIdAndDate[2]));
+            // column family distance
+            int count = 0;
+            for(String s: data_analytics){
+                put.add(Bytes.toBytes("data analytics"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
+                count++;
             }
-            context.write(new Text(text), new Text(distancesString));
+            for(String s: data_management_curation){
+                put.add(Bytes.toBytes("data management curation"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
+                count++;
+            }
+            for(String s: data_science_engineering){
+                put.add(Bytes.toBytes("data science engineering"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
+                count++;
+            }
+            for(String s: scientific_research_methods){
+                put.add(Bytes.toBytes("scintific research methods"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
+                count++;
+            }
+            for(String s: domain_knowledge){
+                put.add(Bytes.toBytes("domain knowledge"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
+                count++;
+            }
+            
+            
+            
+          //  System.out.println(String.format("stats :   key : %d,  count : %d", Bytes.toInt(key.get()), sum));
+            context.write(new ImmutableBytesWritable(docIdAndDate[0].getBytes()), put);
+            //context.write(new Text(text), new Text(distancesString));
 
         }
 
@@ -190,11 +235,10 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);
 
-        
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(Text.class);
-        job.setReducerClass(CompetencesDistanceReducer.class);
-
+//        job.setOutputKeyClass(Text.class);
+//        job.setOutputValueClass(Text.class);
+//        job.setReducerClass(CompetencesDistanceReducer.class);
+         TableMapReduceUtil.initTableReducerJob("summary_user", CompetencesDistanceReducer.class, job);
         //TableMapReduceUtil.initTableReducerJob("Distance", CompetencesDistanceReducer.class, job);
         return (job.waitForCompletion(true) ? 0 : 1);
 
