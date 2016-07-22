@@ -40,37 +40,39 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
-import org.apache.hadoop.hbase.mapreduce.TableMapReduceUtil;
-import org.apache.hadoop.hbase.mapreduce.TableReducer;
+import org.apache.hadoop.hbase.mapreduce.TableOutputFormat;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.Tool;
 
 public class CompetencesDistanceDriver extends Configured implements Tool {
 
     private static List<HashMap<String, Double>> listOfCompetencesVector;
 
-    private static String[] data_analytics = {"predictive analytics","statistical techniques",
-        "analytics for decision making","data blending","big data analytics platform"};
-    private static String[] data_management_curation = {"data management plan","develop data models",
-        "data collection and integration","data visualization","repository of analysis history"};
-    private static String[] data_science_engineering = {"engineering principles","big data computational solutions",
-        "analysis tools for decision making","relational and non-relational databases","security service management",
+    private static String[] data_analytics = {"predictive analytics", "statistical techniques",
+        "analytics for decision making", "data blending", "big data analytics platform"};
+    private static String[] data_management_curation = {"data management plan", "develop data models",
+        "data collection and integration", "data visualization", "repository of analysis history"};
+    private static String[] data_science_engineering = {"engineering principles", "big data computational solutions",
+        "analysis tools for decision making", "relational and non-relational databases", "security service management",
         "agile development"};
-    private static String[] scientific_research_methods = {"systematic study","devise new applications",
-        "develop innovative ideas","strategies into action plans","contribute research objectives"};
-    private static String[] domain_knowledge = {"business process","improve existing services",
-        "participate financial decisions","analytic support to other organisation","analyse data for marketing",
+    private static String[] scientific_research_methods = {"systematic study", "devise new applications",
+        "develop innovative ideas", "strategies into action plans", "contribute research objectives"};
+    private static String[] domain_knowledge = {"business process", "improve existing services",
+        "participate financial decisions", "analytic support to other organisation", "analyse data for marketing",
         "analyse customer data"};
-    
-    
+
     private void readCompetences(String arg) {
         File fileDir = new File(arg);
         File[] listOfCompetencesFile = fileDir.listFiles();
@@ -113,11 +115,12 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
             String tfidf = keyValues[1].split("/")[1];
 
             context.write(new Text(documentID), new Text(word + "@" + tfidf));
-
+            
         }
     } // end of mapper class
 
-    public static class CompetencesDistanceReducer extends TableReducer<Text, Text, ImmutableBytesWritable> {
+//    public static class CompetencesDistanceReducer extends TableReducer<Text, Text, ImmutableBytesWritable> {
+    public static class CompetencesDistanceReducer extends Reducer<Text, Text, ImmutableBytesWritable, Put> {
 
         public CompetencesDistanceReducer() {
         }
@@ -149,7 +152,7 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
                 distances.add(cosineFunction.computeDistance(competence.values(), documentToCompetenceSpace.values()));
 
             }
-            System.out.println(text);
+            System.out.println("Distance"+text);
             String[] docIdAndDate = text.toString().split("@");
             Distances distanceDocument = new Distances();
             distanceDocument.setTitle(docIdAndDate[1]);
@@ -161,39 +164,36 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 //            for (Double d : distances) {
 //                distancesString += d + ";";
 //            }
-
 //            Put put = new Put(key.get());
             Put put = new Put(Bytes.toBytes(docIdAndDate[0]));
-           // put.add(Bytes.toBytes("details"), Bytes.toBytes("total"), Bytes.toBytes(sum));
+            // put.add(Bytes.toBytes("details"), Bytes.toBytes("total"), Bytes.toBytes(sum));
             // column family info
-            put.add(Bytes.toBytes("info"), Bytes.toBytes("title"), Bytes.toBytes(docIdAndDate[1]));
-            put.add(Bytes.toBytes("info"), Bytes.toBytes("date"), Bytes.toBytes(docIdAndDate[2]));
+            put.addColumn(Bytes.toBytes("info"), Bytes.toBytes("title"), Bytes.toBytes(docIdAndDate[1]));
+            put.addColumn(Bytes.toBytes("info"), Bytes.toBytes("date"), Bytes.toBytes(docIdAndDate[2]));
             // column family distance
             int count = 0;
-            for(String s: data_analytics){
-                put.add(Bytes.toBytes("data analytics"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
+            for (String s : data_analytics) {
+                put.addColumn(Bytes.toBytes("data analytics"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
                 count++;
             }
-            for(String s: data_management_curation){
-                put.add(Bytes.toBytes("data management curation"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
+            for (String s : data_management_curation) {
+                put.addColumn(Bytes.toBytes("data management curation"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
                 count++;
             }
-            for(String s: data_science_engineering){
-                put.add(Bytes.toBytes("data science engineering"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
+            for (String s : data_science_engineering) {
+                put.addColumn(Bytes.toBytes("data science engineering"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
                 count++;
             }
-            for(String s: scientific_research_methods){
-                put.add(Bytes.toBytes("scintific research methods"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
+            for (String s : scientific_research_methods) {
+                put.addColumn(Bytes.toBytes("scintific research methods"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
                 count++;
             }
-            for(String s: domain_knowledge){
-                put.add(Bytes.toBytes("domain knowledge"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
+            for (String s : domain_knowledge) {
+                put.addColumn(Bytes.toBytes("domain knowledge"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
                 count++;
             }
-            
-            
-            
-          //  System.out.println(String.format("stats :   key : %d,  count : %d", Bytes.toInt(key.get()), sum));
+
+            System.out.println(docIdAndDate[0]+"...... "+docIdAndDate[1]);
             context.write(new ImmutableBytesWritable(docIdAndDate[0].getBytes()), put);
             //context.write(new Text(text), new Text(distancesString));
 
@@ -235,10 +235,20 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);
 
+        job.setReducerClass(CompetencesDistanceReducer.class);
+        job.setOutputFormatClass(TableOutputFormat.class);
+        job.getConfiguration().set(TableOutputFormat.OUTPUT_TABLE, "jobpostcompetence");
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(Text.class);
+
+        //additional output using TextOutputFormat.
+        MultipleOutputs.addNamedOutput(job, "text", TextOutputFormat.class,
+                Text.class, Text.class);
+
 //        job.setOutputKeyClass(Text.class);
 //        job.setOutputValueClass(Text.class);
 //        job.setReducerClass(CompetencesDistanceReducer.class);
-         TableMapReduceUtil.initTableReducerJob("summary_user", CompetencesDistanceReducer.class, job);
+        //  TableMapReduceUtil.initTableReducerJob("summary_user", CompetencesDistanceReducer.class, job);
         //TableMapReduceUtil.initTableReducerJob("Distance", CompetencesDistanceReducer.class, job);
         return (job.waitForCompletion(true) ? 0 : 1);
 
