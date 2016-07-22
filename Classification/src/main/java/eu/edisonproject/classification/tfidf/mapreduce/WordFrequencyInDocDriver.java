@@ -32,11 +32,14 @@ import java.util.regex.Pattern;
 
 import org.apache.avro.Schema;
 import org.apache.avro.mapred.AvroKey;
+import org.apache.avro.mapred.AvroMapper;
 import org.apache.avro.mapred.AvroValue;
 import org.apache.avro.mapreduce.AvroJob;
 import org.apache.avro.mapreduce.AvroKeyInputFormat;
 import org.apache.avro.mapreduce.AvroKeyValueOutputFormat;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
+
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.NullWritable;
@@ -60,6 +63,9 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     // hashmap for the itemset
     private static List<String> itemset;
 
+    /**
+     *
+     */
     public static class WordFrequencyInDocMapper extends Mapper<AvroKey<Document>, NullWritable, Text, IntWritable> {
 
         public WordFrequencyInDocMapper() {
@@ -139,14 +145,15 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
             String[] components = line.split("/");
             itemset.add(components[0]);
         }
-        Job job = new Job(getConf());
+        Configuration conf = new Configuration();
+        Job job = new Job(conf,"");
         job.setJarByClass(WordFrequencyInDocDriver.class);
         job.setJobName("Word Frequency In Doc Driver");
 
         FileInputFormat.setInputPaths(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
-        new Path(args[1]).getFileSystem(super.getConf()).delete(new Path(args[1]), true);
+        new Path(args[1]).getFileSystem(conf).delete(new Path(args[1]), true);
 
         job.setInputFormatClass(AvroKeyInputFormat.class);
         job.setMapperClass(WordFrequencyInDocMapper.class);

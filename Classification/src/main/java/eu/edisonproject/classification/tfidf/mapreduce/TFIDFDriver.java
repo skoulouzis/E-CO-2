@@ -136,6 +136,9 @@ public class TFIDFDriver implements ITFIDFDriver {
             try {
                 String[] args1 = {INPUT_PATH1, OUTPUT_PATH1, INPUT_ITEMSET};
                 ToolRunner.run(new WordFrequencyInDocDriver(), args1);
+//                WordFrequencyInDocDriver w=new WordFrequencyInDocDriver();
+//                w.run(args1);
+                
                 String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};
                 ToolRunner.run(new WordCountsForDocsDriver(), args2);
                 String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(numberOfDocuments)};
