@@ -122,7 +122,7 @@ public class LuceneExtractor implements TermExtractor {
 //            stemer.setDescription(term);
 //            String stemTerm = stemer.execute();
 //            if (itemsMap.containsKey(term)) {
-
+//            }
             term = term.toLowerCase().trim().replaceAll(" ", "_");
             if (term.endsWith("_")) {
                 term = term.substring(0, term.lastIndexOf("_"));
