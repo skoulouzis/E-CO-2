@@ -107,16 +107,15 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool{
                 //Term frequency is the quocient of the number of terms in document and the total number of terms in doc
                 double tf = Double.valueOf(Double.valueOf(wordFrequenceAndTotalWords[0])
                         / Double.valueOf(wordFrequenceAndTotalWords[1]));
-
+              //  System.out.println("TF "+tf);
                 //interse document frequency quocient between the number of docs in corpus and number of docs the term appears
                 double idf = (double) numberOfDocumentsInCorpus / (double) numberOfDocumentsInCorpusWhereKeyAppears;
-
+              //  System.out.println("IDF"+idf);
                 //given that log(10) = 0, just consider the term frequency in documents
-                double tfIdf = numberOfDocumentsInCorpus == numberOfDocumentsInCorpusWhereKeyAppears
+               double tfIdf = numberOfDocumentsInCorpus == numberOfDocumentsInCorpusWhereKeyAppears
                         ? tf : tf * Math.log10(idf);
-
-                String[] documentFields = document.split("@");
-
+               String[] documentFields = document.split("@");
+              //  System.out.println(tfIdf);
                 lineValue += documentFields[0] + ";" + key.toString() + ";" + DF.format(tfIdf) + "\n";
 //
 //                Tfidf tfidfJson = new Tfidf();
