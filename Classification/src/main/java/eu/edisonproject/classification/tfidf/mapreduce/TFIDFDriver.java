@@ -32,6 +32,14 @@ import org.apache.avro.file.DataFileReader;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.io.DatumReader;
 import org.apache.avro.specific.SpecificDatumReader;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.HColumnDescriptor;
+import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.Admin;
+import org.apache.hadoop.hbase.client.Connection;
+import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.util.ToolRunner;
 
 /**
@@ -69,6 +77,10 @@ public class TFIDFDriver implements ITFIDFDriver {
     private final String contextName;
     private final String finalOutputPath;
     private List<Distances> distancesValues;
+    
+    private Connection conn;
+    
+    private final String[] families = {"info","data analytics","data management curation","data science engineering","scientific research methods","domain knowledge"};
 
     public TFIDFDriver(String contextName) {
         this.contextName = contextName + ".csv";
@@ -77,6 +89,12 @@ public class TFIDFDriver implements ITFIDFDriver {
         if(!f.exists())
             f.mkdir();
         this.finalOutputPath = DISTANCES_VECTOR_PATH + File.separator + contextName;
+        Configuration config = HBaseConfiguration.create();
+        try{
+            conn = ConnectionFactory.createConnection(config);
+        }catch(IOException ex){
+            Logger.getLogger(TFIDFDriver.class.getName()).log(Level.CONFIG, "HBase configuration settings", ex);
+        }
     }
 
     /**
@@ -85,6 +103,12 @@ public class TFIDFDriver implements ITFIDFDriver {
      */
     @Override
     public void executeTFIDF(String inputPath) {
+        
+//        try {
+//            createTable(TableName.valueOf("job post distance"), families);
+//        } catch (IOException ex) {
+//            Logger.getLogger(TFIDFDriver.class.getName()).log(Level.SEVERE, null, ex);
+//        }
         INPUT_PATH1 = inputPath;
         int numberOfDocuments = 0;
         File file = new File(INPUT_PATH1);
@@ -162,5 +186,23 @@ public class TFIDFDriver implements ITFIDFDriver {
             textToPrint+="\n";
         }
         fileWriter.writeFile(textToPrint);
+    }
+    
+    public Connection getConn(){
+        return conn;
+    }
+    
+    protected void createTable(TableName tblName, String[] familiesName) throws IOException{
+        try(Admin admin = getConn().getAdmin()){
+            if(!admin.tableExists(tblName)){
+                HTableDescriptor tableDescriptor;
+                tableDescriptor = new HTableDescriptor(tblName.getName());
+                for(String f: familiesName){
+                    HColumnDescriptor desc = new HColumnDescriptor(f);
+                    tableDescriptor.addFamily(desc);
+                }
+                admin.createTable(tableDescriptor);
+            }
+        }
     }
 }
