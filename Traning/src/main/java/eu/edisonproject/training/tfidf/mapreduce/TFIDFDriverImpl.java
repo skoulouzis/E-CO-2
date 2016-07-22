@@ -96,7 +96,7 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
         if (file.isDirectory()) {
             filesInDir = file.listFiles();
             for (File fileSplit : filesInDir) {
-                if (FilenameUtils.getExtension(fileSplit.getName()).endsWith(".avro")) {
+                //if (FilenameUtils.getExtension(fileSplit.getName()).endsWith(".avro")) {
                     DatumReader<Term> termDatumReader = new SpecificDatumReader<>(Term.class);
                     DataFileReader<Term> dataFileReader;
                     try {
@@ -107,10 +107,11 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
                             dataFileReader.next();
                             numberOfDocuments++;
                         }
+                        System.out.println(numberOfDocuments);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                }
+                //}
             }
 
             try {
