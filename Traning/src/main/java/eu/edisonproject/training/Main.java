@@ -61,7 +61,14 @@ public class Main {
     public static void main(String args[]) {
         Options options = new Options();
         Option operation = new Option("op", "operation", true, "type of operation to perform. "
-                + "For term extraction use 'x'. For word sense disambiguation use 'w'. For tf-idf vector extraction use 't'");
+                + "For term extraction use 'x'.\n"
+                + "Example: -op x -i E-COCO/documentation/sampleTextFiles/databases.txt "
+                + "-o E-COCO/documentation/sampleTextFiles/databaseTerms.csv"
+                + "For word sense disambiguation use 'w'.\n"
+                + "Example: -op w -i E-COCO/documentation/sampleTextFiles/databaseTerms.csv "
+                + "-o E-COCO/documentation/sampleTextFiles/databse.avro"
+//                + "For tf-idf vector extraction use 't'.\n"
+                + "");
         operation.setRequired(true);
         options.addOption(operation);
 
@@ -100,8 +107,8 @@ public class Main {
                 case "w":
                     wsd(cmd.getOptionValue("input"), cmd.getOptionValue("output"));
                     break;
-                case "t":
-                    calculateTFIDF(cmd.getOptionValue("input"), cmd.getOptionValue("output"));
+//                case "t":
+//                    calculateTFIDF(cmd.getOptionValue("input"), cmd.getOptionValue("output"));
                 default:
                     System.out.println(helpmasg);
             }
