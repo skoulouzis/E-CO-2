@@ -217,7 +217,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>eu.edisonproject.training.Main</mainClass>
+                            <mainClass>eu.edisonproject.training.execute.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

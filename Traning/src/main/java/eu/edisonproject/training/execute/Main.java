@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.edisonproject.training;
+package eu.edisonproject.training.execute;
 
 import eu.edisonproject.training.term.extraction.TermExtractor;
 import eu.edisonproject.training.tfidf.mapreduce.ITFIDFDriver;
