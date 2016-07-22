@@ -42,11 +42,8 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.hbase.mapreduce.TableOutputFormat;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.Writable;
-import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -168,28 +165,28 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
             Put put = new Put(Bytes.toBytes(docIdAndDate[0]));
             // put.add(Bytes.toBytes("details"), Bytes.toBytes("total"), Bytes.toBytes(sum));
             // column family info
-            put.addColumn(Bytes.toBytes("info"), Bytes.toBytes("title"), Bytes.toBytes(docIdAndDate[1]));
-            put.addColumn(Bytes.toBytes("info"), Bytes.toBytes("date"), Bytes.toBytes(docIdAndDate[2]));
+            put.add(Bytes.toBytes("info"), Bytes.toBytes("title"), Bytes.toBytes(docIdAndDate[1]));
+            put.add(Bytes.toBytes("info"), Bytes.toBytes("date"), Bytes.toBytes(docIdAndDate[2]));
             // column family distance
             int count = 0;
             for (String s : data_analytics) {
-                put.addColumn(Bytes.toBytes("data analytics"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
+                put.add(Bytes.toBytes("data analytics"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
                 count++;
             }
             for (String s : data_management_curation) {
-                put.addColumn(Bytes.toBytes("data management curation"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
+                put.add(Bytes.toBytes("data management curation"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
                 count++;
             }
             for (String s : data_science_engineering) {
-                put.addColumn(Bytes.toBytes("data science engineering"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
+                put.add(Bytes.toBytes("data science engineering"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
                 count++;
             }
             for (String s : scientific_research_methods) {
-                put.addColumn(Bytes.toBytes("scintific research methods"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
+                put.add(Bytes.toBytes("scintific research methods"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
                 count++;
             }
             for (String s : domain_knowledge) {
-                put.addColumn(Bytes.toBytes("domain knowledge"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
+                put.add(Bytes.toBytes("domain knowledge"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
                 count++;
             }
 

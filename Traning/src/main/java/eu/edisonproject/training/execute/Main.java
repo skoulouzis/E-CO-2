@@ -66,7 +66,7 @@ public class Main {
                 + "-o E-COCO/documentation/sampleTextFiles/databaseTerms.csv"
                 + "For word sense disambiguation use 'w'.\n"
                 + "Example: -op w -i E-COCO/documentation/sampleTextFiles/databaseTerms.csv "
-                + "-o E-COCO/documentation/sampleTextFiles/databse.avro"
+                + "-o E-COCO/documentation/sampleTextFiles/databse.avro\n"
 //                + "For tf-idf vector extraction use 't'.\n"
                 + "");
         operation.setRequired(true);

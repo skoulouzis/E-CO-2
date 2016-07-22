@@ -27,7 +27,7 @@ public class TestTFIDF {
 
     public static void main(String[] args) {
         String contextName = "python";
-        String inputPath = ".." + File.separator + "etc" + File.separator + "Avro Document" + File.separator + "python";
+        String inputPath = ".." + File.separator + "etc" + File.separator + "Avro Document" + File.separator + "Databases";
         ITFIDFDriver tfidfDriver = new TFIDFDriverImpl(contextName);
         tfidfDriver.executeTFIDF(inputPath);
         tfidfDriver.driveProcessResizeVector();
