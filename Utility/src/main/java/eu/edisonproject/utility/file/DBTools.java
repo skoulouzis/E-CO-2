@@ -178,7 +178,7 @@ public class DBTools {
     /**
      * @return the conn
      */
-    public static Connection getConn() {
+    public static synchronized Connection getConn() {
         if (conn == null) {
             Configuration config = HBaseConfiguration.create();
             try {
