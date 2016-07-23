@@ -62,6 +62,7 @@ public class DBTools {
         Map<String, Set<String>> termCache = getTermCache(cacheDBFile);
         for (String id : termCache.keySet()) {
             Set<String> val = termCache.get(id);
+            Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: " + id);
             addPossibleTermsToDB(id, val);
         }
     }
@@ -69,28 +70,41 @@ public class DBTools {
     public static void portBabelNetCache2Hbase(String path) throws IOException, InterruptedException {
         File cacheDBFile = new File(path);
         Map<String, List<String>> wordIDCache = getFromWordIDCache(cacheDBFile);
-        for (String w : wordIDCache.keySet()) {
-            List<String> ids = wordIDCache.get(w);
-            putInWordINDB(w, ids);
+        if (wordIDCache != null) {
+            for (String w : wordIDCache.keySet()) {
+                List<String> ids = wordIDCache.get(w);
+                Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: " + w);
+                putInWordINDB(w, ids);
+            }
         }
 
         Map<String, String> synsetCache = getFromSynsetCache(cacheDBFile);
-        for (String id : synsetCache.keySet()) {
-            String val = synsetCache.get(id);
-            addToSynsetDB(id, val);
+        if (synsetCache != null) {
+            for (String id : synsetCache.keySet()) {
+                String val = synsetCache.get(id);
+                Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: " + id);
+                addToSynsetDB(id, val);
+            }
         }
 
         Map<String, String> disambiguateCache = getDisambiguateCache(cacheDBFile);
-        for (String sentence : disambiguateCache.keySet()) {
-            String val = disambiguateCache.get(sentence);
-            putInDisambiguateDB(sentence, val);
+        if (disambiguateCache != null) {
+            for (String sentence : disambiguateCache.keySet()) {
+                String val = disambiguateCache.get(sentence);
+                Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: " + sentence);
+                putInDisambiguateDB(sentence, val);
+            }
         }
 
         Map<String, String> edgesCache = getEdgesCache(cacheDBFile);
-        for (String id : edgesCache.keySet()) {
-            String val = edgesCache.get(id);
-            addToEdgesDB(id, val);
+        if (edgesCache != null) {
+            for (String id : edgesCache.keySet()) {
+                String val = edgesCache.get(id);
+                Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: " + id);
+                addToEdgesDB(id, val);
+            }
         }
+
     }
 
     private static void putInDisambiguateDB(String sentence, String jsonString) throws IOException {
@@ -255,7 +269,5 @@ public class DBTools {
         newSchema = newSchema.replaceAll("alternativeLables", "altLables");
         return newSchema;
     }
-    
-    
 
 }

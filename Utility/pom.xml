@@ -78,7 +78,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>eu.edisonproject.training.execute.Main</mainClass>
+                            <mainClass>eu.edisonproject.utility.execute.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
