@@ -13,16 +13,15 @@ import eu.edisonproject.utility.commons.TermFactory;
 import eu.edisonproject.utility.commons.ValueComparator;
 import eu.edisonproject.utility.file.CSVFileReader;
 import eu.edisonproject.utility.file.ConfigHelper;
+import eu.edisonproject.utility.file.DBTools;
 import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
 import eu.edisonproject.utility.text.processing.Stemming;
 import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,16 +37,13 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.json.simple.parser.ParseException;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
@@ -391,7 +387,7 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         List<String> families = new ArrayList<>();
         families.add("jsonString");
         families.add("ambiguousTerm");
-        createTable(TERMS_TBL_NAME, families);
+        DBTools.createTable(TERMS_TBL_NAME, families);
         try (Admin admin = getConn().getAdmin()) {
             try (Table tbl = getConn().getTable(TERMS_TBL_NAME)) {
                 for (Term t : terms) {
@@ -637,18 +633,7 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         return conn;
     }
 
-    protected void createTable(TableName tblName, List<String> families) throws IOException {
-        try (Admin admin = getConn().getAdmin()) {
-            if (!admin.tableExists(tblName)) {
-                HTableDescriptor tableDescriptor = new HTableDescriptor(tblName);
-                for (String f : families) {
-                    HColumnDescriptor desc = new HColumnDescriptor(f);
-                    tableDescriptor.addFamily(desc);
-                }
-                admin.createTable(tableDescriptor);
-            }
-        }
-    }
+
 
     private Term getTermFromDB(CharSequence winner) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

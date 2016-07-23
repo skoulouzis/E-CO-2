@@ -10,6 +10,7 @@ import eu.edisonproject.utility.commons.Term;
 import eu.edisonproject.utility.commons.TermFactory;
 import eu.edisonproject.utility.commons.ValueComparator;
 import eu.edisonproject.utility.file.CSVFileReader;
+import eu.edisonproject.utility.file.DBTools;
 import java.util.Properties;
 
 import java.io.FileNotFoundException;
@@ -531,7 +532,7 @@ public class BabelNet extends DisambiguatorImpl {
     private void addToEdgesDB(CharSequence id, String jsonString) throws IOException {
         List<String> families = new ArrayList<>();
         families.add("jsonString");
-        createTable(EDGES_TBL_NAME, families);
+        DBTools.createTable(EDGES_TBL_NAME, families);
 
         try (Admin admin = getConn().getAdmin()) {
             try (Table tbl = getConn().getTable(EDGES_TBL_NAME)) {
@@ -560,7 +561,7 @@ public class BabelNet extends DisambiguatorImpl {
     private void addToSynsetDB(String id, String json) throws IOException {
         List<String> families = new ArrayList<>();
         families.add("jsonString");
-        createTable(SYNSET_TBL_NAME, families);
+        DBTools.createTable(SYNSET_TBL_NAME, families);
 
         try (Admin admin = getConn().getAdmin()) {
             try (Table tbl = getConn().getTable(SYNSET_TBL_NAME)) {
@@ -592,7 +593,7 @@ public class BabelNet extends DisambiguatorImpl {
     private void putInWordINDB(String word, List<String> ids) throws IOException {
         List<String> families = new ArrayList<>();
         families.add("csvIds");
-        createTable(WORDS_TBL_NAME, families);
+        DBTools.createTable(WORDS_TBL_NAME, families);
 
         StringBuilder strIds = new StringBuilder();
         for (String id : ids) {
@@ -615,7 +616,7 @@ public class BabelNet extends DisambiguatorImpl {
 
         List<String> families = new ArrayList<>();
         families.add("jsonString");
-        createTable(DISAMBIGUATE_TBL_NAME, families);
+        DBTools.createTable(DISAMBIGUATE_TBL_NAME, families);
 
         try (Admin admin = getConn().getAdmin()) {
             try (Table tbl = getConn().getTable(DISAMBIGUATE_TBL_NAME)) {
