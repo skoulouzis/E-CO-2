@@ -73,7 +73,6 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
     private String termToProcess;
     private static String stopWordsPath;
     private String itemsFilePath;
-    private Connection conn;
     public static final TableName TERMS_TBL_NAME = TableName.valueOf("terms");
     protected StopWord tokenizer;
     protected StanfordLemmatizer lematizer;
@@ -159,12 +158,12 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
             itemsFilePath = properties.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv");
         }
 
-        Configuration config = HBaseConfiguration.create();
-        try {
-            conn = ConnectionFactory.createConnection(config);
-        } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        }
+//        Configuration config = HBaseConfiguration.create();
+//        try {
+//            conn = ConnectionFactory.createConnection(config);
+//        } catch (IOException ex) {
+//            LOGGER.log(Level.SEVERE, null, ex);
+//        }
 
         CharArraySet stopwordsCharArray = new CharArraySet(ConfigHelper.loadStopWords(stopWordsPath), true);
         tokenizer = new StopWord(stopwordsCharArray);
@@ -388,8 +387,8 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         families.add("jsonString");
         families.add("ambiguousTerm");
         DBTools.createTable(TERMS_TBL_NAME, families);
-        try (Admin admin = getConn().getAdmin()) {
-            try (Table tbl = getConn().getTable(TERMS_TBL_NAME)) {
+        try (Admin admin = DBTools.getConn().getAdmin()) {
+            try (Table tbl = DBTools.getConn().getTable(TERMS_TBL_NAME)) {
                 for (Term t : terms) {
                     Put put = new Put(Bytes.toBytes(t.getUid().toString()));
                     String jsonStr = TermFactory.term2Json(t).toJSONString();
@@ -403,9 +402,9 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
     }
 
     protected Set<String> getPossibleTermsFromDB(String term, CharSequence url) throws IOException {
-        try (Admin admin = getConn().getAdmin()) {
+        try (Admin admin = DBTools.getConn().getAdmin()) {
             if (admin.tableExists(TERMS_TBL_NAME)) {
-                try (Table tbl = getConn().getTable(TERMS_TBL_NAME)) {
+                try (Table tbl = DBTools.getConn().getTable(TERMS_TBL_NAME)) {
                     //shell query: 'scan 'terms', { COLUMNS => 'ambiguousTerm:ambiguousTerm', FILTER => "ValueFilter( =, 'binary:python' )" }'
                     Scan scan = new Scan();
 //                    scan.addFamily(Bytes.toBytes("ambiguousTerm"));
@@ -449,7 +448,7 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
     }
 
     private void deleteEntryFromTerms(byte[] id) throws IOException {
-        try (Table tbl = getConn().getTable(TERMS_TBL_NAME)) {
+        try (Table tbl = DBTools.getConn().getTable(TERMS_TBL_NAME)) {
             Delete d = new Delete(id);
             tbl.delete(d);
         }
@@ -626,12 +625,12 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         return dotProduct;
     }
 
-    /**
-     * @return the conn
-     */
-    public Connection getConn() {
-        return conn;
-    }
+//    /**
+//     * @return the conn
+//     */
+//    public Connection getConn() {
+//        return conn;
+//    }
 
 
 

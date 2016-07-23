@@ -516,9 +516,9 @@ public class BabelNet extends DisambiguatorImpl {
     }
 
     private String getFromEdgesDB(CharSequence id) throws IOException {
-        try (Admin admin = getConn().getAdmin()) {
+        try (Admin admin = DBTools.getConn().getAdmin()) {
             if (admin.tableExists(EDGES_TBL_NAME)) {
-                try (Table tbl = getConn().getTable(EDGES_TBL_NAME)) {
+                try (Table tbl = DBTools.getConn().getTable(EDGES_TBL_NAME)) {
                     Get get = new Get(Bytes.toBytes(id.toString()));
                     get.addFamily(Bytes.toBytes("jsonString"));
                     Result r = tbl.get(get);
@@ -534,8 +534,8 @@ public class BabelNet extends DisambiguatorImpl {
         families.add("jsonString");
         DBTools.createTable(EDGES_TBL_NAME, families);
 
-        try (Admin admin = getConn().getAdmin()) {
-            try (Table tbl = getConn().getTable(EDGES_TBL_NAME)) {
+        try (Admin admin = DBTools.getConn().getAdmin()) {
+            try (Table tbl = DBTools.getConn().getTable(EDGES_TBL_NAME)) {
                 Put put = new Put(Bytes.toBytes(id.toString()));
                 put.addColumn(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString"), Bytes.toBytes(jsonString));
                 tbl.put(put);
@@ -545,9 +545,9 @@ public class BabelNet extends DisambiguatorImpl {
     }
 
     private String getFromSynsetDB(String id) throws IOException {
-        try (Admin admin = getConn().getAdmin()) {
+        try (Admin admin = DBTools.getConn().getAdmin()) {
             if (admin.tableExists(SYNSET_TBL_NAME)) {
-                try (Table tbl = getConn().getTable(SYNSET_TBL_NAME)) {
+                try (Table tbl = DBTools.getConn().getTable(SYNSET_TBL_NAME)) {
                     Get get = new Get(Bytes.toBytes(id));
                     get.addFamily(Bytes.toBytes("jsonString"));
                     Result r = tbl.get(get);
@@ -563,8 +563,8 @@ public class BabelNet extends DisambiguatorImpl {
         families.add("jsonString");
         DBTools.createTable(SYNSET_TBL_NAME, families);
 
-        try (Admin admin = getConn().getAdmin()) {
-            try (Table tbl = getConn().getTable(SYNSET_TBL_NAME)) {
+        try (Admin admin = DBTools.getConn().getAdmin()) {
+            try (Table tbl = DBTools.getConn().getTable(SYNSET_TBL_NAME)) {
                 Put put = new Put(Bytes.toBytes(id));
                 put.addColumn(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString"), Bytes.toBytes(json));
                 tbl.put(put);
@@ -574,9 +574,9 @@ public class BabelNet extends DisambiguatorImpl {
     }
 
     private List<String> getFromWordIDDB(String word) throws IOException {
-        try (Admin admin = getConn().getAdmin()) {
+        try (Admin admin = DBTools.getConn().getAdmin()) {
             if (admin.tableExists(WORDS_TBL_NAME)) {
-                try (Table tbl = getConn().getTable(WORDS_TBL_NAME)) {
+                try (Table tbl = DBTools.getConn().getTable(WORDS_TBL_NAME)) {
                     Get get = new Get(Bytes.toBytes(word));
                     get.addFamily(Bytes.toBytes("csvIds"));
                     Result r = tbl.get(get);
@@ -602,8 +602,8 @@ public class BabelNet extends DisambiguatorImpl {
         strIds.deleteCharAt(strIds.length() - 1);
         strIds.setLength(strIds.length());
 
-        try (Admin admin = getConn().getAdmin()) {
-            try (Table tbl = getConn().getTable(WORDS_TBL_NAME)) {
+        try (Admin admin = DBTools.getConn().getAdmin()) {
+            try (Table tbl = DBTools.getConn().getTable(WORDS_TBL_NAME)) {
                 Put put = new Put(Bytes.toBytes(word));
                 put.addColumn(Bytes.toBytes("csvIds"), Bytes.toBytes("csvIds"), Bytes.toBytes(strIds.toString()));
                 tbl.put(put);
@@ -618,8 +618,8 @@ public class BabelNet extends DisambiguatorImpl {
         families.add("jsonString");
         DBTools.createTable(DISAMBIGUATE_TBL_NAME, families);
 
-        try (Admin admin = getConn().getAdmin()) {
-            try (Table tbl = getConn().getTable(DISAMBIGUATE_TBL_NAME)) {
+        try (Admin admin = DBTools.getConn().getAdmin()) {
+            try (Table tbl = DBTools.getConn().getTable(DISAMBIGUATE_TBL_NAME)) {
                 Put put = new Put(Bytes.toBytes(sentence));
                 put.addColumn(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString"), Bytes.toBytes(jsonString));
                 tbl.put(put);
@@ -629,9 +629,9 @@ public class BabelNet extends DisambiguatorImpl {
     }
 
     private String getFromDisambiguateDB(String sentence) throws IOException {
-        try (Admin admin = getConn().getAdmin()) {
+        try (Admin admin = DBTools.getConn().getAdmin()) {
             if (admin.tableExists(DISAMBIGUATE_TBL_NAME)) {
-                try (Table tbl = getConn().getTable(DISAMBIGUATE_TBL_NAME)) {
+                try (Table tbl = DBTools.getConn().getTable(DISAMBIGUATE_TBL_NAME)) {
                     Get get = new Get(Bytes.toBytes(sentence));
                     get.addFamily(Bytes.toBytes("jsonString"));
                     Result r = tbl.get(get);
