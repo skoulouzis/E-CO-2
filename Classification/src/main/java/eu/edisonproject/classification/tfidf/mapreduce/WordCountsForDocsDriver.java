@@ -23,12 +23,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.avro.Schema;
-import org.apache.avro.mapred.AvroKey;
-import org.apache.avro.mapred.AvroValue;
-import org.apache.avro.mapreduce.AvroJob;
-import org.apache.avro.mapreduce.AvroKeyValueInputFormat;
-import org.apache.avro.mapreduce.AvroKeyValueOutputFormat;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
@@ -42,10 +36,6 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 
 public class WordCountsForDocsDriver extends Configured implements Tool{
-
-    // where to put the data in hdfs when we're done     private static final String OUTPUT_PATH = ".."+File.separator+"etc"+File.separator+"2-word-counts";
-
-    // where to read the data from.    private static final String INPUT_PATH = ".."+File.separator+"etc"+File.separator+"1-word-freq";
 
     public static class WordCountsForDocsMapper extends Mapper<LongWritable, Text, Text, Text> {
 
@@ -108,23 +98,9 @@ public class WordCountsForDocsDriver extends Configured implements Tool{
         outPath.getFileSystem(conf).delete(outPath, true);
 
         job.setMapperClass(WordCountsForDocsMapper.class);
-//        job.setInputFormatClass(AvroKeyValueInputFormat.class);
-//        job.setMapperClass(WordCountsForDocsMapper.class);
-//        AvroJob.setInputKeySchema(job, Schema.create(Schema.Type.STRING));
-//        AvroJob.setInputValueSchema(job, Schema.create(Schema.Type.INT));
-//
-//        job.setMapOutputKeyClass(Text.class);
-//        job.setMapOutputValueClass(Text.class);
-        /*Here it is possible put the combiner class
-		job.setCombinerClass(AvroAverageCombiner.class);
-         */
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
         job.setReducerClass(WordCountsForDocsReducer.class);
-//        job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
-//        job.setReducerClass(WordCountsForDocsReducer.class);
-//        AvroJob.setOutputKeySchema(job, Schema.create(Schema.Type.STRING));
-//        AvroJob.setOutputValueSchema(job, Schema.create(Schema.Type.STRING));
 
         return (job.waitForCompletion(true) ? 0 : 1);
     }

@@ -219,13 +219,6 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 
         }
 
-        /*        private static Put resultToPut(ImmutableBytesWritable key, Result result) throws IOException {
-  		Put put = new Put(key.get());
- 		for (KeyValue kv : result.raw()) {
-			put.addColumn(kv);
-		}
-		return put;
-   	}*/
     } // end of reducer class
 
     public int run(String[] args) throws Exception {
@@ -247,10 +240,6 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
         outPath.getFileSystem(conf).delete(outPath, true);
 
         job.setMapperClass(CompetencesDistanceMapper.class);
-//        job.setInputFormatClass(AvroKeyValueInputFormat.class);
-//        job.setMapperClass(CompetencesDistanceMapper.class);
-//        AvroJob.setInputKeySchema(job, Schema.create(Schema.Type.STRING));
-//        AvroJob.setInputValueSchema(job, Tfidf.getClassSchema());
 
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);
@@ -265,31 +254,8 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
         MultipleOutputs.addNamedOutput(job, "text", TextOutputFormat.class,
                 Text.class, Text.class);
 
-//        job.setOutputKeyClass(Text.class);
-//        job.setOutputValueClass(Text.class);
-//        job.setReducerClass(CompetencesDistanceReducer.class);
-        //  TableMapReduceUtil.initTableReducerJob("summary_user", CompetencesDistanceReducer.class, job);
-        //TableMapReduceUtil.initTableReducerJob("Distance", CompetencesDistanceReducer.class, job);
         return (job.waitForCompletion(true) ? 0 : 1);
 
-//        HBaseConfiguration conf = HBaseConfiguration.create();
-//        Job job = new Job(conf, "JOB_NAME");
-//        job.setJarByClass(yourclass.class);
-//        job.setMapperClass(yourMapper.class);
-//        job.setMapOutputKeyClass(Text.class);
-//        job.setMapOutputValueClass(Intwritable.class);
-//        FileInputFormat.setInputPaths(job, new Path(inputPath));
-//        TableMapReduceUtil.initTableReducerJob(TABLE,
-//                yourReducer.class, job);
-//        job.setReducerClass(yourReducer.class);
-//        job.waitForCompletion(true);
-//class yourReducer
-//        extends
-//        TableReducer<Text, IntWritable, 
-//        ImmutableBytesWritable>
-//{
-////@override reduce()
-//}
     }
 
 }

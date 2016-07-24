@@ -21,7 +21,6 @@ package eu.edisonproject.classification.tfidf.mapreduce;
  */
 import document.avro.Document;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -30,13 +29,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.avro.Schema;
 import org.apache.avro.mapred.AvroKey;
-import org.apache.avro.mapred.AvroMapper;
-import org.apache.avro.mapred.AvroValue;
 import org.apache.avro.mapreduce.AvroJob;
 import org.apache.avro.mapreduce.AvroKeyInputFormat;
-import org.apache.avro.mapreduce.AvroKeyValueOutputFormat;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 
@@ -50,22 +45,12 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
-import org.apache.hadoop.util.ToolRunner;
 
 public class WordFrequencyInDocDriver extends Configured implements Tool {
 
-    // where to read the frequent itemset
-    // private static final String ITEMSET_PATH = ".." + File.separator + "etc" + File.separator + "itemset.csv";
-    // where to put the data in hdfs when we're done
-    //private static final String OUTPUT_PATH = ".." + File.separator + "etc" + File.separator + "1-word-freq";
-    // where to read the data from.
-    //private static final String INPUT_PATH = ".." + File.separator + "etc" + File.separator + "input";
-    // hashmap for the itemset
+   
     private static List<String> itemset;
 
-    /**
-     *
-     */
     public static class WordFrequencyInDocMapper extends Mapper<AvroKey<Document>, NullWritable, Text, IntWritable> {
 
         public WordFrequencyInDocMapper() {
@@ -161,10 +146,6 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(IntWritable.class);
 
-        //job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
-        //job.setReducerClass(WordFrequencyInDocReducer.class);
-        //AvroJob.setOutputKeySchema(job, Schema.create(Schema.Type.STRING));
-        //AvroJob.setOutputValueSchema(job, Schema.create(Schema.Type.INT));
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Integer.class);
         job.setReducerClass(WordFrequencyInDocReducer.class);

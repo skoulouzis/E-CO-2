@@ -19,18 +19,12 @@ package eu.edisonproject.classification.tfidf.mapreduce;
  *
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
  */
-import tfidf.avro.Tfidf;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.avro.Schema;
-import org.apache.avro.mapred.AvroKey;
-import org.apache.avro.mapred.AvroValue;
-import org.apache.avro.mapreduce.AvroJob;
-import org.apache.avro.mapreduce.AvroKeyValueInputFormat;
-import org.apache.avro.mapreduce.AvroKeyValueOutputFormat;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
@@ -137,15 +131,6 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
         outPath.getFileSystem(conf).delete(outPath, true);
 
         job.setMapperClass(WordsInCorpusTFIDFMapper.class);
-//        job.setInputFormatClass(AvroKeyValueInputFormat.class);
-//        job.setMapperClass(WordsInCorpusTFIDFMapper.class);
-//        AvroJob.setInputKeySchema(job, Schema.create(Schema.Type.STRING));
-//        AvroJob.setInputValueSchema(job, Schema.create(Schema.Type.STRING));       
-//        
-//        job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
-//        job.setReducerClass(WordsInCorpusTFIDFReducer.class);
-//        AvroJob.setOutputKeySchema(job, Schema.create(Schema.Type.STRING));
-//        AvroJob.setOutputValueSchema(job, Tfidf.getClassSchema());
 
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);

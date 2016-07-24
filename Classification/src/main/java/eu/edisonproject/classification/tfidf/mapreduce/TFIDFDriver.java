@@ -136,8 +136,6 @@ public class TFIDFDriver implements ITFIDFDriver {
             try {
                 String[] args1 = {INPUT_PATH1, OUTPUT_PATH1, INPUT_ITEMSET};
                 ToolRunner.run(new WordFrequencyInDocDriver(), args1);
-//                WordFrequencyInDocDriver w=new WordFrequencyInDocDriver();
-//                w.run(args1);
                 
                 String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};
                 ToolRunner.run(new WordCountsForDocsDriver(), args2);
@@ -154,24 +152,6 @@ public class TFIDFDriver implements ITFIDFDriver {
 
     }
 
-//    public void drivePrintIntoCSV() {
-//        // Read the output from avro file
-//        readDistancesOutput();
-//        printCSV();
-//    }
-
-//    public void printCSV() {
-//        WriterFile fileWriter = new WriterFile(finalOutputPath);
-//        String text = "";
-//        for (Distances d : distancesValues) {
-//            text += d.getDocumentId() + " ," + d.getDate() + " ,";
-//            for (Double distance : d.getDistanceArray()) {
-//                text += d + ",";
-//            }
-//            text += "\n";
-//        }
-//        fileWriter.writeFile(text);
-//    }
 
     public void readDistancesOutputAndPrintCSV() {
         ReaderFile rf = new ReaderFile(OUTPUT_PATH4+File.separator+"part-r-00000");
