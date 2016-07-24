@@ -1,0 +1,79 @@
+2016-07-23 13:02:06 NativeCodeLoader [WARN] Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+2016-07-23 13:02:07 RecoverableZooKeeper [INFO] Process identifier=hconnection-0x2b4a2ec7 connecting to ZooKeeper ensemble=localhost:2181
+2016-07-23 13:02:07 ZooKeeper [INFO] Client environment:zookeeper.version=3.4.6-1569965, built on 02/20/2014 09:09 GMT
+2016-07-23 13:02:07 ZooKeeper [INFO] Client environment:host.name=hermes
+2016-07-23 13:02:07 ZooKeeper [INFO] Client environment:java.version=1.8.0_101
+2016-07-23 13:02:07 ZooKeeper [INFO] Client environment:java.vendor=Oracle Corporation
+2016-07-23 13:02:07 ZooKeeper [INFO] Client environment:java.home=/usr/lib/jvm/java-8-oracle/jre
+2016-07-23 13:02:07 ZooKeeper [INFO] Client environment:java.class.path=target/Traning-1.0-SNAPSHOT-jar-with-dependencies.jar
+2016-07-23 13:02:07 ZooKeeper [INFO] Client environment:java.library.path=/usr/java/packages/lib/amd64:/usr/lib64:/lib64:/lib:/usr/lib
+2016-07-23 13:02:07 ZooKeeper [INFO] Client environment:java.io.tmpdir=/tmp
+2016-07-23 13:02:07 ZooKeeper [INFO] Client environment:java.compiler=<NA>
+2016-07-23 13:02:07 ZooKeeper [INFO] Client environment:os.name=Linux
+2016-07-23 13:02:07 ZooKeeper [INFO] Client environment:os.arch=amd64
+2016-07-23 13:02:07 ZooKeeper [INFO] Client environment:os.version=4.2.0-36-generic
+2016-07-23 13:02:07 ZooKeeper [INFO] Client environment:user.name=alogo
+2016-07-23 13:02:07 ZooKeeper [INFO] Client environment:user.home=/home/alogo
+2016-07-23 13:02:07 ZooKeeper [INFO] Client environment:user.dir=/home/alogo/workspace/E-COCO/Traning
+2016-07-23 13:02:07 ZooKeeper [INFO] Initiating client connection, connectString=localhost:2181 sessionTimeout=90000 watcher=hconnection-0x2b4a2ec70x0, quorum=localhost:2181, baseZNode=/hbase
+2016-07-23 13:02:07 ClientCnxn [INFO] Opening socket connection to server localhost/127.0.0.1:2181. Will not attempt to authenticate using SASL (unknown error)
+2016-07-23 13:02:07 ClientCnxn [INFO] Socket connection established to localhost/127.0.0.1:2181, initiating session
+2016-07-23 13:02:07 ClientCnxn [INFO] Session establishment complete on server localhost/127.0.0.1:2181, sessionid = 0x1561730f27d0006, negotiated timeout = 40000
+2016-07-23 13:02:08 RecoverableZooKeeper [INFO] Process identifier=hconnection-0x2cd2a21f connecting to ZooKeeper ensemble=localhost:2181
+2016-07-23 13:02:08 ZooKeeper [INFO] Initiating client connection, connectString=localhost:2181 sessionTimeout=90000 watcher=hconnection-0x2cd2a21f0x0, quorum=localhost:2181, baseZNode=/hbase
+2016-07-23 13:02:08 ClientCnxn [INFO] Opening socket connection to server localhost/127.0.0.1:2181. Will not attempt to authenticate using SASL (unknown error)
+2016-07-23 13:02:08 ClientCnxn [INFO] Socket connection established to localhost/127.0.0.1:2181, initiating session
+2016-07-23 13:02:09 ClientCnxn [INFO] Session establishment complete on server localhost/127.0.0.1:2181, sessionid = 0x1561730f27d0007, negotiated timeout = 40000
+2016-07-23 13:02:09 RecoverableZooKeeper [INFO] Process identifier=hconnection-0x5a56cdac connecting to ZooKeeper ensemble=localhost:2181
+2016-07-23 13:02:09 ZooKeeper [INFO] Initiating client connection, connectString=localhost:2181 sessionTimeout=90000 watcher=hconnection-0x5a56cdac0x0, quorum=localhost:2181, baseZNode=/hbase
+2016-07-23 13:02:09 ClientCnxn [INFO] Opening socket connection to server localhost/127.0.0.1:2181. Will not attempt to authenticate using SASL (unknown error)
+2016-07-23 13:02:09 ClientCnxn [INFO] Socket connection established to localhost/127.0.0.1:2181, initiating session
+2016-07-23 13:02:09 ClientCnxn [INFO] Session establishment complete on server localhost/127.0.0.1:2181, sessionid = 0x1561730f27d0008, negotiated timeout = 40000
+2016-07-23 13:02:10 RecoverableZooKeeper [INFO] Process identifier=hconnection-0x66f57048 connecting to ZooKeeper ensemble=localhost:2181
+2016-07-23 13:02:10 ZooKeeper [INFO] Initiating client connection, connectString=localhost:2181 sessionTimeout=90000 watcher=hconnection-0x66f570480x0, quorum=localhost:2181, baseZNode=/hbase
+2016-07-23 13:02:10 ClientCnxn [INFO] Opening socket connection to server localhost/127.0.0.1:2181. Will not attempt to authenticate using SASL (unknown error)
+2016-07-23 13:02:10 ClientCnxn [INFO] Socket connection established to localhost/127.0.0.1:2181, initiating session
+2016-07-23 13:02:10 ClientCnxn [INFO] Session establishment complete on server localhost/127.0.0.1:2181, sessionid = 0x1561730f27d0009, negotiated timeout = 40000
+2016-07-23 13:04:22 TermsExtractor [INFO] Using Stanford POS tagger..
+2016-07-23 13:51:00 NativeCodeLoader [WARN] Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+2016-07-23 13:51:00 RecoverableZooKeeper [INFO] Process identifier=hconnection-0x22555ebf connecting to ZooKeeper ensemble=localhost:2181
+2016-07-23 13:51:00 ZooKeeper [INFO] Client environment:zookeeper.version=3.4.6-1569965, built on 02/20/2014 09:09 GMT
+2016-07-23 13:51:00 ZooKeeper [INFO] Client environment:host.name=hermes
+2016-07-23 13:51:00 ZooKeeper [INFO] Client environment:java.version=1.8.0_101
+2016-07-23 13:51:00 ZooKeeper [INFO] Client environment:java.vendor=Oracle Corporation
+2016-07-23 13:51:00 ZooKeeper [INFO] Client environment:java.home=/usr/lib/jvm/java-8-oracle/jre
+2016-07-23 13:51:00 ZooKeeper [INFO] Client environment:java.class.path=target/Traning-1.0-SNAPSHOT-jar-with-dependencies.jar
+2016-07-23 13:51:00 ZooKeeper [INFO] Client environment:java.library.path=/usr/java/packages/lib/amd64:/usr/lib64:/lib64:/lib:/usr/lib
+2016-07-23 13:51:00 ZooKeeper [INFO] Client environment:java.io.tmpdir=/tmp
+2016-07-23 13:51:00 ZooKeeper [INFO] Client environment:java.compiler=<NA>
+2016-07-23 13:51:00 ZooKeeper [INFO] Client environment:os.name=Linux
+2016-07-23 13:51:00 ZooKeeper [INFO] Client environment:os.arch=amd64
+2016-07-23 13:51:00 ZooKeeper [INFO] Client environment:os.version=4.2.0-36-generic
+2016-07-23 13:51:00 ZooKeeper [INFO] Client environment:user.name=alogo
+2016-07-23 13:51:00 ZooKeeper [INFO] Client environment:user.home=/home/alogo
+2016-07-23 13:51:00 ZooKeeper [INFO] Client environment:user.dir=/home/alogo/workspace/E-COCO/Traning
+2016-07-23 13:51:00 ZooKeeper [INFO] Initiating client connection, connectString=localhost:2181 sessionTimeout=90000 watcher=hconnection-0x22555ebf0x0, quorum=localhost:2181, baseZNode=/hbase
+2016-07-23 13:51:00 ClientCnxn [INFO] Opening socket connection to server localhost/127.0.0.1:2181. Will not attempt to authenticate using SASL (unknown error)
+2016-07-23 13:51:00 ClientCnxn [INFO] Socket connection established to localhost/127.0.0.1:2181, initiating session
+2016-07-23 13:51:00 ClientCnxn [INFO] Session establishment complete on server localhost/127.0.0.1:2181, sessionid = 0x1561730f27d001a, negotiated timeout = 40000
+2016-07-23 13:51:38 NativeCodeLoader [WARN] Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+2016-07-23 13:51:38 RecoverableZooKeeper [INFO] Process identifier=hconnection-0x22555ebf connecting to ZooKeeper ensemble=localhost:2181
+2016-07-23 13:51:38 ZooKeeper [INFO] Client environment:zookeeper.version=3.4.6-1569965, built on 02/20/2014 09:09 GMT
+2016-07-23 13:51:38 ZooKeeper [INFO] Client environment:host.name=hermes
+2016-07-23 13:51:38 ZooKeeper [INFO] Client environment:java.version=1.8.0_101
+2016-07-23 13:51:38 ZooKeeper [INFO] Client environment:java.vendor=Oracle Corporation
+2016-07-23 13:51:38 ZooKeeper [INFO] Client environment:java.home=/usr/lib/jvm/java-8-oracle/jre
+2016-07-23 13:51:38 ZooKeeper [INFO] Client environment:java.class.path=target/Traning-1.0-SNAPSHOT-jar-with-dependencies.jar
+2016-07-23 13:51:38 ZooKeeper [INFO] Client environment:java.library.path=/usr/java/packages/lib/amd64:/usr/lib64:/lib64:/lib:/usr/lib
+2016-07-23 13:51:38 ZooKeeper [INFO] Client environment:java.io.tmpdir=/tmp
+2016-07-23 13:51:38 ZooKeeper [INFO] Client environment:java.compiler=<NA>
+2016-07-23 13:51:38 ZooKeeper [INFO] Client environment:os.name=Linux
+2016-07-23 13:51:38 ZooKeeper [INFO] Client environment:os.arch=amd64
+2016-07-23 13:51:38 ZooKeeper [INFO] Client environment:os.version=4.2.0-36-generic
+2016-07-23 13:51:38 ZooKeeper [INFO] Client environment:user.name=alogo
+2016-07-23 13:51:38 ZooKeeper [INFO] Client environment:user.home=/home/alogo
+2016-07-23 13:51:38 ZooKeeper [INFO] Client environment:user.dir=/home/alogo/workspace/E-COCO/Traning
+2016-07-23 13:51:38 ZooKeeper [INFO] Initiating client connection, connectString=localhost:2181 sessionTimeout=90000 watcher=hconnection-0x22555ebf0x0, quorum=localhost:2181, baseZNode=/hbase
+2016-07-23 13:51:38 ClientCnxn [INFO] Opening socket connection to server localhost/127.0.0.1:2181. Will not attempt to authenticate using SASL (unknown error)
+2016-07-23 13:51:38 ClientCnxn [INFO] Socket connection established to localhost/127.0.0.1:2181, initiating session
+2016-07-23 13:51:38 ClientCnxn [INFO] Session establishment complete on server localhost/127.0.0.1:2181, sessionid = 0x1561730f27d001b, negotiated timeout = 40000

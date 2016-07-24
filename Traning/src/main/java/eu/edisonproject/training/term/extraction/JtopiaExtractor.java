@@ -112,8 +112,11 @@ public class JtopiaExtractor implements TermExtractor {
         for (String t : terms) {
             Double tf;
             String term = t.toLowerCase().trim().replaceAll(" ", "_");
-            if (term.endsWith("_")) {
+            while (term.endsWith("_")) {
                 term = term.substring(0, term.lastIndexOf("_"));
+            }
+            while (term.startsWith("_")) {
+                term = term.substring(term.indexOf("_") + 1, term.length());
             }
             if (keywordsDictionaray.containsKey(term)) {
                 tf = keywordsDictionaray.get(term);

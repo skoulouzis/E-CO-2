@@ -104,15 +104,15 @@ public class LuceneExtractor implements TermExtractor {
         fileContents.deleteCharAt(fileContents.length() - 1);
         fileContents.setLength(fileContents.length());
 
-        String contents = fileContents.toString().replaceAll("_", " ");
+        String contents = fileContents.toString().trim().replaceAll("_", " ");
         contents = contents.replaceAll("\\s{2,}", " ");
 
-        tokenizer.setDescription(contents);
+        tokenizer.setDescription(contents.trim());
         String cleanText = tokenizer.execute();
-        lematizer.setDescription(cleanText);
+        lematizer.setDescription(cleanText.trim());
 //        System.err.println(cleanText);
         String lematizedText = lematizer.execute();
-        ng.setDescription(lematizedText);
+        ng.setDescription(lematizedText.trim());
         String ngText = ng.execute();
         ngText += lematizedText;
         Map<String, Double> termDictionaray = new HashMap();
@@ -124,10 +124,12 @@ public class LuceneExtractor implements TermExtractor {
 //            if (itemsMap.containsKey(term)) {
 //            }
             term = term.toLowerCase().trim().replaceAll(" ", "_");
-            if (term.endsWith("_")) {
+            while (term.endsWith("_")) {
                 term = term.substring(0, term.lastIndexOf("_"));
             }
-
+            while (term.startsWith("_")) {
+                term = term.substring(term.indexOf("_") + 1, term.length());
+            }
             Double tf;
             if (termDictionaray.containsKey(term)) {
                 tf = termDictionaray.get(term);
