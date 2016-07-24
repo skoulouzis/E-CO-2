@@ -60,11 +60,24 @@ public class DBTools {
     public static void portTermCache2Hbase(String path) throws IOException, InterruptedException, ParseException {
         File cacheDBFile = new File(path);
         Map<String, Set<String>> termCache = getTermCache(cacheDBFile);
-        for (String id : termCache.keySet()) {
-            Set<String> val = termCache.get(id);
-            Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: " + id);
-            addPossibleTermsToDB(id, val);
+        List<String> families = new ArrayList<>();
+        families.add("jsonString");
+        families.add("ambiguousTerm");
+        createTable(TERMS_TBL_NAME, families);
+        try (Admin admin = getConn().getAdmin()) {
+            try (Table tbl = getConn().getTable(TERMS_TBL_NAME)) {
+                for (String id : termCache.keySet()) {
+                    if (id != null && id.length() > 0) {
+                        Set<String> val = termCache.get(id);
+                        Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: {0} ", new Object[]{id});
+                        addPossibleTermsToDB(id, val, tbl);
+                    }
+
+                }
+            }
+            admin.flush(TERMS_TBL_NAME);
         }
+
     }
 
     public static void portBabelNetCache2Hbase(String path) throws IOException, InterruptedException {
@@ -77,9 +90,11 @@ public class DBTools {
             try (Admin admin = getConn().getAdmin()) {
                 try (Table tbl = getConn().getTable(WORDS_TBL_NAME)) {
                     for (String w : wordIDCache.keySet()) {
-                        List<String> ids = wordIDCache.get(w);
-                        Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: {0}", w);
-                        putInWordINDB(w, ids, tbl);
+                        if (w != null && w.length() > 0) {
+                            List<String> ids = wordIDCache.get(w);
+                            Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: {0}", w);
+                            putInWordINDB(w, ids, tbl);
+                        }
                     }
                 }
                 admin.flush(WORDS_TBL_NAME);
@@ -94,9 +109,11 @@ public class DBTools {
             try (Admin admin = getConn().getAdmin()) {
                 try (Table tbl = getConn().getTable(SYNSET_TBL_NAME)) {
                     for (String id : synsetCache.keySet()) {
-                        String val = synsetCache.get(id);
-                        Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: {0}", id);
-                        addToSynsetDB(id, val, tbl);
+                        if (id != null && id.length() > 0) {
+                            String val = synsetCache.get(id);
+                            Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: {0}", id);
+                            addToSynsetDB(id, val, tbl);
+                        }
                     }
                 }
                 admin.flush(SYNSET_TBL_NAME);
@@ -111,9 +128,12 @@ public class DBTools {
             try (Admin admin = getConn().getAdmin()) {
                 try (Table tbl = getConn().getTable(DISAMBIGUATE_TBL_NAME)) {
                     for (String sentence : disambiguateCache.keySet()) {
-                        String val = disambiguateCache.get(sentence);
-                        Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: {0}", sentence);
-                        putInDisambiguateDB(sentence, val, tbl);
+                        if (sentence != null && sentence.length() > 0) {
+                            String val = disambiguateCache.get(sentence);
+                            Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: {0}", sentence);
+                            putInDisambiguateDB(sentence, val, tbl);
+                        }
+
                     }
                 }
                 admin.flush(DISAMBIGUATE_TBL_NAME);
@@ -129,9 +149,11 @@ public class DBTools {
             try (Admin admin = getConn().getAdmin()) {
                 try (Table tbl = getConn().getTable(EDGES_TBL_NAME)) {
                     for (String id : edgesCache.keySet()) {
-                        String val = edgesCache.get(id);
-                        Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: {0}", id);
-                        addToEdgesDB(id, val, tbl);
+                        if (id != null && id.length() > 0) {
+                            String val = edgesCache.get(id);
+                            Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: {0}", id);
+                            addToEdgesDB(id, val, tbl);
+                        }
                     }
                 }
                 admin.flush(EDGES_TBL_NAME);
@@ -140,7 +162,6 @@ public class DBTools {
     }
 
     private static void putInDisambiguateDB(String sentence, String jsonString, Table tbl) throws IOException {
-
         Put put = new Put(Bytes.toBytes(sentence));
         put.addColumn(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString"), Bytes.toBytes(jsonString));
         tbl.put(put);
@@ -180,7 +201,7 @@ public class DBTools {
         strIds.setLength(strIds.length());
 
         Put put = new Put(Bytes.toBytes(word));
-        Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: " + word + " , " + strIds);
+        Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: {0} , {1}", new Object[]{word, strIds});
         put.addColumn(Bytes.toBytes("csvIds"), Bytes.toBytes("csvIds"), Bytes.toBytes(strIds.toString()));
         tbl.put(put);
 
@@ -244,25 +265,18 @@ public class DBTools {
         return db.getHashMap("termCacheDB");
     }
 
-    protected static void addPossibleTermsToDB(String ambiguousTerm, Set<String> terms) throws IOException, ParseException {
-        List<String> families = new ArrayList<>();
-        families.add("jsonString");
-        families.add("ambiguousTerm");
-        createTable(TERMS_TBL_NAME, families);
-        try (Admin admin = getConn().getAdmin()) {
-            try (Table tbl = getConn().getTable(TERMS_TBL_NAME)) {
-                for (String oldSchemaJsonStr : terms) {
-                    String newSchemaJsonStr = convertSchema(oldSchemaJsonStr);
-                    Term t = TermFactory.create(newSchemaJsonStr);
-                    Put put = new Put(Bytes.toBytes(t.getUid().toString()));
+    protected static void addPossibleTermsToDB(String ambiguousTerm, Set<String> terms, Table tbl) throws IOException, ParseException {
+
+        for (String oldSchemaJsonStr : terms) {
+            String newSchemaJsonStr = convertSchema(oldSchemaJsonStr);
+            Term t = TermFactory.create(newSchemaJsonStr);
+            Put put = new Put(Bytes.toBytes(t.getUid().toString()));
 //                    String oldSchemaJsonStr = TermFactory.term2Json(t).toJSONString();
-                    put.addColumn(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString"), Bytes.toBytes(newSchemaJsonStr));
-                    put.addColumn(Bytes.toBytes("ambiguousTerm"), Bytes.toBytes("ambiguousTerm"), Bytes.toBytes(ambiguousTerm));
-                    tbl.put(put);
-                }
-            }
-            admin.flush(TERMS_TBL_NAME);
+            put.addColumn(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString"), Bytes.toBytes(newSchemaJsonStr));
+            put.addColumn(Bytes.toBytes("ambiguousTerm"), Bytes.toBytes("ambiguousTerm"), Bytes.toBytes(ambiguousTerm));
+            tbl.put(put);
         }
+
     }
 
     private static String convertSchema(String oldSchemaJsonStr) {
