@@ -56,6 +56,8 @@ public class DBTools {
     public static final TableName DISAMBIGUATE_TBL_NAME = TableName.valueOf("disambiguate");
     public static final TableName TERMS_TBL_NAME = TableName.valueOf("terms");
     private static Connection conn;
+    private static boolean wordsTableCreated;
+    private static boolean edgesTableCreated;
 
     public static void portTermCache2Hbase(String path) throws IOException, InterruptedException, ParseException {
         File cacheDBFile = new File(path);
@@ -70,72 +72,88 @@ public class DBTools {
     public static void portBabelNetCache2Hbase(String path) throws IOException, InterruptedException {
         File cacheDBFile = new File(path);
         Map<String, List<String>> wordIDCache = getFromWordIDCache(cacheDBFile);
+        List<String> families = new ArrayList<>();
+        families.add("csvIds");
+        createTable(WORDS_TBL_NAME, families);
         if (wordIDCache != null) {
-            for (String w : wordIDCache.keySet()) {
-                List<String> ids = wordIDCache.get(w);
-                Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: " + w);
-                putInWordINDB(w, ids);
+            try (Admin admin = getConn().getAdmin()) {
+                try (Table tbl = getConn().getTable(WORDS_TBL_NAME)) {
+                    for (String w : wordIDCache.keySet()) {
+                        List<String> ids = wordIDCache.get(w);
+                        Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: {0}", w);
+                        putInWordINDB(w, ids, tbl);
+                    }
+                }
+                admin.flush(EDGES_TBL_NAME);
             }
         }
 
         Map<String, String> synsetCache = getFromSynsetCache(cacheDBFile);
+        families = new ArrayList<>();
+        families.add("jsonString");
+        createTable(SYNSET_TBL_NAME, families);
         if (synsetCache != null) {
-            for (String id : synsetCache.keySet()) {
-                String val = synsetCache.get(id);
-                Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: " + id);
-                addToSynsetDB(id, val);
+            try (Admin admin = getConn().getAdmin()) {
+                try (Table tbl = getConn().getTable(SYNSET_TBL_NAME)) {
+                    for (String id : synsetCache.keySet()) {
+                        String val = synsetCache.get(id);
+                        Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: {0}", id);
+                        addToSynsetDB(id, val, tbl);
+                    }
+                }
+                admin.flush(EDGES_TBL_NAME);
             }
         }
 
         Map<String, String> disambiguateCache = getDisambiguateCache(cacheDBFile);
+        families = new ArrayList<>();
+        families.add("jsonString");
+        createTable(DISAMBIGUATE_TBL_NAME, families);
         if (disambiguateCache != null) {
-            for (String sentence : disambiguateCache.keySet()) {
-                String val = disambiguateCache.get(sentence);
-                Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: " + sentence);
-                putInDisambiguateDB(sentence, val);
+            try (Admin admin = getConn().getAdmin()) {
+                try (Table tbl = getConn().getTable(DISAMBIGUATE_TBL_NAME)) {
+                    for (String sentence : disambiguateCache.keySet()) {
+                        String val = disambiguateCache.get(sentence);
+                        Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: {0}", sentence);
+                        putInDisambiguateDB(sentence, val, tbl);
+                    }
+                }
+                admin.flush(EDGES_TBL_NAME);
             }
         }
 
         Map<String, String> edgesCache = getEdgesCache(cacheDBFile);
+        families = new ArrayList<>();
+        families.add("jsonString");
+        createTable(EDGES_TBL_NAME, families);
+
         if (edgesCache != null) {
-            for (String id : edgesCache.keySet()) {
-                String val = edgesCache.get(id);
-                Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: " + id);
-                addToEdgesDB(id, val);
+            try (Admin admin = getConn().getAdmin()) {
+                try (Table tbl = getConn().getTable(EDGES_TBL_NAME)) {
+                    for (String id : edgesCache.keySet()) {
+                        String val = edgesCache.get(id);
+                        Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: {0}", id);
+                        addToEdgesDB(id, val, tbl);
+                    }
+                }
+                admin.flush(EDGES_TBL_NAME);
             }
-        }
-
-    }
-
-    private static void putInDisambiguateDB(String sentence, String jsonString) throws IOException {
-
-        List<String> families = new ArrayList<>();
-        families.add("jsonString");
-        createTable(DISAMBIGUATE_TBL_NAME, families);
-
-        try (Admin admin = getConn().getAdmin()) {
-            try (Table tbl = getConn().getTable(DISAMBIGUATE_TBL_NAME)) {
-                Put put = new Put(Bytes.toBytes(sentence));
-                put.addColumn(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString"), Bytes.toBytes(jsonString));
-                tbl.put(put);
-            }
-            admin.flush(DISAMBIGUATE_TBL_NAME);
         }
     }
 
-    private static void addToSynsetDB(String id, String json) throws IOException {
-        List<String> families = new ArrayList<>();
-        families.add("jsonString");
-        createTable(SYNSET_TBL_NAME, families);
+    private static void putInDisambiguateDB(String sentence, String jsonString, Table tbl) throws IOException {
 
-        try (Admin admin = getConn().getAdmin()) {
-            try (Table tbl = getConn().getTable(SYNSET_TBL_NAME)) {
-                Put put = new Put(Bytes.toBytes(id));
-                put.addColumn(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString"), Bytes.toBytes(json));
-                tbl.put(put);
-            }
-            admin.flush(SYNSET_TBL_NAME);
-        }
+        Put put = new Put(Bytes.toBytes(sentence));
+        put.addColumn(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString"), Bytes.toBytes(jsonString));
+        tbl.put(put);
+
+    }
+
+    private static void addToSynsetDB(String id, String json, Table tbl) throws IOException {
+        Put put = new Put(Bytes.toBytes(id));
+        put.addColumn(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString"), Bytes.toBytes(json));
+        tbl.put(put);
+
     }
 
     private static Map<String, String> getFromSynsetCache(File cacheDBFile) throws InterruptedException, IOException {
@@ -154,10 +172,7 @@ public class DBTools {
         return wordIDCache;
     }
 
-    public static void putInWordINDB(String word, List<String> ids) throws IOException {
-        List<String> families = new ArrayList<>();
-        families.add("csvIds");
-        createTable(WORDS_TBL_NAME, families);
+    public static void putInWordINDB(String word, List<String> ids, Table tbl) throws IOException {
 
         StringBuilder strIds = new StringBuilder();
         for (String id : ids) {
@@ -166,14 +181,11 @@ public class DBTools {
         strIds.deleteCharAt(strIds.length() - 1);
         strIds.setLength(strIds.length());
 
-        try (Admin admin = getConn().getAdmin()) {
-            try (Table tbl = getConn().getTable(WORDS_TBL_NAME)) {
-                Put put = new Put(Bytes.toBytes(word));
-                put.addColumn(Bytes.toBytes("csvIds"), Bytes.toBytes("csvIds"), Bytes.toBytes(strIds.toString()));
-                tbl.put(put);
-            }
-            admin.flush(WORDS_TBL_NAME);
-        }
+        Put put = new Put(Bytes.toBytes(word));
+        Logger.getLogger(DBTools.class.getName()).log(Level.INFO, "Adding: " + word + " , " + strIds);
+        put.addColumn(Bytes.toBytes("csvIds"), Bytes.toBytes("csvIds"), Bytes.toBytes(strIds.toString()));
+        tbl.put(put);
+
     }
 
     public static void createTable(TableName tblName, List<String> families) throws IOException {
@@ -220,19 +232,11 @@ public class DBTools {
         return db.getHashMap("edgesCacheDB");
     }
 
-    private static void addToEdgesDB(CharSequence id, String jsonString) throws IOException {
-        List<String> families = new ArrayList<>();
-        families.add("jsonString");
-        createTable(EDGES_TBL_NAME, families);
+    private static void addToEdgesDB(CharSequence id, String jsonString, Table tbl) throws IOException {
+        Put put = new Put(Bytes.toBytes(id.toString()));
+        put.addColumn(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString"), Bytes.toBytes(jsonString));
+        tbl.put(put);
 
-        try (Admin admin = getConn().getAdmin()) {
-            try (Table tbl = getConn().getTable(EDGES_TBL_NAME)) {
-                Put put = new Put(Bytes.toBytes(id.toString()));
-                put.addColumn(Bytes.toBytes("jsonString"), Bytes.toBytes("jsonString"), Bytes.toBytes(jsonString));
-                tbl.put(put);
-            }
-            admin.flush(EDGES_TBL_NAME);
-        }
     }
 
     private static Map<String, Set<String>> getTermCache(File cacheDBFile) {
