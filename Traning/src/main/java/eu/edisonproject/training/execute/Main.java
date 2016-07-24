@@ -107,8 +107,8 @@ public class Main {
                 case "w":
                     wsd(cmd.getOptionValue("input"), cmd.getOptionValue("output"));
                     break;
-//                case "t":
-//                    calculateTFIDF(cmd.getOptionValue("input"), cmd.getOptionValue("output"));
+                case "t":
+                    calculateTFIDF(cmd.getOptionValue("input"), cmd.getOptionValue("output"));
                 default:
                     System.out.println(helpmasg);
             }
@@ -215,7 +215,6 @@ public class Main {
         } else {
             tfidfDriver.executeTFIDF(inFile.getAbsolutePath());
         }
-
         tfidfDriver.driveProcessResizeVector();
 
     }

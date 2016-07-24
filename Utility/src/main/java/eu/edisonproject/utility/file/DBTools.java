@@ -56,8 +56,6 @@ public class DBTools {
     public static final TableName DISAMBIGUATE_TBL_NAME = TableName.valueOf("disambiguate");
     public static final TableName TERMS_TBL_NAME = TableName.valueOf("terms");
     private static Connection conn;
-    private static boolean wordsTableCreated;
-    private static boolean edgesTableCreated;
 
     public static void portTermCache2Hbase(String path) throws IOException, InterruptedException, ParseException {
         File cacheDBFile = new File(path);
@@ -84,7 +82,7 @@ public class DBTools {
                         putInWordINDB(w, ids, tbl);
                     }
                 }
-                admin.flush(EDGES_TBL_NAME);
+                admin.flush(WORDS_TBL_NAME);
             }
         }
 
@@ -101,7 +99,7 @@ public class DBTools {
                         addToSynsetDB(id, val, tbl);
                     }
                 }
-                admin.flush(EDGES_TBL_NAME);
+                admin.flush(SYNSET_TBL_NAME);
             }
         }
 
@@ -118,7 +116,7 @@ public class DBTools {
                         putInDisambiguateDB(sentence, val, tbl);
                     }
                 }
-                admin.flush(EDGES_TBL_NAME);
+                admin.flush(DISAMBIGUATE_TBL_NAME);
             }
         }
 
