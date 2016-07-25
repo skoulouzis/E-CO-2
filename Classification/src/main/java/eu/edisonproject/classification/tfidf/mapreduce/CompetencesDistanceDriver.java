@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -60,7 +61,8 @@ import org.apache.hadoop.util.Tool;
 
 public class CompetencesDistanceDriver extends Configured implements Tool {
 
-    private static List<HashMap<String, Double>> listOfCompetencesVector;
+   // private static List<HashMap<String, Double>> listOfCompetencesVector;
+    private static HashMap<String, HashMap<String, Double>> competencesList;
 
     private static String[] data_analytics = {"predictive analytics", "statistical techniques",
         "analytics for decision making", "data blending", "big data analytics platform"};
@@ -80,7 +82,8 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
     private void readCompetences(String arg) {
         File fileDir = new File(arg);
         File[] listOfCompetencesFile = fileDir.listFiles();
-        listOfCompetencesVector = new LinkedList<>();
+        //listOfCompetencesVector = new LinkedList<>();
+        competencesList = new HashMap<>();
         for (File f : listOfCompetencesFile) {
             HashMap<String, Double> competenceFile = new HashMap<>();
             try {
@@ -95,7 +98,8 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
             } catch (IOException ex) {
                 Logger.getLogger(CompetencesDistanceDriver.class.getName()).log(Level.SEVERE, "IO Exception", ex);
             }
-            listOfCompetencesVector.add(competenceFile);
+         //   listOfCompetencesVector.add(competenceFile);
+            competencesList.put(f.getName().replace(".csv", ""), competenceFile);
 
         }
     }
@@ -132,6 +136,7 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
         @Override
         protected void reduce(Text text, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             //The object are grouped for them documentId
+            HashMap<String, Double> distancesNameAndValue = new HashMap<>();
             HashMap<String, Double> documentWords = new HashMap<>();
             List<CharSequence> wordToWrite = new LinkedList<>();
             List<CharSequence> valuesToWrite = new LinkedList<>();
@@ -141,9 +146,15 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
                 documentWords.put(line[0], Double.parseDouble(line[1].replace(",", ".")));
             }
 
-            List<Double> distances = new LinkedList<Double>();
+          //  List<Double> distances = new LinkedList<Double>();
             CosineSimilarityMatrix cosineFunction = new CosineSimilarityMatrix();
-            for (HashMap<String, Double> competence : listOfCompetencesVector) {
+
+            //for (HashMap<String, Double> competence : listOfCompetencesVector) {
+            Set<String> names = competencesList.keySet();
+            Iterator<String> iter = names.iterator();
+            while (iter.hasNext()) {
+                String key = iter.next();
+                HashMap<String, Double> competence = competencesList.get(key);
                 HashMap<String, Double> documentToCompetenceSpace = new HashMap<>();
                 Set<String> words = competence.keySet();
                 for (String word : words) {
@@ -153,17 +164,17 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
                         documentToCompetenceSpace.put(word, 0.0);
                     }
                 }
-
-                distances.add(cosineFunction.computeDistance(competence.values(), documentToCompetenceSpace.values()));
+                distancesNameAndValue.put(key, cosineFunction.computeDistance(competence.values(), documentToCompetenceSpace.values()));
+                //distances.add(cosineFunction.computeDistance(competence.values(), documentToCompetenceSpace.values()));
 
             }
             System.out.println("Distance" + text);
             String[] docIdAndDate = text.toString().split("@");
-            Distances distanceDocument = new Distances();
-            distanceDocument.setTitle(docIdAndDate[1]);
-            distanceDocument.setDocumentId(docIdAndDate[0]);
-            distanceDocument.setDate(docIdAndDate[2]);
-            distanceDocument.setDistanceArray(distances);
+//            Distances distanceDocument = new Distances();
+//            distanceDocument.setTitle(docIdAndDate[1]);
+//            distanceDocument.setDocumentId(docIdAndDate[0]);
+//            distanceDocument.setDate(docIdAndDate[2]);
+//            distanceDocument.setDistanceArray(distances);
 
 //            String distancesString = "";
 //            for (Double d : distances) {
@@ -186,27 +197,36 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
                     put.addColumn(Bytes.toBytes("info"), Bytes.toBytes("title"), Bytes.toBytes(docIdAndDate[1]));
                     put.addColumn(Bytes.toBytes("info"), Bytes.toBytes("date"), Bytes.toBytes(docIdAndDate[2]));
                     // column family distance
-                    int count = 0;
-                    for (String s : data_analytics) {
-                        put.addColumn(Bytes.toBytes("data_analytics"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
-                        count++;
+                    Set<String> columnFamilyAndQualifier = distancesNameAndValue.keySet();
+                    Iterator<String> iterColumn = columnFamilyAndQualifier.iterator();
+                    while (iterColumn.hasNext()) {
+                        String key = iter.next();
+                        Double d = distancesNameAndValue.get(key);
+                        String columnFamily = key.split("-")[0];
+                        String columnQualifier = key.split("-")[1];
+                        put.addColumn(Bytes.toBytes(columnFamily), Bytes.toBytes(columnQualifier), Bytes.toBytes(d));
                     }
-                    for (String s : data_management_curation) {
-                        put.addColumn(Bytes.toBytes("data_management_curation"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
-                        count++;
-                    }
-                    for (String s : data_science_engineering) {
-                        put.addColumn(Bytes.toBytes("data_science_engineering"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
-                        count++;
-                    }
-                    for (String s : scientific_research_methods) {
-                        put.addColumn(Bytes.toBytes("scintific_research_methods"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
-                        count++;
-                    }
-                    for (String s : domain_knowledge) {
-                        put.addColumn(Bytes.toBytes("domain_knowledge"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
-                        count++;
-                    }
+//                    int count = 0;
+//                    for (String s : data_analytics) {
+//                        put.addColumn(Bytes.toBytes("data_analytics"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
+//                        count++;
+//                    }
+//                    for (String s : data_management_curation) {
+//                        put.addColumn(Bytes.toBytes("data_management_curation"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
+//                        count++;
+//                    }
+//                    for (String s : data_science_engineering) {
+//                        put.addColumn(Bytes.toBytes("data_science_engineering"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
+//                        count++;
+//                    }
+//                    for (String s : scientific_research_methods) {
+//                        put.addColumn(Bytes.toBytes("scintific_research_methods"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
+//                        count++;
+//                    }
+//                    for (String s : domain_knowledge) {
+//                        put.addColumn(Bytes.toBytes("domain_knowledge"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
+//                        count++;
+//                    }
                     tbl.put(put);
                     System.out.println(docIdAndDate[0] + "...... " + docIdAndDate[1]);
                     context.write(new ImmutableBytesWritable(docIdAndDate[0].getBytes()), put);
