@@ -30,7 +30,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -61,7 +60,7 @@ import org.apache.hadoop.util.Tool;
 public class CompetencesDistanceDriver extends Configured implements Tool {
 
     // private static List<HashMap<String, Double>> listOfCompetencesVector;
-    private static HashMap<String, HashMap<String, Double>> competencesList;
+    private static HashMap<String, HashMap<String, Double>> CATEGORIES_LIST;
 
 //    private static String[] data_analytics = {"predictive analytics", "statistical techniques",
 //        "analytics for decision making", "data blending", "big data analytics platform"};
@@ -75,30 +74,30 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 //    private static String[] domain_knowledge = {"business process", "improve existing services",
 //        "participate financial decisions", "analytic support to other organisation", "analyse data for marketing",
 //        "analyse customer data"};
-    public static final TableName JOB_POST_COMETENCE_TBL_NAME = TableName.valueOf("jobpostcompetence");
+    public static final TableName JOB_POST_COMETENCE_TBL_NAME = TableName.valueOf("categories");
     private static final Logger LOGGER = Logger.getLogger(CompetencesDistanceDriver.class.getName());
 
     private void readCompetences(String arg) {
         File fileDir = new File(arg);
         File[] listOfCompetencesFile = fileDir.listFiles();
         //listOfCompetencesVector = new LinkedList<>();
-        competencesList = new HashMap<>();
+        CATEGORIES_LIST = new HashMap<>();
         for (File f : listOfCompetencesFile) {
-            HashMap<String, Double> competenceFile = new HashMap<>();
+            HashMap<String, Double> categoriesFile = new HashMap<>();
             try {
                 BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f.getAbsolutePath())));
                 String line = "";
                 while ((line = br.readLine()) != null) {
                     String[] value = line.split(";");
-                    competenceFile.put(value[0], Double.parseDouble(value[1]));
+                    categoriesFile.put(value[0], Double.parseDouble(value[1]));
                 }
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(CompetencesDistanceDriver.class.getName()).log(Level.SEVERE, "File Not Found", ex);
             } catch (IOException ex) {
                 Logger.getLogger(CompetencesDistanceDriver.class.getName()).log(Level.SEVERE, "IO Exception", ex);
             }
-            //   listOfCompetencesVector.add(competenceFile);
-            competencesList.put(f.getName().replace(".csv", ""), competenceFile);
+            //   listOfCompetencesVector.add(categoriesFile);
+            CATEGORIES_LIST.put(f.getName().replace(".csv", ""), categoriesFile);
 
         }
     }
@@ -108,6 +107,7 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
         public CompetencesDistanceMapper() {
         }
 
+        @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             /*
 			 * keyValues[0] --> word
@@ -137,8 +137,8 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
             //The object are grouped for them documentId
             HashMap<String, Double> distancesNameAndValue = new HashMap<>();
             HashMap<String, Double> documentWords = new HashMap<>();
-            List<CharSequence> wordToWrite = new LinkedList<>();
-            List<CharSequence> valuesToWrite = new LinkedList<>();
+//            List<CharSequence> wordToWrite = new LinkedList<>();
+//            List<CharSequence> valuesToWrite = new LinkedList<>();
 
             for (Text value : values) {
                 String[] line = value.toString().split("@");
@@ -149,11 +149,11 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
             CosineSimilarityMatrix cosineFunction = new CosineSimilarityMatrix();
 
             //for (HashMap<String, Double> competence : listOfCompetencesVector) {
-            Set<String> names = competencesList.keySet();
+            Set<String> names = CATEGORIES_LIST.keySet();
             Iterator<String> iter = names.iterator();
             while (iter.hasNext()) {
                 String key = iter.next();
-                HashMap<String, Double> competence = competencesList.get(key);
+                HashMap<String, Double> competence = CATEGORIES_LIST.get(key);
                 HashMap<String, Double> documentToCompetenceSpace = new HashMap<>();
                 Set<String> words = competence.keySet();
                 for (String word : words) {

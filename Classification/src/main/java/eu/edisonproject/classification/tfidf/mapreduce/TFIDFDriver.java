@@ -21,25 +21,13 @@ import eu.edisonproject.utility.file.ReaderFile;
 import eu.edisonproject.utility.file.WriterFile;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.avro.file.DataFileReader;
-import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.io.DatumReader;
 import org.apache.avro.specific.SpecificDatumReader;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.HColumnDescriptor;
-import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.client.Admin;
-import org.apache.hadoop.hbase.client.Connection;
-import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.util.ToolRunner;
 
 /**
@@ -77,24 +65,25 @@ public class TFIDFDriver implements ITFIDFDriver {
     private final String contextName;
     private final String finalOutputPath;
     private List<Distances> distancesValues;
-    
-    private Connection conn;
-    
-    private final String[] families = {"info","data analytics","data management curation","data science engineering","scientific research methods","domain knowledge"};
 
+    private static final Logger LOGGER = Logger.getLogger(TFIDFDriver.class.getName());
+
+//    private Connection conn;
+//    private final String[] families = {"info","data analytics","data management curation","data science engineering","scientific research methods","domain knowledge"};
     public TFIDFDriver(String contextName) {
         this.contextName = contextName + ".csv";
         this.distancesValues = new LinkedList<>();
         File f = new File(DISTANCES_VECTOR_PATH);
-        if(!f.exists())
+        if (!f.exists()) {
             f.mkdir();
-        this.finalOutputPath = DISTANCES_VECTOR_PATH + File.separator + contextName;
-        Configuration config = HBaseConfiguration.create();
-        try{
-            conn = ConnectionFactory.createConnection(config);
-        }catch(IOException ex){
-            Logger.getLogger(TFIDFDriver.class.getName()).log(Level.CONFIG, "HBase configuration settings", ex);
         }
+        this.finalOutputPath = DISTANCES_VECTOR_PATH + File.separator + contextName;
+//        Configuration config = HBaseConfiguration.create();
+//        try{
+//            conn = ConnectionFactory.createConnection(config);
+//        }catch(IOException ex){
+//            Logger.getLogger(TFIDFDriver.class.getName()).log(Level.CONFIG, "HBase configuration settings", ex);
+//        }
     }
 
     /**
@@ -103,7 +92,7 @@ public class TFIDFDriver implements ITFIDFDriver {
      */
     @Override
     public void executeTFIDF(String inputPath) {
-        
+
 //        try {
 //            createTable(TableName.valueOf("job post distance"), families);
 //        } catch (IOException ex) {
@@ -131,61 +120,44 @@ public class TFIDFDriver implements ITFIDFDriver {
                 }
 
             }
-            System.out.println("Number of Documents "+numberOfDocuments);
+            LOGGER.log(Level.INFO, "Number of Documents {0}", numberOfDocuments);
+//            System.out.println("Number of Documents "+numberOfDocuments);
 
             try {
                 String[] args1 = {INPUT_PATH1, OUTPUT_PATH1, INPUT_ITEMSET};
                 ToolRunner.run(new WordFrequencyInDocDriver(), args1);
-                
+
                 String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};
                 ToolRunner.run(new WordCountsForDocsDriver(), args2);
                 String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(numberOfDocuments)};
-                ToolRunner.run(new WordsInCorpusTFIDFDriver(),args3);
+                ToolRunner.run(new WordsInCorpusTFIDFDriver(), args3);
                 String[] args4 = {INPUT_PATH4, OUTPUT_PATH4, COMPETENCES_PATH};
-                ToolRunner.run(new CompetencesDistanceDriver(),args4);
+                ToolRunner.run(new CompetencesDistanceDriver(), args4);
             } catch (Exception ex) {
                 Logger.getLogger(TFIDFDriver.class.getName()).log(Level.SEVERE, "MapReduce Fail", ex);
             }
-        }else{
+        } else {
             Logger.getLogger(TFIDFDriver.class.getName()).log(Level.SEVERE, "You must specify the input folder not a specific document", file);
         }
 
     }
 
-
     public void readDistancesOutputAndPrintCSV() {
-        ReaderFile rf = new ReaderFile(OUTPUT_PATH4+File.separator+"part-r-00000");
+        ReaderFile rf = new ReaderFile(OUTPUT_PATH4 + File.separator + "part-r-00000");
         String text = rf.readFileWithN();
         String[] textLine = text.split("\n");
         WriterFile fileWriter = new WriterFile(finalOutputPath);
         String textToPrint = "";
-        for(String line: textLine){
+        for (String line : textLine) {
             String[] keyValue = line.split("\t");
             String[] field = keyValue[0].split("@");
             String[] distances = keyValue[1].split(";");
-            textToPrint+=field[1]+";"+field[0]+";"+field[2]+";";
-            for(String d: distances)
-                textToPrint+=d+";";
-            textToPrint+="\n";
+            textToPrint += field[1] + ";" + field[0] + ";" + field[2] + ";";
+            for (String d : distances) {
+                textToPrint += d + ";";
+            }
+            textToPrint += "\n";
         }
         fileWriter.writeFile(textToPrint);
-    }
-    
-    public Connection getConn(){
-        return conn;
-    }
-    
-    protected void createTable(TableName tblName, String[] familiesName) throws IOException{
-        try(Admin admin = getConn().getAdmin()){
-            if(!admin.tableExists(tblName)){
-                HTableDescriptor tableDescriptor;
-                tableDescriptor = new HTableDescriptor(tblName.getName());
-                for(String f: familiesName){
-                    HColumnDescriptor desc = new HColumnDescriptor(f);
-                    tableDescriptor.addFamily(desc);
-                }
-                admin.createTable(tableDescriptor);
-            }
-        }
     }
 }
