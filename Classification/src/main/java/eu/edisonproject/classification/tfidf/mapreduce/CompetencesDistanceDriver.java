@@ -19,7 +19,6 @@ package eu.edisonproject.classification.tfidf.mapreduce;
  *
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
  */
-import distances.avro.Distances;
 import eu.edisonproject.classification.distance.CosineSimilarityMatrix;
 import eu.edisonproject.utility.file.DBTools;
 import java.io.BufferedReader;
@@ -61,23 +60,23 @@ import org.apache.hadoop.util.Tool;
 
 public class CompetencesDistanceDriver extends Configured implements Tool {
 
-   // private static List<HashMap<String, Double>> listOfCompetencesVector;
+    // private static List<HashMap<String, Double>> listOfCompetencesVector;
     private static HashMap<String, HashMap<String, Double>> competencesList;
 
-    private static String[] data_analytics = {"predictive analytics", "statistical techniques",
-        "analytics for decision making", "data blending", "big data analytics platform"};
-    private static String[] data_management_curation = {"data management plan", "develop data models",
-        "data collection and integration", "data visualization", "repository of analysis history"};
-    private static String[] data_science_engineering = {"engineering principles", "big data computational solutions",
-        "analysis tools for decision making", "relational and non-relational databases", "security service management",
-        "agile development"};
-    private static String[] scientific_research_methods = {"systematic study", "devise new applications",
-        "develop innovative ideas", "strategies into action plans", "contribute research objectives"};
-    private static String[] domain_knowledge = {"business process", "improve existing services",
-        "participate financial decisions", "analytic support to other organisation", "analyse data for marketing",
-        "analyse customer data"};
-
+//    private static String[] data_analytics = {"predictive analytics", "statistical techniques",
+//        "analytics for decision making", "data blending", "big data analytics platform"};
+//    private static String[] data_management_curation = {"data management plan", "develop data models",
+//        "data collection and integration", "data visualization", "repository of analysis history"};
+//    private static String[] data_science_engineering = {"engineering principles", "big data computational solutions",
+//        "analysis tools for decision making", "relational and non-relational databases", "security service management",
+//        "agile development"};
+//    private static String[] scientific_research_methods = {"systematic study", "devise new applications",
+//        "develop innovative ideas", "strategies into action plans", "contribute research objectives"};
+//    private static String[] domain_knowledge = {"business process", "improve existing services",
+//        "participate financial decisions", "analytic support to other organisation", "analyse data for marketing",
+//        "analyse customer data"};
     public static final TableName JOB_POST_COMETENCE_TBL_NAME = TableName.valueOf("jobpostcompetence");
+    private static final Logger LOGGER = Logger.getLogger(CompetencesDistanceDriver.class.getName());
 
     private void readCompetences(String arg) {
         File fileDir = new File(arg);
@@ -98,7 +97,7 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
             } catch (IOException ex) {
                 Logger.getLogger(CompetencesDistanceDriver.class.getName()).log(Level.SEVERE, "IO Exception", ex);
             }
-         //   listOfCompetencesVector.add(competenceFile);
+            //   listOfCompetencesVector.add(competenceFile);
             competencesList.put(f.getName().replace(".csv", ""), competenceFile);
 
         }
@@ -146,7 +145,7 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
                 documentWords.put(line[0], Double.parseDouble(line[1].replace(",", ".")));
             }
 
-          //  List<Double> distances = new LinkedList<Double>();
+            //  List<Double> distances = new LinkedList<Double>();
             CosineSimilarityMatrix cosineFunction = new CosineSimilarityMatrix();
 
             //for (HashMap<String, Double> competence : listOfCompetencesVector) {
@@ -168,7 +167,8 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
                 //distances.add(cosineFunction.computeDistance(competence.values(), documentToCompetenceSpace.values()));
 
             }
-            System.out.println("Distance" + text);
+//            System.out.println("Distance" + text);
+            LOGGER.log(Level.INFO, "Distance{0}", text);
             String[] docIdAndDate = text.toString().split("@");
 //            Distances distanceDocument = new Distances();
 //            distanceDocument.setTitle(docIdAndDate[1]);
@@ -183,12 +183,15 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 //            Put put = new Put(key.get());
             List<String> families = new ArrayList<>();
             families.add("info");
-            families.add("data_analytics");
-            families.add("data_management_curation");
-            families.add("data_science_engineering");
-            families.add("scintific_research_methods");
-            families.add("domain_knowledge");
-            DBTools.createTable(JOB_POST_COMETENCE_TBL_NAME, families);
+            for (String family : distancesNameAndValue.keySet()) {
+                families.add(family);
+            }
+//            families.add("data_analytics");
+//            families.add("data_management_curation");
+//            families.add("data_science_engineering");
+//            families.add("scintific_research_methods");
+//            families.add("domain_knowledge");
+            DBTools.createOrUpdateTable(JOB_POST_COMETENCE_TBL_NAME, families);
             try (Admin admin = DBTools.getConn().getAdmin()) {
                 try (Table tbl = DBTools.getConn().getTable(JOB_POST_COMETENCE_TBL_NAME)) {
                     Put put = new Put(Bytes.toBytes(docIdAndDate[0]));
@@ -197,14 +200,14 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
                     put.addColumn(Bytes.toBytes("info"), Bytes.toBytes("title"), Bytes.toBytes(docIdAndDate[1]));
                     put.addColumn(Bytes.toBytes("info"), Bytes.toBytes("date"), Bytes.toBytes(docIdAndDate[2]));
                     // column family distance
-                    Set<String> columnFamilyAndQualifier = distancesNameAndValue.keySet();
-                    Iterator<String> iterColumn = columnFamilyAndQualifier.iterator();
-                    while (iterColumn.hasNext()) {
-                        String key = iter.next();
+//                    Set<String> columnFamilyAndQualifier = distancesNameAndValue.keySet();
+//                    Iterator<String> iterColumn = columnFamilyAndQualifier.iterator();
+                    for (String family : distancesNameAndValue.keySet()) {
+                        String key = family;//iterColumn.next();
                         Double d = distancesNameAndValue.get(key);
-                        String columnFamily = key.split("-")[0];
-                        String columnQualifier = key.split("-")[1];
-                        put.addColumn(Bytes.toBytes(columnFamily), Bytes.toBytes(columnQualifier), Bytes.toBytes(d));
+//                        String columnFamily = key.split("-")[0];
+//                        String columnQualifier = key.split("-")[1];
+                        put.addColumn(Bytes.toBytes(key), Bytes.toBytes(key), Bytes.toBytes(d));
                     }
 //                    int count = 0;
 //                    for (String s : data_analytics) {
@@ -228,7 +231,8 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 //                        count++;
 //                    }
                     tbl.put(put);
-                    System.out.println(docIdAndDate[0] + "...... " + docIdAndDate[1]);
+//                    System.out.println(docIdAndDate[0] + "...... " + docIdAndDate[1]);
+                    LOGGER.log(Level.INFO, "{0}...... {1}", new Object[]{docIdAndDate[0], docIdAndDate[1]});
                     context.write(new ImmutableBytesWritable(docIdAndDate[0].getBytes()), put);
                     //context.write(new Text(text), new Text(distancesString));
                 }

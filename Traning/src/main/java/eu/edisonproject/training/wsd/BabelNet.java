@@ -532,7 +532,7 @@ public class BabelNet extends DisambiguatorImpl {
     private void addToEdgesDB(CharSequence id, String jsonString) throws IOException {
         List<String> families = new ArrayList<>();
         families.add("jsonString");
-        DBTools.createTable(EDGES_TBL_NAME, families);
+        DBTools.createOrUpdateTable(EDGES_TBL_NAME, families);
 
         try (Admin admin = DBTools.getConn().getAdmin()) {
             try (Table tbl = DBTools.getConn().getTable(EDGES_TBL_NAME)) {
@@ -561,7 +561,7 @@ public class BabelNet extends DisambiguatorImpl {
     private void addToSynsetDB(String id, String json) throws IOException {
         List<String> families = new ArrayList<>();
         families.add("jsonString");
-        DBTools.createTable(SYNSET_TBL_NAME, families);
+        DBTools.createOrUpdateTable(SYNSET_TBL_NAME, families);
 
         try (Admin admin = DBTools.getConn().getAdmin()) {
             try (Table tbl = DBTools.getConn().getTable(SYNSET_TBL_NAME)) {
@@ -593,7 +593,7 @@ public class BabelNet extends DisambiguatorImpl {
     private void putInWordINDB(String word, List<String> ids) throws IOException {
         List<String> families = new ArrayList<>();
         families.add("csvIds");
-        DBTools.createTable(WORDS_TBL_NAME, families);
+        DBTools.createOrUpdateTable(WORDS_TBL_NAME, families);
 
         StringBuilder strIds = new StringBuilder();
         for (String id : ids) {
@@ -616,7 +616,7 @@ public class BabelNet extends DisambiguatorImpl {
 
         List<String> families = new ArrayList<>();
         families.add("jsonString");
-        DBTools.createTable(DISAMBIGUATE_TBL_NAME, families);
+        DBTools.createOrUpdateTable(DISAMBIGUATE_TBL_NAME, families);
 
         try (Admin admin = DBTools.getConn().getAdmin()) {
             try (Table tbl = DBTools.getConn().getTable(DISAMBIGUATE_TBL_NAME)) {
