@@ -16,7 +16,6 @@
 package eu.edisonproject.training.tfidf.mapreduce;
 
 import term.avro.Term;
-import eu.edisonproject.training.tfidf.avro.TfidfDocument;
 import eu.edisonproject.utility.file.ReaderFile;
 import eu.edisonproject.utility.file.WriterFile;
 import java.io.File;
@@ -31,7 +30,6 @@ import java.util.logging.Logger;
 import org.apache.avro.file.DataFileReader;
 import org.apache.avro.io.DatumReader;
 import org.apache.avro.specific.SpecificDatumReader;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.hadoop.util.ToolRunner;
 //import org.apache.avro.hadoop.io.AvroSerialization;
 
@@ -66,7 +64,7 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
     // where to put the csv with the tfidf
     private final String TFIDFCSV_PATH = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "5-csv";
     // where to put the csv with the context vector
-    private final String CONTEXT_PATH = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "6-context-vector";
+    public static String CONTEXT_PATH = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "6-context-vector";
 
     // the name of the context (categories) that it is under analysis
     private final String contextName;
@@ -97,20 +95,20 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
             filesInDir = file.listFiles();
             for (File fileSplit : filesInDir) {
                 //if (FilenameUtils.getExtension(fileSplit.getName()).endsWith(".avro")) {
-                    DatumReader<Term> termDatumReader = new SpecificDatumReader<>(Term.class);
-                    DataFileReader<Term> dataFileReader;
-                    try {
-                        dataFileReader = new DataFileReader<Term>(fileSplit, termDatumReader);
+                DatumReader<Term> termDatumReader = new SpecificDatumReader<>(Term.class);
+                DataFileReader<Term> dataFileReader;
+                try {
+                    dataFileReader = new DataFileReader<Term>(fileSplit, termDatumReader);
 
-                        while (dataFileReader.hasNext()) {
-                            //Count the number of rows inside the .avro
-                            dataFileReader.next();
-                            numberOfDocuments++;
-                        }
-                        System.out.println(numberOfDocuments);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    while (dataFileReader.hasNext()) {
+                        //Count the number of rows inside the .avro
+                        dataFileReader.next();
+                        numberOfDocuments++;
                     }
+                    System.out.println(numberOfDocuments);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 //}
             }
 
@@ -230,7 +228,7 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
         for (int i = 0; i < values.get(0).length; i++) {
             double wordIValue = 0.0;
             for (int j = 0; j < values.size(); j++) {
-                if (!values.get(j)[i].equals("0")|| !values.get(j)[i].contains("-∞")) {
+                if (!values.get(j)[i].equals("0") || !values.get(j)[i].contains("-∞")) {
                     wordIValue += Double.parseDouble(values.get(j)[i].replace(",", "."));
                 }
             }

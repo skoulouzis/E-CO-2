@@ -24,9 +24,7 @@ import eu.edisonproject.utility.commons.Term;
 import eu.edisonproject.utility.commons.TermAvroSerializer;
 import eu.edisonproject.utility.commons.ValueComparator;
 import eu.edisonproject.utility.file.ConfigHelper;
-import eu.edisonproject.utility.text.processing.Cleaner;
 import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
-import eu.edisonproject.utility.text.processing.Stemming;
 import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -37,7 +35,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,7 +44,6 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.text.StrBuilder;
 import org.apache.lucene.analysis.util.CharArraySet;
 
 /**
@@ -115,6 +111,7 @@ public class Main {
                     break;
                 case "t":
                     calculateTFIDF(cmd.getOptionValue("input"), cmd.getOptionValue("output"));
+                    break;
                 default:
                     System.out.println(helpmasg);
             }
@@ -229,7 +226,7 @@ public class Main {
         String contextName = FilenameUtils.removeExtension(in.substring(in.lastIndexOf(File.separator) + 1));
         ITFIDFDriver tfidfDriver = new TFIDFDriverImpl(contextName);
         File inFile = new File(in);
-        TFIDFDriverImpl.OUTPUT_PATH4 = out;
+        TFIDFDriverImpl.CONTEXT_PATH = out;
         if (inFile.isFile()) {
             tfidfDriver.executeTFIDF(inFile.getParent());
         } else {

@@ -10,7 +10,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath eu.edisonproject.training.execute.Main -op x  -i /home/alogo/Downloads/ng/all.txt -o /home/alogo/Downloads/ng/all.csv</exec.args>
+                <exec.args>-Doffset.terms=1 -Dnum.of.terms=10 -classpath %classpath eu.edisonproject.training.execute.Main -op t -i /home/alogo/Downloads/D2.1_Table5_Skills_and_knowledge_Big_Data_platforms_and_tools/Education/education.avro -o /home/alogo/Downloads/D2.1_Table5_Skills_and_knowledge_Big_Data_platforms_and_tools/Education</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
@@ -24,7 +24,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath eu.edisonproject.training.execute.Main -op x  -i /home/alogo/Downloads/ng/all.txt -o /home/alogo/Downloads/ng/all.csv</exec.args>
+                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -Doffset.terms=1 -Dnum.of.terms=10 -classpath %classpath eu.edisonproject.training.execute.Main -op t -i /home/alogo/Downloads/D2.1_Table5_Skills_and_knowledge_Big_Data_platforms_and_tools/Education/education.avro -o /home/alogo/Downloads/D2.1_Table5_Skills_and_knowledge_Big_Data_platforms_and_tools/Education</exec.args>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
             </properties>
@@ -39,7 +39,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath eu.edisonproject.training.execute.Main -op x  -i /home/alogo/Downloads/ng/all.txt -o /home/alogo/Downloads/ng/all.csv</exec.args>
+                <exec.args>-Doffset.terms=1 -Dnum.of.terms=10 -classpath %classpath eu.edisonproject.training.execute.Main -op t -i /home/alogo/Downloads/D2.1_Table5_Skills_and_knowledge_Big_Data_platforms_and_tools/Education/education.avro -o /home/alogo/Downloads/D2.1_Table5_Skills_and_knowledge_Big_Data_platforms_and_tools/Education</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
