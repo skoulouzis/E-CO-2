@@ -59,11 +59,11 @@ public class Main {
             DisambiguatorImpl d = new MetaDisambiguator();
             d.configure(prop);
             String dictinaryPath = ".." + File.separator + "etc" + File.separator + "databases.csv";
-            List<Term> terms = d.disambiguateTerms(dictinaryPath);
+//            List<Term> terms = d.disambiguateTerms(dictinaryPath);
+            d.getTerm("bachelor");
 
-            String context = FilenameUtils.removeExtension(dictinaryPath.substring(dictinaryPath.lastIndexOf(File.separator) + 1));
-            saveTerms2Avro(terms, context);
-
+//            String context = FilenameUtils.removeExtension(dictinaryPath.substring(dictinaryPath.lastIndexOf(File.separator) + 1));
+//            saveTerms2Avro(terms, context);
         } catch (IOException | ParseException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }

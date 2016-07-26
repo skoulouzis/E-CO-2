@@ -129,6 +129,7 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         } else {
             limit = Integer.valueOf(numOfTerms);
         }
+        LOGGER.log(Level.FINE, "num.of.terms: " + limit);
 
         String offset = System.getProperty("offset.terms");
 
@@ -137,30 +138,30 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         } else {
             lineOffset = Integer.valueOf(offset);
         }
+        LOGGER.log(Level.FINE, "offset.terms: " + lineOffset);
         String minimumSimilarityStr = System.getProperty("minimum.similarity");
         if (minimumSimilarityStr == null) {
             minimumSimilarityStr = properties.getProperty("minimum.similarity", "0,3");
         }
         minimumSimilarity = Double.valueOf(minimumSimilarityStr);
-
+        LOGGER.log(Level.FINE, "minimum.similarity: " + lineOffset);
         stopWordsPath = System.getProperty("stop.words.file");
 
         if (stopWordsPath == null) {
             stopWordsPath = properties.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
         }
-
+        LOGGER.log(Level.FINE, "stop.words.file: " + stopWordsPath);
         itemsFilePath = System.getProperty("itemset.file");
         if (itemsFilePath == null) {
             itemsFilePath = properties.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv");
         }
-
+        LOGGER.log(Level.FINE, "itemset.file: " + itemsFilePath);
 //        Configuration config = HBaseConfiguration.create();
 //        try {
 //            conn = ConnectionFactory.createConnection(config);
 //        } catch (IOException ex) {
 //            LOGGER.log(Level.SEVERE, null, ex);
 //        }
-
         CharArraySet stopwordsCharArray = new CharArraySet(ConfigHelper.loadStopWords(stopWordsPath), true);
         tokenizer = new StopWord(stopwordsCharArray);
         lematizer = new StanfordLemmatizer();
@@ -258,7 +259,7 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
     }
 
     private Set<Term> tf_idf_Disambiguation(Set<Term> possibleTerms, Set<String> nGrams, String lemma, double confidence, boolean matchTitle) throws IOException, ParseException {
-
+        LOGGER.log(Level.FINE, "Loaded {0} for {1}", new Object[]{nGrams.size(), lemma});
         if (nGrams.size() < 7) {
             LOGGER.log(Level.WARNING, "Found only {0} n-grams for {1}. Not enough for disambiguation.", new Object[]{nGrams.size(), lemma});
             return null;
@@ -329,14 +330,14 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
 //                        String sub = t.getLemma().toString().toLowerCase().substring(index1, index2);
 //                        subTokens.addAll(tokenize(sub, true));
 //                    }
-                    double factor = 0.2;
+                    double factor = 0.15;
                     if (stemTitle.length() > stemLema.length()) {
                         if (stemTitle.contains(stemLema)) {
-                            factor = 0.08;
+                            factor = 0.075;
                         }
                     } else if (stemLema.length() > stemTitle.length()) {
                         if (stemLema.contains(stemTitle)) {
-                            factor = 0.08;
+                            factor = 0.075;
                         }
                     }
                     int dist = edu.stanford.nlp.util.StringUtils.editDistance(stemTitle, stemLema);
@@ -627,9 +628,6 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
 //    public Connection getConn() {
 //        return conn;
 //    }
-
-
-
     private Term getTermFromDB(CharSequence winner) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

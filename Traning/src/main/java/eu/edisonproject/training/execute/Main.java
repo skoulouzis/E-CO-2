@@ -24,7 +24,10 @@ import eu.edisonproject.utility.commons.Term;
 import eu.edisonproject.utility.commons.TermAvroSerializer;
 import eu.edisonproject.utility.commons.ValueComparator;
 import eu.edisonproject.utility.file.ConfigHelper;
+import eu.edisonproject.utility.text.processing.Cleaner;
+import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
 import eu.edisonproject.utility.text.processing.Stemming;
+import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -34,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,6 +47,8 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.text.StrBuilder;
+import org.apache.lucene.analysis.util.CharArraySet;
 
 /**
  * Example usage for training : -op t -i
@@ -157,7 +163,6 @@ public class Main {
         DisambiguatorImpl d = new MetaDisambiguator();
         d.configure(prop);
         List<Term> terms = d.disambiguateTerms(in);
-
         saveTerms2Avro(terms, out);
 
     }
@@ -166,7 +171,17 @@ public class Main {
         TermAvroSerializer ts = new TermAvroSerializer(out, Term.getClassSchema());
         List<CharSequence> empty = new ArrayList<>();
         empty.add("");
-        Stemming stemer = new Stemming();
+//        Stemming stemer = new Stemming();
+        String stopWordsPath = System.getProperty("stop.words.file");
+
+        if (stopWordsPath == null) {
+            stopWordsPath = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
+        }
+
+        CharArraySet stopwordsCharArray = new CharArraySet(ConfigHelper.loadStopWords(stopWordsPath), true);
+        StopWord tokenizer = new StopWord(stopwordsCharArray);
+        StanfordLemmatizer lematizer = new StanfordLemmatizer();
+
         for (Term t : terms) {
             List<CharSequence> nuid = t.getNuids();
             if (nuid == null || nuid.isEmpty() || nuid.contains(null)) {
@@ -190,8 +205,13 @@ public class Main {
                     glosses.append(n).append(" ");
                 }
                 gl = new ArrayList<>();
-                stemer.setDescription(glosses.toString());
-                gl.add(stemer.execute());
+                tokenizer.setDescription(glosses.toString());
+                String cleanText = tokenizer.execute();
+                lematizer.setDescription(cleanText);
+                String lematizedText = lematizer.execute();
+
+//                stemer.setDescription(glosses.toString());
+                gl.add(lematizedText);
                 t.setGlosses(gl);
 
             }
