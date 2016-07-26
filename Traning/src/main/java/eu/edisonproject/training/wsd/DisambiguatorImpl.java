@@ -383,7 +383,7 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         List<String> families = new ArrayList<>();
         families.add("jsonString");
         families.add("ambiguousTerm");
-        DBTools.createOrUpdateTable(TERMS_TBL_NAME, families);
+        DBTools.createOrUpdateTable(TERMS_TBL_NAME, families, false);
         try (Admin admin = DBTools.getConn().getAdmin()) {
             try (Table tbl = DBTools.getConn().getTable(TERMS_TBL_NAME)) {
                 for (Term t : terms) {

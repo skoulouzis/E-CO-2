@@ -191,7 +191,7 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 //            families.add("data_science_engineering");
 //            families.add("scintific_research_methods");
 //            families.add("domain_knowledge");
-            DBTools.createOrUpdateTable(JOB_POST_COMETENCE_TBL_NAME, families);
+            DBTools.createOrUpdateTable(JOB_POST_COMETENCE_TBL_NAME, families, true);
             try (Admin admin = DBTools.getConn().getAdmin()) {
                 try (Table tbl = DBTools.getConn().getTable(JOB_POST_COMETENCE_TBL_NAME)) {
                     Put put = new Put(Bytes.toBytes(docIdAndDate[0]));

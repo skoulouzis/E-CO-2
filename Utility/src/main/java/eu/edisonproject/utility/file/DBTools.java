@@ -63,7 +63,7 @@ public class DBTools {
         List<String> families = new ArrayList<>();
         families.add("jsonString");
         families.add("ambiguousTerm");
-        createOrUpdateTable(TERMS_TBL_NAME, families);
+        createOrUpdateTable(TERMS_TBL_NAME, families, false);
         try (Admin admin = getConn().getAdmin()) {
             try (Table tbl = getConn().getTable(TERMS_TBL_NAME)) {
                 for (String id : termCache.keySet()) {
@@ -85,7 +85,7 @@ public class DBTools {
         Map<String, List<String>> wordIDCache = getFromWordIDCache(cacheDBFile);
         List<String> families = new ArrayList<>();
         families.add("csvIds");
-        createOrUpdateTable(WORDS_TBL_NAME, families);
+        createOrUpdateTable(WORDS_TBL_NAME, families, false);
         if (wordIDCache != null) {
             try (Admin admin = getConn().getAdmin()) {
                 try (Table tbl = getConn().getTable(WORDS_TBL_NAME)) {
@@ -104,7 +104,7 @@ public class DBTools {
         Map<String, String> synsetCache = getFromSynsetCache(cacheDBFile);
         families = new ArrayList<>();
         families.add("jsonString");
-        createOrUpdateTable(SYNSET_TBL_NAME, families);
+        createOrUpdateTable(SYNSET_TBL_NAME, families, false);
         if (synsetCache != null) {
             try (Admin admin = getConn().getAdmin()) {
                 try (Table tbl = getConn().getTable(SYNSET_TBL_NAME)) {
@@ -123,7 +123,7 @@ public class DBTools {
         Map<String, String> disambiguateCache = getDisambiguateCache(cacheDBFile);
         families = new ArrayList<>();
         families.add("jsonString");
-        createOrUpdateTable(DISAMBIGUATE_TBL_NAME, families);
+        createOrUpdateTable(DISAMBIGUATE_TBL_NAME, families, false);
         if (disambiguateCache != null) {
             try (Admin admin = getConn().getAdmin()) {
                 try (Table tbl = getConn().getTable(DISAMBIGUATE_TBL_NAME)) {
@@ -143,7 +143,7 @@ public class DBTools {
         Map<String, String> edgesCache = getEdgesCache(cacheDBFile);
         families = new ArrayList<>();
         families.add("jsonString");
-        createOrUpdateTable(EDGES_TBL_NAME, families);
+        createOrUpdateTable(EDGES_TBL_NAME, families, false);
 
         if (edgesCache != null) {
             try (Admin admin = getConn().getAdmin()) {
@@ -207,7 +207,7 @@ public class DBTools {
 
     }
 
-    public static void createOrUpdateTable(TableName tblName, List<String> families) throws IOException {
+    public static void createOrUpdateTable(TableName tblName, List<String> families, boolean update) throws IOException {
         try (Admin admin = getConn().getAdmin()) {
             HTableDescriptor tableDescriptor = new HTableDescriptor(tblName);
             if (!admin.tableExists(tblName)) {
@@ -216,7 +216,7 @@ public class DBTools {
                     tableDescriptor.addFamily(desc);
                 }
                 admin.createTable(tableDescriptor);
-            } else {
+            } else if (update) {
                 admin.disableTable(tblName);
                 try (Table tbl = getConn().getTable(tblName)) {
                     HTableDescriptor tblDescriptor = tbl.getTableDescriptor();
