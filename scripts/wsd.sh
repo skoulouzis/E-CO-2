@@ -18,14 +18,7 @@ do
   do
     base=`basename $i`
     echo $base
-
-    screen -dmSL $base java -Xmx4096m -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -Dnum.of.terms=250 -Doffset.terms=1 -jar $JAR_PATH -op w -i $f -o $i/$base.avro -p $PROPS_FILE
-    
-    screen -dmSL $base java -Xmx4096m -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -Dnum.of.terms=250 -Doffset.terms=250 -jar $JAR_PATH -op w -i $f -o $i/$base.avro -p $PROPS_FILE
-    
-    screen -dmSL $base java -Xmx4096m -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -Dnum.of.terms=250 -Doffset.terms=500 -jar $JAR_PATH -op w -i $f -o $i/$base.avro -p $PROPS_FILE
-    
-    screen -dmSL $base java -Xmx4096m -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -Dnum.of.terms=250 -Doffset.terms=750 -jar $JAR_PATH -op w -i $f -o $i/$base.avro -p $PROPS_FILE
-        
+    screen -dmSL $base java -Xmx8g -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -Dnum.of.terms=500 -Doffset.terms=1 -jar $JAR_PATH -op w -i $f -o $i/$base.avro -p $PROPS_FILE
+    screen -dmSL $base java -Xmx8g -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -Dnum.of.terms=500 -Doffset.terms=500 -jar $JAR_PATH -op w -i $f -o $i/$base.avro -p $PROPS_FILE
   done
 done
