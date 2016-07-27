@@ -32,7 +32,7 @@ public class LuceneExtractor implements TermExtractor {
     private String stopWordsPath;
     Cleaner ng;
     private Cleaner tokenizer;
-    private Cleaner lematizer;
+//    private Cleaner lematizer;
     private Stemming stemer;
 
     @Override
@@ -64,7 +64,7 @@ public class LuceneExtractor implements TermExtractor {
             int count = 0;
             CharArraySet stopwordsCharArray = new CharArraySet(ConfigHelper.loadStopWords(stopWordsPath), true);
             tokenizer = new StopWord(stopwordsCharArray);
-            lematizer = new StanfordLemmatizer();
+//            lematizer = new StanfordLemmatizer();
             stemer = new Stemming();
 
             ng = new NGramGenerator(stopwordsCharArray, maxNgrams);
@@ -109,9 +109,9 @@ public class LuceneExtractor implements TermExtractor {
 
         tokenizer.setDescription(contents.trim());
         String cleanText = tokenizer.execute();
-        lematizer.setDescription(cleanText.trim());
+//        lematizer.setDescription(cleanText.trim());
 //        System.err.println(cleanText);
-        String lematizedText = lematizer.execute();
+        String lematizedText = cleanText;// lematizer.execute();
         ng.setDescription(lematizedText.trim());
         String ngText = ng.execute();
         ngText += lematizedText;

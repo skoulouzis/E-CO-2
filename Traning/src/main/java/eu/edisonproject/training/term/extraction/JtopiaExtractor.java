@@ -33,7 +33,7 @@ public class JtopiaExtractor implements TermExtractor {
 
     private String stopWordsPath;
     private StopWord tokenizer;
-    private StanfordLemmatizer lematizer;
+//    private StanfordLemmatizer lematizer;
 
     @Override
     public void configure(Properties prop) {
@@ -91,7 +91,7 @@ public class JtopiaExtractor implements TermExtractor {
 
         CharArraySet stopwordsCharArray = new CharArraySet(ConfigHelper.loadStopWords(stopWordsPath), true);
         tokenizer = new StopWord(stopwordsCharArray);
-        lematizer = new StanfordLemmatizer();
+//        lematizer = new StanfordLemmatizer();
 
         Set<String> terms = new HashSet<>();
 
@@ -146,8 +146,8 @@ public class JtopiaExtractor implements TermExtractor {
 
                 tokenizer.setDescription(contents);
                 String cleanText = tokenizer.execute();
-                lematizer.setDescription(cleanText);
-                String lematizedText = lematizer.execute();
+//                lematizer.setDescription(cleanText);
+                String lematizedText = cleanText;//lematizer.execute();
 
                 topiaDoc = termExtractor.extractTerms(lematizedText);
                 terms = topiaDoc.getFinalFilteredTerms().keySet();
