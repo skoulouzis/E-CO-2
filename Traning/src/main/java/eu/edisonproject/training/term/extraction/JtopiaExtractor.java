@@ -49,7 +49,7 @@ public class JtopiaExtractor implements TermExtractor {
             stopWordsPath = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
         }
 
-        String modelPath = System.getProperty("tagger.type");
+        String modelPath = System.getProperty("model.path");
         if (modelPath == null) {
             modelPath = prop.getProperty("model.path", ".." + File.separator + "etc" + File.separator + "model");
         }
@@ -72,6 +72,11 @@ public class JtopiaExtractor implements TermExtractor {
                 Configuration.setModelFileLocation(modelPath + File.separator
                         + "default" + File.separator + "english-lexicon.txt");
                 Configuration.setTaggerType("default");
+                break;
+            default:
+                Configuration.setModelFileLocation(modelPath + File.separator
+                        + "stanford" + File.separator + "english-left3words-distsim.tagger");
+                Configuration.setTaggerType("stanford");
                 break;
         }
         Integer singleStrength = Integer.valueOf(prop.getProperty("single.strength", "3"));
