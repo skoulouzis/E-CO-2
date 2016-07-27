@@ -1,0 +1,710 @@
+Data models have been used for many years to design information systems. This type of software typically uses a relational database management system (RDBMS) based on Structured Query Language (SQL). Logical data models are used to organize and understand information structure. Physical data models incorporate data types and other design details needed to generate SQL code.
+
+In addition to creating logical and physical data models, MacA&D and WinA&D can customize diagram presentations, model non-visual database elements and generate SQL for Oracle, DB2, SQL Server, Sybase, Informix and InterBase. This paper discusses SQL, data models, code generation and namespaces for partitioning SQL schemas. These concepts are illustrated with WinA&D screen shots and supported by all editions of WinA&D or MacA&D OSX.
+
+SQL Concepts
+
+The relational model is used by most commercial databases. Most database systems use a vendor specific form of SQL to define the database schema. SQL has undergone several standardization efforts including SQL-99 (also referred to as SQL3). Most RDBMS products support a subset of SQL-99 plus vendor specific extensions.
+
+SQL began life as a procedural-oriented language, but in recent years object-oriented concepts have been added by RDBMS vendors and included in the SQL-99 standard. To support the object-relational model, new capabilities like user defined (abstract) data types, methods for user defined types and object views have been added to RDBMS products. This ongoing effort is less standardized and not as widely utilized by developers.
+
+SQL statements can be categorized as data definition language (DDL), data control language (DCL) and data manipulation language (DML). DDL statements define or delete database objects such as CREATE TABLE and DROP TABLE. DCL statements control access to data and the database using statements such as GRANT and REVOKE. DML statements select, insert, delete, update and query actual data. When SQL is generated from a data model, the primary emphasis is on the DDL statements that define the database schema and to a lesser extent the DCL statements that handle privileges. DML statements are only relevant in the sense that they are used within triggers, procedures and functions stored in the dictionary.
+
+Data Model in WinA&D With Generated SQL
+
+Data Modeling Concepts
+
+The data modeling process can be described as iterations of the following steps.
+
+    Create a data model as one or more Entity-Relation Diagrams (ERDs) and associated dictionary.
+    Set presentation defaults and save your work into a project folder.
+    Using the tool palette, create entities and relationship connections and fill in property dialogs.
+    Merge the diagrams into the dictionary to generate associated entries.
+    Use a dialog to fill in detailed information about entities, attributes and other SQL elements.
+    Use menu commands to generate foreign keys, verify and balance the model.
+    Generate SQL code.
+
+An ERD represents tables as entities and columns as attributes of those entities. Often the words entity and table or attribute and column are used interchangeability. To be more precise, entity and attribute usually refer to the logical data model, while table and column refer to the physical SQL code. A data model may contain one or more diagrams within one or more documents that store detailed information in the global data dictionary.
+
+Entities are added to a model with the Entity tool and named in a property dialog. Entities represent SQL tables or views. The diagram is merged into the dictionary to add an entry for each entity.
+
+Entity details entered into a dialog are stored in the dictionary. Each entity and each of its attributes has a dictionary entry. Attributes have a dictionary entry name of the form EntityX'AttributeY. In the Dictionary window, the entries for each entity and its attributes are grouped together alphabetically.
+
+Details Dialog for Entity
+
+In addition to attributes, a table can have associated triggers, alternate keys, indexes and other properties. SQL tables (entities) can have associated triggers that execute code when an event occurs. Triggers have a dictionary entry name of the form EntityX-TriggerY.
+
+Logical Data Model
+
+Connection lines between entities represent foreign key relationships. Connection lines can be named and have a dictionary entry with information that further details the relationship.
+
+A menu command can be used to add referential attributes to the referencing entities based on diagram connections. The command puts relationship data into the dictionary entry for each connection. A dialog can be presented to further define each relationship with referential actions.
+
+The SQL Elements dialog is used to define SQL concepts such as domains, constraints, assertions, etc. that do not have graphic representations. Some elements such as domains and constraints are referenced from many columns and tables. If the element name is changed, all references change automatically.
+
+An alphabetical list of each type of item is displayed. When the item is selected the dialog shows the item's Name, Description and Code fields. The Description field is free format text used by the developer and optionally included as comments in emitted code. The Code field contains an SQL code fragment.
+
+SQL Elements Dialog
+
+Design namespaces are used to partition large projects. If your project uses namespaces, a namespace selector is visible in the bottom right of the dialog. It can be a powerful aid when working with complex models. The items in each list can be viewed for a selected namespace or all namespaces. If a specific namespace is selected, then the name of any new item added is automatically prefixed with that namespace.
+
+An information system can be represented as a logical or physical data model. A logical model typically uses longer, more expressive names for entities and attributes, but hides details like data types and foreign keys. In a physical model, names of tables and columns may be more concise and are often predetermined by the existing database schema. Other differences in the physical model depend on designer preferences. A relationship line can use a single arrowhead that points to the referenced entity and shows the primary key in the relationship name. The tool can automatically generate physical names from logical names based on user-determined criteria.
+
+In addition to its logical or physical presentation, data models can hide or show all attributes, selected attributes or only show primary and foreign key attributes. Another option is to show only the entity name and its description. The Diagram Presentation command changes the presentation of all entities on the current diagram. Entities on other diagram levels are not affected. The Presentation command changes the presentation of a selected entity.
+
+The tool has the capability to represent logical and physical models either as a single diagram or as two separate diagrams usually within the same document. When using a single diagram, menu commands allow the designer to easily toggle between logical and physical views. When using a two-diagram approach, a command automatically generates a physical model from a logical model.
+
+The strength and weakness of each approach is briefly described here.
+
+    The single diagram approach is convenient since only one diagram is created to represent both logical and physical models. Changes or additions to entities and relationships need only occur on one diagram. A designer uses the Physical command to toggle between logical and physical views. Since the physical model shows attribute data types or domains on the diagram, entities require more space and are thus loosely packed when viewed in the logical model.
+
+    In the two-diagram approach, the designer simply selects the logical or physical model from the Contents view since each diagram exists separately. Each diagram can use different physical or presentation options and represent connections and their names in different ways. Using this approach the logical model is created first, then a command is used to create a physical model in a separate diagram.
+
+    In the two-diagram approach, each diagram can be edited independently. This approach requires extra effort to add or rename entities or relationships since these modifications must be made to both diagrams. However, most of a designer's time is spent defining attributes and related details. Since that information is stored in the global data dictionary, changes are automatically reflected in both diagrams. Alternatively, the physical model need not be maintained since it can be regenerated automatically after editing changes are made to the logical model.
+
+The command to generate a physical model performs a series of steps that can also be done manually by the designer. First it creates an empty diagram or replaces an existing diagram. Objects from the logical model are copied to the physical model. The Physical command is selected and the Diagram Presentation is set to Normal. If a many-to-many relationship exists in the logical model, a new entity is created that formalize the relationship and the connections are changed to one-to-many relationships as described below. Foreign keys are generated. Connection names are changed to reflect the matching of primary key to foreign key values.
+
+A logical model may contain a many-to-many relationship between two entities that can be simplified for implementation by introducing a table in the physical model that formalizes the relationship. Consider a company that stores many parts in several warehouses.
+
+Logical Model Shows Many-To-Many Relationship
+
+In the physical model, a new table can be created that simplifies the implementation. It references the primary keys in the original entities. The new Quantity attribute (column) stores information related to the two entities (tables).
+
+Physical Model Adds New Entity
+
+Code Generation Concepts
+
+An SQL script file can be generated for an entire data model, selected entities and/or selected SQL element types. Namespaces are used to group sections of a design and can be used to selectively generate SQL for specific schemas in the data model. The generated SQL script supports SQL-99, Oracle, DB2, SQL Server, Sybase, Informix or InterBase formats.
+
+The Customize Code dialog is used to control whether SQL constructs are generated and specify the formatting and syntax used. For example, entities produce CREATE TABLE statements that may include primary key, foreign key and alternate key constraints. Alternatively, constraints can be expressed separately with ALTER TABLE statements.
+
+Dialog to Customize SQL Code Generation
+
+Some RDBMS products support indexes to speed access to specific rows in a table. Indexes can be generated for primary keys, alternate keys or generated from indexes defined in the data model. Some of the options is this dialog are only applicable to specific SQL dialects.
+
+Some databases support several named object collections called schemas. SQL code can be generated with or without schema prefixes using the Schema Syntax selection. The Customize Code dialog has a list of Include and Drop checkboxes to selectively include the CREATE and DROP statements of SQL element types like tables, views, domains and constraints. Trigger styles vary between RDBMS products. The selected SQL dialect determines the format of the generate code.
+
+The Generate Code dialog has options to generate code for selected objects, all objects, physical models or objects within a namespace. If your project uses separate logical and physical diagrams, select the Physical Models option to generate code only for entity objects on physical models.
+
+Dialog to Generate SQL Code
+
+Schemas and Namespaces
+
+An SQL Schema identifies a group of related objects such as Tables, Views, Constraints, Assertions, etc. that are owned by a user or authorization identifier. Object names within a schema are unique. In some RDBMS products a database may contain several schemas while in others, the entire database is one schema.
+
+Namespaces can be used to model multiple schemas within a project. If a project uses three schemas named Tom, Dick and Harry, their associated modeling objects and dictionary entries are mapped to the namespaces Tom, Dick and Harry, respectively. Namespaces are an optional design feature so if your database is simple and consists of one schema, they can be ignored completely.
+
+During the modeling process, namespaces can easily be applied to selections in a diagram or dictionary. Commands for reporting information, listing dictionary entries, importing data, etc. can use namespaces as a powerful organizational tool for dealing with lots of information.
+
+Most SQL statements contain element names that can be prefixed with a schema as illustrated below. Notice that in the first table, the name Customers is prefixed with the schema name Tom. For some database products the schema name is also the owner name. The second table belongs to schema Harry and creates a different table with the same name.
+
+    CREATE TABLE Tom.Customers
+    (CustomerID NUMBER, FirstName VARCHAR(30), LastName VARCHAR(30));
+
+    CREATE TABLE Harry.Customers
+    (CustID NUMBER, FName VARCHAR(30), LName VARCHAR(30));
+
+In the modeling environment, these tables belong to namespaces Tom and Harry, respectively. For example, if you looked in the dictionary you would find entries related to the Tom:Customers table of the form:
+
+    Tom:Customers = entity entry
+    Tom:Customers'CustomerID = entity attribute entry
+    Tom:Customers'FirstName = entity attribute entry
+    Tom:Customers'LastName = entity attribute entry
+
+When generating SQL code from a data model the developer can selectively generate code for a specific namespace or all namespaces. The code may optionally include or exclude the qualifying schema name.
+
+Summary
+
+MacA&D and WinA&D support logical data models, physical data models, various diagram presentations and SQL code generation. It comes with printed and PDF manuals, contextual help and step-by-step tutorials to get you started. 
+
+
+Figure 6: Division
+Normalization
+Normalization is a design technique that is widely used as a guide in designing relational
+databases. Normalization is essentially a two step process that puts data into tabular form by
+removing repeating groups and then removes duplicated from the relational tables. 
+Normalization theory is based on the concepts of 
+normal forms
+. A relational table is said to be a
+particular normal form if it satisfied a certain set of constraints. There are currently five normal
+forms that have been defined. In this section, we will cover the first three normal forms that were
+defined by E. F. Codd. 
+Basic Concepts 
+The goal of normalization is to create a set of relational tables that are free of redundant data and
+that can be consistently and correctly modified. This means that all tables in a relational database
+should be in the third normal form (3NF). A relational table is in 3NF if and only if all non-key
+columns are (a) mutually independent and (b) fully dependent upon the primary key. Mutual
+independence means that no non-key column is dependent upon any combination of the other
+columns. The first two normal forms are intermediate steps to achieve the goal of having all
+tables in 3NF. In order to better understand the 2NF and higher forms, it is necessary to
+understand the concepts of functional dependencies and lossless decomposition. 
+Functional Dependencies 
+The concept of functional dependencies is the basis for the first three normal forms. A column,
+Y, of the relational table R is said to be 
+functionally dependent 
+upon column X of R if and only
+if each value of X in R is associated with precisely one value of Y at any given time. X and Y
+may be composite. Saying that column Y is functionally dependent upon X is the same as saying
+the values of column X identify the values of column Y. If column X is a primary key, then all
+columns in the relational table R must be functionally dependent upon X. 
+A short-hand notation for describing a functional dependency is: 
+R.x —>
+; R.y 
+which can be read as in the relational table named R, column x functionally determines
+(identifies) column y. 
+Full functional dependence 
+applies to tables with composite keys. Column Y in relational table
+R is fully functional on X of R if it is functionally dependent on X and not functionally
+dependent upon any subset of X. Full functional dependence means that when a primary key is
+composite, made of two or more columns, then the other columns must be identified by the entire
+key and not just some of the columns that make up the key. 
+Overview 
+Simply stated, normalization is the process of removing redundant data from relational tables by
+decomposing (splitting) a relational table into smaller tables by projection. The goal is to have
+only primary keys on the left hand side of a functional dependency. In order to be correct,
+decomposition must be lossless. That is, the new tables can be recombined by a natural join to
+recreate the original table without creating any spurious or redundant data
+
+
+
+Definition - What does Data Modeling mean?
+
+Data modeling is a representation of the data structures in a table for a company’s database and is a very powerful expression of the company's business requirements. This data model is the guide used by functional and technical analysts in the design and implementation of a database.
+
+Data models are used for many purposes, from high-level conceptual models to physical data models.
+
+
+Data modeling explores data-oriented structures and identifies entity types. This is unlike class modeling, where classes are identified.
+
+Three basic styles of data modeling are generally used in practice today.
+
+    Conceptual Data Models: High-level, static business structures and concepts
+    Logical Data Models (LDMs): Entity types, data attributes and relationships between entities
+    Physical Data Models (PDMs): The internal schema database design
+
+Data models in DBMS are systems that help you use and create databases. DBMS actually stands for a database management system. Various DBMS types exist with different speed, flexibilities and implementations. Each type has an advantage over others but there is no one superior kinds. The kind of structure and data you need determines which data model in DBMS suits your needs best. Here is a course entitled Advanced Excel for Professionals that shows you how to use excel for charting, data analysis, data cleaning, MIS Reporting and other time saver tricks.
+
+You can think of a data model as a flowchart of diagram that shows you data relationships. It can be time-intensive to capture all the data in a model but this should not be rushed as it is quite important. Basically, a database management system is a program collection allowing end users to control, maintain or create records in a data base. Primarily, features of DBMS address database creation for record interrogation, queries and data extraction. The difference between an application development environment and a DBMS system ranges from the personnel to the data usage. Here is a course entitled Google Analytics Mastery that shows you the power of analysing data and the resulting sky rocket marketing.
+
+Object Oriented Data Models in DBMS
+
+Compared to other DBMS data models, a database that is object-oriented can hold different data types, such as video, audio or graphics files. These objects consist of the data piece itself and methods, which are the DBMS instructions giving you the details of how an object should be handled. Because of the amount of structure and storage space they require, DBMS of this types tend to cost more to implement. On the other hand, these offer a big advantage over other DBMS types due to the allowable data flexibility. This type of DBMS is able many new types of data including video, audio, photographs and graphics. This type of data represents a significant advance over their other cousins in the database. Network and hierarchical database are all made to handle data that is structured, which is data the nicely fits into columns, rows and fields. These come in handy for handles information in smaller snippets such as zip codes, product numbers, addresses, names and any other number or statistic you can think of. On the other hand, this DBMS can also be utilized for storing data from various sources of media such as text and photographs and produce output work in a format of multimedia.
+Relational Data Models in DBMS
+
+This data model type connects the system’s items together using keys. There is a unique key for each record that you use for finding them, which makes them more rapid to use than network or hierarchical DBMS since you don’t have to traverse those structures just to be able to get items found. In another data, these keys are also able to get data linked. In a relational database, you can get entries modified without having its structure redefined as you do with a network or a hierarchical database. DBMS is considered rational, or RDBMS if the relationships in a database are in a ‘table’ form. There are 3 keys on this type of DBMS, including: attributes, domain and relation. There are a few popular RDBMS examples including Microsoft Access, Microsoft SQL Server, Informix, Ingress, Sybase and Oracle.
+Network Data Models in DBMS
+
+A hierarchical structure is used in a network database in DBMS as well. However, these look more like the web of a spider than anything else, were the items in the center are the roots and the members or the ‘children,’ branch out. Unlike databases that are hierarchical, however, children in a network DBMS can have more than one ‘owner’ or ‘parent.’ When creating this type of data model, you need the structure of a DBMS network defined in advance. However, since this model type allows a lot of connections between items, it is actually has more flexibility than other DBMS types.
+
+In other words, if the relationship that a database’s data has is many-to-many, it is a network DBSM. Mainly, higher level language such as FORTRAN, COBOL, C++ and Pascal were used for implementing set structures and records. The network database is somewhat complicated since the relationships are many to many and one record can be used as the entire database’s key.
+Hierarchical Data Models in DBMS
+
+Data models that are hierarchical organize data items into structures that look like trees, where items of data at higher levels exist over items that are a level lower. Items that are related exist on the same level. Items that are a level higher than the current level are items called ‘parents.’ In the same way, ‘children’ is the term used for items on a lower level. ‘Root’ is the term used in the upper most regions. When you traverse a hierarchical model in DBMS, you can begin at the root and branch downwards. You can quickly update the structure of a hierarchical DBMS because of how the items are organized and defined.
+
+A hierarchical DBMS is when the relationships found in the databases’ data are established so that one item of data is present as another’s subordinate, or a sub unit. When two records are consecutively stored, direct relationship exists. In this model, no backwards movement is allowed or possible. Here is a course you might like entitled Microsoft Excel Pivot Tables, which is in-depth Excel training that will teach you how to manipulate your data on Excel using Pivot Tables. For all Excel users, this course is a true essential.
+Advantages for the Personnel
+
+Now that you know all the different data models, it is only right that you know the advantages of data models in DBMS. A system of DBMS consists of database administrators and managers that oversee the entire operation of DBMS. Primarily, the duties are making sure primary schedule is run daily, loading program releases and the maintenance of database records. Application development consists of system analysts, computer technicians and programmers with the job of finding errors in the software for testing.
+For Records Interrogation
+
+Programs for records interrogation are designed to provide information to the end users through many programs such as general inquiry programs, report generators and Query. The Query program is the most popular one, allowing end users to develop basic skills of programming by constructing simple programs of data using a processor for query language for data extraction. For records interrogation, Query programs happen to be quite powerful. Here is a course you might be interested in entitled The Ultimate Microsoft Access 2013 Training Bundle that shows you how to become an expert data manager and take your skills a level or two higher.
+You Can Catalog Programs
+
+In a system of DBMS, end users are able to catalog program favorites to delete, edit or view data. Each of the users is able to copy routines to a catalog file that is user defined for managing databases. The system of catalogs is a personal tool used to run programs by end users without having a specialist of applications design programs for them.
+You Can Access Data
+
+Typically, there are centralized databases for DBMS systems. Databases can be accessed by end-users without an application program developer needing to create program access or interruption from a programmer. In the software, the record structures and database are already built in. In this area, the advantage is access to data records and structures. By the way here is an article you might be interested in called RDBMS Concepts: Creating a Database Management System
+
+
+Best Practice: 
+
+A data model documents and organizes data, how it is stored and accessed, and the relationships among different types of data. The model may be abstract or concrete.
+
+Use these guidelines to create a data model:
+
+    Identify the different data components- consider raw and processed data, as well as associated metadata (these are called entities)
+    Identify the relationships between the different data components (these are called associations)
+    Identify anticipated uses of the data (these are called requirements), with recognition that data may be most valuable in the future for unanticipated uses
+    Identify the strengths and constraints of the technology (hardware and software) that you plan to use during your project (this is called a technology assessment phase)
+    Build a draft model of the entities and their relations, attempting to keep the model independent from any specific uses or technology constraints.
+    Incorporate intended usage and technology constraints as needed to derive the simplest, most general model possible
+    Test the model with different scenarios, including best- and
+    worst-case (worst-case includes problems such as invalid raw data, user mistakes, failing algorithms, etc)
+    Repeat these steps to optimize the model 
+
+Description Rationale: 
+
+Considering and creating the data model helps with data planning and identifies potential problems that future data users might encounter.
+
+A data model is an abstract model that organizes elements of data and standardizes how they relate to one another and to properties of the real world. For instance, a data model may specify that a data element representing a car comprise a number of other elements which in turn represent the color, size and owner of the car.
+Overview of data modeling context: Data model is based on Data, Data relationship, Data semantic and Data constraint. A data model provides the details of information to be stored, and is of primary use when the final product is the generation of computer software code for an application or the preparation of a functional specification to aid a computer software make-or-buy decision. The figure is an example of the interaction between process and data models.[1]
+
+A data model explicitly determines the structure of data. Data models are specified in a data modeling notation, which is often graphical in form.[2]
+
+A data model can be sometimes referred to as a data structure, especially in the context of programming languages. Data models are often complemented by function models, especially in the context of enterprise models.
+
+Contents
+
+    1 Overview
+        1.1 The role of data models
+        1.2 Three perspectives
+    2 History
+    3 Types of data models
+        3.1 Database model
+        3.2 Data Structure Diagram
+        3.3 Entity-relationship model
+        3.4 Geographic data model
+        3.5 Generic data model
+        3.6 Semantic data model
+    4 Data model topics
+        4.1 Data architecture
+        4.2 Data modeling
+        4.3 Data properties
+        4.4 Data organization
+        4.5 Data structure
+        4.6 Data model theory
+        4.7 Patterns
+    5 Related models
+        5.1 Data flow diagram
+        5.2 Information model
+        5.3 Object model
+        5.4 Object-Role Model
+        5.5 Unified Modeling Language models
+    6 See also
+    7 References
+    8 Further reading
+
+Overview
+
+Managing large quantities of structured and unstructured data is a primary function of information systems. Data models describe the structure, manipulation and integrity aspects of the data stored in data management systems such as relational databases. They typically do not describe unstructured data, such as word processing documents, email messages, pictures, digital audio, and video.
+The role of data models
+How data models deliver benefit.[3]
+
+The main aim of data models is to support the development of information systems by providing the definition and format of data. According to West and Fowler (1999) "if this is done consistently across systems then compatibility of data can be achieved. If the same data structures are used to store and access data then different applications can share data. The results of this are indicated above. However, systems and interfaces often cost more than they should, to build, operate, and maintain. They may also constrain the business rather than support it. A major cause is that the quality of the data models implemented in systems and interfaces is poor".[3]
+
+    "Business rules, specific to how things are done in a particular place, are often fixed in the structure of a data model. This means that small changes in the way business is conducted lead to large changes in computer systems and interfaces".[3]
+    "Entity types are often not identified, or incorrectly identified. This can lead to replication of data, data structure, and functionality, together with the attendant costs of that duplication in development and maintenance".[3]
+    "Data models for different systems are arbitrarily different. The result of this is that complex interfaces are required between systems that share data. These interfaces can account for between 25-70% of the cost of current systems".[3]
+    "Data cannot be shared electronically with customers and suppliers, because the structure and meaning of data has not been standardized. For example, engineering design data and drawings for process plant are still sometimes exchanged on paper".[3]
+
+The reason for these problems is a lack of standards that will ensure that data models will both meet business needs and be consistent.[3]
+
+A data model explicitly determines the structure of data or structured data. Typical applications of data models include database models, design of information systems, and enabling exchange of data. Usually data models are specified in a data modeling language.[3]
+
+A data model can be sometimes referred to as a data structure, especially in the context of programming languages. Data models are often complemented by function models, especially in the context of enterprise models.
+Three perspectives
+The ANSI/SPARC three level architecture. This shows that a data model can be an external model (or view), a conceptual model, or a physical model. This is not the only way to look at data models, but it is a useful way, particularly when comparing models.[3]
+
+A data model instance may be one of three kinds according to ANSI in 1975:[4]
+
+    Conceptual data model : describes the semantics of a domain, being the scope of the model. For example, it may be a model of the interest area of an organization or industry. This consists of entity classes, representing kinds of things of significance in the domain, and relationship assertions about associations between pairs of entity classes. A conceptual schema specifies the kinds of facts or propositions that can be expressed using the model. In that sense, it defines the allowed expressions in an artificial 'language' with a scope that is limited by the scope of the model.
+    Logical data model : describes the semantics, as represented by a particular data manipulation technology. This consists of descriptions of tables and columns, object oriented classes, and XML tags, among other things.
+    Physical data model : describes the physical means by which data are stored. This is concerned with partitions, CPUs, tablespaces, and the like.
+
+The significance of this approach, according to ANSI, is that it allows the three perspectives to be relatively independent of each other. Storage technology can change without affecting either the logical or the conceptual model. The table/column structure can change without (necessarily) affecting the conceptual model. In each case, of course, the structures must remain consistent with the other model. The table/column structure may be different from a direct translation of the entity classes and attributes, but it must ultimately carry out the objectives of the conceptual entity class structure. Early phases of many software development projects emphasize the design of a conceptual data model. Such a design can be detailed into a logical data model. In later stages, this model may be translated into physical data model. However, it is also possible to implement a conceptual model directly.
+History
+
+One of the earliest pioneering works in modelling information systems was done by Young and Kent (1958),[5][6] who argued for "a precise and abstract way of specifying the informational and time characteristics of a data processing problem". They wanted to create "a notation that should enable the analyst to organize the problem around any piece of hardware". Their work was a first effort to create an abstract specification and invariant basis for designing different alternative implementations using different hardware components. A next step in IS modelling was taken by CODASYL, an IT industry consortium formed in 1959, who essentially aimed at the same thing as Young and Kent: the development of "a proper structure for machine independent problem definition language, at the system level of data processing". This led to the development of a specific IS information algebra.[6]
+
+In the 1960s data modeling gained more significance with the initiation of the management information system (MIS) concept. According to Leondes (2002), "during that time, the information system provided the data and information for management purposes. The first generation database system, called Integrated Data Store (IDS), was designed by Charles Bachman at General Electric. Two famous database models, the network data model and the hierarchical data model, were proposed during this period of time".[7] Towards the end of the 1960s Edgar F. Codd worked out his theories of data arrangement, and proposed the relational model for database management based on first-order predicate logic.[8]
+
+In the 1970s entity relationship modeling emerged as a new type of conceptual data modeling, originally proposed in 1976 by Peter Chen. Entity relationship models were being used in the first stage of information system design during the requirements analysis to describe information needs or the type of information that is to be stored in a database. This technique can describe any ontology, i.e., an overview and classification of concepts and their relationships, for a certain area of interest.
+
+In the 1970s G.M. Nijssen developed "Natural Language Information Analysis Method" (NIAM) method, and developed this in the 1980s in cooperation with Terry Halpin into Object-Role Modeling (ORM).
+
+Bill Kent, in his 1978 book Data and Reality[9] compared a data model to a map of a territory, emphasizing that in the real world, "highways are not painted red, rivers don't have county lines running down the middle, and you can't see contour lines on a mountain". In contrast to other researchers who tried to create models that were mathematically clean and elegant, Kent emphasized the essential messiness of the real world, and the task of the data modeller to create order out of chaos without excessively distorting the truth.
+
+In the 1980s according to Jan L. Harrington (2000) "the development of the object-oriented paradigm brought about a fundamental change in the way we look at data and the procedures that operate on data. Traditionally, data and procedures have been stored separately: the data and their relationship in a database, the procedures in an application program. Object orientation, however, combined an entity's procedure with its data."[10]
+Types of data models
+Database model
+Main article: Database model
+
+A database model is a specification describing how a database is structured and used.
+
+Several such models have been suggested. Common models include:
+
+Flat model
+    This may not strictly qualify as a data model. The flat (or table) model consists of a single, two-dimensional array of data elements, where all members of a given column are assumed to be similar values, and all members of a row are assumed to be related to one another.
+Hierarchical model
+    In this model data is organized into a tree-like structure, implying a single upward link in each record to describe the nesting, and a sort field to keep the records in a particular order in each same-level list.
+Network model
+    This model organizes data using two fundamental constructs, called records and sets. Records contain fields, and sets define one-to-many relationships between records: one owner, many members.
+Relational model
+    is a database model based on first-order predicate logic. Its core idea is to describe a database as a collection of predicates over a finite set of predicate variables, describing constraints on the possible values and combinations of values.
+Object-relational model
+    Similar to a relational database model, but objects, classes and inheritance are directly supported in database schemas and in the query language.
+Star schema
+    The simplest style of data warehouse schema. The star schema consists of a few "fact tables" (possibly only one, justifying the name) referencing any number of "dimension tables". The star schema is considered an important special case of the snowflake schema.
+
+    Flat model
+
+    Hierarchical model
+
+    Network model
+
+    Relational model
+
+    Concept-oriented model
+
+    Star schema
+
+Data Structure Diagram
+Main article: Data structure diagram
+Example of a Data Structure Diagram.
+
+A data structure diagram (DSD) is a diagram and data model used to describe conceptual data models by providing graphical notations which document entities and their relationships, and the constraints that bind them. The basic graphic elements of DSDs are boxes, representing entities, and arrows, representing relationships. Data structure diagrams are most useful for documenting complex data entities.
+
+Data structure diagrams are an extension of the entity-relationship model (ER model). In DSDs, attributes are specified inside the entity boxes rather than outside of them, while relationships are drawn as boxes composed of attributes which specify the constraints that bind entities together. The E-R model, while robust, doesn't provide a way to specify the constraints between relationships, and becomes visually cumbersome when representing entities with several attributes. DSDs differ from the ER model in that the ER model focuses on the relationships between different entities, whereas DSDs focus on the relationships of the elements within an entity and enable users to fully see the links and relationships between each entity.
+
+There are several styles for representing data structure diagrams, with the notable difference in the manner of defining cardinality. The choices are between arrow heads, inverted arrow heads (crow's feet), or numerical representation of the cardinality.
+Example of an IDEF1X Entity relationship diagrams used to model IDEF1X itself.[11]
+Entity-relationship model
+Main article: Entity-relationship model
+
+An entity-relationship model (ERM), sometimes referred to as an entity-relationship diagram (ERD), is an abstract conceptual data model (or semantic data model) used in software engineering to represent structured data. There are several notations used for ERMs.
+Geographic data model
+Main article: Data model (GIS)
+
+A data model in Geographic information systems is a mathematical construct for representing geographic objects or surfaces as data. For example,
+
+    the vector data model represents geography as collections of points, lines, and polygons;
+    the raster data model represent geography as cell matrixes that store numeric values;
+    and the Triangulated irregular network (TIN) data model represents geography as sets of contiguous, nonoverlapping triangles.[12]
+
+    Groups relate to process of making a map[13]
+
+    NGMDB data model applications[13]
+
+    NGMDB databases linked together[13]
+
+    Representing 3D map information[13]
+
+Generic data model
+Main article: Generic data model
+
+Generic data models are generalizations of conventional data models. They define standardised general relation types, together with the kinds of things that may be related by such a relation type. Generic data models are developed as an approach to solve some shortcomings of conventional data models. For example, different modelers usually produce different conventional data models of the same domain. This can lead to difficulty in bringing the models of different people together and is an obstacle for data exchange and data integration. Invariably, however, this difference is attributable to different levels of abstraction in the models and differences in the kinds of facts that can be instantiated (the semantic expression capabilities of the models). The modelers need to communicate and agree on certain elements which are to be rendered more concretely, in order to make the differences less significant.
+Semantic data model
+Main article: Semantic data model
+Semantic data models.[11]
+
+A semantic data model in software engineering is a technique to define the meaning of data within the context of its interrelationships with other data. A semantic data model is an abstraction which defines how the stored symbols relate to the real world.[11] A semantic data model is sometimes called a conceptual data model.
+
+The logical data structure of a database management system (DBMS), whether hierarchical, network, or relational, cannot totally satisfy the requirements for a conceptual definition of data because it is limited in scope and biased toward the implementation strategy employed by the DBMS. Therefore, the need to define data from a conceptual view has led to the development of semantic data modeling techniques. That is, techniques to define the meaning of data within the context of its interrelationships with other data. As illustrated in the figure. The real world, in terms of resources, ideas, events, etc., are symbolically defined within physical data stores. A semantic data model is an abstraction which defines how the stored symbols relate to the real world. Thus, the model must be a true representation of the real world.[11]
+Data model topics
+Data architecture
+Main article: Data architecture
+
+Data architecture is the design of data for use in defining the target state and the subsequent planning needed to hit the target state. It is usually one of several architecture domains that form the pillars of an enterprise architecture or solution architecture.
+
+A data architecture describes the data structures used by a business and/or its applications. There are descriptions of data in storage and data in motion; descriptions of data stores, data groups and data items; and mappings of those data artifacts to data qualities, applications, locations etc.
+
+Essential to realizing the target state, Data architecture describes how data is processed, stored, and utilized in a given system. It provides criteria for data processing operations that make it possible to design data flows and also control the flow of data in the system.
+Data modeling
+Main article: Data modeling
+The data modeling process.
+
+Data modeling in software engineering is the process of creating a data model by applying formal data model descriptions using data modeling techniques. Data modeling is a technique for defining business requirements for a database. It is sometimes called database modeling because a data model is eventually implemented in a database.[14]
+
+The figure illustrates the way data models are developed and used today. A conceptual data model is developed based on the data requirements for the application that is being developed, perhaps in the context of an activity model. The data model will normally consist of entity types, attributes, relationships, integrity rules, and the definitions of those objects. This is then used as the start point for interface or database design.[3]
+Data properties
+
+Some important properties of data for which requirements need to be met are:
+
+    definition-related properties[3]
+        relevance: the usefulness of the data in the context of your business.
+        clarity: the availability of a clear and shared definition for the data.
+        consistency: the compatibility of the same type of data from different sources.
+
+Some important properties of data.[3]
+
+    content-related properties
+        timeliness: the availability of data at the time required and how up to date that data is.
+        accuracy: how close to the truth the data is.
+    properties related to both definition and content
+        completeness: how much of the required data is available.
+        accessibility: where, how, and to whom the data is available or not available (e.g. security).
+        cost: the cost incurred in obtaining the data, and making it available for use.
+
+Data organization
+
+Another kind of data model describes how to organize data using a database management system or other data management technology. It describes, for example, relational tables and columns or object-oriented classes and attributes. Such a data model is sometimes referred to as the physical data model, but in the original ANSI three schema architecture, it is called "logical". In that architecture, the physical model describes the storage media (cylinders, tracks, and tablespaces). Ideally, this model is derived from the more conceptual data model described above. It may differ, however, to account for constraints like processing capacity and usage patterns.
+
+While data analysis is a common term for data modeling, the activity actually has more in common with the ideas and methods of synthesis (inferring general concepts from particular instances) than it does with analysis (identifying component concepts from more general ones). {Presumably we call ourselves systems analysts because no one can say systems synthesists.} Data modeling strives to bring the data structures of interest together into a cohesive, inseparable, whole by eliminating unnecessary data redundancies and by relating data structures with relationships.
+
+A different approach is to use adaptive systems such as artificial neural networks that can autonomously create implicit models of data.
+Data structure
+Main article: Data structure
+A binary tree, a simple type of branching linked data structure.
+
+A data structure is a way of storing data in a computer so that it can be used efficiently. It is an organization of mathematical and logical concepts of data. Often a carefully chosen data structure will allow the most efficient algorithm to be used. The choice of the data structure often begins from the choice of an abstract data type.
+
+A data model describes the structure of the data within a given domain and, by implication, the underlying structure of that domain itself. This means that a data model in fact specifies a dedicated grammar for a dedicated artificial language for that domain. A data model represents classes of entities (kinds of things) about which a company wishes to hold information, the attributes of that information, and relationships among those entities and (often implicit) relationships among those attributes. The model describes the organization of the data to some extent irrespective of how data might be represented in a computer system.
+
+The entities represented by a data model can be the tangible entities, but models that include such concrete entity classes tend to change over time. Robust data models often identify abstractions of such entities. For example, a data model might include an entity class called "Person", representing all the people who interact with an organization. Such an abstract entity class is typically more appropriate than ones called "Vendor" or "Employee", which identify specific roles played by those people.
+
+    Array
+
+    Hash table
+
+    Linked list
+
+    Stack (data structure)
+
+Data model theory
+
+The term data model can have two meanings:[15]
+
+    A data model theory, i.e. a formal description of how data may be structured and accessed.
+    A data model instance, i.e. applying a data model theory to create a practical data model instance for some particular application.
+
+A data model theory has three main components:[15]
+
+    The structural part: a collection of data structures which are used to create databases representing the entities or objects modeled by the database.
+    The integrity part: a collection of rules governing the constraints placed on these data structures to ensure structural integrity.
+    The manipulation part: a collection of operators which can be applied to the data structures, to update and query the data contained in the database.
+
+For example, in the relational model, the structural part is based on a modified concept of the mathematical relation; the integrity part is expressed in first-order logic and the manipulation part is expressed using the relational algebra, tuple calculus and domain calculus.
+
+A data model instance is created by applying a data model theory. This is typically done to solve some business enterprise requirement. Business requirements are normally captured by a semantic logical data model. This is transformed into a physical data model instance from which is generated a physical database. For example, a data modeler may use a data modeling tool to create an entity-relationship model of the corporate data repository of some business enterprise. This model is transformed into a relational model, which in turn generates a relational database.
+Patterns
+
+Patterns[16] are common data modeling structures that occur in many data models.
+Related models
+Data flow diagram
+Main article: Data flow diagram
+Data Flow Diagram example.[17]
+
+A data flow diagram (DFD) is a graphical representation of the "flow" of data through an information system. It differs from the flowchart as it shows the data flow instead of the control flow of the program. A data flow diagram can also be used for the visualization of data processing (structured design). Data flow diagrams were invented by Larry Constantine, the original developer of structured design,[18] based on Martin and Estrin's "data flow graph" model of computation.
+
+It is common practice to draw a context-level Data flow diagram first which shows the interaction between the system and outside entities. The DFD is designed to show how a system is divided into smaller portions and to highlight the flow of data between those parts. This context-level Data flow diagram is then "exploded" to show more detail of the system being modeled
+Information model
+Main article: Information model
+Example of an EXPRESS G Information model.
+
+An Information model is not a type of data model, but more or less an alternative model. Within the field of software engineering both a data model and an information model can be abstract, formal representations of entity types that includes their properties, relationships and the operations that can be performed on them. The entity types in the model may be kinds of real-world objects, such as devices in a network, or they may themselves be abstract, such as for the entities used in a billing system. Typically, they are used to model a constrained domain that can be described by a closed set of entity types, properties, relationships and operations.
+
+According to Lee (1999)[19] an information model is a representation of concepts, relationships, constraints, rules, and operations to specify data semantics for a chosen domain of discourse. It can provide sharable, stable, and organized structure of information requirements for the domain context.[19] More in general the term information model is used for models of individual things, such as facilities, buildings, process plants, etc. In those cases the concept is specialised to Facility Information Model, Building Information Model, Plant Information Model, etc. Such an information model is an integration of a model of the facility with the data and documents about the facility.
+
+An information model provides formalism to the description of a problem domain without constraining how that description is mapped to an actual implementation in software. There may be many mappings of the information model. Such mappings are called data models, irrespective of whether they are object models (e.g. using UML), entity relationship models or XML schemas.
+Document Object Model, a standard object model for representing HTML or XML.
+Object model
+Main article: Object model
+
+An object model in computer science is a collection of objects or classes through which a program can examine and manipulate some specific parts of its world. In other words, the object-oriented interface to some service or system. Such an interface is said to be the object model of the represented service or system. For example, the Document Object Model (DOM) [1] 
+is a collection of objects that represent a page in a web browser, used by script programs to examine and dynamically change the page. There is a Microsoft Excel object model[20] for controlling Microsoft Excel from another program, and the ASCOM Telescope Driver[21] is an object model for controlling an astronomical telescope.
+
+In computing the term object model has a distinct second meaning of the general properties of objects in a specific computer programming language, technology, notation or methodology that uses them. For example, the Java object model, the COM object model, or the object model of OMT. Such object models are usually defined using concepts such as class, message, inheritance, polymorphism, and encapsulation. There is an extensive literature on formalized object models as a subset of the formal semantics of programming languages.
+Object-Role Model
+Main article: Object-Role Modeling
+Example of the application of Object-Role Modeling in a "Schema for Geologic Surface", Stephen M. Richard (1999).[22]
+
+Object-Role Modeling (ORM) is a method for conceptual modeling, and can be used as a tool for information and rules analysis.[23]
+
+Object-Role Modeling is a fact-oriented method for performing systems analysis at the conceptual level. The quality of a database application depends critically on its design. To help ensure correctness, clarity, adaptability and productivity, information systems are best specified first at the conceptual level, using concepts and language that people can readily understand.
+
+The conceptual design may include data, process and behavioral perspectives, and the actual DBMS used to implement the design might be based on one of many logical data models (relational, hierarchic, network, object-oriented etc.).[24]
+Unified Modeling Language models
+Main article: Unified Modeling Language
+
+The Unified Modeling Language (UML) is a standardized general-purpose modeling language in the field of software engineering. It is a graphical language for visualizing, specifying, constructing, and documenting the artifacts of a software-intensive system. The Unified Modeling Language offers a standard way to write a system's blueprints, including:[25]
+
+    Conceptual things such as business processes and system functions
+    Concrete things such as programming language statements, database schemas, and
+    Reusable software components.
+
+UML offers a mix of functional models, data models, and database models.
+See also
+
+    Business process model
+    Core Architecture Data Model
+    Data dictionary
+    JC3IEDM
+    Process model
+    Data Format Description Language (DFDL)
+    Structured Search
+    Key-objects
+
+Data modeling in software engineering is the process of creating a data model for an information system by applying formal data modeling techniques.
+
+Contents
+
+    1 Overview
+    2 Data modeling topics
+        2.1 Data models
+        2.2 Conceptual, logical and physical schemas
+        2.3 Data modeling process
+        2.4 Modeling methodologies
+        2.5 Entity relationship diagrams
+        2.6 Generic data modeling
+        2.7 Semantic data modeling
+    3 See also
+    4 References
+    5 Further reading
+    6 External links
+
+Overview
+
+Data modeling is a process used to define and analyze data requirements needed to support the business processes within the scope of corresponding information systems in organizations. Therefore, the process of data modeling involves professional data modelers working closely with business stakeholders, as well as potential users of the information system.
+
+There are three different types of data models produced while progressing from requirements to the actual database to be used for the information system.[2] The data requirements are initially recorded as a conceptual data model which is essentially a set of technology independent specifications about the data and is used to discuss initial requirements with the business stakeholders. The conceptual model is then translated into a logical data model, which documents structures of the data that can be implemented in databases. Implementation of one conceptual data model may require multiple logical data models. The last step in data modeling is transforming the logical data model to a physical data model that organizes the data into tables, and accounts for access, performance and storage details. Data modeling defines not just data elements, but also their structures and the relationships between them.[3]
+
+Data modeling techniques and methodologies are used to model data in a standard, consistent, predictable manner in order to manage it as a resource. The use of data modeling standards is strongly recommended for all projects requiring a standard means of defining and analyzing data within an organization, e.g., using data modeling:
+
+    to assist business analysts, programmers, testers, manual writers, IT package selectors, engineers, managers, related organizations and clients to understand and use an agreed semi-formal model the concepts of the organization and how they relate to one another
+    to manage data as a resource
+    for the integration of information systems
+    for designing databases/data warehouses (aka data repositories)
+
+Data modeling may be performed during various types of projects and in multiple phases of projects. Data models are progressive; there is no such thing as the final data model for a business or application. Instead a data model should be considered a living document that will change in response to a changing business. The data models should ideally be stored in a repository so that they can be retrieved, expanded, and edited over time. Whitten et al. (2004) determined two types of data modeling:[4]
+
+    Strategic data modeling: This is part of the creation of an information systems strategy, which defines an overall vision and architecture for information systems is defined. Information engineering is a methodology that embraces this approach.
+    Data modeling during systems analysis: In systems analysis logical data models are created as part of the development of new databases.
+
+Data modeling is also used as a technique for detailing business requirements for specific databases. It is sometimes called database modeling because a data model is eventually implemented in a database.[4]
+Data modeling topics
+Data models
+Main article: Data model
+How data models deliver benefit.[1]
+
+Data models provide a structure for data used within information systems by providing specific definition and format. If a data model is used consistently across systems then compatibility of data can be achieved. If the same data structures are used to store and access data then different applications can share data seamlessly. The results of this are indicated in the diagram. However, systems and interfaces often cost more than they should, to build, operate, and maintain. They may also constrain the business rather than support it. This may occur when the quality of the data models implemented in systems and interfaces is poor.[1]
+
+    Business rules, specific to how things are done in a particular place, are often fixed in the structure of a data model. This means that small changes in the way business is conducted lead to large changes in computer systems and interfaces. So, business rules need to be implemented in a flexible way that does not result in complicated dependencies, rather the data model should be flexible enough so that changes in the business can be implemented within the data model in a relatively quick and efficient way.
+    Entity types are often not identified, or are identified incorrectly. This can lead to replication of data, data structure and functionality, together with the attendant costs of that duplication in development and maintenance.Therefore, data definitions should be made as explicit and easy to understand as possible to minimize misinterpretation and duplication.
+    Data models for different systems are arbitrarily different. The result of this is that complex interfaces are required between systems that share data. These interfaces can account for between 25-70% of the cost of current systems. Required interfaces should be considered inherently while designing a data model, as a data model on its own would not be usable without interfaces within different systems.
+    Data cannot be shared electronically with customers and suppliers, because the structure and meaning of data has not been standardised. To obtain optimal value from an implemented data model, it is very important to define standards that will ensure that data models will both meet business needs and be consistent.[1]
+
+Conceptual, logical and physical schemas
+The ANSI/SPARC three level architecture. This shows that a data model can be an external model (or view), a conceptual model, or a physical model. This is not the only way to look at data models, but it is a useful way, particularly when comparing models.[1]
+
+In 1975 ANSI described three kinds of data-model instance:[5]
+
+    Conceptual schema: describes the semantics of a domain (the scope of the model). For example, it may be a model of the interest area of an organization or of an industry. This consists of entity classes, representing kinds of things of significance in the domain, and relationships assertions about associations between pairs of entity classes. A conceptual schema specifies the kinds of facts or propositions that can be expressed using the model. In that sense, it defines the allowed expressions in an artificial "language" with a scope that is limited by the scope of the model. Simply described, a conceptual schema is the first step in organizing the data requirements.
+    Logical schema: describes the structure of some domain of information. This consists of descriptions of (for example) tables, columns, object-oriented classes, and XML tags. The logical schema and conceptual schema are sometimes implemented as one and the same.[2]
+    Physical schema: describes the physical means used to store data. This is concerned with partitions, CPUs, tablespaces, and the like.
+
+According to ANSI, this approach allows the three perspectives to be relatively independent of each other. Storage technology can change without affecting either the logical or the conceptual schema. The table/column structure can change without (necessarily) affecting the conceptual schema. In each case, of course, the structures must remain consistent across all schemas of the same data model.
+Data modeling process
+Data modeling in the context of Business Process Integration.[6]
+
+In the context of business process integration (see figure), data modeling complements business process modeling, and ultimately results in database generation.[6]
+
+The process of designing a database involves producing the previously described three types of schemas - conceptual, logical, and physical. The database design documented in these schemas are converted through a Data Definition Language, which can then be used to generate a database. A fully attributed data model contains detailed attributes (descriptions) for every entity within it. The term "database design" can describe many different parts of the design of an overall database system. Principally, and most correctly, it can be thought of as the logical design of the base data structures used to store the data. In the relational model these are the tables and views. In an object database the entities and relationships map directly to object classes and named relationships. However, the term "database design" could also be used to apply to the overall process of designing, not just the base data structures, but also the forms and queries used as part of the overall database application within the Database Management System or DBMS.
+
+In the process, system interfaces account for 25% to 70% of the development and support costs of current systems. The primary reason for this cost is that these systems do not share a common data model. If data models are developed on a system by system basis, then not only is the same analysis repeated in overlapping areas, but further analysis must be performed to create the interfaces between them. Most systems within an organization contain the same basic data, redeveloped for a specific purpose. Therefore, an efficiently designed basic data model can minimize rework with minimal modifications for the purposes of different systems within the organization[1]
+Modeling methodologies
+
+Data models represent information areas of interest. While there are many ways to create data models, according to Len Silverston (1997)[7] only two modeling methodologies stand out, top-down and bottom-up:
+
+    Bottom-up models or View Integration models are often the result of a reengineering effort. They usually start with existing data structures forms, fields on application screens, or reports. These models are usually physical, application-specific, and incomplete from an enterprise perspective. They may not promote data sharing, especially if they are built without reference to other parts of the organization.[7]
+    Top-down logical data models, on the other hand, are created in an abstract way by getting information from people who know the subject area. A system may not implement all the entities in a logical model, but the model serves as a reference point or template.[7]
+
+Sometimes models are created in a mixture of the two methods: by considering the data needs and structure of an application and by consistently referencing a subject-area model. Unfortunately, in many environments the distinction between a logical data model and a physical data model is blurred. In addition, some CASE tools don’t make a distinction between logical and physical data models.[7]
+Entity relationship diagrams
+Main article: Entity-relationship model
+Example of an IDEF1X Entity relationship diagrams used to model IDEF1X itself. The name of the view is mm. The domain hierarchy and constraints are also given. The constraints are expressed as sentences in the formal theory of the meta model.[8]
+
+There are several notations for data modeling. The actual model is frequently called "Entity relationship model", because it depicts data in terms of the entities and relationships described in the data.[4] An entity-relationship model (ERM) is an abstract conceptual representation of structured data. Entity-relationship modeling is a relational schema database modeling method, used in software engineering to produce a type of conceptual data model (or semantic data model) of a system, often a relational database, and its requirements in a top-down fashion.
+
+These models are being used in the first stage of information system design during the requirements analysis to describe information needs or the type of information that is to be stored in a database. The data modeling technique can be used to describe any ontology (i.e. an overview and classifications of used terms and their relationships) for a certain universe of discourse i.e. area of interest.
+
+Several techniques have been developed for the design of data models. While these methodologies guide data modelers in their work, two different people using the same methodology will often come up with very different results. Most notable are:
+
+    Bachman diagrams
+    Barker's notation
+    Chen's Notation
+    Data Vault Modeling
+    Extended Backus–Naur form
+    IDEF1X
+    Object-relational mapping
+    Object-Role Modeling
+    Relational Model
+    Relational Model/Tasmania
+
+Generic data modeling
+Main article: Generic data model
+Example of a Generic data model.[9]
+
+Generic data models are generalizations of conventional data models. They define standardized general relation types, together with the kinds of things that may be related by such a relation type. The definition of generic data model is similar to the definition of a natural language. For example, a generic data model may define relation types such as a 'classification relation', being a binary relation between an individual thing and a kind of thing (a class) and a 'part-whole relation', being a binary relation between two things, one with the role of part, the other with the role of whole, regardless the kind of things that are related.
+
+Given an extensible list of classes, this allows the classification of any individual thing and to specify part-whole relations for any individual object. By standardization of an extensible list of relation types, a generic data model enables the expression of an unlimited number of kinds of facts and will approach the capabilities of natural languages. Conventional data models, on the other hand, have a fixed and limited domain scope, because the instantiation (usage) of such a model only allows expressions of kinds of facts that are predefined in the model.
+Semantic data modeling
+Main article: Semantic data model
+
+The logical data structure of a DBMS, whether hierarchical, network, or relational, cannot totally satisfy the requirements for a conceptual definition of data because it is limited in scope and biased toward the implementation strategy employed by the DBMS.
+Semantic data models.[8]
+
+Therefore, the need to define data from a conceptual view has led to the development of semantic data modeling techniques. That is, techniques to define the meaning of data within the context of its interrelationships with other data. As illustrated in the figure the real world, in terms of resources, ideas, events, etc., are symbolically defined within physical data stores. A semantic data model is an abstraction which defines how the stored symbols relate to the real world. Thus, the model must be a true representation of the real world.[8]
+
+A semantic data model can be used to serve many purposes, such as:[8]
+
+    planning of data resources
+    building of shareable databases
+    evaluation of vendor software
+    integration of existing databases
+
+The overall goal of semantic data models is to capture more meaning of data by integrating relational concepts with more powerful abstraction concepts known from the Artificial Intelligence field. The idea is to provide high level modeling primitives as integral part of a data model in order to facilitate the representation of real world situations.[10]
+See also
+
+    Architectural pattern (computer science)
+    Comparison of data modeling tools
+    Data (computing)
+    Data dictionary
+    Document modeling
+    Information Management
+    Informative modeling
+    Three schema approach
+    Zachman Framework
+    Metadata modeling
+Data models define how the logical structure of a database is modeled. Data Models are fundamental entities to introduce abstraction in a DBMS. Data models define how data is connected to each other and how they are processed and stored inside the system.
+
+The very first data model could be flat data-models, where all the data used are to be kept in the same plane. Earlier data models were not so scientific, hence they were prone to introduce lots of duplication and update anomalies.
+Entity-Relationship Model
+
+Entity-Relationship (ER) Model is based on the notion of real-world entities and relationships among them. While formulating real-world scenario into the database model, the ER Model creates entity set, relationship set, general attributes and constraints.
+
+ER Model is best used for the conceptual design of a database.
+
+ER Model is based on −
+
+    Entities and their attributes.
+
+    Relationships among entities.
+
+These concepts are explained below.
+
+    Entity − An entity in an ER Model is a real-world entity having properties called attributes. Every attribute is defined by its set of values called domain. For example, in a school database, a student is considered as an entity. Student has various attributes like name, age, class, etc.
+
+    Relationship − The logical association among entities is called relationship. Relationships are mapped with entities in various ways. Mapping cardinalities define the number of association between two entities.
+
+    Mapping cardinalities −
+        one to one
+        one to many
+        many to one
+        many to many
+
+Relational Model
+
+The most popular data model in DBMS is the Relational Model. It is more scientific a model than others. This model is based on first-order predicate logic and defines a table as an n-ary relation.
+Relational Model Table
+
+The main highlights of this model are −
+
+    Data is stored in tables called relations.
+    Relations can be normalized.
+    In normalized relations, values saved are atomic values.
+    Each row in a relation contains a unique value.
+    Each column in a relation contains values from a same domain.
+Data modeling is the process of documenting a complex software system design as an easily understood diagram, using text and symbols to represent the way data needs to flow. The diagram can be used as a blueprint for the construction of new software or for re-engineering a legacy application. 
+
+
+Traditionally, data models have been built during the analysis and design phases of a project to ensure that the requirements for a new application are fully understood. A data model can be thought of as a flowchart that illustrates the relationships between data. Although capturing all the possible relationships in a data model can be very time-intensive, it's an important step that shouldn't be rushed. Well-documented conceptual, logical and physical data models allow stake-holders to identify errors and make changes before any programming code has been written.
+
+Data modelers often use multiple models to view the same data and ensure that all processes, entities, relationships and data flows have been identified. There are several different approaches to data modeling, including:
+
+Conceptual Data Modeling - identifies the highest-level relationships between different entities.
+
+Enterprise Data Modeling - similar to conceptual data modeling, but addresses the unique requirements of a specific business.
+
+Logical Data Modeling - illustrates the specific entities, attributes and relationships involved in a business function. Serves as the basis for the creation of the physical data model.
+
+Physical Data Modeling - represents an application and database-specific implementation of a logical data model.
