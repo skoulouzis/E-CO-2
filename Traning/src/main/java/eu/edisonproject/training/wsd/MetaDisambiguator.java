@@ -114,7 +114,7 @@ public class MetaDisambiguator extends DisambiguatorImpl {
         String delimeter = ",";
         String wordSeperator = "_";
         Set<String> ngarms = CSVFileReader.getNGramsForTerm(term, getItemsFilePath(), delimeter, wordSeperator);
-
+        ngarms.addAll( CSVFileReader.getNGramsForTerm(term, getCandidateTermsFile(), delimeter, wordSeperator));
         Term dis = disambiguate(term, possibleTerms, ngarms, getMinimumSimilarity());
 //        Term dis = getWinner(possibleTerms, getMinimumSimilarity());
         if (dis == null) {

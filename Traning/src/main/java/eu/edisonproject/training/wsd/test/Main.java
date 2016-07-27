@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.FilenameUtils;
 import org.json.simple.parser.ParseException;
 
 /**

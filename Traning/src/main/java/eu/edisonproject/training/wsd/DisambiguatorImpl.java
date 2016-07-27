@@ -74,21 +74,23 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
     protected StanfordLemmatizer lematizer;
     protected Stemming stemer;
     private static final Logger LOGGER = Logger.getLogger(DisambiguatorImpl.class.getName());
+    private String candidateTermsFile;
 
     /**
      *
-     * @param filterredDictionary
+     * @param candidateTermsFile
      * @return
      * @throws IOException
      * @throws FileNotFoundException
      * @throws ParseException
      */
     @Override
-    public List<Term> disambiguateTerms(String filterredDictionary) throws IOException, FileNotFoundException, ParseException {
-        LOGGER.log(Level.FINE, "filterredDictionary: {0}", filterredDictionary);
+    public List<Term> disambiguateTerms(String candidateTermsFile) throws IOException, FileNotFoundException, ParseException {
+        LOGGER.log(Level.FINE, "filterredDictionary: {0}", candidateTermsFile);
+        this.candidateTermsFile = candidateTermsFile;
         List<Term> terms = new ArrayList<>();
 
-        File dictionary = new File(filterredDictionary);
+        File dictionary = new File(candidateTermsFile);
         int count = 0;
         int lineCount = 1;
         try (BufferedReader br = new BufferedReader(new FileReader(dictionary))) {
@@ -114,7 +116,7 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
                 lineCount++;
             }
         } catch (Exception ex) {
-            LOGGER.log(Level.WARNING, "Failed while processing line: " + lineCount + " from: " + filterredDictionary, ex);
+            LOGGER.log(Level.WARNING, "Failed while processing line: " + lineCount + " from: " + candidateTermsFile, ex);
         } finally {
             return terms;
         }
@@ -743,6 +745,13 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
     @Override
     public Set<Term> getCandidates(String lemma) throws MalformedURLException, IOException, ParseException, InterruptedException, ExecutionException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    /**
+     * @return the candidateTermsFile
+     */
+    public String getCandidateTermsFile() {
+        return candidateTermsFile;
     }
 
 }
