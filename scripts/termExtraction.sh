@@ -1,5 +1,5 @@
 #!/bin/bash
-JAR_PATH=$HOME/workspace/E-CO-2/target/Traning-1.0-SNAPSHOT-jar-with-dependencies.jar
+JAR_PATH=$HOME/workspace/E-CO-2/Traning/target/Traning-1.0-SNAPSHOT-jar-with-dependencies.jar
 DICTIONARY_ALL=$HOME/workspace/E-CO-2/etc/dictionaryAll.csv 
 STOPWORDS=$HOME/workspace/E-CO-2/etc/stopwords.csv
 MODEL_PATH=$HOME/workspace/E-CO-2/etc/model
@@ -16,6 +16,6 @@ for i in "${TRAIN_DOC_PATHS[@]}"
 do
   for f in $i/*.txt
   do
-    java -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -jar $JAR_PATH -op x -i $i -o $i/terms.csv -p $PROPS_FILE
+    java -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -jar $JAR_PATH -op x -i $f -o $i/terms.csv -p $PROPS_FILE
   done
 done

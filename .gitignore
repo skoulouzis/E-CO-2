@@ -1,1 +1,16 @@
 /Utility/target/
+/etc/Avro Document/education.avro
+/etc/Classification/5-tf-idf-csv/
+/etc/Classification/3-tf-idf/
+/etc/Classification/Avro Document/
+/etc/Classification/1-word-freq/
+/etc/Classification/Job Post/
+/etc/Classification/2-word-counts/
+/etc/Training/Avro Document/
+/etc/Training/3-tf-idf/
+/etc/Training/4-tf-idf-document/
+/etc/Training/2-word-counts/
+/etc/Training/6-context-vector/
+/etc/Training/1-word-freq/
+/etc/Training/5-csv/
+/Traning/logs/

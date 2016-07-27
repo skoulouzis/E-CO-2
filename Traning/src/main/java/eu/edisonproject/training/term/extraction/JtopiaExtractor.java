@@ -9,7 +9,6 @@ import com.sree.textbytes.jtopia.Configuration;
 import com.sree.textbytes.jtopia.TermDocument;
 import com.sree.textbytes.jtopia.TermsExtractor;
 import eu.edisonproject.utility.file.ConfigHelper;
-import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
 import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.BufferedReader;
 import java.io.File;
