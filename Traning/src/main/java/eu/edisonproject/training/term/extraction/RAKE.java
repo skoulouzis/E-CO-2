@@ -56,4 +56,9 @@ edu.ehu.galan.rake.RakeAlgorithm ex = new edu.ehu.galan.rake.RakeAlgorithm();
 return null;
     }
 
+    @Override
+    public Map<String, Double> rank(String inDir) throws IOException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

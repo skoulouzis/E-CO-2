@@ -14,9 +14,11 @@ import java.util.Properties;
  * @author S. Koulouzis
  */
 public interface TermExtractor {
-    
+
     public void configure(Properties prop);
-    
-    public Map<String,Double> termXtraction(String inDir) throws IOException;
-    
+
+    public Map<String, Double> termXtraction(String inDir) throws IOException;
+
+    public Map<String, Double> rank(String inDir) throws IOException;
+
 }
