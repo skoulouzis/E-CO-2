@@ -24,7 +24,7 @@ import java.io.File;
  */
 public class TestTFIDF {
 
-    public static void main(String[] args) {
+    public static void execute(String[] args) {
         String inputPath = ".." + File.separator + "etc" + File.separator + 
                 "Classification" + File.separator + "Avro Document" + File.separator;
         TFIDFDriver tfidfDriver = new TFIDFDriver("post");

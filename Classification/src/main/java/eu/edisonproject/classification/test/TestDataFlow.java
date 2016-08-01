@@ -24,7 +24,7 @@ import java.io.File;
  */
 public class TestDataFlow {
 
-	public static void main(String[] args){
+	public static void execute(String[] args){
 		IDataFlow idf = new DataFlow();
                 String inputFolder = ".."+File.separator+"etc"+File.separator+"Classification"+File.separator+"Job Post"+File.separator;
 		String outputFolder = ".."+File.separator+"etc"+File.separator+"Classification"+File.separator+"Avro Document"+File.separator;
