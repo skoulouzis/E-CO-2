@@ -34,7 +34,7 @@ import java.util.TreeMap;
 public class CSVFileReader {
 
     private static Map<String, Set<String>> nGramsMap;
-    private static Cleaner STEMER = new Stemming();
+    private static final Cleaner STEMER = new Stemming();
 
     public static Map<String, String> csvFileToMap(String csvFilePath, String delimeter) throws IOException {
         Map<String, String> map = new HashMap<>();
