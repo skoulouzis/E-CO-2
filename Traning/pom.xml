@@ -41,7 +41,7 @@
         <dependency>
             <groupId>edu.ehu.galan.rake</groupId>
             <artifactId>RAKE</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
             <type>jar</type>
         </dependency>
         
@@ -151,6 +151,18 @@
             <artifactId>hadoop-core</artifactId>
             <version>1.1.0</version>
         </dependency>-->
+        
+<!--        <dependency>
+            <groupId>edu.illinois.cs.cogcomp</groupId>
+            <artifactId>illinois-pos</artifactId>
+            <version>3.0.58</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.uiuc.cogcomp</groupId>
+            <artifactId>LBJ2POS</artifactId>
+            <version>2.0</version>
+        </dependency>-->
+        
     </dependencies>
     
     
@@ -190,11 +202,11 @@
         </repository>
         
         
-        <repository>
+        <!--        <repository>
             <id>galan-maven-repo</id>
             <name>galan-maven-repo-releases</name>
             <url>http://galan.ehu.es/artifactory/ext-release-local</url>
-        </repository>
+        </repository>-->
  
         <repository>
             <id>cloudera-releases</id>
@@ -206,7 +218,19 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+        
+        <repository>
+            <id>CogcompSoftware</id>
+            <name>CogcompSoftware</name>
+            <url>http://cogcomp.cs.illinois.edu/m2repo/</url>
+        </repository>
  
+ 
+        <repository>
+            <id>opennlp.sf.net</id>
+            <url>http://opennlp.sourceforge.net/maven2</url>
+        </repository>
+
     </repositories>
     
     

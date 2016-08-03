@@ -139,7 +139,7 @@ public class AprioriExtraction implements TermExtractor {
 //            contents = contents.replaceAll("\\s{2,}", " ");
             String[] args = new String[2];
             args[0] = fileContents.toString();
-            args[1] = "0.03";
+            args[1] = "0.01";
             Apriori apriori = new Apriori(args);
             terms = apriori.go();
         }

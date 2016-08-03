@@ -126,7 +126,6 @@ public class LuceneExtractor implements TermExtractor {
 //            String stemTerm = stemer.execute();
 //            if (itemsMap.containsKey(term)) {
 //            }
-     MaxentTagger tagger = new MaxentTagger("models/left3words-wsj-0-18.tagger");
      
             term = term.toLowerCase().trim().replaceAll(" ", "_");
             while (term.endsWith("_")) {

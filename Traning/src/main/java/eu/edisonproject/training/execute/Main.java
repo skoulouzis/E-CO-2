@@ -127,10 +127,12 @@ public class Main {
 //                "eu.edisonproject.training.term.extraction.LuceneExtractor,"
 //                + "eu.edisonproject.training.term.extraction.JtopiaExtractor,"
 //                        + "eu.edisonproject.training.term.extraction.AprioriExtraction").split(",");
-
         String[] extractors = prop.getProperty("term.extractors",
-                "eu.edisonproject.training.term.extraction.AprioriExtraction").split(",");
+                "eu.edisonproject.training.term.extraction.JtopiaExtractor,"
+                + "eu.edisonproject.training.term.extraction.AprioriExtraction").split(",");
 
+//        String[] extractors = prop.getProperty("term.extractors",
+//                "eu.edisonproject.training.term.extraction.AprioriExtraction").split(",");
         Map<String, Double> termDictionaray = new HashMap();
         for (String className : extractors) {
             Class c = Class.forName(className);
