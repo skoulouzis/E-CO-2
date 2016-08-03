@@ -1,5 +1,8 @@
 package eu.edisonproject.training.term.extraction;
 
+import edu.stanford.nlp.ling.CoreAnnotations;
+import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import eu.edisonproject.utility.file.CSVFileReader;
 import eu.edisonproject.utility.file.ConfigHelper;
 import eu.edisonproject.utility.text.processing.Cleaner;
@@ -123,6 +126,7 @@ public class LuceneExtractor implements TermExtractor {
 //            String stemTerm = stemer.execute();
 //            if (itemsMap.containsKey(term)) {
 //            }
+     
             term = term.toLowerCase().trim().replaceAll(" ", "_");
             while (term.endsWith("_")) {
                 term = term.substring(0, term.lastIndexOf("_"));
@@ -143,6 +147,11 @@ public class LuceneExtractor implements TermExtractor {
 
         return termDictionaray;
 
+    }
+
+    @Override
+    public Map<String, Double> rank(String inDir) throws IOException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

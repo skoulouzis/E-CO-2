@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 package eu.edisonproject.classification.prepare.controller;
+
 /**
- * 
+ *
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
  */
 import document.avro.Document;
@@ -80,9 +81,12 @@ public class DataPrepare implements IDataPrepare {
             File[] filesInDir = file.listFiles();
             Arrays.sort(filesInDir);
             for (File subFolder : filesInDir) {
+
+                String date = subFolder.getName().replace("Data Scientis ", "");
+                System.out.println("retrived: " + date);
                 File[] files = subFolder.listFiles();
                 Arrays.sort(filesInDir);
-               // String newOutputFolder = outputFolder + File.separator + subFolder.getName() + LocalDate.now().toString();
+                // String newOutputFolder = outputFolder + File.separator + subFolder.getName() + LocalDate.now().toString();
                 //create a new Folder
                 //new File(newOutputFolder).mkdir();
                 for (File f : files) {
@@ -102,7 +106,7 @@ public class DataPrepare implements IDataPrepare {
                     davro.setDescription(documentObject.getDescription());
 
                     if (dAvroSerializer == null) {
-                        dAvroSerializer = new DocumentAvroSerializer(outputFolder + File.separator + documentObject.getTitle() + ".avro", davro.getSchema());
+                        dAvroSerializer = new DocumentAvroSerializer(outputFolder + File.separator + documentObject.getTitle() + date + ".avro", davro.getSchema());
                     }
                     dAvroSerializer.serialize(davro);
 
@@ -113,8 +117,9 @@ public class DataPrepare implements IDataPrepare {
                     dAvroSerializer = null;
                 }
             }
-        }else
+        } else {
             System.out.println("NOT A DIRECTORY");
+        }
 
     }
 
@@ -135,11 +140,11 @@ public class DataPrepare implements IDataPrepare {
     }
 
     public void clean(String description) {
-        System.out.println("DESCRIZIONE"+description);
+        //System.out.println("DESCRIZIONE"+description);
         Cleaner cleanStopWord = new StopWord(this.getStopWordArraySet());
-        cleanStopWord.setDescription("DESCRIZIONE PULITA "+description);
+        cleanStopWord.setDescription("DESCRIZIONE PULITA " + description);
         documentObject.setDescription(cleanStopWord.execute());
-        System.out.println(documentObject.getDescription());
+        //System.out.println(documentObject.getDescription());
         Cleaner cleanStanfordLemmatizer = new StanfordLemmatizer();
         cleanStanfordLemmatizer.setDescription(documentObject.getDescription());
         documentObject.setDescription(cleanStanfordLemmatizer.execute());

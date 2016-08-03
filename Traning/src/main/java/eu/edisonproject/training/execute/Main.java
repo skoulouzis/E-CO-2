@@ -122,10 +122,17 @@ public class Main {
     }
 
     private static void termExtraxtion(String in, String out) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
-
+//
+//        String[] extractors = prop.getProperty("term.extractors",
+//                "eu.edisonproject.training.term.extraction.LuceneExtractor,"
+//                + "eu.edisonproject.training.term.extraction.JtopiaExtractor,"
+//                        + "eu.edisonproject.training.term.extraction.AprioriExtraction").split(",");
         String[] extractors = prop.getProperty("term.extractors",
-                "eu.edisonproject.training.term.extraction.LuceneExtractor,"
-                + "eu.edisonproject.training.term.extraction.JtopiaExtractor").split(",");
+                "eu.edisonproject.training.term.extraction.JtopiaExtractor,"
+                + "eu.edisonproject.training.term.extraction.AprioriExtraction").split(",");
+
+//        String[] extractors = prop.getProperty("term.extractors",
+//                "eu.edisonproject.training.term.extraction.AprioriExtraction").split(",");
         Map<String, Double> termDictionaray = new HashMap();
         for (String className : extractors) {
             Class c = Class.forName(className);

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package eu.edisonproject.training.context.corpus;
 
@@ -17,7 +17,6 @@ import eu.edisonproject.utility.text.processing.Cleaner;
 import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
 import eu.edisonproject.utility.text.processing.StopWord;
 
-
 import org.apache.lucene.analysis.util.CharArraySet;
 
 /**
@@ -29,7 +28,7 @@ import org.apache.lucene.analysis.util.CharArraySet;
  * the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -39,126 +38,126 @@ import org.apache.lucene.analysis.util.CharArraySet;
  */
 public class DataPrepare {
 
-	private String inputFolder;
-	private String outputFolder;
-	private String charArraySetPath;
-	private CharArraySet stopWordArraySet;
-	private ReaderFile fileReader;
-	private List<List<String>> allRules;
+    private String inputFolder;
+    private String outputFolder;
+    private String charArraySetPath;
+    private CharArraySet stopWordArraySet;
+    private ReaderFile fileReader;
+    private List<List<String>> allRules;
 
-	public DataPrepare(String inputFolder, String outputFolder,String stopwordDocument) {
-		stopWordArraySet = loadStopWords(stopwordDocument);
-		this.inputFolder = inputFolder;
-		this.outputFolder = outputFolder;
-		this.allRules = new LinkedList<List<String>>();
-	}
+    public DataPrepare(String inputFolder, String outputFolder, String stopwordDocument) {
+        stopWordArraySet = loadStopWords(stopwordDocument);
+        this.inputFolder = inputFolder;
+        this.outputFolder = outputFolder;
+        this.allRules = new LinkedList<List<String>>();
+    }
 
-	public CharArraySet loadStopWords(String stopwordDocument) {
-		fileReader = new ReaderFile(stopwordDocument);
-		String[] stopWord = fileReader.readFile().split(" ");
-		final List<String> stopWords = Arrays.asList(stopWord);
+    public CharArraySet loadStopWords(String stopwordDocument) {
+        fileReader = new ReaderFile(stopwordDocument);
+        String[] stopWord = fileReader.readFile().split(" ");
+        final List<String> stopWords = Arrays.asList(stopWord);
 
-		return new CharArraySet(stopWords, false);
-	}
+        return new CharArraySet(stopWords, false);
+    }
 
-	public void execute() {
+    public void execute() {
 
-		/*
+        /*
 		 * Read, clean and compute the association rules for each categories
 		 * organized in folder. It is required to following this pattern for the
 		 * folder organization. Top folder-- - Category1 --Doc11 --Doc21 ...
 		 * -Category2 --Doc12 and so on.
-		 */
+         */
+        File file = new File(inputFolder);
+        if (file.isDirectory()) {
+            File[] filesInDir = file.listFiles();
+            Arrays.sort(filesInDir);
+            for (File folder : filesInDir) {
+                if (file.isDirectory()) {
+                    String transactions = "";
+                    File[] documents = folder.listFiles();
+                    for (File document : documents) {
+                        ReaderFile rf = new ReaderFile(inputFolder + "/" + folder.getName() + "/" + document.getName());
+                        String description = rf.readFile();
+                        String cleanedDescription = clean(description);
 
-		File file = new File(inputFolder);
-		if (file.isDirectory()) {
-			File[] filesInDir = file.listFiles();
-			Arrays.sort(filesInDir);
-			for (File folder : filesInDir) {
-				if (file.isDirectory()) {
-					String transactions = "";
-					File[] documents = folder.listFiles();
-					for (File document : documents) {
-						ReaderFile rf = new ReaderFile(inputFolder + "/"+folder.getName()+"/"+document.getName());
-						String description = rf.readFile();
-						String cleanedDescription = clean(description);
+                        transactions += cleanedDescription + "\n";
+                    }
+                    String supportThreshold = "0.8";
+                    String[] arg = {transactions.toString(), supportThreshold};
+                    Apriori aprioriDocuments;
+                    try {
+                        aprioriDocuments = new Apriori(arg);
+                        allRules.add(aprioriDocuments.go());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
 
-						transactions += cleanedDescription + "\n";
-					}
-					String supportThreshold = "0.8";
-					String[] arg = { transactions.toString(), supportThreshold };
-					Apriori aprioriDocuments;
-					try {
-						aprioriDocuments = new Apriori(arg);
-						allRules.add(aprioriDocuments.go());
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
+            }
+        }
+        try {
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFolder + "itemset.csv")));
+            for (List<String> itemset : allRules) {
+                for (String item : itemset) {
+                    String[] words = (item.split(",")[0]).split(" ");
+                    if (words.length > 1) {
+                        bw.write(item + "\n");
+                    }
+                }
+            }
 
-			}
-		}
-		try {
-			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFolder+"itemset.csv")));
-			for (List<String> itemset : allRules) {
-				for (String item : itemset) {
-					String[] words = (item.split(",")[0]).split(" ");
-					if(words.length>1)
-						bw.write(item + "\n");
-				}
-			}
+            bw.flush();
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-			bw.flush();
-			bw.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+    }
 
-	}
+    public String clean(String description) {
+        Cleaner cleanStopWord = new StopWord(this.getStopWordArraySet());
+        cleanStopWord.setDescription(description);
+        String descriptionWithoutStopWord = cleanStopWord.execute();
 
-	public String clean(String description) {
-		Cleaner cleanStopWord = new StopWord(this.getStopWordArraySet());
-		cleanStopWord.setDescription(description);
-		String descriptionWithoutStopWord = cleanStopWord.execute();
+        Cleaner cleanLemmatisation = new StanfordLemmatizer();
+        cleanLemmatisation.setDescription(descriptionWithoutStopWord);
+        String descriptionLemma = cleanLemmatisation.execute();
 
-		Cleaner cleanLemmatisation = new StanfordLemmatizer();
-		cleanLemmatisation.setDescription(descriptionWithoutStopWord);
-		String descriptionLemma = cleanLemmatisation.execute();
+        return descriptionLemma;
 
-		return descriptionLemma;
+    }
 
-	}
+    public String getInputFolder() {
+        return inputFolder;
+    }
 
-	public String getInputFolder() {
-		return inputFolder;
-	}
+    public void setInputFolder(String inputFolder) {
+        this.inputFolder = inputFolder;
+    }
 
-	public void setInputFolder(String inputFolder) {
-		this.inputFolder = inputFolder;
-	}
+    public String getOutputFolder() {
+        return outputFolder;
+    }
 
-	public String getOutputFolder() {
-		return outputFolder;
-	}
+    public void setOutputFolder(String outputFolder) {
+        this.outputFolder = outputFolder;
+    }
 
-	public void setOutputFolder(String outputFolder) {
-		this.outputFolder = outputFolder;
-	}
+    public String getCharArraySetPath() {
+        return charArraySetPath;
+    }
 
-	public String getCharArraySetPath() {
-		return charArraySetPath;
-	}
+    public void setCharArraySetPath(String charArraySetPath) {
+        this.charArraySetPath = charArraySetPath;
+    }
 
-	public void setCharArraySetPath(String charArraySetPath) {
-		this.charArraySetPath = charArraySetPath;
-	}
+    public CharArraySet getStopWordArraySet() {
+        return stopWordArraySet;
+    }
 
-	public CharArraySet getStopWordArraySet() {
-		return stopWordArraySet;
-	}
-
-	public void setStopWordArraySet(CharArraySet charArraySet) {
-		this.stopWordArraySet = charArraySet;
-	}
+    public void setStopWordArraySet(CharArraySet charArraySet) {
+        this.stopWordArraySet = charArraySet;
+    }
 
 }

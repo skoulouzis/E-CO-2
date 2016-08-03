@@ -1,7 +1,8 @@
 package eu.edisonproject.training.context.corpus;
 
-import java.io.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -20,7 +21,7 @@ import java.util.*;
  * the License.
  *
  */
-public class Apriori{
+public class Apriori {
 
     /**
      * the words
@@ -63,6 +64,9 @@ public class Apriori{
 
     /**
      * starts the algorithm after configuration
+     *
+     * @return
+     * @throws java.lang.Exception
      */
     public List<String> go() throws Exception {
         //start timer
@@ -99,7 +103,8 @@ public class Apriori{
      * outputs a message in Sys.err if not used as library
      */
     private void log(String message) {
-        System.out.println(message);
+//        System.out.println(message);
+        Logger.getLogger(Apriori.class.getName()).log(Level.FINE, message);
     }
 
     /**
@@ -107,7 +112,7 @@ public class Apriori{
      */
     private void configure(String[] args) throws Exception {
 
-        listOfItemsets = new LinkedList<String>();
+        listOfItemsets = new LinkedList<>();
         // setting fileContent
         postsText = args[0];
 
@@ -158,7 +163,7 @@ public class Apriori{
      * datasets
      */
     private void createItemsetsOfSize1() {
-        itemsets = new ArrayList<String[]>();
+        itemsets = new ArrayList<>();
         for (int i = 0; i < numItems; i++) {
             String[] cand = {words.get(i)};
             itemsets.add(cand);
@@ -236,7 +241,7 @@ public class Apriori{
         while (stFile.hasMoreTokens()) {
 
             String parsedVal = stFile.nextToken();
-            System.out.println(parsedVal);
+            log(parsedVal);
             trans[words.indexOf(parsedVal)] = true; //if it is not a 0, assign the value to true
         }
     }

@@ -147,7 +147,7 @@ public class JtopiaExtractor implements TermExtractor {
 
                 String contents = fileContents.toString().replaceAll("_", " ");
                 contents = contents.replaceAll("\\s{2,}", " ");
-
+                
                 tokenizer.setDescription(contents);
                 String cleanText = tokenizer.execute();
 //                lematizer.setDescription(cleanText);
@@ -158,5 +158,10 @@ public class JtopiaExtractor implements TermExtractor {
             }
         }
         return terms;
+    }
+
+    @Override
+    public Map<String, Double> rank(String inDir) throws IOException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
