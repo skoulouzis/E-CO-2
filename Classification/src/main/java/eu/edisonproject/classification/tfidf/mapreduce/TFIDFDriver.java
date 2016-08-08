@@ -60,7 +60,7 @@ public class TFIDFDriver implements ITFIDFDriver {
 
     private final String DISTANCES_VECTOR_PATH = ".." + File.separator + "etc" + File.separator + "Classification" + File.separator + "5-tf-idf-csv";
     // where to put the csv with the tfidf
-    private final String COMPETENCES_PATH = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "6-context-vector";
+    private final String COMPETENCES_PATH = ".." + File.separator + "etc" + File.separator + "Classification" + File.separator + "competences-vector";
 
     private final String contextName;
     private final String finalOutputPath;

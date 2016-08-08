@@ -30,6 +30,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -88,7 +89,7 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
                 BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f.getAbsolutePath())));
                 String line = "";
                 while ((line = br.readLine()) != null) {
-                    String[] value = line.split(";");
+                    String[] value = line.split(",");
                     categoriesFile.put(value[0], Double.parseDouble(value[1]));
                 }
             } catch (FileNotFoundException ex) {
@@ -155,42 +156,55 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
                 String key = iter.next();
                 HashMap<String, Double> competence = CATEGORIES_LIST.get(key);
                 HashMap<String, Double> documentToCompetenceSpace = new HashMap<>();
-                Set<String> words = competence.keySet();
-                for (String word : words) {
-                    if (documentWords.containsKey(word)) {
-                        documentToCompetenceSpace.put(word, documentWords.get(word));
-                    } else {
-                        documentToCompetenceSpace.put(word, 0.0);
-                    }
-                }
-                distancesNameAndValue.put(key, cosineFunction.computeDistance(competence.values(), documentToCompetenceSpace.values()));
-                //distances.add(cosineFunction.computeDistance(competence.values(), documentToCompetenceSpace.values()));
 
+                //Change to the common sub space
+                Set<String> words = competence.keySet();
+                List<Double> competenceValue = new LinkedList<Double>();
+                List<Double> documentValue = new LinkedList<Double>();
+                for (String word : words) {
+                    //Align the term written in the csv with the term analysed by MR
+                    //The terms comosed by two or more words in MR are separeted by whitespace
+                    //Instead the terms into the csv file are separeteb by "_" char
+                    String originalWord = word;
+                    if (word.contains("_")) {
+                        word = word.replaceAll("_", " ");
+                    }
+                    if (documentWords.containsKey(word)) {
+                        competenceValue.add(competence.get(originalWord));
+                        documentValue.add(documentWords.get(word));
+                        //documentToCompetenceSpace.put(word, documentWords.get(word));
+                    }// else {
+                    // documentToCompetenceSpace.put(word, 0.0);
+                    // }
+
+                    if (competenceValue.size() != 0) {
+                        distancesNameAndValue.put(key, cosineFunction.computeDistance(competence.values(), documentToCompetenceSpace.values()));
+                        System.out.println(key+"--"+distancesNameAndValue.get(key));
+                    } else {
+                        distancesNameAndValue.put(key, 0.0);
+                    }
+                    //distances.add(cosineFunction.computeDistance(competence.values(), documentToCompetenceSpace.values()));
+
+                }
             }
-//            System.out.println("Distance" + text);
             LOGGER.log(Level.INFO, "Distance{0}", text);
             String[] docIdAndDate = text.toString().split("@");
-//            Distances distanceDocument = new Distances();
-//            distanceDocument.setTitle(docIdAndDate[1]);
-//            distanceDocument.setDocumentId(docIdAndDate[0]);
-//            distanceDocument.setDate(docIdAndDate[2]);
-//            distanceDocument.setDistanceArray(distances);
-
-//            String distancesString = "";
-//            for (Double d : distances) {
-//                distancesString += d + ";";
-//            }
-//            Put put = new Put(key.get());
             List<String> families = new ArrayList<>();
             families.add("info");
+
             for (String family : distancesNameAndValue.keySet()) {
-                families.add(family);
+                String columnFamily = family.split("-")[0];
+                boolean isPresent = false;
+                for (String fam : families) {
+                    if (fam.equals(columnFamily)) {
+                        isPresent = true;
+                    }
+                }
+                if (!isPresent) {
+                    families.add(columnFamily);
+                }
             }
-//            families.add("data_analytics");
-//            families.add("data_management_curation");
-//            families.add("data_science_engineering");
-//            families.add("scintific_research_methods");
-//            families.add("domain_knowledge");
+
             DBTools.createOrUpdateTable(JOB_POST_COMETENCE_TBL_NAME, families, true);
             try (Admin admin = DBTools.getConn().getAdmin()) {
                 try (Table tbl = DBTools.getConn().getTable(JOB_POST_COMETENCE_TBL_NAME)) {
@@ -199,39 +213,15 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
                     // column family info
                     put.addColumn(Bytes.toBytes("info"), Bytes.toBytes("title"), Bytes.toBytes(docIdAndDate[1]));
                     put.addColumn(Bytes.toBytes("info"), Bytes.toBytes("date"), Bytes.toBytes(docIdAndDate[2]));
-                    // column family distance
-//                    Set<String> columnFamilyAndQualifier = distancesNameAndValue.keySet();
-//                    Iterator<String> iterColumn = columnFamilyAndQualifier.iterator();
+
                     for (String family : distancesNameAndValue.keySet()) {
-                        String key = family;//iterColumn.next();
-                        Double d = distancesNameAndValue.get(key);
-//                        String columnFamily = key.split("-")[0];
-//                        String columnQualifier = key.split("-")[1];
-                        put.addColumn(Bytes.toBytes(key), Bytes.toBytes(key), Bytes.toBytes(d));
+                        //String key = family; //iterColumn.next();
+                        Double d = distancesNameAndValue.get(family);
+                        String columnFamily = family.split("-")[0];
+                        String columnQualifier = family.split("-")[1];
+                        put.addColumn(Bytes.toBytes(columnFamily), Bytes.toBytes(columnQualifier), Bytes.toBytes(d));
                     }
-//                    int count = 0;
-//                    for (String s : data_analytics) {
-//                        put.addColumn(Bytes.toBytes("data_analytics"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
-//                        count++;
-//                    }
-//                    for (String s : data_management_curation) {
-//                        put.addColumn(Bytes.toBytes("data_management_curation"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
-//                        count++;
-//                    }
-//                    for (String s : data_science_engineering) {
-//                        put.addColumn(Bytes.toBytes("data_science_engineering"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
-//                        count++;
-//                    }
-//                    for (String s : scientific_research_methods) {
-//                        put.addColumn(Bytes.toBytes("scintific_research_methods"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
-//                        count++;
-//                    }
-//                    for (String s : domain_knowledge) {
-//                        put.addColumn(Bytes.toBytes("domain_knowledge"), Bytes.toBytes(s), Bytes.toBytes(distances.get(count)));
-//                        count++;
-//                    }
                     tbl.put(put);
-//                    System.out.println(docIdAndDate[0] + "...... " + docIdAndDate[1]);
                     LOGGER.log(Level.INFO, "{0}...... {1}", new Object[]{docIdAndDate[0], docIdAndDate[1]});
                     context.write(new ImmutableBytesWritable(docIdAndDate[0].getBytes()), put);
                     //context.write(new Text(text), new Text(distancesString));
