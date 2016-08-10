@@ -10,7 +10,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Doffset.terms=1 -Dnum.of.terms=1 -classpath %classpath eu.edisonproject.training.execute.Main -op x -i /home/alogo/workspace/E-CO-2/Competences/data_analytics/DSDA01_predictive_analytics/DSDA01_predictive_analytics.txt -o /home/alogo/workspace/E-CO-2/Competences/data_analytics/DSDA01_predictive_analytics/term.csv</exec.args>
+                <exec.args>-Doffset.terms=1 -Dnum.of.terms=1 -classpath %classpath eu.edisonproject.training.execute.Main -op t -i /home/alogo/workspace/E-CO-2/Competences/data_analytics/DSDA01_predictive_analytics/DSDA01_predictive_analytics.avro -o /home/alogo/workspace/E-CO-2/Competences/data_analytics/DSDA01_predictive_analytics/</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
@@ -24,7 +24,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -Doffset.terms=1 -Dnum.of.terms=1 -classpath %classpath eu.edisonproject.training.execute.Main -op x -i /home/alogo/workspace/E-CO-2/Competences/data_analytics/DSDA01_predictive_analytics/DSDA01_predictive_analytics.txt -o /home/alogo/workspace/E-CO-2/Competences/data_analytics/DSDA01_predictive_analytics/term.csv</exec.args>
+                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -Doffset.terms=1 -Dnum.of.terms=1 -classpath %classpath eu.edisonproject.training.execute.Main -op t -i /home/alogo/workspace/E-CO-2/Competences/data_analytics/DSDA01_predictive_analytics/DSDA01_predictive_analytics.avro -o /home/alogo/workspace/E-CO-2/Competences/data_analytics/DSDA01_predictive_analytics/</exec.args>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
             </properties>
@@ -39,7 +39,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Doffset.terms=1 -Dnum.of.terms=1 -classpath %classpath eu.edisonproject.training.execute.Main -op x -i /home/alogo/workspace/E-CO-2/Competences/data_analytics/DSDA01_predictive_analytics/DSDA01_predictive_analytics.txt -o /home/alogo/workspace/E-CO-2/Competences/data_analytics/DSDA01_predictive_analytics/term.csv</exec.args>
+                <exec.args>-Doffset.terms=1 -Dnum.of.terms=1 -classpath %classpath eu.edisonproject.training.execute.Main -op t -i /home/alogo/workspace/E-CO-2/Competences/data_analytics/DSDA01_predictive_analytics/DSDA01_predictive_analytics.avro -o /home/alogo/workspace/E-CO-2/Competences/data_analytics/DSDA01_predictive_analytics/</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>

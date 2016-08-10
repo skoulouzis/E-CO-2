@@ -43,6 +43,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.lucene.analysis.util.CharArraySet;
 
@@ -229,16 +230,27 @@ public class Main {
 
     }
 
-    private static void calculateTFIDF(String in, String out) {
+    private static void calculateTFIDF(String in, String out) throws IOException {
         String contextName = FilenameUtils.removeExtension(in.substring(in.lastIndexOf(File.separator) + 1));
         ITFIDFDriver tfidfDriver = new TFIDFDriverImpl(contextName);
         File inFile = new File(in);
-        TFIDFDriverImpl.CONTEXT_PATH = out;
+//        TFIDFDriverImpl.CONTEXT_PATH = out;
+        File tmpFolder = new File(System.getProperty("java.io.tmpdir") + File.separator + "avro");
+        tmpFolder.mkdir();
+        tmpFolder.deleteOnExit();
+
         if (inFile.isFile()) {
-            tfidfDriver.executeTFIDF(inFile.getParent());
+            FileUtils.copyFile(inFile, new File(tmpFolder + File.separator + inFile.getName()));
+            tfidfDriver.executeTFIDF(tmpFolder.getAbsolutePath());
         } else {
+            for (File f : inFile.listFiles()) {
+                if (FilenameUtils.getExtension(f.getName()).endsWith("avro")) {
+                    FileUtils.copyFile(f, new File(tmpFolder + File.separator + f.getName()));
+                }
+            }
             tfidfDriver.executeTFIDF(inFile.getAbsolutePath());
         }
+        //        TFIDFDriverImpl.CONTEXT_PATH = out;
         tfidfDriver.driveProcessResizeVector();
 
     }
