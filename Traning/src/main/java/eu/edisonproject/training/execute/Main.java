@@ -241,16 +241,15 @@ public class Main {
 
         if (inFile.isFile()) {
             FileUtils.copyFile(inFile, new File(tmpFolder + File.separator + inFile.getName()));
-            tfidfDriver.executeTFIDF(tmpFolder.getAbsolutePath());
+//            tfidfDriver.executeTFIDF(tmpFolder.getAbsolutePath());
         } else {
             for (File f : inFile.listFiles()) {
                 if (FilenameUtils.getExtension(f.getName()).endsWith("avro")) {
                     FileUtils.copyFile(f, new File(tmpFolder + File.separator + f.getName()));
                 }
             }
-            tfidfDriver.executeTFIDF(inFile.getAbsolutePath());
         }
-
+        tfidfDriver.executeTFIDF(tmpFolder.getAbsolutePath());
         tfidfDriver.driveProcessResizeVector();
         File ctxPath = new File(TFIDFDriverImpl.CONTEXT_PATH);
         for (File f : ctxPath.listFiles()) {
