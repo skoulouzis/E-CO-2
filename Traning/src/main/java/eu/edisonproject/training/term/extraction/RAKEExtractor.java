@@ -70,31 +70,31 @@ public class RAKEExtractor implements TermExtractor {
 //            Document doc=new Document(full_path,name);
 //    doc.setSentenceList(sentences);
 //    doc.setTokenList(tokenized_sentences); 
-        edu.ehu.galan.rake.RakeAlgorithm ex = new edu.ehu.galan.rake.RakeAlgorithm();
+//        edu.ehu.galan.rake.RakeAlgorithm ex = new edu.ehu.galan.rake.RakeAlgorithm();
         List<String> words = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(new File(stopWordsPath)))) {
             for (String text; (text = br.readLine()) != null;) {
                 words.add(text);
             }
         }
-        ex.loadStopWordsList(words);
+//        ex.loadStopWordsList(words);
         words = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(new File(puctuationFilePath)))) {
             for (String text; (text = br.readLine()) != null;) {
                 words.add(text);
             }
         }
-        ex.loadPunctStopWord(words);
+//        ex.loadPunctStopWord(words);
 //        ex.loadPunctStopWord(words);
 
 //    parser.readSource("testCorpus/textAstronomy");
 inti();
-        edu.ehu.galan.rake.model.Document doc = new edu.ehu.galan.rake.model.Document(f.getAbsolutePath(), f.getName());
+//        edu.ehu.galan.rake.model.Document doc = new edu.ehu.galan.rake.model.Document(f.getAbsolutePath(), f.getName());
         String pPropsDir = "";
 
-        ex.init(doc, pPropsDir);
-        ex.runAlgorithm();
-        doc.getTermList();
+//        ex.init(doc, pPropsDir);
+//        ex.runAlgorithm();
+//        doc.getTermList();
         return null;
     }
 
