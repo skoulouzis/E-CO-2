@@ -234,14 +234,50 @@ public class Main {
         String contextName = FilenameUtils.removeExtension(in.substring(in.lastIndexOf(File.separator) + 1));
         ITFIDFDriver tfidfDriver = new TFIDFDriverImpl(contextName);
         File inFile = new File(in);
+
+        File tmpFolder = new File(System.getProperty("java.io.tmpdir") + File.separator + "avro");
+        tmpFolder.mkdir();
+        tmpFolder.deleteOnExit();
+
+        setPaths(inFile, tmpFolder);
+
+        tfidfDriver.executeTFIDF(tmpFolder.getAbsolutePath());
+        tfidfDriver.driveProcessResizeVector();
+        File ctxPath = new File(TFIDFDriverImpl.CONTEXT_PATH);
+        for (File f : ctxPath.listFiles()) {
+            if (FilenameUtils.getExtension(f.getName()).endsWith("csv")) {
+                FileUtils.moveFile(f, new File(out + File.separator + f.getName()));
+            }
+        }
+    }
+
+    private static void setPaths(File inFile, File tmpFolder) throws IOException {
+
         TFIDFDriverImpl.INPUT_ITEMSET = System.getProperty("itemset.file");
         if (TFIDFDriverImpl.INPUT_ITEMSET == null) {
             TFIDFDriverImpl.INPUT_ITEMSET = prop.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv");
         }
 
-        File tmpFolder = new File(System.getProperty("java.io.tmpdir") + File.separator + "avro");
-        tmpFolder.mkdir();
-        tmpFolder.deleteOnExit();
+        File outPath1 = new File(TFIDFDriverImpl.INPUT_ITEMSET);
+        TFIDFDriverImpl.OUTPUT_PATH1 = tmpFolder.getAbsolutePath() + File.separator + outPath1.getName();
+
+        File inPath2 = new File(TFIDFDriverImpl.INPUT_PATH2);
+        TFIDFDriverImpl.INPUT_PATH2 = tmpFolder.getAbsolutePath() + File.separator + inPath2.getName();
+
+        File outPath2 = new File(TFIDFDriverImpl.OUTPUT_PATH2);
+        TFIDFDriverImpl.OUTPUT_PATH2 = tmpFolder.getAbsolutePath() + File.separator + outPath2.getName();
+
+        File inPath3 = new File(TFIDFDriverImpl.INPUT_PATH3);
+        TFIDFDriverImpl.INPUT_PATH3 = tmpFolder.getAbsolutePath() + File.separator + inPath3.getName();
+
+        File outPath3 = new File(TFIDFDriverImpl.OUTPUT_PATH3);
+        TFIDFDriverImpl.OUTPUT_PATH3 = tmpFolder.getAbsolutePath() + File.separator + outPath3.getName();
+        
+        File inPath4 = new File(TFIDFDriverImpl.INPUT_PATH4);
+        TFIDFDriverImpl.INPUT_PATH4 = tmpFolder.getAbsolutePath() + File.separator + inPath4.getName();
+
+        File outPath4 = new File(TFIDFDriverImpl.OUTPUT_PATH4);
+        TFIDFDriverImpl.OUTPUT_PATH4 = tmpFolder.getAbsolutePath() + File.separator + outPath4.getName();
 
         if (inFile.isFile()) {
             FileUtils.copyFile(inFile, new File(tmpFolder + File.separator + inFile.getName()));
@@ -253,14 +289,7 @@ public class Main {
                 }
             }
         }
-        tfidfDriver.executeTFIDF(tmpFolder.getAbsolutePath());
-        tfidfDriver.driveProcessResizeVector();
-        File ctxPath = new File(TFIDFDriverImpl.CONTEXT_PATH);
-        for (File f : ctxPath.listFiles()) {
-            if (FilenameUtils.getExtension(f.getName()).endsWith("csv")) {
-                FileUtils.moveFile(f, new File(out + File.separator + f.getName()));
-            }
-        }
+
     }
 
 }

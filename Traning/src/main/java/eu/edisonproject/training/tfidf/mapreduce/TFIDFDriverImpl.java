@@ -44,20 +44,20 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
     //where to read the data for MapReduce#1
     private String INPUT_PATH1;
     //where to put the data in hdfs when MapReduce#1 will finish
-    private final String OUTPUT_PATH1 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "1-word-freq";
+    public static String OUTPUT_PATH1 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "1-word-freq";
 
     // where to read the data for the MapReduce#2
-    private final String INPUT_PATH2 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "1-word-freq";
+    public static String INPUT_PATH2 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "1-word-freq";
     // where to put the data in hdfs when the MapReduce#2 will finish
-    private final String OUTPUT_PATH2 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "2-word-counts";
+    public static String OUTPUT_PATH2 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "2-word-counts";
 
     // where to read the data for the MapReduce#3
-    private final String INPUT_PATH3 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "2-word-counts";
+    public static String INPUT_PATH3 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "2-word-counts";
     // where to put the data in hdfs when the MapReduce#3 will finish
-    private final String OUTPUT_PATH3 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "3-tf-idf";
+    public static String OUTPUT_PATH3 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "3-tf-idf";
 
     // where to read the data for the MapReduce#4.
-    private final String INPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "3-tf-idf";
+    public static String INPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "3-tf-idf";
     // where to put the data in hdfs when the MapReduce# will finish
     public static String OUTPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "4-tf-idf-document";
 
@@ -114,6 +114,9 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
 
             try {
                 String[] args1 = {INPUT_PATH1, OUTPUT_PATH1, INPUT_ITEMSET};
+                System.err.println(INPUT_PATH1);
+                System.err.println(OUTPUT_PATH1);
+                System.err.println(INPUT_ITEMSET);
                 ToolRunner.run(new WordFrequencyInDocDriver(), args1);
 
                 String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};
