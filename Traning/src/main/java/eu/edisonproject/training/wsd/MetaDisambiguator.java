@@ -14,12 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.simple.parser.ParseException;
@@ -31,7 +26,7 @@ import org.json.simple.parser.ParseException;
 public class MetaDisambiguator extends DisambiguatorImpl {
 
     List<DisambiguatorImpl> disambiguators = new ArrayList<>();
-    private boolean sequentially;
+//    private boolean sequentially;
 
     @Override
     public void configure(Properties properties) {
@@ -53,7 +48,7 @@ public class MetaDisambiguator extends DisambiguatorImpl {
                 Logger.getLogger(MetaDisambiguator.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        sequentially = Boolean.valueOf(properties.getProperty("execute.sequentially", "false"));
+//        sequentially = Boolean.valueOf(properties.getProperty("execute.sequentially", "false"));
     }
 
     @Override

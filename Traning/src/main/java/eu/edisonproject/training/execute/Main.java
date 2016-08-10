@@ -234,7 +234,11 @@ public class Main {
         String contextName = FilenameUtils.removeExtension(in.substring(in.lastIndexOf(File.separator) + 1));
         ITFIDFDriver tfidfDriver = new TFIDFDriverImpl(contextName);
         File inFile = new File(in);
-//        TFIDFDriverImpl.CONTEXT_PATH = out;
+        TFIDFDriverImpl.INPUT_ITEMSET = System.getProperty("itemset.file");
+        if (TFIDFDriverImpl.INPUT_ITEMSET == null) {
+            TFIDFDriverImpl.INPUT_ITEMSET = prop.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv");
+        }
+
         File tmpFolder = new File(System.getProperty("java.io.tmpdir") + File.separator + "avro");
         tmpFolder.mkdir();
         tmpFolder.deleteOnExit();

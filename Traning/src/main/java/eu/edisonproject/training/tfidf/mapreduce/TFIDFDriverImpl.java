@@ -40,7 +40,7 @@ import org.apache.hadoop.util.ToolRunner;
 public class TFIDFDriverImpl implements ITFIDFDriver {
 
     //where to read the frequent itemset
-    private final String INPUT_ITEMSET = ".." + File.separator + "etc" + File.separator + "itemset.csv";
+    public static String INPUT_ITEMSET = ".." + File.separator + "etc" + File.separator + "itemset.csv";
     //where to read the data for MapReduce#1
     private String INPUT_PATH1;
     //where to put the data in hdfs when MapReduce#1 will finish
