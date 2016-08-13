@@ -105,18 +105,15 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
                         dataFileReader.next();
                         numberOfDocuments++;
                     }
-                    System.out.println(numberOfDocuments);
+                    Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Num. of Documents: {0}", numberOfDocuments);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE,null, e);
                 }
                 //}
             }
 
             try {
                 String[] args1 = {INPUT_PATH1, OUTPUT_PATH1, INPUT_ITEMSET};
-                System.err.println(INPUT_PATH1);
-                System.err.println(OUTPUT_PATH1);
-                System.err.println(INPUT_ITEMSET);
                 ToolRunner.run(new WordFrequencyInDocDriver(), args1);
 
                 String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};

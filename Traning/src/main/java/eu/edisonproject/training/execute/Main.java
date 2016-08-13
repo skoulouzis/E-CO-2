@@ -255,10 +255,10 @@ public class Main {
 
         TFIDFDriverImpl.INPUT_ITEMSET = System.getProperty("itemset.file");
         if (TFIDFDriverImpl.INPUT_ITEMSET == null) {
-            TFIDFDriverImpl.INPUT_ITEMSET = prop.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv");
+            TFIDFDriverImpl.INPUT_ITEMSET = prop.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "itemset.csv");
         }
 
-        File outPath1 = new File(TFIDFDriverImpl.INPUT_ITEMSET);
+        File outPath1 = new File(TFIDFDriverImpl.OUTPUT_PATH1);
         TFIDFDriverImpl.OUTPUT_PATH1 = tmpFolder.getAbsolutePath() + File.separator + outPath1.getName();
 
         File inPath2 = new File(TFIDFDriverImpl.INPUT_PATH2);
@@ -272,14 +272,15 @@ public class Main {
 
         File outPath3 = new File(TFIDFDriverImpl.OUTPUT_PATH3);
         TFIDFDriverImpl.OUTPUT_PATH3 = tmpFolder.getAbsolutePath() + File.separator + outPath3.getName();
-        
+
         File inPath4 = new File(TFIDFDriverImpl.INPUT_PATH4);
         TFIDFDriverImpl.INPUT_PATH4 = tmpFolder.getAbsolutePath() + File.separator + inPath4.getName();
 
         File outPath4 = new File(TFIDFDriverImpl.OUTPUT_PATH4);
         TFIDFDriverImpl.OUTPUT_PATH4 = tmpFolder.getAbsolutePath() + File.separator + outPath4.getName();
 
-        if (inFile.isFile()) {
+        if (inFile.isFile() && FilenameUtils.getExtension(inFile.getName()).endsWith("avro")) {
+
             FileUtils.copyFile(inFile, new File(tmpFolder + File.separator + inFile.getName()));
 //            tfidfDriver.executeTFIDF(tmpFolder.getAbsolutePath());
         } else {
