@@ -16,9 +16,7 @@
 package eu.edisonproject.training.term.extraction;
 
 import eu.edisonproject.training.context.corpus.Apriori;
-import eu.edisonproject.training.context.corpus.DataPrepare;
 import eu.edisonproject.utility.file.ConfigHelper;
-import eu.edisonproject.utility.text.processing.Cleaner;
 import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
 import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.BufferedReader;
