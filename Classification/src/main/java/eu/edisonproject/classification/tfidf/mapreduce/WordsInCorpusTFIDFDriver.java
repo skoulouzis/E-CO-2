@@ -107,7 +107,7 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
 
                 String newKey = documentFields[0] + "@" + documentFields[1]+"@"+documentFields[2];
                 String newValue = key.toString() + "/" + DF.format(tfIdf);
-
+                System.out.println(newKey + ":"+newValue);
                 context.write(new Text(newKey), new Text(newValue));
 
             }
