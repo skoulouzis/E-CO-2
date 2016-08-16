@@ -152,6 +152,7 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
             //for (HashMap<String, Double> competence : listOfCompetencesVector) {
             Set<String> names = CATEGORIES_LIST.keySet();
             Iterator<String> iter = names.iterator();
+            System.out.println("Competence dimension: "+names.size());
             while (iter.hasNext()) {
                 String key = iter.next();
                 HashMap<String, Double> competence = CATEGORIES_LIST.get(key);
@@ -176,16 +177,18 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
                     }// else {
                     // documentToCompetenceSpace.put(word, 0.0);
                     // }
-
-                    if (competenceValue.size() != 0) {
-                        distancesNameAndValue.put(key, cosineFunction.computeDistance(competence.values(), documentToCompetenceSpace.values()));
-                        System.out.println(key+"--"+distancesNameAndValue.get(key));
-                    } else {
-                        distancesNameAndValue.put(key, 0.0);
-                    }
-                    //distances.add(cosineFunction.computeDistance(competence.values(), documentToCompetenceSpace.values()));
-
                 }
+
+                if (!competenceValue.isEmpty()) {
+                    double distance = cosineFunction.computeDistance(competenceValue,documentValue);
+                    System.out.println(distance);
+                    distancesNameAndValue.put(key, distance);
+                    System.out.println(key + "--" + distancesNameAndValue.get(key));
+                } else {
+                    distancesNameAndValue.put(key, 0.0);
+                }
+                //distances.add(cosineFunction.computeDistance(competence.values(), documentToCompetenceSpace.values()));
+
             }
             LOGGER.log(Level.INFO, "Distance{0}", text);
             String[] docIdAndDate = text.toString().split("@");
