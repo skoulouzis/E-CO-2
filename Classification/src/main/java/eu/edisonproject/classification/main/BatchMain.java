@@ -30,6 +30,8 @@ import eu.edisonproject.classification.test.TestTFIDF;
 public class BatchMain {
 
     public static void main(String[] args){
+//        args = new String[1];
+//        args[0]="..";
         TestDataFlow.execute(args);
         TestTFIDF.execute(args);
     }
