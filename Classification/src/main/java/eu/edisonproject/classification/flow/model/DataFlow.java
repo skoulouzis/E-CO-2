@@ -26,8 +26,8 @@ import eu.edisonproject.classification.prepare.controller.IDataPrepare;
 public class DataFlow implements IDataFlow {
 
 	@Override
-	public void dataPreProcessing(String inputPath, String outputPath) {
-		IDataPrepare dp = new DataPrepare(inputPath, outputPath);
+	public void dataPreProcessing(String inputPath, String outputPath,String relativeFolder) {
+		IDataPrepare dp = new DataPrepare(inputPath, outputPath, relativeFolder);
 		dp.execute();
 	}
 

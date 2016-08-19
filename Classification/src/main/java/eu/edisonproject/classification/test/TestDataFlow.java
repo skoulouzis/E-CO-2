@@ -31,7 +31,7 @@ public class TestDataFlow {
                 //String stopWordPath = ".."+File.separator+"etc"+File.separator+"stopwords.csv";
                 System.out.println("TEST DATA FLOW");
                 System.out.println(inputFolder);
-                idf.dataPreProcessing(inputFolder,outputFolder);
+                idf.dataPreProcessing(inputFolder,outputFolder, args[0]);
 		
 	}
 	
