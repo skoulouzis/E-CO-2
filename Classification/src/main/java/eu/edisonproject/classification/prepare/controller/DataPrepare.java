@@ -58,16 +58,18 @@ public class DataPrepare implements IDataPrepare {
     private ReaderFile fileReader;
     private static final int maxNumberOfAvroPerFile = 10;
     private String relativePath;
+    
     public DataPrepare(String inputFolder, String outputFolder, String relativePath) {
-        documentObjectList = new LinkedList<DocumentObject>();
-        stopWordArraySet = loadStopWords();
+        
         this.inputFolder = inputFolder;
         this.outputFolder = outputFolder;
         this.relativePath = relativePath;
+        documentObjectList = new LinkedList<DocumentObject>();
+        stopWordArraySet = loadStopWords();
     }
 
     public CharArraySet loadStopWords() {
-        fileReader = new ReaderFile(this.relativePath + File.separator + "etc" + File.separator + "stopwords.csv");
+        fileReader = new ReaderFile(relativePath + File.separator + "etc" + File.separator + "stopwords.csv");
 
         String[] stopWord = fileReader.readFileWithN().split("\n");
         final List<String> stopWords = Arrays.asList(stopWord);

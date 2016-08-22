@@ -32,7 +32,7 @@ public class BatchMain {
     public static void main(String[] args){
 //        args = new String[1];
 //        args[0]="..";
-        TestDataFlow.execute(args);
+       // TestDataFlow.execute(args);
         TestTFIDF.execute(args);
     }
     
