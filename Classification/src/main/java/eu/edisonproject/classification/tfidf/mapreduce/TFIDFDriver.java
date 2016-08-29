@@ -37,40 +37,50 @@ import org.apache.hadoop.util.ToolRunner;
 public class TFIDFDriver implements ITFIDFDriver {
 
     //where to read the frequent itemset
-    private final String INPUT_ITEMSET = ".." + File.separator + "etc" + File.separator + "itemset.csv";
+    private String INPUT_ITEMSET;
     //where to read the data for MapReduce#1
     private String INPUT_PATH1;
     //where to put the data in hdfs when MapReduce#1 will finish
-    private final String OUTPUT_PATH1 = ".." + File.separator + "etc" + File.separator + "Classification" + File.separator + "1-word-freq";
-
+    private String OUTPUT_PATH1;
     // where to read the data for the MapReduce#2
-    private final String INPUT_PATH2 = ".." + File.separator + "etc" + File.separator + "Classification" + File.separator + "1-word-freq";
+    private String INPUT_PATH2 ;
     // where to put the data in hdfs when the MapReduce#2 will finish
-    private final String OUTPUT_PATH2 = ".." + File.separator + "etc" + File.separator + "Classification" + File.separator + "2-word-counts";
-
+    private String OUTPUT_PATH2;
     // where to read the data for the MapReduce#3
-    private final String INPUT_PATH3 = ".." + File.separator + "etc" + File.separator + "Classification" + File.separator + "2-word-counts";
-    // where to put the data in hdfs when the MapReduce#3 will finish
-    private final String OUTPUT_PATH3 = ".." + File.separator + "etc" + File.separator + "Classification" + File.separator + "3-tf-idf";
-
+    private String INPUT_PATH3;    
+// where to put the data in hdfs when the MapReduce#3 will finish
+    private String OUTPUT_PATH3;
+    
     // where to read the data for the MapReduce#4.
-    private final String INPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "Classification" + File.separator + "3-tf-idf";
+    private String INPUT_PATH4;
     // where to put the data in hdfs when the MapReduce# will finish
-    private final String OUTPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "Classification" + File.separator + "4-distances";
-
-    private final String DISTANCES_VECTOR_PATH = ".." + File.separator + "etc" + File.separator + "Classification" + File.separator + "5-tf-idf-csv";
+    private String OUTPUT_PATH4;
+    
+    private String DISTANCES_VECTOR_PATH; 
     // where to put the csv with the tfidf
-    private final String COMPETENCES_PATH = ".." + File.separator + "etc" + File.separator + "Classification" + File.separator + "competences-vector";
-
-    private final String contextName;
-    private final String finalOutputPath;
+    private String COMPETENCES_PATH;
+    
+    private String contextName;
+    private String finalOutputPath;
     private List<Distances> distancesValues;
 
     private static final Logger LOGGER = Logger.getLogger(TFIDFDriver.class.getName());
 
 //    private Connection conn;
 //    private final String[] families = {"info","data analytics","data management curation","data science engineering","scientific research methods","domain knowledge"};
-    public TFIDFDriver(String contextName) {
+    public TFIDFDriver(String contextName, String inputRootPath) {
+          
+        INPUT_ITEMSET = inputRootPath + File.separator + "etc" + File.separator + "itemset.csv";
+        OUTPUT_PATH1 = inputRootPath + File.separator + "etc" + File.separator + "Classification" + File.separator + "1-word-freq";
+        INPUT_PATH2 = inputRootPath + File.separator + "etc" + File.separator + "Classification" + File.separator + "1-word-freq";
+        OUTPUT_PATH2 = inputRootPath + File.separator + "etc" + File.separator + "Classification" + File.separator + "2-word-counts";
+        INPUT_PATH3 = inputRootPath + File.separator + "etc" + File.separator + "Classification" + File.separator + "2-word-counts";
+        OUTPUT_PATH3 = inputRootPath + File.separator + "etc" + File.separator + "Classification" + File.separator + "3-tf-idf";
+        INPUT_PATH4 = inputRootPath + File.separator + "etc" + File.separator + "Classification" + File.separator + "3-tf-idf";
+        OUTPUT_PATH4 = inputRootPath + File.separator + "etc" + File.separator + "Classification" + File.separator + "4-distances";
+        DISTANCES_VECTOR_PATH = inputRootPath + File.separator + "etc" + File.separator + "Classification" + File.separator + "5-tf-idf-csv";
+        COMPETENCES_PATH = inputRootPath + File.separator + "etc" + File.separator + "Classification" + File.separator + "competences-vector";
+
         this.contextName = contextName + ".csv";
         this.distancesValues = new LinkedList<>();
         File f = new File(DISTANCES_VECTOR_PATH);
@@ -78,12 +88,7 @@ public class TFIDFDriver implements ITFIDFDriver {
             f.mkdir();
         }
         this.finalOutputPath = DISTANCES_VECTOR_PATH + File.separator + contextName;
-//        Configuration config = HBaseConfiguration.create();
-//        try{
-//            conn = ConnectionFactory.createConnection(config);
-//        }catch(IOException ex){
-//            Logger.getLogger(TFIDFDriver.class.getName()).log(Level.CONFIG, "HBase configuration settings", ex);
-//        }
+      
     }
 
     /**

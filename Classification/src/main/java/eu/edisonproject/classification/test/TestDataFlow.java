@@ -26,12 +26,12 @@ public class TestDataFlow {
 
 	public static void execute(String[] args){
 		IDataFlow idf = new DataFlow();
-                String inputFolder = ".."+File.separator+"etc"+File.separator+"Classification"+File.separator+"Job Post"+File.separator;
-		String outputFolder = ".."+File.separator+"etc"+File.separator+"Classification"+File.separator+"Avro Document"+File.separator;
+                String inputFolder = args[0]+File.separator+"etc"+File.separator+"Classification"+File.separator+"Job Post"+File.separator;
+		String outputFolder = args[0]+File.separator+"etc"+File.separator+"Classification"+File.separator+"Avro Document"+File.separator;
                 //String stopWordPath = ".."+File.separator+"etc"+File.separator+"stopwords.csv";
                 System.out.println("TEST DATA FLOW");
                 System.out.println(inputFolder);
-                idf.dataPreProcessing(inputFolder,outputFolder);
+                idf.dataPreProcessing(inputFolder,outputFolder, args[0]);
 		
 	}
 	
