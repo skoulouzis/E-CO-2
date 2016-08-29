@@ -22,3 +22,10 @@ do
     screen -dmSL $base  nice -n 15 java -Xmx2g -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -Dnum.of.terms=1000 -Doffset.terms=500 -jar $JAR_PATH -op w -i $f -o $i/$base.avro -p $PROPS_FILE
   done
 done
+
+
+screen -ls | grep Detached | cut -d. -f1 | awk '{print $1} > pids
+
+while read p; do
+  cpulimit -p $p -l 30 &
+done <pids
