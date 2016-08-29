@@ -24,8 +24,8 @@ do
 done
 
 
-screen -ls | grep Detached | cut -d. -f1 | awk '{print $1} > pids
+screen -ls | grep Detached | cut -d. -f1 | awk '{print $1}' > pids
 
 while read p; do
-  cpulimit -p $p -l 30 &
-done <pids
+  cpulimit -p $p -l 25 &
+done < pids
