@@ -15,6 +15,8 @@
  */
 package eu.edisonproject.training.term.extraction;
 
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
+import edu.stanford.nlp.tagger.maxent.TaggerConfig;
 import eu.edisonproject.training.context.corpus.Apriori;
 import eu.edisonproject.utility.file.ConfigHelper;
 import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
@@ -41,9 +43,11 @@ import org.apache.lucene.analysis.util.CharArraySet;
  */
 public class AprioriExtraction implements TermExtractor {
 
-    private String stopWordsPath;
-    private StopWord cleanStopWord;
-    private StanfordLemmatizer cleanLemmatisation;
+    private static String stopWordsPath;
+    private static StopWord cleanStopWord;
+//    private static StanfordLemmatizer cleanLemmatisation;
+    private static String taggerPath;
+    private static final String[] rejectPOS = new String[]{"JJ", "JJR", "JJS", "VB", "VBD", "VBG", "VBN", "VBP", "VBZ", "RB", "RBR", "RBS"};
 
     @Override
     public void configure(Properties prop) {
@@ -55,7 +59,12 @@ public class AprioriExtraction implements TermExtractor {
         CharArraySet stopwordsCharArray = new CharArraySet(ConfigHelper.loadStopWords(stopWordsPath), true);
         cleanStopWord = new StopWord(stopwordsCharArray);
 
-        cleanLemmatisation = new StanfordLemmatizer();
+//        cleanLemmatisation = new StanfordLemmatizer();
+        taggerPath = System.getProperty("tagger.file");
+
+        if (taggerPath == null) {
+            taggerPath = prop.getProperty("tagger.file", ".." + File.separator + "etc" + File.separator + "model" + File.separator + "stanford" + File.separator + "english-left3words-distsim.tagger");
+        }
     }
 
     public String clean(String description) {
@@ -92,8 +101,9 @@ public class AprioriExtraction implements TermExtractor {
                 }
 
             }
+            MaxentTagger tagger = new MaxentTagger(taggerPath);
             for (String t : terms) {
-                Double tf;
+                Double tf = 0.0;
                 String term = t.toLowerCase().trim().replaceAll(" ", "_").split("/")[0];
                 while (term.endsWith("_")) {
                     term = term.substring(0, term.lastIndexOf("_"));
@@ -101,13 +111,33 @@ public class AprioriExtraction implements TermExtractor {
                 while (term.startsWith("_")) {
                     term = term.substring(term.indexOf("_") + 1, term.length());
                 }
-                if (keywordsDictionaray.containsKey(term)) {
-                    tf = keywordsDictionaray.get(term);
-                    tf++;
-                } else {
-                    tf = 1.0;
+                String tagged = null;
+                if (!term.contains("_")) {
+                    tagged = tagger.tagString(term);
                 }
-                keywordsDictionaray.put(term, tf);
+                boolean add = true;
+                if (tagged != null) {
+                    String tag = tagged.split("_")[1].trim();
+                    for (String pos : rejectPOS) {
+//                        System.out.println(tag + " = " + pos);
+                        if (tag.equals(pos)) {
+                            add = false;
+                            break;
+                        }
+                    }
+                } else {
+                    add = true;
+                }
+                if (add) {
+                    if (keywordsDictionaray.containsKey(term)) {
+                        tf = keywordsDictionaray.get(term);
+                        tf++;
+                    } else {
+                        tf = 1.0;
+                    }
+                    keywordsDictionaray.put(term, tf);
+                }
+
             }
             return keywordsDictionaray;
 
@@ -128,7 +158,7 @@ public class AprioriExtraction implements TermExtractor {
             StringBuilder fileContents = new StringBuilder();
             try (BufferedReader br = new BufferedReader(new FileReader(f))) {
                 for (String text; (text = br.readLine()) != null;) {
-                    String cleanedDescription = clean(text.toString());
+                    String cleanedDescription = clean(text);
                     fileContents.append(cleanedDescription).append("\n");
                 }
             }
@@ -137,10 +167,11 @@ public class AprioriExtraction implements TermExtractor {
 //            contents = contents.replaceAll("\\s{2,}", " ");
             String[] args = new String[2];
             args[0] = fileContents.toString();
-            args[1] = "0.01";
+            args[1] = "0.005";
             Apriori apriori = new Apriori(args);
             terms = apriori.go();
         }
+
         return terms;
     }
 

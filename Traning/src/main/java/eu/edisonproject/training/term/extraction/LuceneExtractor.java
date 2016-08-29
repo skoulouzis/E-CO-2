@@ -1,13 +1,9 @@
 package eu.edisonproject.training.term.extraction;
 
-import edu.stanford.nlp.ling.CoreAnnotations;
-import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
-import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import eu.edisonproject.utility.file.CSVFileReader;
 import eu.edisonproject.utility.file.ConfigHelper;
 import eu.edisonproject.utility.text.processing.Cleaner;
 import eu.edisonproject.utility.text.processing.NGramGenerator;
-import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
 import eu.edisonproject.utility.text.processing.Stemming;
 import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.BufferedReader;
