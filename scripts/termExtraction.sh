@@ -17,6 +17,6 @@ for i in "${TRAIN_DOC_PATHS[@]}"
 do
   for f in $i/*.txt
   do
-    java -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -Dtagger.file= -jar $JAR_PATH -op x -i $f -o $i/terms.csv -p $PROPS_FILE
+    java -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -Dtagger.file=$TAGGER_FILE -jar $JAR_PATH -op x -i $f -o $i/terms.csv -p $PROPS_FILE
   done
 done
