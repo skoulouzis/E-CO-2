@@ -1,0 +1,431 @@
+A data management plan or DMP is a formal document that outlines how you will handle your data both during your research, and after the project is completed.[1] The goal of a data management plan is to consider the many aspects of data management, metadata generation, data preservation, and analysis before the project begins; this ensures that data are well-managed in the present, and prepared for preservation in the future.
+
+Contents
+
+    1 Importance
+    2 Major Components
+        2.1 Information about data & data format
+        2.2 Metadata content and format
+        2.3 Policies for access, sharing, and re-use
+        2.4 Long-term storage and data management
+        2.5 Budget
+    3 NSF Data Management Plan
+    4 ESRC Data Management Plan
+    5 References
+    6 Further reading
+    7 External links
+
+Importance
+
+Preparing a data management plan before data are collected ensures that data are in the correct format, organized well, and better annotated.[2] This saves time in the long term because there is no need to re-organize, re-format, or try to remember details about data. It also increases research efficiency since both the data collector and other researchers will be able to understand and use well-annotated data in the future. One component of a good data management plan is data archiving and preservation. By deciding on an archive ahead of time, the data collector can format data during collection to make its future submission to a database easier. If data are preserved, they are more relevant since they can be re-used by other researchers. It also allows the data collector to direct requests for data to the database, rather than address requests individually. Data that are preserved have the potential to lead to new, unanticipated discoveries, and they prevent duplication of scientific studies that have already been conducted. Data archiving also provides insurance against loss by the data collector.
+
+Funding agencies are beginning to require data management plans as part of the proposal and evaluation process.[3]
+Major Components
+Information about data & data format
+
+    Include a description of data to be produced by the project.[4] This might include (but is not limited to) data that are:
+        Experimental
+        Observational
+        Raw or derived
+        Physical collections
+        Models
+        Simulations
+        Curriculum materials
+        Software
+        Images
+    How will the data be acquired? When and where will they be acquired?
+    After collection, how will the data be processed? Include information about
+        Software used
+        Algorithms
+        Scientific workflows
+    Describe the file formats that will be used, justify those formats, and describe the naming conventions used.
+    Identify the quality assurance & quality control measures that will be taken during sample collection, analysis, and processing.
+    If existing data are used, what are their origins? How will the data collected be combined with existing data? What is the relationship between the data collected and existing data?
+    How will the data be managed in the short-term? Consider the following:
+        Version control for files
+        Backing up data and data products
+        Security & protection of data and data products
+        Who will be responsible for management
+
+Metadata content and format
+
+Metadata are the contextual details, including any information important for using data. This may include descriptions of temporal and spatial details, instruments, parameters, units, files, etc. Metadata is commonly referred to as “data about data”.[5] Consider the following:
+
+    What metadata are needed? Include any details that make data meaningful.
+    How will the metadata be created and/or captured? Examples include lab notebooks, GPS hand-held units, Auto-saved files on instruments, etc.
+    What format will be used for the metadata? Consider the metadata standards commonly used in the scientific discipline that contains your work. There should be justification for the format chosen.
+
+Policies for access, sharing, and re-use
+
+    Describe any obligations that exist for sharing data collected. These may include obligations from funding agencies, institutions, other professional organizations, and legal requirements.
+    Include information about how data will be shared, including when the data will be accessible, how long the data will be available, how access can be gained, and any rights that the data collector reserves for using data.
+    Address any ethical or privacy issues with data sharing
+    Address intellectual property & copyright issues. Who owns the copyright? What are the institutional, publisher, and/or funding agency policies associated with intellectual property? Are there embargoes for political, commercial, or patent reasons?
+    Describe the intended future uses/users for the data
+    Indicate how the data should be cited by others. How will the issue of persistent citation be addressed? For example, if the data will be deposited in a public archive, will the dataset have a digital object identifier (doi) assigned to it?
+
+Long-term storage and data management
+
+    Researchers should identify an appropriate archive for long-term preservation of their data. By identifying the archive early in the project, the data can be formatted, transformed, and documented appropriately to meet the requirements of the archive. Researchers should consult colleagues and professional societies in their discipline to determine the most appropriate database, and include a backup archive in their data management plan in case their first choice goes out of existence.
+    Early in the project, the primary researcher should identify what data will be preserved in an archive. Usually, preserving the data in its most raw form is desirable, although data derivatives and products can also be preserved.
+    An individual should be identified as the primary contact person for archived data, and ensure that contact information is always kept up-to-date in case there are requests for data or information about data.
+
+Budget
+
+Data management and preservation costs may be considerable, depending on the nature of the project. By anticipating costs ahead of time, researchers ensure that the data will be properly managed and archived. Potential expenses that should be considered are
+
+    Personnel time for data preparation, management, documentation, and preservation
+    Hardware and/or software needed for data management, backing up, security, documentation, and preservation
+    Costs associated with submitting the data to an archive
+
+The data management plan should include how these costs will be paid.
+NSF Data Management Plan
+
+All grant proposals submitted to NSF must include a Data Management Plan that is no more than two pages.[6] This is a supplement (not part of the 15 page proposal) and should describe how the proposal will conform to the Award and Administration Guide policy (see below). It may include the following:
+
+    The types of data
+    The standards to be used for data and metadata format and content
+    Policies for access and sharing
+    Policies and provisions for re-use
+    Plans for archiving data
+
+Policy summarized from the NSF Award and Administration Guide, Section 4 (Dissemination and Sharing of Research Results):[7]
+
+    Promptly publish with appropriate authorship
+    Share data, samples, physical collections, and supporting materials with others, within a reasonable time frame
+    Share software and inventions
+    Investigators can keep their legal rights over their intellectual property, but they still have to make their results, data, and collections available to others
+    Policies will be implemented via
+        Proposal review
+        Award negotiations and conditions
+        Support/incentives
+
+ESRC Data Management Plan
+
+Since 1995, the UK's Economic and Social Research Council (ESRC) have had a research data policy in place. The current ESRC Research Data Policy states that research data created as a result of ESRC-funded research should be openly available to the scientific community to the maximum extent possible, through long-term preservation and high quality data management.[8]
+
+ESRC requires a data management plan for all research award applications where new data are being created. Such plans are designed to promote a structured approach to data management throughout the data lifecycle, resulting in better quality data that is ready to archive for sharing and re-use. The UK Data Service, the ESRC's flagship data service, provides practical guidance on research data management planning suitable for social science researchers in the UK and around the world.[9][10]
+
+ESRC has a longstanding arrangement with the UK Data Archive, based at the University of Essex, as a place of deposit for research data, with award holders required to offer data resulting from their research grants via the UK Data Service.[11] The Archive enables data re-use by preserving data and making them available to the research and teaching communities.
+
+
+A data management plan (DMP) will help you manage your data, meet funder requirements, and help others use your data if shared.
+
+The DMPTool is a web-based tool that helps you construct data management plans using templates that address specific funder requirements. From within this tool, you can save your plans, access MIT-specific information & resources, and request a review of your DMP by a member of our Data Management Services team. To access the MIT-customized DMPTool, choose “Massachusetts Institute of Technology” as your institution to log via Touchstone.
+
+Alternatively, you can use the questions below and any specific data management requirements from your funding agency to write your data management plan. Additional resources for creating plans are also provided below.
+
+     Project, experiment, and data description
+        What’s the purpose of the research?
+        What is the data? How and in what format will the data be collected? Is it numerical data, image data, text sequences, or modeling data?
+        How much data will be generated for this research?
+        How long will the data be collected and how often will it change?
+        Are you using data that someone else produced? If so, where is it from?
+        Who is responsible for managing the data? Who will ensure that the data management plan is carried out?
+    Documentation, organization, and storage
+        What documentation will you be creating in order to make the data understandable by other researchers?
+        Are you using metadata that is standard to your field? How will the metadata be managed and stored?
+        What file formats will be used? Do these formats conform to an open standard and/or are they proprietary?
+        Are you using a file format that is standard to your field? If not, how will you document the alternative you are using?
+        What directory and file naming convention will be used?
+        What are your local storage and backup procedures? Will this data require secure storage?
+        What tools or software are required to read or view the data?
+    Access, sharing, and re-use
+        Who has the right to manage this data? Is it the responsibility of the PI, student, lab, MIT, or funding agency?
+        What data will be shared, when, and how?
+        Does sharing the data raise privacy, ethical, or confidentiality concerns?  Do you have a plan to protect or anonymize data, if needed?
+        Who holds intellectual property rights for the data and other information created by the project? Will any copyrighted or licensed material be used? Do you have permission to use/disseminate this material?
+        Are there any patent- or technology-licensing-related restrictions on data sharing associated with this grant? The Technology Licensing Office (TLO) can provide this information.
+        Will this research be published in a journal that requires the underlying data to accompany articles?
+        Will there be any embargoes on the data?
+        Will you permit re-use, redistribution, or the creation of new tools, services, data sets, or products (derivatives)? Will commercial use be allowed?
+    Archiving
+        How will you be archiving the data? Will you be storing it in an archive or repository for long-term access? If not, how will you preserve access to the data?
+        Is a discipline-specific repository available? If not, you could consider depositing your data into DSpace@MIT. Email us at data-management@mit.edu if you’re interested in using DSpace@MIT to store your data.
+        How will you prepare data for preservation or data sharing? Will the data need to be anonymized or converted to more stable file formats?
+        Are software or tools needed to use the data? Will these be archived?
+        How long should the data be retained? 3-5 years, 10 years, or forever?
+
+
+
+Guidelines for Effective 
+Data Management Plans
+18
+Appendix B: Sample Data Management Plan for 
+Depositing Data with ICPSR
+This sample plan is provided to assist grant applicants in creating the required Data 
+Management Plans. Researchers should feel free to edit and customize this text before 
+submission. Note that a letter of commitment from ICPSR confirming that it will archiv
+e 
+the data should accompany the plan. Please contact ICPSR Director of 
+Acquisitions Amy 
+Pienta, 
+apienta@umich.edu
+, to request such a letter.
+Please review our 
+guidelines on how to deposit data
+ with ICPSR.
+Dat
+a Description
+ – [Provide a brief description of the information to be gathered 
+-- the nature, scope, and scale of the data that will be generated or collected.] These 
+data, which will be submitted to ICPSR, fit within the scope of the 
+ICPSR Collection 
+Development Policy
+. A letter of support describing ICPSR’s commitment to the data as 
+they have been described is provided.
+Designated Archive
+ – The research data from this project will be deposited with the 
+digital repository of the 
+Inter-university Consortium for Political and Social Research
+(ICPSR) to ensure that the research community has long-term access to the data. The 
+integrated data management plan proposed leverages capabilities of ICPSR and its 
+trained archival staff.
+Access and Sharing
+ – ICPSR will make the research data from this project available to 
+the broader social science research community. 
+Public-use data files
+: These files, in which direct and indirect identifiers have been 
+removed to minimize disclosure risk, may be accessed directly through the ICPSR 
+Web site. After agreeing to Terms of Use, users with an ICPSR MyData account and an 
+authorized IP address from a member institution may download the data, and non-
+members may purchase the files. 
+Restricted-use data files
+: These files are distributed in those cases when removing 
+potentially identifying information would significantly impair the analytic potential of the 
+data. Users (and their institutions) must apply for these files, create data securit
+y plans, 
+and agree to other access controls. 
+Timeliness
+: The research data from this project will be supplied to ICPSR before the end 
+of the project so that any issues surrounding the usability of the data can be resolved. 
+Delayed dissemination may be possible. The Delayed Dissemination Policy allows for data 
+to be deposited but not disseminated for an agreed-upon period of time (typically one 
+year).
+Metadata
+ – Substantive metadata will be provided in compliance with the most relevant 
+standard for the social, behavioral, and economic sciences -- the 
+Data Documentation 
+Initiative
+ (DDI). This XML standard provides for the tagging of content, which facilitates 
+preservation and enables flexibility in display. These types of metadata will be produced 
+Guidelines for Effective 
+Data Management Plans
+19
+and archived:
+• 
+Study-Level Metadata Record
+. A summary DDI-based record will be created for 
+inclusion in the searchable ICPSR online catalog. This record will be indexed with 
+terms from the ICPSR Thesaurus to enhance data discovery. 
+• 
+Data Citation with Digital Object Identifier (DOI)
+. A standard citation will be 
+provided to facilitate attribution. The DOI provides permanent identification for the 
+data and ensures that they will always be found at the URL specified.
+• 
+Variable-Level Documentation
+. ICPSR will tag variable-level information in DDI 
+format for inclusion in ICPSR’s Social Science Variables Database (SSVD), which 
+allows users to identify relevant variables and studies of interest.
+• 
+Technical Documentation
+. The variable-level files described above will serve as the 
+foundation for the technical documentation or codebook that ICPSR will prepare 
+and deliver.
+• 
+Related Publications
+. Resources permitting, ICPSR will periodically search for 
+publications based on the data and provide two-way linkages between data and 
+publications. 
+Intellectual Property Rights
+ – Principal investigators and their institutions hold the 
+copyright for the research data they generate. By depositing with ICPSR, investigators 
+do not transfer copyright but instead grant permission for ICPSR to redisseminate 
+the data and to transform the data as necessary to protect respondent confidentiality, 
+improve usefulness, and facilitate preservation.
+Ethics and Privacy
+ – 
+Informed consent
+: For this project, informed consent statements, 
+if applicable, will not include language that would prohibit the data from being shared 
+with the research community. 
+Disclosure risk management
+: The research project will remove any direct identifiers in 
+the data before deposit with ICPSR. Once deposited, the data will undergo procedures 
+to protect the confidentiality of individuals whose personal information may be part of 
+archived data. These include: (1) rigorous review to assess disclosure risk, (2) modifying 
+data if necessary to protect confidentiality, (3) limiting access to datasets in which risk of 
+disclosure remains high, and (4) consultation with data producers to manage disclosure 
+risk. ICPSR will assign a qualified data manager certified in disclosure risk management 
+to act as steward for the data while they are being processed. The data will be processed 
+and managed in a secure non-networked environment using virtual desktop technology.
+Format
+ – 
+Submission
+: The data and documentation will be submitted to ICPSR in 
+recommended formats
+. 
+Access
+: ICPSR will make the quantitative data files available in several widely used 
+formats, including ASCII, tab-delimited (for use with Excel), SAS, SPSS, and Stata. 
+Documentation will be provided as PDF. 
+Guidelines for Effective 
+Data Management Plans
+20
+Preservation
+: Data will be stored in accordance with prevailing standards and practice. 
+Currently, ICPSR stores quantitative data as ASCII along with setup files for the 
+statistical software packages, and documentation is preserved using XML and PDF/A.
+Archiving and Preservation
+ – ICPSR is a data archive with a nearly 50-year track 
+record for preserving and making data available over several generational shifts in 
+technology. ICPSR will accept responsibility for long-term preservation of the research 
+data upon receipt of a signed deposit form. This responsibility includes a commitment to 
+manage successive iterations of the data if new waves or versions are deposited. ICPSR 
+will ensure that the research data are migrated to new formats, platforms, and storage 
+media as required by good practice in the digital preservation community. Good practice 
+for digital preservation requires that an organization address succession planning for 
+digital assets. ICPSR has a commitment to designate a successor in the unlikely event 
+that such a need arises. 
+Storage and Backup
+ – Research has shown that multiple locally and geographically 
+distributed copies of digital files are required to keep information safe. Accordingly, 
+ICPSR will place a master copy of each digital file (i.e., research data files, 
+documentation, and other related files) in ICPSR’s Archival Storage, with several copies 
+stored with partner organizations at designated locations and synchronized with the 
+maste
+
+
+Project Information 
+This Data Management Plan (DMP) co
+vers the data which will be collect
+ed for a longitudinal study at the 
+University  of  North  Carolina  at  Chapel  Hill.  The  
+study  projected  to  be  conducted  between  January  1,  
+2011  and  December  31,  2011.  The  study  will  collect  non-
+sensitive  data  from  a  cohort  of  mixed-gender  
+subjects  ranging  from  18  to  85  years  of  age.  No  ot
+her  personal  identifiers  will  be  collected  during  the  
+study apart from those identified above.  
+The  study  will  focus  on  determining  subject  preference
+  for  patronage  of  specific  fast  food  chains.  The  
+subjects  will  be  randomly  selected  in  urban  and  
+rural  public,  non-retail  locations  in  central  North  
+Carolina, United States. Subjects who consent to partic
+ipate will be anonymously surveyed by asking to 
+respond to a simple yes/no, single question verbal survey. The results will be manually recorded by the 
+surveyor. The data collected during this study will be ar
+chived with H. W. Odum Institute for Research in 
+Social Science located at the University of North Caro
+lina at Chapel Hill (UNC-CH). The data will be stored 
+in  a  specific  virtual  archive  and  will  be  made  
+publicly  available  through  the  Odum  Institute  Dataverse  
+Network  (DVN).  The  Odum  Institute  Data  Archive  is  
+a  well-established  and  trusted  archive  in  the  social  
+science field. As a member of the Data Preservation 
+Alliance for the Social Sciences (Data-PASS) and the 
+Library  of  Congress  National  Digital  Stewardship  Al
+liance  (NDSA)  Odum  provides  a  strong  archival  and  
+data distribution resource to the project.   
+General Data Management Plan information 
+This  DMP  was  created  on  December  1,  2010  for  subm
+ission  to  the  National  Science  Foundation  as  
+required by NSF guidelines in the interest of securing funding for this study. The aim and purpose of this 
+DMP  is  to  detail  and  guarantee  the  preservation  of  the  
+data  collected  during  this  study,  as  well  as  any  
+results  derived  from  the  associated  research.  Th
+is  DMP  is  intended  for  review  by  relevant  NSF  
+personnel,  as  well  as  Odum  Institute  staff  and  UNC-CH
+  staff  Odum  Institute  affiliated  directly  with  this  
+study and the collection and preservation of the associat
+ed data and research. This is the first iteration 
+of this DMP associated with this data. 
+Policies
+There  are  no  requirements  stipulated  by  the  funding  or  partner  organizations  regarding  this  data.  
+Comprehensive institutional and research group guidelines specified by UNC-CH were applied regarding 
+the  collection  of  this  data.  There  are  no  addition
+al  requirements  associated  with  the  data  being  
+submitted. 
+Legal Guidelines and Requirements 
+ODUM INSTITUTE 
+−
+ DATA MANAGEMENT SAMPLE PLAN 
+2 
+This study will only collect non-sensitive data. No pers
+onal identifiers will be recorded or retained by the 
+researchers  in  any  form.  There  are  no  copyright  or
+  licensing  issues  associated  with  the  data  being  
+submitted. 
+Access, Sharing and Re-use of Data 
+The  researchers  associated  with  this  study  are  no
+t  aware  of  any  reasons  which  might  prohibit  the  
+sharing  and  re-use  of  the  data  being  submitted.  Th
+e  researchers  are  not  required  to  make  this  data  
+available  publicly  but  have  elected  to  do  so.  The  da
+ta  being  submitted  will  be  made  publicly  available  
+through the Odum Institute for Research in Social Sc
+ience located at UNC-CH by January 1, 2013. There 
+will  be  no  additional  restrictions  or  permissions  required  for  accessing  the  data.  Findings  will  be  
+published by the researchers based on this data; the 
+estimated date of publication is June 1, 2012. There 
+is  an  agreement  regarding  the  right  of  the  original  
+data  collector,  creator  or  
+principal  investigator  for  
+first  use  of  the  data.  The  specified  embargo  period  associated  with  the  data  being  submitted  extends  
+from  the  projected  conclusion  date  for  initial  
+research  (December  31,  2011)  until  six  months  after  
+projected publication date for the fi
+ndings (June 1, 2012). The embargo 
+will be lifted by January 1, 2013. 
+Data Standards and Capture 
+The associated data types will be captured using Qual
+trics survey software and analyzed using SPSS data 
+analytics tools. The researchers are not aware of any 
+issues regarding the effects or limitations of these 
+formats regarding the data being submitted. 
+Metadata 
+General  metadata  related  to  the  survey  topic  wi
+ll  be  created  for  the  data  being  submitted.  The  
+associated  metadata  will  be  manually  created  in  
+XML  file  format.  DDI  metadata  standards  will  be  
+applied during the creation of the metadata.  
+Security, Storage, Management and Back-Up of Data 
+The Odum Institute’s experience with, and commitment 
+to, secure data archiving is well established and 
+is  in  keeping  with  established  
+UNC  Information  Security  Policies
+.  During  the  implementation  of  the  
+survey,  associated  research  data  will  be  physicall
+y  stored  on  a  password-protected  secure  server  
+maintained  by  UNC-CH  using  standard  SPSS  file  form
+ats.  No  data  will  reside  on  portable  or  laptop  
+devices, and no other external media/format(s) will be used for data storage.  
+Research  data  is  backed  up  on  a  daily  basis.  The  
+researchers  are  currently  responsible  for  storage,  
+maintenance  and  back-up  of  the  data.  The  specific  storage  volume  of  the  data  being  submitted  will  be  
+not  more  than  1GB  maximum.  The  long-term  strategy
+  for  the  maintenance,  curation  and  archiving  of  
+the  data  will  be  implemented  when  the  data  and  associated  research  are  migrated  to  the  Odum  
+Institute for archiving usin
+g the Odum Institute DVN. 
+Preservation, Review and Long-Term Management of Data 
+ODUM INSTITUTE 
+−
+ DATA MANAGEMENT SAMPLE PLAN 
+3 
+Data  collected  during  this  study  will  be  archived  with
+  the  Odum  Institute  at  UNC-CH.  The  data  will  be  
+stored in a specific virtual archive and will be ma
+de publicly available through 
+the Odum Institute DVN. 
+As  a  result  of  this  arrangement,  there  are  no  specif
+ic  financial  considerations  of  which  the  researchers  
+are  currently  aware  which  might  impact  the  long-term  management  of  the  data.  The  research  and  
+archival staff of the Odum Institute will review this
+ DMP upon accession of the data in order to ensure 
+and demonstrate compliance. The DMP will again be re
+viewed by Odum Institute research and archival 
+staff prior to ingest and release into the Odum DVN
+
+

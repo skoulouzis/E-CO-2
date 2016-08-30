@@ -1,0 +1,664 @@
+The Registry of Research Data Repositories (re3data.org) is an Open Science tool that offers researchers, funding organizations, libraries and publishers an overview of existing international repositories for research data.
+
+Contents
+
+    1 Background
+    2 Content
+    3 Features
+    4 Inclusion criteria
+    5 Partners and Cooperation
+    6 See also
+    7 External links
+    8 References
+
+Background
+
+re3data.org is a global registry of research data repositories from all academic disciplines. It provides an overview of existing research data repositories in order to help researchers to identify a suitable repository for their data and thus comply with requirements set out in data policies.[1] The registry was officially launched in May 2013.[2]
+Content
+
+In March 2014 the registry lists 634 research data repositories from around the world covering all academic disciplines. 586 of these are described in detail using the re3data.org schema.[3] The project makes all metadata in the registry available for open use under the Creative Commons deed CC0.[4]
+A screenshot of the DataDryad entry in re3data.org.
+Features
+
+The majority of the listed research data repositories are described in detail by a comprehensive schema, namely the re3data.org Schema for the Description of Research Data Repositories.[5] Information icons support researchers to identify an adequate repository for the storage and reuse of their data.[2][6]
+Aspects of a Research Data Repository with the corresponding icons used in re3data.org.
+Inclusion criteria
+
+A repository is indexed when the minimum requirements for inclusion in re3data.org are met: the repository has to be run by a legal entity, such as a sustainable institution (e.g. library, university) and clearly state access conditions to the data and repository as well as the terms of use. Additionally, an English graphical user interface (GUI) plus a focus on research data is needed.[5]
+Partners and Cooperation
+
+re3data.org is a joint project of the Berlin School of Library and Information Science, the Helmholtz Centre Potsdam GFZ German Research Centre for Geosciences and the Library of the Karlsruhe Institute of Technology (KIT). The project is funded by the German Research Foundation (DFG).[1] The project cooperates with other Open Science initiatives like Databib,[7] BioSharing,[8] DataCite[9] and OpenAIRE.[10] Several publishers, research institutions and funders refer to re3data.org in their Editorial Policies and guidelines as a tool for the identification of suitable data repositories, e.g. Nature,[11] Springer[12] and the European Commission.[13]
+See also
+
+    Scientific data archiving
+    Data sharing
+    Data archive
+    Data library
+    Data curation
+
+
+Data curation is a term used to indicate management activities related to organization and integration of data collected from various sources, annotation of the data, and publication and presentation of the data such that the value of the data is maintained over time, and the data remains available for reuse and preservation. Data curation includes "all the processes needed for principled and controlled data creation, maintenance, and management, together with the capacity to add value to data".[1] In science, data curation may indicate the process of extraction of important information from scientific texts, such as research articles by experts, to be converted into an electronic format, such as an entry of a biological database.[2] The term is also used in the humanities, where increasing cultural and scholarly data from digital humanities projects requires the expertise and analytical practices of data curation.[3] In broad terms, curation means a range of activities and processes done to create, manage, maintain, and validate a component.[4]
+
+Contents
+
+    1 Definition and practice
+    2 Projects and studies
+    3 See also
+    4 References
+    5 External links
+
+Definition and practice
+
+According to the University of Illinois' Graduate School of Library and Information Science, "Data curation is the active and on-going management of data through its lifecycle of interest and usefulness to scholarship, science, and education; curation activities enable data discovery and retrieval, maintain quality, add value, and provide for re-use over time."[5]
+
+Deep background on data libraries appeared in a 1982 issue of the Illinois journal, Library Trends.[6] For historical background on the data archive movement, see "Social Scientific Information Needs for Numeric Data: The Evolution of the International Data Archive Infrastructure."[7]
+
+This term is sometimes used in context of biological databases, where specific biological information is firstly obtained from a range of research articles and then stored within a specific category of database. For instance, information about anti-depressant drugs can be obtained from various sources and, after checking whether they are available as a database or not, they are saved under a drug's database's anti-depressive category. Enterprises are also utilizing data curation within their operational and strategic processes to ensure data quality and accuracy.[8]
+Projects and studies
+
+The Dissemination Information Packages (DIPS) for Information Reuse (DIPIR) project is studying research data produced and used by quantitative social scientists, archaeologists, and zoologists. The intended audience is researchers who use secondary data and the digital curators, digital repository managers, data center staff, and others who collect, manage, and store digital information.[9]
+See also
+
+    Biocurator
+    Data archaeology
+    Data degradation
+    Data format management
+    Data governance
+    Data management
+    Data stewardship
+    Data wrangling, low-level activities to parse and reformat data
+    Informationist, an individual with extensive industry expertise, acute familiarity with organizational structures and processes, deep domain level information mastery and information systems technical savvy
+A data steward is a person responsible for the management and fitness of data elements (also known as critical data elements) - both the content and metadata. Data stewards have a specialist role that incorporates processes, policies, guidelines and responsibilities for administering organizations' entire data in compliance with policy and/or regulatory obligations. A data steward may share some responsibilities with a data custodian.
+
+The overall objective of a Data Steward is metadata management, in regard to the key/critical data elements existing within a specific enterprise operating structure, of the elements in their respective domains. This includes capturing/documenting (meta)information for their elements (such as: definitions, related rules/governance, physical manifestation, related data models, etc. With most of these properties being specific to an attribute/concept relationship), identifying owners/custodians/various responsibilities, relations insight pertaining to attribute quality, aiding with project requirement data facilitation and documentation of capture rules.
+
+Data stewards begin the stewarding process with the identification of the elements which they will steward, with the ultimate result being standards, controls and data entry.[citation needed] The steward works closely with business glossary standards analysts (for standards), with data architect/modelers (for standards), with DQ analysts (for controls) and with operations team members (good-quality data going in per business rules) while entering data.
+
+Data stewardship roles are common when organizations attempt to exchange data precisely and consistently between computer systems and to reuse data-related resources.[citation needed] Master data management often[quantify] makes references to the need for data stewardship for its implementation to succeed. Data stewardship must have precise purpose, fit for purpose or fitness.
+
+Contents
+
+    1 Data Steward Responsibilities
+    2 Benefits of data stewardship
+    3 Examples
+    4 See also
+    5 References
+
+Data Steward Responsibilities
+
+A data steward ensures that each assigned data element:
+
+    Has clear and unambiguous data element definition.
+    Does not conflict with other data elements in the metadata registry (removes duplicates, overlap etc.)
+    Has clear enumerated value definitions if it is of type Code.
+    Is still being used (remove unused data elements)
+    Is being used consistently in various computer systems
+    Is being used, fit for purpose = Data Fitness.
+    Has adequate documentation on appropriate usage and notes
+    Documents the origin and sources of authority on each metadata element
+    Is protected against unauthorized access or change
+
+Benefits of data stewardship
+
+Systematic data stewardship can foster fitness thru:
+
+    consistent use of data management resources
+    easy mapping of data between computer systems and exchange documents
+    lower costs associated with migration to (for example) Service Oriented Architecture (SOA)
+
+Assignment of each data element to a person sometimes seems like an unimportant process. But many groups[which?] have found that users have greater trust and usage rates in systems where they can contact a person with questions on each data element.
+Examples
+[icon] 	This section requires expansion. (July 2010)
+
+The  
+EPA metadata registry furnishes an example of data stewardship. Note that each data element therein has a "POC" (point of contact).
+See also
+
+    Metadata
+    Metadata registry
+    Data curation
+    Data element
+    Data element definition
+    Representation term
+    ISO/IEC 11179
+
+
+
+For the computer-based analysis of archaeological data, see Computational archaeology.
+
+Data archaeology refers to the art and science of recovering computer data encoded and/or encrypted in now obsolete media or formats. Data archaeology can also refer to recovering information from damaged electronic formats after natural or man made disasters.
+
+The term originally appeared in 1993 as part of the Global Oceanographic Data Archaeology and Rescue Project (GODAR). The original impetus for data archaeology came from the need to recover computerized records of climatic conditions stored on old computer tape, which can provide valuable evidence for testing theories of climate change. These approaches allowed the reconstruction of an image of the Arctic that had been captured by the Nimbus 2 satellite on September 23, 1966, in higher resolution than ever seen before from this type of data.[1]
+
+NASA also utilizes the services of data archaeologists to recover information stored on 1960s era vintage computer tape, as exemplified by the Lunar Orbiter Image Recovery Project (LOIRP).[2]
+
+Contents
+
+    1 Recovery
+        1.1 Disaster Recovery
+        1.2 Recovery Techniques
+    2 Prevention
+    3 See also
+    4 References
+
+Recovery
+
+It is also important to make the distinction in data archaeology between data recovery, and data intelligibility. You may be able to recover the data, but not understand it. For data archeology to be effective the data must be intelligible. [3]
+Disaster Recovery
+
+Data archaeologists can also use data recovery after natural disasters such as fires, floods, earthquakes, or even hurricanes. For example, in 1995 during hurricane Marilyn the National Media Lab assisted the National Archives and Records Administration in recovering data at risk due to damaged equipment. The hardware was damaged from rain, salt water, and sand, yet it was possible to clean some of the disks and refit them with new cases thus saving the data within. [4]
+Recovery Techniques
+
+When deciding whether or not to try and recover data, the cost must be taken into account. If there is enough time and money, most data will be able to be recovered. In the case of magnetic media, which are the most common type used for data storage, there are various techniques that can be used to recover the data depending on the type of damage. [5]
+
+Humidity can cause tapes to become unusable as they begin to deteriorate and become sticky. In this case, a heat treatment can be applied to fix this problem, by causing the oils and residues to either be reabsorbed into the tape or evaporate off the surface of the tape. However, this should only be done in order to provide access to the data so it can be extracted and copied to a medium that is more stable. [6]
+
+Lubrication loss is another source of damage to tapes. This is most commonly caused by heavy use, but can also be a result of improper storage or natural evaporation. As a result of heavy use, some of the lubricant can remain on the read-write heads which then collect dust and particles. This can cause damage to the tape. Loss of lubrication can be addressed by re-lubricating the tapes. This should be done cautiously, as excessive re-lubrication can cause tape slippage, which in turn can lead to media being misread and the loss of data. [7]
+
+Water exposure will damage tapes over time. This often occurs in a disaster situation. If the media is in salty or dirty water, it should be rinsed in fresh water. The process of cleaning, rinsing, and drying wet tapes should be done at room temperature in order to prevent heat damage. Older tapes should be recovered prior to newer tapes, as they are more susceptible to water damage. [8]
+Prevention
+
+To prevent the need of data archeology, creators and holders of digital documents should take care of digital preservation.
+See also
+
+    Digital dark age
+    Knowledge discovery
+    Bit rot
+
+
+Data governance is a control that ensures that the data entry by an operations team member or by an automated process meets precisely standards, much as a Business rule, a data definition and data integrity constraints in the data model. The data governor uses data quality monitoring against production data to communicate errors in data back to operational team members, or to the technical support team, for corrective action. Data governance is used by organizations to exercise control over processes and methods used by their data stewards and data custodians in order to improve data quality.
+
+Data governance is a set of processes that ensures that important data assets are formally managed throughout the enterprise. Data governance ensures that data can be trusted and that people can be made accountable for any adverse event that happens because of low data quality. It is about putting people in charge of fixing and preventing issues with data so that the enterprise can become more efficient. Data governance also describes an evolutionary process for a company, altering the company’s way of thinking and setting up the processes to handle information so that it may be utilized by the entire organization. It’s about using technology when necessary in many forms to help aid the process. When companies desire, or are required, to gain control of their data, they empower their people, set up processes and get help from technology to do it.[1]
+
+According to one vendor, data governance is a quality control discipline for assessing, managing, using, improving, monitoring, maintaining, and protecting organizational information. It is a system of decision rights and accountabilities for information-related processes, executed according to agreed-upon models which describe who can take what actions with what information, and when, under what circumstances, using what methods.[2]
+
+Contents
+
+    1 Overview
+    2 Data governance drivers
+    3 Data governance initiatives
+    4 Implementation
+    5 Data governance tools
+    6 Data governance organizations
+    7 Data governance conferences
+    8 See also
+    9 References
+
+Overview
+
+Data governance encompasses the people, processes, and information technology required to create a consistent and proper handling of an organization's data across the business enterprise. Goals may be defined at all levels of the enterprise and doing so may aid in acceptance of processes by those who will use them. Some goals include:
+
+    Increasing consistency and confidence in decision making
+    Decreasing the risk of regulatory fines
+    Improving data security, also defining and verifying the requirements for data distribution policies[3]
+    Maximizing the income generation potential of data
+    Designating accountability for information quality
+    Enable better planning by supervisory staff
+    Minimizing or eliminating re-work
+    Optimize staff effectiveness
+    Establish process performance baselines to enable improvement efforts
+    Acknowledge and hold all gain
+
+These goals are realized by the implementation of Data governance programs, or initiatives using Change Management techniques.
+Data governance drivers
+
+While data governance initiatives can be driven by a desire to improve data quality, they are more often driven by C-Level leaders responding to external regulations. Examples of these regulations include Sarbanes-Oxley, Basel I, Basel II, HIPAA, and a number of data privacy regulations. To achieve compliance with these regulations, business processes and controls require formal management processes to govern the data subject to these regulations.[4] Successful programs identify drivers meaningful to both supervisory and executive leadership.
+
+Common themes among the external regulations center on the need to manage risk. The risks can be financial misstatement, inadvertent release of sensitive data, or poor data quality for key decisions. Methods to manage these risks vary from industry to industry. Examples of commonly referenced best practices and guidelines include COBIT, ISO/IEC 38500, and others. The proliferation of regulations and standards creates challenges for data governance professionals, particularly when multiple regulations overlap the data being managed. Organizations often launch data governance initiatives to address these challenges.
+Data governance initiatives
+
+Data governance initiatives improve data quality by assigning a team responsible for data's accuracy, accessibility, consistency, and completeness, among other metrics. This team usually consists of executive leadership, project management, line-of-business managers, and data stewards. The team usually employs some form of methodology for tracking and improving enterprise data, such as Six Sigma, and tools for data mapping, profiling, cleansing, and monitoring data.
+
+Data governance initiatives may be aimed at achieving a number of objectives including offering better visibility to internal and external customers (such as supply chain management), compliance with regulatory law, improving operations after rapid company growth or corporate mergers, or to aid the efficiency of enterprise knowledge workers by reducing confusion and error and increasing their scope of knowledge. Many data governance initiatives are also inspired by past attempts to fix information quality at the departmental level, leading to incongruent and redundant data quality processes. Most large companies have many applications and databases that can't easily share information. Therefore, knowledge workers within large organizations often don't have access to the information they need to best do their jobs. When they do have access to the data, the data quality may be poor. By setting up a data governance practice or Corporate Data Authority, these problems can be mitigated.
+
+The structure of a data governance initiative will vary not only with the size of the organization, but with the desired objectives or the 'focus areas' [5] of the effort.
+Implementation
+
+Implementation of a Data Governance initiative may vary in scope as well as origin. Sometimes, an executive mandate will arise to initiate an enterprise wide effort, sometimes the mandate will be to create a pilot project or projects, limited in scope and objectives, aimed at either resolving existing issues or demonstrating value. Sometimes an initiative will originate lower down in the organization’s hierarchy, and will be deployed in a limited scope to demonstrate value to potential sponsors higher up in the organization. The initial scope of an implementation can vary greatly as well, from review of a one-off IT system, to a cross-organization initiative.
+Data governance tools
+
+Leaders of successful data governance programs declared in December 2006 at the Data Governance Conference in Orlando, Fl, that data governance is between 80 and 95 percent communication."[6] That stated, it is a given that many of the objectives of a Data Governance program must be accomplished with appropriate tools. Many vendors are now positioning their products as Data Governance tools; due to the different focus areas of various data governance initiatives, any given tool may or may not be appropriate, in addition, many tools that are not marketed as governance tools address governance needs.[7]
+Data governance organizations
+
+DAMA International[8]
+    DAMA (the Data Management Association) is a not-for-profit, vendor-independent, international association of technical and business professionals dedicated to advancing the concepts and practices of information resource management (IRM) and data resource management (DRM).
+
+Data Governance Professionals Organization (DGPO)[9]
+    The Data Governance Professionals Organization (DGPO) is a non-profit, vendor neutral, association of business, IT and data professionals dedicated to advancing the discipline of data governance. The objective of the DGPO is to provide a forum that fosters discussion and networking for members and to encourage, develop and advance the skills of members working in the data governance discipline.
+
+The Data Governance Society [10]
+    The Data Governance Society, Inc. is dedicated to fostering a new paradigm for the effective use and protection of information in which Data is governed and leveraged as a unique corporate asset.
+
+The Data Governance Council [11]
+    The Data Governance Council is an organization formed by IBM consisting of companies, institutions and technology solution providers with the stated objective to build consistency and quality control in governance, which will help companies better protect critical data."
+
+IQ International -- the International Association for Information and Data Quality[12]
+    IQ International is a not-for-profit, vendor neutral, professional association formed in 2004, dedicated to building the information and data quality profession.
+
+Data governance conferences
+
+A number of major conferences relevant to data governance are held annually:
+
+Data Governance and Information Quality Conference[13]
+    Commercial conferences held each year in the USA
+
+Data Governance Conference Europe,[14]
+    Commercial conferences held annually in London, England .
+Information and Data Quality Conference[15]
+    Not for profit conference run by IQ International in the USA
+Master Data Management & Data Governance Conferences[16]
+    Six major conferences are run annually by the MDM Institute in London, San Francisco, Sydney, Toronto, Madrid, Frankfurt, and New York City.
+Financial Information Summit series of conferences[17]
+Hosted by Inside Reference Data magazine in New York, London, Hong Kong, Toronto, Chicago, Frankfurt, Paris and Tokyo.
+
+See also
+
+    Information Architecture
+    Information technology governance
+    Semantics of Business Vocabulary and Business Rules
+    Master data management
+    COBIT
+    ISO/IEC 38500
+    ISO/TC 215
+    Operational risk management
+    Basel II Accord
+    HIPAA
+    Sarbanes-Oxley Act
+    Information technology controls
+    Data Protection Directive (EU)
+    Universal Data Element Framework
+    Asset Description Metadata Schema
+
+Data sharing is the practice of making data used for scholarly research available to other investigators. Replication has a long history in science. The motto of The Royal Society is 'Nullius in verba', translated "Take no man's word for it."[1] Many funding agencies, institutions, and publication venues have policies regarding data sharing because transparency and openness are considered by many to be part of the scientific method.
+
+A number of funding agencies and science journals require authors of peer-reviewed papers to share any supplemental information (raw data, statistical methods or source code) necessary to understand, develop or reproduce published research. A great deal of scientific research is not subject to data sharing requirements, and many of these policies have liberal exceptions. In the absence of any binding requirement, data sharing is at the discretion of the scientists themselves. In addition, in certain situations agencies and institutions prohibit or severely limit data sharing to protect proprietary interests, national security, and subject/patient/victim confidentiality. Data sharing may also be restricted to protect institutions and scientists from use of data for political purposes.
+
+Data and methods may be requested from an author years after publication. In order to encourage data sharing and prevent the loss or corruption of data, a number of funding agencies and journals established policies on data archiving. Access to publicly archived data is a recent development in the history of science made possible by technological advances in communications and information technology.
+
+Despite policies on data sharing and archiving, data withholding still happens. Authors may fail to archive data or they only archive a portion of the data. Failure to archive data alone is not data withholding. When a researcher requests additional information, an author sometimes refuses to provide it.[2] When authors withhold data like this, they run the risk of losing the trust of the science community.[3]
+
+Contents
+
+    1 U.S. government policies
+        1.1 Federal law
+        1.2 NIH data sharing policy
+        1.3 NSF Policy from Grant General Conditions
+    2 Office of Research Integrity
+    3 Ideals in data sharing
+    4 International policies
+    5 Data sharing problems
+        5.1 Academic genetics
+        5.2 Academic psychology
+        5.3 Scientists in training
+    6 Differing approaches in different fields
+    7 See also
+    8 References
+    9 Literature
+    10 External links
+
+U.S. government policies
+Federal law
+
+On August 9, 2007, President Bush signed the America COMPETES Act (or the "America Creating Opportunities to Meaningfully Promote Excellence in Technology, Education, and Science Act") requiring civilian federal agencies to provide guidelines, policy and procedures, to facilitate and optimize the open exchange of data and research between agencies, the public and policymakers. See Section 1009.[4]
+NIH data sharing policy
+
+    ‘The National Institutes of Health (NIH) Grants Policy Statement defines "data" as "recorded information, regardless of the form or medium on which it may be recorded, and includes writings, films, sound recordings, pictorial reproductions, drawings, designs, or other graphic representations, procedural manuals, forms, diagrams, work flow charts, equipment descriptions, data files, data processing or computer programs (software), statistical records, and other research data."’
+    — Council on Governamental Relations[5]
+
+The NIH Final Statement of Sharing of Research Data says:
+
+    ‘Final NIH statement on sharing research data 
+    .’[6]
+
+NSF Policy from Grant General Conditions
+
+    36. Sharing of Findings, Data, and Other Research Products
+
+    a. NSF …expects investigators to share with other researchers, at no more than incremental cost and within a reasonable time, the data, samples, physical collections and other supporting materials created or gathered in the course of the work. It also encourages awardees to share software and inventions or otherwise act to make the innovations they embody widely useful and usable.
+    b. Adjustments and, where essential, exceptions may be allowed to safeguard the rights of individuals and subjects, the validity of results, or the integrity of collections or to accommodate legitimate interests of investigators.
+    — "National Science Foundation 
+    : Grant General Conditions (GC-1)", April 1, 2001 (p. 17).
+
+Office of Research Integrity
+
+Allegations of misconduct in medical research carry severe consequences. The United States Department of Health and Human Services established an office to oversee investigations of allegations of misconduct, including data withholding. The website defines the mission:
+
+    "The Office of Research Integrity (ORI) promotes integrity in biomedical and behavioral research supported by the U.S. Public Health Service (PHS) at about 4,000 institutions worldwide. ORI monitors institutional investigations of research misconduct and facilitates the responsible conduct of research (RCR) through educational, preventive, and regulatory activities."
+    — Office of Research Integrity 
+    .
+
+Ideals in data sharing
+
+Some research organizations feel particularly strongly about data sharing. Stanford University's WaveLab has a philosophy about reproducible research and disclosing all algorithms and source code necessary to reproduce the research. In a paper titled "WaveLab and Reproducible Research," the authors describe some of the problems they encountered in trying to reproduce their own research after a period of time. In many cases, it was so difficult they gave up the effort. These experiences are what convinced them of the importance of disclosing source code.[7] The philosophy is described:
+
+    The idea is: An article about computational science in a scientific publication is not the scholarship itself, it is merely advertising of the scholarship. The actual scholarship is the complete software development environment and the complete set of instructions which generated the figures.[8]
+
+The Data Observation Network for Earth (DataONE) and Data Conservancy[9] are projects supported by the National Science Foundation to encourage and facilitate data sharing among research scientists and better support meta-analysis. In environmental sciences, the research community is recognizing that major scientific advances involving integration of knowledge in and across fields will require that researchers overcome not only the technological barriers to data sharing but also the historically entrenched institutional and sociological barriers.[10] Dr. Richard J. Hodes, director of the National Institute on Aging has stated, "the old model in which researchers jealously guarded their data is no longer applicable".[11]
+
+The Alliance for Taxpayer Access is a group of organizations that support open access to government sponsored research. The group has expressed a "Statement of Principles" explaining why they believe open access is important.[12] They also list a number of international public access policies.[13]
+International policies
+
+    Australia 
+    Austria 
+    Europe — Commission of European Communities 
+    Germany 
+    United Kingdom 
+    'Omic Data Sharing — a list of policies of major science funders BioSharing.org Catalogue of Data Policies 
+
+Data sharing problems
+Academic genetics
+
+Withholding of data has become so commonplace in academic genetics that researchers at Massachusetts General Hospital published a journal article on the subject. The study found that "Because they were denied access to data, 28% of geneticists reported that they had been unable to confirm published research."[14]
+Academic psychology
+
+In a 2006 study, it was observed that, of 141 authors of a publication from the American Psychology Association (APA) empirical articles, 103 (73%) did not respond with their data over a 6-month period.[15] In a follow up study published in 2015, it was found that 246 out of 394 contacted authors of papers in APA journals did not share their data upon request (62%).[16]
+Scientists in training
+
+A study of scientists in training indicated many had already experienced data withholding.[17] This study has given rise to the fear the future generation of scientists will not abide by the established practices.
+Differing approaches in different fields
+
+Requirements for data sharing are more commonly imposed by institutions, funding agencies, and publication venues in the medical and biological sciences than in the physical sciences. Requirements vary widely regarding whether data must be shared at all, with whom the data must be shared, and who must bear the expense of data sharing.
+
+Funding agencies such as the NIH and NSF tend to require greater sharing of data, but even these requirements tend to acknowledge the concerns of patient confidentiality, costs incurred in sharing data, and the legitimacy of the request. Private interests and public agencies with national security interests (defense and law enforcement) often discourage sharing of data and methods through non-disclosure agreements.
+
+Data sharing poses specific challenges in participatory monitoring initiatives, for example where forest communities collect data on local social and environmental conditions. In this case, a rights-based approach to the development of data-sharing protocols can be based on principles of free, prior and informed consent, and prioritise the protection of the rights of those who generated the data, and/or those potentially affected by data-sharing.[18]
+See also
+
+    Data archive
+    Data publishing
+    Data citation
+    re3data.org - Registry of Research Data Repositories
+
+
+
+What is a data library?
+
+A data library is a collection of numeric and/or geospatial data sets for secondary use in research. (Scroll down to view definition from the Online Dictionary for Library and Information Science.) A data library is normally part of a larger institution (academic, corporate, scientific, medical, governmental, etc.) established to serve the data users of that organisation. The data library tends to house local data collections and provides access to them through various means (CD-/DVD-ROMs or central server for download). A data library may also maintain subscriptions to licensed data resources for its users to access. Whether a data library is also considered a data archive may depend on the extent of unique holdings in the collection, whether long-term preservation services are offered, and whether it serves a broader community (as national data archives do).
+Importance of data libraries and data librarianship
+
+In August 2001, the Association of Research Libraries (ARL) 
+published SPEC Kit 263: Numeric Data Products and Services 
+, presenting results from a survey of ARL member institutions involved in collecting and providing services for numeric data resources.
+Services offered by data libraries and data librarians
+
+Library service providing support at the institutional level for the use of numerical and other types of datasets in research. Amongst the support activities typically available:
+
+    Reference Assistance — locating numeric or geospatial datasets containing measurable variables on a particular topic or group of topics, in response to a user query.
+    User Instruction — providing hands-on training to groups of users in locating data resources on particular topics, how to download data and read it into spreadsheet, statistical, database, or GIS packages, how to interpret codebooks and other documentation.
+    Technical Assistance - including easing registration procedures, troubleshooting problems with the dataset, such as errors in the documentation, reformatting data into something a user can work with, and helping with statistical methodology.
+    Collection Development & Management - acquire, maintain, and manage a collection of data files used for secondary analysis by the local user community; purchase institutional data subscriptions; act as a site representative to data providers and national data archives for the institution.
+    Preservation and Data Sharing Services - act on a strategy of preservation of datasets in the collection, such as media refreshment and file format migration; download and keep records on updated versions from a central repository. Also, assist users in preparing original data for secondary use by others; either for deposit in a central or institutional repository, or for less formal ways of sharing data. This may also involve marking up the data into an appropriate XML standard, such as the Data Documentation Initiative, or adding other metadata to facilitate online discovery.
+
+Associations
+
+    IASSIST 
+    (International Association for Social Science Information and Service Technology)
+    DISC-UK 
+    (Data Information Specialists Committee—United Kingdom)
+    APDU 
+    (Association of Public Data Users - USA)
+    CAPDU 
+    (Canadian Association of Public Data Users)
+
+Examples of Data Library
+
+The Massachusetts Institute of Technology’s (MIT) Data Management and Publishing tutorial, 
+The EDINA Research Data Management Training (MANTRA), 
+The University of Edinburgh’s Data Library and 
+The University of Minnesota libraries’ Data Management Course for Structural Engineers
+The London School of Economics and Political Science Data and Statistics
+
+References
+
+    Clubb, J., Austin, E., and Geda, C. "'Sharing research data in the social sciences.'" In Sharing Research Data, S. Fienberg, M. Martin, and M. Straf, Eds. National Academy Press, Washington, D.C., 1985, 39-88.
+    Geraci, D., Humphrey, C., and Jacobs, J. Data Basics. Canadian Library Association, Ottawa, ON, 2005.
+    Martinez, Luis & Macdonald, Stuart, "'Supporting local data users in the UK academic community'" 
+    . Ariadne, issue 44, July 2005.
+    See the IASSIST Bibliography of Selected Works 
+    for articles tracing the history of data libraries and its relationship to the archivist profession, going back to the 1960s and '70s up to 1996.
+    See IASSIST Quarterly 
+    articles from 1993 to the present, focusing on data libraries, data archives, data support, and information technology for the social sciences.
+
+See also
+
+Digital curation
+Digital preservation
+Open Data
+
+In information technology, a backup, or the process of backing up, refers to the copying and archiving of computer data so it may be used to restore the original after a data loss event. The verb form is to back up in two words, whereas the noun is backup.[1]
+
+Backups have two distinct purposes. The primary purpose is to recover data after its loss, be it by data deletion or corruption. Data loss can be a common experience of computer users; a 2008 survey found that 66% of respondents had lost files on their home PC.[2] The secondary purpose of backups is to recover data from an earlier time, according to a user-defined data retention policy, typically configured within a backup application for how long copies of data are required. Though backups represent a simple form of disaster recovery, and should be part of any disaster recovery plan, backups by themselves should not be considered a complete disaster recovery plan. One reason for this is that not all backup systems are able to reconstitute a computer system or other complex configuration such as a computer cluster, active directory server, or database server by simply restoring data from a backup.
+
+Since a backup system contains at least one copy of all data considered worth saving, the data storage requirements can be significant. Organizing this storage space and managing the backup process can be a complicated undertaking. A data repository model may be used to provide structure to the storage. Nowadays, there are many different types of data storage devices that are useful for making backups. There are also many different ways in which these devices can be arranged to provide geographic redundancy, data security, and portability.
+
+Before data are sent to their storage locations, they are selected, extracted, and manipulated. Many different techniques have been developed to optimize the backup procedure. These include optimizations for dealing with open files and live data sources as well as compression, encryption, and de-duplication, among others. Every backup scheme should include dry runs that validate the reliability of the data being backed up. It is important to recognize the limitations and human factors involved in any backup scheme.
+
+Contents
+
+    1 Storage, the base of a backup system
+        1.1 Data repository models
+        1.2 Storage media
+        1.3 Managing the data repository
+    2 Selection and extraction of data
+        2.1 Files
+        2.2 Filesystems
+        2.3 Live data
+        2.4 Metadata
+    3 Manipulation of data and dataset optimization
+    4 Managing the backup process
+        4.1 Objectives
+        4.2 Limitations
+        4.3 Implementation
+        4.4 Measuring the process
+    5 See also
+    6 References
+    7 External links
+
+Storage, the base of a backup system
+Data repository models
+
+Any backup strategy starts with a concept of a data repository. The backup data needs to be stored, and probably should be organized to a degree. The organisation could be as simple as a sheet of paper with a list of all backup media (CDs etc.) and the dates they were produced. A more sophisticated setup could include a computerized index, catalog, or relational database. Different approaches have different advantages. Part of the model is the backup rotation scheme.
+
+Unstructured 
+    An unstructured repository may simply be a stack of or CD-Rs or DVD-Rs with minimal information about what was backed up and when. This is the easiest to implement, but probably the least likely to achieve a high level of recoverability as it lacks automation.
+Full only / System imaging 
+    A repository of this type contains complete system images taken at one or more specific points in time. This technology is frequently used by computer technicians to record known good configurations. Imaging[3] is generally more useful for deploying a standard configuration to many systems rather than as a tool for making ongoing backups of diverse systems.
+Incremental 
+    An incremental style repository aims to make it more feasible to store backups from more points in time by organizing the data into increments of change between points in time. This eliminates the need to store duplicate copies of unchanged data: with full backups a lot of the data will be unchanged from what has been backed up previously. Typically, a full backup (of all files) is made on one occasion (or at infrequent intervals) and serves as the reference point for an incremental backup set. After that, a number of incremental backups are made after successive time periods. Restoring the whole system to the date of the last incremental backup would require starting from the last full backup taken before the data loss, and then applying in turn each of the incremental backups since then.[4] Additionally, some backup systems can reorganize the repository to synthesize full backups from a series of incrementals.
+Differential 
+    Each differential backup saves the data that has changed since the last full backup. It has the advantage that only a maximum of two data sets are needed to restore the data. One disadvantage, compared to the incremental backup method, is that as time from the last full backup (and thus the accumulated changes in data) increases, so does the time to perform the differential backup. Restoring an entire system would require starting from the most recent full backup and then applying just the last differential backup since the last full backup.
+
+        Note: Vendors have standardized on the meaning of the terms "incremental backup" and "differential backup". However, there have been cases where conflicting definitions of these terms have been used. The most relevant characteristic of an incremental backup is which reference point it uses to check for changes. By standard definition, a differential backup copies files that have been created or changed since the last full backup, regardless of whether any other differential backups have been made since then, whereas an incremental backup copies files that have been created or changed since the most recent backup of any type (full or incremental). Other variations of incremental backup include multi-level incrementals and incremental backups that compare parts of files instead of just the whole file.
+
+Reverse delta 
+    A reverse delta type repository stores a recent "mirror" of the source data and a series of differences between the mirror in its current state and its previous states. A reverse delta backup will start with a normal full backup. After the full backup is performed, the system will periodically synchronize the full backup with the live copy, while storing the data necessary to reconstruct older versions. This can either be done using hard links, or using binary diffs. This system works particularly well for large, slowly changing, data sets. Examples of programs that use this method are rdiff-backup and Time Machine.
+Continuous data protection 
+    Instead of scheduling periodic backups, the system immediately logs every change on the host system. This is generally done by saving byte or block-level differences rather than file-level differences.[5] It differs from simple disk mirroring in that it enables a roll-back of the log and thus restoration of old images of data.
+
+Storage media
+
+Regardless of the repository model that is used, the data has to be stored on some data storage medium.
+
+Magnetic tape 
+    Magnetic tape has long been the most commonly used medium for bulk data storage, backup, archiving, and interchange. Tape has typically had an order of magnitude better capacity-to-price ratio when compared to hard disk, but recently the ratios for tape and hard disk have become a lot closer.[6] There are many formats, many of which are proprietary or specific to certain markets like mainframes or a particular brand of personal computer. Tape is a sequential access medium, so even though access times may be poor, the rate of continuously writing or reading data can actually be very fast. Some new tape drives are even faster than modern hard disks.
+Hard disk
+    The capacity-to-price ratio of hard disk has been rapidly improving for many years. This is making it more competitive with magnetic tape as a bulk storage medium. The main advantages of hard disk storage are low access times, availability, capacity and ease of use.[7] External disks can be connected via local interfaces like SCSI, USB, FireWire, or eSATA, or via longer distance technologies like Ethernet, iSCSI, or Fibre Channel. Some disk-based backup systems, such as Virtual Tape Libraries, support data deduplication which can dramatically reduce the amount of disk storage capacity consumed by daily and weekly backup data. The main disadvantages of hard disk backups are that they are easily damaged, especially while being transported (e.g., for off-site backups), and that their stability over periods of years is a relative unknown.
+Optical storage 
+    Recordable CDs, DVDs, and Blu-ray Discs are commonly used with personal computers and generally have low media unit costs. However, the capacities and speeds of these and other optical discs are typically an order of magnitude lower than hard disk or tape. Many optical disk formats are WORM type, which makes them useful for archival purposes since the data cannot be changed. The use of an auto-changer or jukebox can make optical discs a feasible option for larger-scale backup systems. Some optical storage systems allow for cataloged data backups without human contact with the discs, allowing for longer data integrity.
+Solid state storage 
+    Also known as flash memory, thumb drives, USB flash drives, CompactFlash, SmartMedia, Memory Stick, Secure Digital cards, etc., these devices are relatively expensive for their low capacity in comparison to hard disk drives, but are very convenient for backing up relatively low data volumes. A solid-state drive does not contain any movable parts unlike its magnetic drive counterpart, making it less susceptible to physical damage, and can have huge throughput in the order of 500Mbit/s to 6Gbit/s. The capacity offered from SSDs continues to grow and prices are gradually decreasing as they become more common.
+Remote backup service 
+    As broadband Internet access becomes more widespread, remote backup services are gaining in popularity. Backing up via the Internet to a remote location can protect against some worst-case scenarios such as fires, floods, or earthquakes which would destroy any backups in the immediate vicinity along with everything else. There are, however, a number of drawbacks to remote backup services. First, Internet connections are usually slower than local data storage devices. Residential broadband is especially problematic as routine backups must use an upstream link that's usually much slower than the downstream link used only occasionally to retrieve a file from backup. This tends to limit the use of such services to relatively small amounts of high value data. Secondly, users must trust a third party service provider to maintain the privacy and integrity of their data, although confidentiality can be assured by encrypting the data before transmission to the backup service with an encryption key known only to the user. Ultimately the backup service must itself use one of the above methods so this could be seen as a more complex way of doing traditional backups.
+Floppy disk 
+    During the 1980s and early 1990s, many personal/home computer users associated backing up mostly with copying to floppy disks. However, the data capacity of floppy disks failed to catch up with growing demands, rendering them effectively obsolete.
+
+Managing the data repository
+
+Regardless of the data repository model, or data storage media used for backups, a balance needs to be struck between accessibility, security and cost. These media management methods are not mutually exclusive and are frequently combined to meet the user's needs. Using on-line disks for staging data before it is sent to a near-line tape library is a common example.
+
+On-line 
+    On-line backup storage is typically the most accessible type of data storage, which can begin restore in milliseconds of time. A good example is an internal hard disk or a disk array (maybe connected to SAN). This type of storage is very convenient and speedy, but is relatively expensive. On-line storage is quite vulnerable to being deleted or overwritten, either by accident, by intentional malevolent action, or in the wake of a data-deleting virus payload.
+Near-line 
+    Near-line storage is typically less accessible and less expensive than on-line storage, but still useful for backup data storage. A good example would be a tape library with restore times ranging from seconds to a few minutes. A mechanical device is usually used to move media units from storage into a drive where the data can be read or written. Generally it has safety properties similar to on-line storage.
+Off-line 
+    Off-line storage requires some direct human action to provide access to the storage media: for example inserting a tape into a tape drive or plugging in a cable. Because the data are not accessible via any computer except during limited periods in which they are written or read back, they are largely immune to a whole class of on-line backup failure modes. Access time will vary depending on whether the media are on-site or off-site.
+Off-site data protection
+    To protect against a disaster or other site-specific problem, many people choose to send backup media to an off-site vault. The vault can be as simple as a system administrator's home office or as sophisticated as a disaster-hardened, temperature-controlled, high-security bunker with facilities for backup media storage. Importantly a data replica can be off-site but also on-line (e.g., an off-site RAID mirror). Such a replica has fairly limited value as a backup, and should not be confused with an off-line backup.
+Backup site or disaster recovery center (DR center)
+    In the event of a disaster, the data on backup media will not be sufficient to recover. Computer systems onto which the data can be restored and properly configured networks are necessary too. Some organizations have their own data recovery centers that are equipped for this scenario. Other organizations contract this out to a third-party recovery center. Because a DR site is itself a huge investment, backing up is very rarely considered the preferred method of moving data to a DR site. A more typical way would be remote disk mirroring, which keeps the DR data as up to date as possible.
+
+Selection and extraction of data
+
+A successful backup job starts with selecting and extracting coherent units of data. Most data on modern computer systems is stored in discrete units, known as files. These files are organized into filesystems. Files that are actively being updated can be thought of as "live" and present a challenge to back up. It is also useful to save metadata that describes the computer or the filesystem being backed up.
+
+Deciding what to back up at any given time is a harder process than it seems. By backing up too much redundant data, the data repository will fill up too quickly. Backing up an insufficient amount of data can eventually lead to the loss of critical information.
+Files
+
+Copying files 
+    With file-level approach, making copies of files is the simplest and most common way to perform a backup. A means to perform this basic function is included in all backup software and all operating systems.
+
+Partial file copying
+    Instead of copying whole files, one can limit the backup to only the blocks or bytes within a file that have changed in a given period of time. This technique can use substantially less storage space on the backup medium, but requires a high level of sophistication to reconstruct files in a restore situation. Some implementations require integration with the source file system.
+
+Deleted files 
+    To prevent the unintentional restoration of files that have been intentionally deleted, a record of the deletion must be kept.
+
+Filesystems
+
+Filesystem dump
+    Instead of copying files within a file system, a copy of the whole filesystem itself in block-level can be made. This is also known as a raw partition backup and is related to disk imaging. The process usually involves unmounting the filesystem and running a program like dd (Unix). Because the disk is read sequentially and with large buffers, this type of backup can be much faster than reading every file normally, especially when the filesystem contains many small files, is highly fragmented, or is nearly full. But because this method also reads the free disk blocks that contain no useful data, this method can also be slower than conventional reading, especially when the filesystem is nearly empty. Some filesystems, such as XFS, provide a "dump" utility that reads the disk sequentially for high performance while skipping unused sections. The corresponding restore utility can selectively restore individual files or the entire volume at the operator's choice.
+
+Identification of changes
+    Some filesystems have an archive bit for each file that says it was recently changed. Some backup software looks at the date of the file and compares it with the last backup to determine whether the file was changed.
+
+Versioning file system 
+    A versioning filesystem keeps track of all changes to a file and makes those changes accessible to the user. Generally this gives access to any previous version, all the way back to the file's creation time. An example of this is the Wayback versioning filesystem for Linux.[8]
+
+Live data
+
+If a computer system is in use while it is being backed up, the possibility of files being open for reading or writing is real. If a file is open, the contents on disk may not correctly represent what the owner of the file intends. This is especially true for database files of all kinds. The term fuzzy backup can be used to describe a backup of live data that looks like it ran correctly, but does not represent the state of the data at any single point in time. This is because the data being backed up changed in the period of time between when the backup started and when it finished. For databases in particular, fuzzy backups are worthless.[citation needed]
+
+Snapshot backup
+    A snapshot is an instantaneous function of some storage systems that presents a copy of the file system as if it were frozen at a specific point in time, often by a copy-on-write mechanism. An effective way to back up live data is to temporarily quiesce them (e.g. close all files), take a snapshot, and then resume live operations. At this point the snapshot can be backed up through normal methods.[9] While a snapshot is very handy for viewing a filesystem as it was at a different point in time, it is hardly an effective backup mechanism by itself.
+
+Open file backup
+    Many backup software packages feature the ability to handle open files in backup operations. Some simply check for openness and try again later. File locking is useful for regulating access to open files.
+    When attempting to understand the logistics of backing up open files, one must consider that the backup process could take several minutes to back up a large file such as a database. In order to back up a file that is in use, it is vital that the entire backup represent a single-moment snapshot of the file, rather than a simple copy of a read-through. This represents a challenge when backing up a file that is constantly changing. Either the database file must be locked to prevent changes, or a method must be implemented to ensure that the original snapshot is preserved long enough to be copied, all while changes are being preserved. Backing up a file while it is being changed, in a manner that causes the first part of the backup to represent data before changes occur to be combined with later parts of the backup after the change results in a corrupted file that is unusable, as most large files contain internal references between their various parts that must remain consistent throughout the file.
+
+Cold database backup
+    During a cold backup, the database is closed or locked and not available to users. The datafiles do not change during the backup process so the database is in a consistent state when it is returned to normal operation.[10]
+
+Hot database backup
+    Some database management systems offer a means to generate a backup image of the database while it is online and usable ("hot"). This usually includes an inconsistent image of the data files plus a log of changes made while the procedure is running. Upon a restore, the changes in the log files are reapplied to bring the copy of the database up-to-date (the point in time at which the initial hot backup ended).[11]
+
+Metadata
+
+Not all information stored on the computer is stored in files. Accurately recovering a complete system from scratch requires keeping track of this non-file data too. [12]
+
+System description
+    System specifications are needed to procure an exact replacement after a disaster.
+Boot sector 
+    The boot sector can sometimes be recreated more easily than saving it. Still, it usually isn't a normal file and the system won't boot without it.
+Partition layout
+    The layout of the original disk, as well as partition tables and filesystem settings, is needed to properly recreate the original system.
+File metadata 
+    Each file's permissions, owner, group, ACLs, and any other metadata need to be backed up for a restore to properly recreate the original environment.
+System metadata
+    Different operating systems have different ways of storing configuration information. Microsoft Windows keeps a registry of system information that is more difficult to restore than a typical file.
+
+Manipulation of data and dataset optimization
+
+It is frequently useful or required to manipulate the data being backed up to optimize the backup process. These manipulations can provide many benefits including improved backup speed, restore speed, data security, media usage and/or reduced bandwidth requirements.
+
+Compression 
+    Various schemes can be employed to shrink the size of the source data to be stored so that it uses less storage space. Compression is frequently a built-in feature of tape drive hardware.
+Deduplication 
+    When multiple similar systems are backed up to the same destination storage device, there exists the potential for much redundancy within the backed up data. For example, if 20 Windows workstations were backed up to the same data repository, they might share a common set of system files. The data repository only needs to store one copy of those files to be able to restore any one of those workstations. This technique can be applied at the file level or even on raw blocks of data, potentially resulting in a massive reduction in required storage space. Deduplication can occur on a server before any data moves to backup media, sometimes referred to as source/client side deduplication. This approach also reduces bandwidth required to send backup data to its target media. The process can also occur at the target storage device, sometimes referred to as inline or back-end deduplication.
+Duplication 
+    Sometimes backup jobs are duplicated to a second set of storage media. This can be done to rearrange the backup images to optimize restore speed or to have a second copy at a different location or on a different storage medium.
+Encryption 
+    High capacity removable storage media such as backup tapes present a data security risk if they are lost or stolen.[13] Encrypting the data on these media can mitigate this problem, but presents new problems. Encryption is a CPU intensive process that can slow down backup speeds, and the security of the encrypted backups is only as effective as the security of the key management policy.
+Multiplexing 
+    When there are many more computers to be backed up than there are destination storage devices, the ability to use a single storage device with several simultaneous backups can be useful.
+Refactoring
+    The process of rearranging the backup sets in a data repository is known as refactoring. For example, if a backup system uses a single tape each day to store the incremental backups for all the protected computers, restoring one of the computers could potentially require many tapes. Refactoring could be used to consolidate all the backups for a single computer onto a single tape. This is especially useful for backup systems that do incrementals forever style backups.
+Staging 
+    Sometimes backup jobs are copied to a staging disk before being copied to tape. This process is sometimes referred to as D2D2T, an acronym for Disk to Disk to Tape. This can be useful if there is a problem matching the speed of the final destination device with the source device as is frequently faced in network-based backup systems. It can also serve as a centralized location for applying other data manipulation techniques.
+
+Managing the backup process
+	This article needs additional citations for verification. Please help improve this article by adding citations to reliable sources. Unsourced material may be challenged and removed. (September 2014) (Learn how and when to remove this template message)
+
+As long as new data are being created and changes are being made, backups will need to be performed at frequent intervals. Individuals and organizations with anything from one computer to thousands of computer systems all require protection of data. The scales may be very different, but the objectives and limitations are essentially the same. Those who perform backups need to know how successful the backups are, regardless of scale.
+Objectives
+
+Recovery point objective (RPO) 
+    The point in time that the restarted infrastructure will reflect. Essentially, this is the roll-back that will be experienced as a result of the recovery. The most desirable RPO would be the point just prior to the data loss event. Making a more recent recovery point achievable requires increasing the frequency of synchronization between the source data and the backup repository.[14][15]
+Recovery time objective (RTO) 
+    The amount of time elapsed between disaster and restoration of business functions.[16]
+Data security 
+    In addition to preserving access to data for its owners, data must be restricted from unauthorized access. Backups must be performed in a manner that does not compromise the original owner's undertaking. This can be achieved with data encryption and proper media handling policies.
+Data retention period 
+    Regulations and policy can lead to situations where backups are expected to be retained for a particular period, but not any further. Retaining backups after this period can lead to unwanted liability and sub-optimal use of storage media.
+
+Limitations
+
+An effective backup scheme will take into consideration the limitations of the situation.
+
+Backup window
+    The period of time when backups are permitted to run on a system is called the backup window. This is typically the time when the system sees the least usage and the backup process will have the least amount of interference with normal operations. The backup window is usually planned with users' convenience in mind. If a backup extends past the defined backup window, a decision is made whether it is more beneficial to abort the backup or to lengthen the backup window.
+Performance impact
+    All backup schemes have some performance impact on the system being backed up. For example, for the period of time that a computer system is being backed up, the hard drive is busy reading files for the purpose of backing up, and its full bandwidth is no longer available for other tasks. Such impacts should be analyzed.
+Costs of hardware, software, labor
+    All types of storage media have a finite capacity with a real cost. Matching the correct amount of storage capacity (over time) with the backup needs is an important part of the design of a backup scheme. Any backup scheme has some labor requirement, but complicated schemes have considerably higher labor requirements. The cost of commercial backup software can also be considerable.
+Network bandwidth
+    Distributed backup systems can be affected by limited network bandwidth.
+
+Implementation
+
+Meeting the defined objectives in the face of the above limitations can be a difficult task. The tools and concepts below can make that task more achievable.
+
+Scheduling
+    Using a job scheduler can greatly improve the reliability and consistency of backups by removing part of the human element. Many backup software packages include this functionality.
+Authentication
+    Over the course of regular operations, the user accounts and/or system agents that perform the backups need to be authenticated at some level. The power to copy all data off of or onto a system requires unrestricted access. Using an authentication mechanism is a good way to prevent the backup scheme from being used for unauthorized activity.
+Chain of trust 
+    Removable storage media are physical items and must only be handled by trusted individuals. Establishing a chain of trusted individuals (and vendors) is critical to defining the security of the data.
+
+Measuring the process
+
+To ensure that the backup scheme is working as expected, key factors should be monitored and historical data maintained.
+
+Backup validation 
+    (also known as "backup success validation") Provides information about the backup, and proves compliance to regulatory bodies outside the organization: for example, an insurance company in the USA might be required under HIPAA to demonstrate that its client data meet records retention requirements.[17] Disaster, data complexity, data value and increasing dependence upon ever-growing volumes of data all contribute to the anxiety around and dependence upon successful backups to ensure business continuity. Thus many organizations rely on third-party or "independent" solutions to test, validate, and optimize their backup operations (backup reporting).
+Reporting
+    In larger configurations, reports are useful for monitoring media usage, device status, errors, vault coordination and other information about the backup process.
+Logging
+    In addition to the history of computer generated reports, activity and change logs are useful for monitoring backup system events.
+Validation
+    Many backup programs use checksums or hashes to validate that the data was accurately copied. These offer several advantages. First, they allow data integrity to be verified without reference to the original file: if the file as stored on the backup medium has the same checksum as the saved value, then it is very probably correct. Second, some backup programs can use checksums to avoid making redundant copies of files, and thus improve backup speed. This is particularly useful for the de-duplication process.
+Monitored backup
+    Backup processes are monitored by a third party monitoring center, which alerts users to any errors that occur during automated backups. Monitored backup requires software capable of pinging[clarification needed] the monitoring center's servers in the case of errors. Some monitoring services also allow collection of historical meta-data, that can be used for Storage Resource Management purposes like projection of data growth, locating redundant primary storage capacity and reclaimable backup capacity.
+
+See also
+
+About backup
+
+    Backup software
+        List of backup software
+    Glossary of backup terms
+    Remote backup service
+    Virtual backup appliance
+
+Related topics
+
+    Data consistency
+    Data degradation
+    Data proliferation
+    Database dump
+    Digital preservation
+    Disaster recovery and business continuity auditing
+    File synchronization
+    Information repository
+
+
+
