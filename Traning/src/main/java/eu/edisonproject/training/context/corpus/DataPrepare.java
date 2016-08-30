@@ -83,7 +83,7 @@ public class DataPrepare {
 
                         transactions += cleanedDescription + "\n";
                     }
-                    String supportThreshold = "0.6";
+                    String supportThreshold = "0.8";
                     String[] arg = {transactions.toString(), supportThreshold};
                     Apriori aprioriDocuments;
                     try {

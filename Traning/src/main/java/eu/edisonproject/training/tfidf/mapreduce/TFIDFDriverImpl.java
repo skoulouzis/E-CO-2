@@ -62,7 +62,7 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
     public static String OUTPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "4-tf-idf-document";
 
     // where to put the csv with the tfidf
-    private final String TFIDFCSV_PATH = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "5-csv";
+    public static String TFIDFCSV_PATH = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "5-csv";
     // where to put the csv with the context vector
     public static String CONTEXT_PATH = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "6-context-vector";
 

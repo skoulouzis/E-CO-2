@@ -15,6 +15,8 @@
  */
 package eu.edisonproject.training.execute;
 
+import com.google.common.io.Files;
+import eu.edisonproject.training.context.corpus.DataPrepare;
 import eu.edisonproject.training.term.extraction.TermExtractor;
 import eu.edisonproject.training.tfidf.mapreduce.ITFIDFDriver;
 import eu.edisonproject.training.tfidf.mapreduce.TFIDFDriverImpl;
@@ -70,8 +72,8 @@ public class Main {
                 + "For word sense disambiguation use 'w'.\n"
                 + "Example: -op w -i E-COCO/documentation/sampleTextFiles/databaseTerms.csv "
                 + "-o E-COCO/documentation/sampleTextFiles/databse.avro\n"
-                //                + "For tf-idf vector extraction use 't'.\n"
-                + "");
+                + "For tf-idf vector extraction use 't'.\n"
+                + "For running the apriori algorithm use 'a'");
         operation.setRequired(true);
         options.addOption(operation);
 
@@ -112,6 +114,9 @@ public class Main {
                     break;
                 case "t":
                     calculateTFIDF(cmd.getOptionValue("input"), cmd.getOptionValue("output"));
+                    break;
+                case "a":
+                    apriori(cmd.getOptionValue("input"), cmd.getOptionValue("output"));
                     break;
                 default:
                     System.out.println(helpmasg);
@@ -231,24 +236,35 @@ public class Main {
     }
 
     private static void calculateTFIDF(String in, String out) throws IOException {
-        String contextName = FilenameUtils.removeExtension(in.substring(in.lastIndexOf(File.separator) + 1));
-        ITFIDFDriver tfidfDriver = new TFIDFDriverImpl(contextName);
-        File inFile = new File(in);
-
-        File tmpFolder = new File(System.getProperty("java.io.tmpdir") + File.separator + "avro");
-        tmpFolder.mkdir();
-        tmpFolder.deleteOnExit();
-
-        setPaths(inFile, tmpFolder);
-
-        tfidfDriver.executeTFIDF(tmpFolder.getAbsolutePath());
-        tfidfDriver.driveProcessResizeVector();
-        File ctxPath = new File(TFIDFDriverImpl.CONTEXT_PATH);
-        for (File f : ctxPath.listFiles()) {
-            if (FilenameUtils.getExtension(f.getName()).endsWith("csv")) {
-                FileUtils.moveFile(f, new File(out + File.separator + f.getName()));
+        File tmpFolder = null;
+        try {
+            if (new File(out).isFile()) {
+                throw new IOException(out + " is a file. Should specify directory");
             }
+            String contextName = FilenameUtils.removeExtension(in.substring(in.lastIndexOf(File.separator) + 1));
+            ITFIDFDriver tfidfDriver = new TFIDFDriverImpl(contextName);
+            File inFile = new File(in);
+
+            tmpFolder = Files.createTempDir();
+
+//        File tmpFolder = new File(System.getProperty("java.io.tmpdir") + File.separator + "avro");
+            tmpFolder.mkdir();
+            tmpFolder.deleteOnExit();
+
+            setPaths(inFile, tmpFolder);
+
+            tfidfDriver.executeTFIDF(tmpFolder.getAbsolutePath());
+            tfidfDriver.driveProcessResizeVector();
+            File ctxPath = new File(TFIDFDriverImpl.CONTEXT_PATH);
+            for (File f : ctxPath.listFiles()) {
+                if (FilenameUtils.getExtension(f.getName()).endsWith("csv")) {
+                    FileUtils.moveFile(f, new File(out + File.separator + f.getName()));
+                }
+            }
+        } finally {
+            tmpFolder.delete();
         }
+
     }
 
     private static void setPaths(File inFile, File tmpFolder) throws IOException {
@@ -279,6 +295,12 @@ public class Main {
         File outPath4 = new File(TFIDFDriverImpl.OUTPUT_PATH4);
         TFIDFDriverImpl.OUTPUT_PATH4 = tmpFolder.getAbsolutePath() + File.separator + outPath4.getName();
 
+        File tiidfCSV = new File(TFIDFDriverImpl.TFIDFCSV_PATH);
+        TFIDFDriverImpl.TFIDFCSV_PATH = tmpFolder.getAbsolutePath() + File.separator + tiidfCSV.getName();
+
+        File context = new File(TFIDFDriverImpl.CONTEXT_PATH);
+        TFIDFDriverImpl.CONTEXT_PATH = tmpFolder.getAbsolutePath() + File.separator + context.getName();
+
         if (inFile.isFile() && FilenameUtils.getExtension(inFile.getName()).endsWith("avro")) {
 
             FileUtils.copyFile(inFile, new File(tmpFolder + File.separator + inFile.getName()));
@@ -291,6 +313,16 @@ public class Main {
             }
         }
 
+    }
+
+    private static void apriori(String in, String out) {
+        String stopWordsPath = System.getProperty("stop.words.file");
+
+        if (stopWordsPath == null) {
+            stopWordsPath = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
+        }
+        DataPrepare dataPrepare = new DataPrepare(in, out, stopWordsPath);
+        dataPrepare.execute();
     }
 
 }
