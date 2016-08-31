@@ -197,7 +197,7 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
                 possibaleTerms.add(TermFactory.create(jsonTerm));
             }
             String delimeter = ",";
-            String wordSeperator = "_";
+            String wordSeperator = " ";
             Set<String> ngarms = CSVFileReader.getNGramsForTerm(term, getItemsFilePath(), delimeter, wordSeperator);
             return disambiguate(term, possibaleTerms, ngarms, getMinimumSimilarity());
         } else {

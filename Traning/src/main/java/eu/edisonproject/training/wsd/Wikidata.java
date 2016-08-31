@@ -93,7 +93,7 @@ public class Wikidata extends DisambiguatorImpl {
             Logger.getLogger(Wikipedia.class.getName()).log(Level.SEVERE, null, ex);
         }
         String delimeter = ",";
-        String wordSeperator = "_";
+        String wordSeperator = " ";
         Set<String> ngarms = CSVFileReader.getNGramsForTerm(term, getItemsFilePath(), delimeter, wordSeperator);
         Term dis = super.disambiguate(term, possibleTerms, ngarms, getMinimumSimilarity());
         if (dis == null) {

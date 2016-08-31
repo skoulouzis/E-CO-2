@@ -110,20 +110,19 @@ public class AprioriExtraction implements TermExtractor {
                     term = term.substring(term.indexOf("_") + 1, term.length());
                 }
                 String tagged = null;
-                if (!term.contains("_")) {
-                    tagged = tagger.tagString(term);
-                }
+//                if (!term.contains("_")) {
+                tagged = tagger.tagString(term);
+//                }
                 boolean add = true;
                 if (tagged != null) {
 //                    System.err.println(tagged);
-                    String tag = tagged.split("_")[1].trim();
-                    for (String pos : rejectPOS) {
+//                    String tag = tagged.split("_")[1].trim();
+//                    for (String pos : rejectPOS) {
 //                        System.out.println(tag + " = " + pos);
-                        if (tag.equals(pos)) {
-                            add = false;
-                            break;
-                        }
+                    if (!tagged.contains("NN") || tagged.contains("RB")) {
+                        add = false;
                     }
+//                    }
                 } else {
                     add = true;
                 }

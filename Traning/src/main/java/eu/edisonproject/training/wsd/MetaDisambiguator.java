@@ -107,7 +107,7 @@ public class MetaDisambiguator extends DisambiguatorImpl {
             }
         }
         String delimeter = ",";
-        String wordSeperator = "_";
+        String wordSeperator = " ";
         Set<String> ngarms = CSVFileReader.getNGramsForTerm(term, getItemsFilePath(), delimeter, wordSeperator);
         if (getCandidateTermsFile() != null) {
             ngarms.addAll(CSVFileReader.getNGramsForTerm(term, getCandidateTermsFile(), delimeter, wordSeperator));

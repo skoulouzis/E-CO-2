@@ -16,6 +16,7 @@
 package eu.edisonproject.training.execute;
 
 import com.google.common.io.Files;
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import eu.edisonproject.training.context.corpus.DataPrepare;
 import eu.edisonproject.training.term.extraction.TermExtractor;
 import eu.edisonproject.training.tfidf.mapreduce.ITFIDFDriver;
@@ -28,8 +29,10 @@ import eu.edisonproject.utility.commons.ValueComparator;
 import eu.edisonproject.utility.file.ConfigHelper;
 import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
 import eu.edisonproject.utility.text.processing.StopWord;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -62,6 +65,8 @@ import org.apache.lucene.analysis.util.CharArraySet;
 public class Main {
 
     private static Properties prop;
+    private static final String[] rejectPOS = new String[]{"JJ", "JJR", "JJS",
+        "VB", "VBD", "VBG", "VBN", "VBP", "VBZ", "RB", "RBR", "RBS"};
 
     public static void main(String args[]) {
         Options options = new Options();
@@ -315,14 +320,48 @@ public class Main {
 
     }
 
-    private static void apriori(String in, String out) {
+    private static void apriori(String in, String out) throws IOException {
         String stopWordsPath = System.getProperty("stop.words.file");
 
         if (stopWordsPath == null) {
             stopWordsPath = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
         }
-        DataPrepare dataPrepare = new DataPrepare(in, out, stopWordsPath);
-        dataPrepare.execute();
+//        DataPrepare dataPrepare = new DataPrepare(in, out, stopWordsPath);
+//        dataPrepare.execute();
+        String taggerPath = System.getProperty("tagger.file");
+
+        if (taggerPath == null) {
+            taggerPath = prop.getProperty("tagger.file", ".." + File.separator + "etc" + File.separator + "model" + File.separator + "stanford" + File.separator + "english-left3words-distsim.tagger");
+        }
+
+        File fin = new File(out + File.separator + "itemset.csv");
+        File fout = new File(out + File.separator + "tmp.csv");
+        MaxentTagger tagger = new MaxentTagger(taggerPath);
+        try (PrintWriter pw = new PrintWriter(fout)) {
+            try (BufferedReader br = new BufferedReader(new FileReader(fin))) {
+                for (String text; (text = br.readLine()) != null;) {
+                    String term = text.split("/")[0];
+                    String tagged = tagger.tagString(term);
+//                    System.out.println(tagged);
+//                    String tag = tagged.split("_")[1].trim();
+                    boolean add = true;
+                    if (!tagged.contains("NN") || tagged.contains("RB")) {
+                        add = false;
+                    }
+//                    for (String pos : rejectPOS) {
+//                        System.out.println(tag + " = " + pos);
+//                        if (tag.equals(pos)) {
+//                            add = false;
+//                            break;
+//                        }
+//                    }
+                    if (add) {
+                        pw.print(text + "\n");
+                    }
+                }
+            }
+        }
+
     }
 
 }

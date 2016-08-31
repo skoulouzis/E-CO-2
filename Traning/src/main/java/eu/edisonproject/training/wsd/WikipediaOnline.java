@@ -70,7 +70,7 @@ public class WikipediaOnline extends Wikipedia {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
             String delimeter = ",";
-            String wordSeperator = "_";
+            String wordSeperator = " ";
             Set<String> ngarms = CSVFileReader.getNGramsForTerm(term, getItemsFilePath(), delimeter, wordSeperator);
             dis = super.disambiguate(term, possibleTerms, ngarms, getMinimumSimilarity());
             if (dis == null) {

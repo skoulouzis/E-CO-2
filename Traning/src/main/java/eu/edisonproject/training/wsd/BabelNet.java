@@ -68,7 +68,7 @@ public class BabelNet extends DisambiguatorImpl {
         Term dis = null;//super.getTerm(term);
         if (dis == null) {
             String delimeter = ",";
-            String wordSeperator = "_";
+            String wordSeperator = " ";
             Set<String> ngarms = CSVFileReader.getNGramsForTerm(term, getItemsFilePath(), delimeter, wordSeperator);
             Set<Term> possibleTerms = getCandidates(term);
             dis = super.disambiguate(term, possibleTerms, ngarms, getMinimumSimilarity());
