@@ -17,7 +17,6 @@ package eu.edisonproject.training.execute;
 
 import com.google.common.io.Files;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
-import eu.edisonproject.training.context.corpus.DataPrepare;
 import eu.edisonproject.training.term.extraction.TermExtractor;
 import eu.edisonproject.training.tfidf.mapreduce.ITFIDFDriver;
 import eu.edisonproject.training.tfidf.mapreduce.TFIDFDriverImpl;
@@ -65,8 +64,8 @@ import org.apache.lucene.analysis.util.CharArraySet;
 public class Main {
 
     private static Properties prop;
-    private static final String[] rejectPOS = new String[]{"JJ", "JJR", "JJS",
-        "VB", "VBD", "VBG", "VBN", "VBP", "VBZ", "RB", "RBR", "RBS"};
+//    private static final String[] rejectPOS = new String[]{"JJ", "JJR", "JJS",
+//        "VB", "VBD", "VBG", "VBN", "VBP", "VBZ", "RB", "RBR", "RBS"};
 
     public static void main(String args[]) {
         Options options = new Options();

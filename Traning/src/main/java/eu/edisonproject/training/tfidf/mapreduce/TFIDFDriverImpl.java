@@ -124,6 +124,7 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
 
                 String[] args4 = {INPUT_PATH4, OUTPUT_PATH4};
                 ToolRunner.run(new WordsGroupByTitleDriver(), args4);
+                
             } catch (Exception ex) {
                 Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, "TFIDF fail", ex);
             }
