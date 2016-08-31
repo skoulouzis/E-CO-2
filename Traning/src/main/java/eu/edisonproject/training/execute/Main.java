@@ -17,6 +17,7 @@ package eu.edisonproject.training.execute;
 
 import com.google.common.io.Files;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
+import eu.edisonproject.training.context.corpus.DataPrepare;
 import eu.edisonproject.training.term.extraction.TermExtractor;
 import eu.edisonproject.training.tfidf.mapreduce.ITFIDFDriver;
 import eu.edisonproject.training.tfidf.mapreduce.TFIDFDriverImpl;
@@ -325,8 +326,8 @@ public class Main {
         if (stopWordsPath == null) {
             stopWordsPath = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
         }
-//        DataPrepare dataPrepare = new DataPrepare(in, out, stopWordsPath);
-//        dataPrepare.execute();
+        DataPrepare dataPrepare = new DataPrepare(in, out, stopWordsPath);
+        dataPrepare.execute();
         String taggerPath = System.getProperty("tagger.file");
 
         if (taggerPath == null) {
@@ -360,7 +361,7 @@ public class Main {
                 }
             }
         }
-
+        Files.move(fout, fin);
     }
 
 }
