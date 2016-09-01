@@ -106,7 +106,7 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
                         if (count > getLimit()) {
                             break;
                         }
-                        LOGGER.log(Level.INFO, "Processing: {0}  at line: {1} of {3}", new Object[]{line, lineCount, getLimit()});
+                        LOGGER.log(Level.INFO, "Processing: {0}  at line: {1} of " + getLimit(), new Object[]{line, lineCount});
                         Term tt = getTerm(term);
                         if (tt != null) {
                             terms.add(tt);
