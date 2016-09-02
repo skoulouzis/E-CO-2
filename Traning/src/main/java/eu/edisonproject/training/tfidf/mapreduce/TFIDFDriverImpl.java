@@ -107,12 +107,13 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
                     }
                     Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Num. of Documents: {0}", numberOfDocuments);
                 } catch (IOException e) {
-                    Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE,null, e);
+                    Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, null, e);
                 }
                 //}
             }
 
             try {
+
                 String[] args1 = {INPUT_PATH1, OUTPUT_PATH1, INPUT_ITEMSET};
                 ToolRunner.run(new WordFrequencyInDocDriver(), args1);
 
@@ -124,7 +125,7 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
 
                 String[] args4 = {INPUT_PATH4, OUTPUT_PATH4};
                 ToolRunner.run(new WordsGroupByTitleDriver(), args4);
-                
+
             } catch (Exception ex) {
                 Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, "TFIDF fail", ex);
             }

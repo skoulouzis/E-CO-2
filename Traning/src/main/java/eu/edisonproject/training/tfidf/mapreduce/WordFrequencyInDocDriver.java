@@ -24,6 +24,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
+import java.net.SocketTimeoutException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -49,13 +55,38 @@ import term.avro.Term;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.util.Tool;
 
-public class WordFrequencyInDocDriver extends Configured implements Tool{
-
+public class WordFrequencyInDocDriver extends Configured implements Tool {
 
     // hashmap for the itemset
     private static List<String> itemset;
 
-    
+    private boolean isHaddopOn() {
+        SocketAddress sockaddr = new InetSocketAddress("fs0.das4.cs.vu.nl", 8080);
+// Create your socket
+        Socket socket = new Socket();
+        boolean online = true;
+// Connect with 10 s timeout
+        try {
+            socket.connect(sockaddr, 200);
+        } catch (SocketTimeoutException stex) {
+            // treating timeout errors separately from other io exceptions
+            // may make sense
+            online = false;
+        } catch (IOException iOException) {
+            online = false;
+        } finally {
+            // As the close() operation can also throw an IOException
+            // it must caught here
+            try {
+                socket.close();
+            } catch (IOException ex) {
+                // feel free to do something moderately useful here, eg log the event
+            }
+
+        }
+        return online;
+    }
+
     public static class WordFrequencyInDocMapper extends Mapper<AvroKey<Term>, NullWritable, Text, IntWritable> {
 
         public WordFrequencyInDocMapper() {
@@ -123,6 +154,21 @@ public class WordFrequencyInDocDriver extends Configured implements Tool{
     // runWordFrequencyInDocDriver --> run (args[])
     @Override
     public int run(String[] args) throws Exception {
+        Configuration jobconf = getConf();
+
+//        if (isHaddopOn()) {
+//            jobconf.set("fs.defaultFS", "hdfs://master.ib.cluster:8020");
+//            jobconf.set("mapred.job.tracker", "localhost:9001");
+//        }
+
+//        try {
+        new Path(args[1]).getFileSystem(jobconf).delete(new Path(args[1]), true);
+//        } catch (java.net.ConnectException ex) {
+//
+//            jobconf.set("fs.defaultFS", "file:///");
+//            jobconf.set("mapred.job.tracker", null);
+//            new Path(args[1]).getFileSystem(jobconf).delete(new Path(args[1]), true);
+//        }
 
         itemset = new LinkedList<String>();
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(args[2])));
@@ -131,14 +177,12 @@ public class WordFrequencyInDocDriver extends Configured implements Tool{
             String[] components = line.split("/");
             itemset.add(components[0]);
         }
-        Job job = new Job(getConf());
-
+        Job job = new Job(jobconf);
         job.setJarByClass(WordFrequencyInDocDriver.class);
         job.setJobName("Word Frequency In Doc Driver");
 
         FileInputFormat.setInputPaths(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
-        new Path(args[1]).getFileSystem(super.getConf()).delete(new Path(args[1]), true);
 
         job.setInputFormatClass(AvroKeyInputFormat.class);
         job.setMapperClass(WordFrequencyInDocMapper.class);
@@ -146,7 +190,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool{
 
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(IntWritable.class);
-        
+
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Integer.class);
         job.setReducerClass(WordFrequencyInDocReducer.class);
