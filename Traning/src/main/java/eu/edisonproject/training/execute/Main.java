@@ -255,7 +255,7 @@ public class Main {
                 workingFolder = prop.getProperty("working.folder", System.getProperty("java.io.tmpdir"));
             }
 
-            tmpFolder = new File(workingFolder);
+            tmpFolder = new File(workingFolder + File.separator + System.currentTimeMillis());
 
 //        File tmpFolder = new File(System.getProperty("java.io.tmpdir") + File.separator + "avro");
             tmpFolder.mkdir();
@@ -273,6 +273,7 @@ public class Main {
             }
         } finally {
             tmpFolder.delete();
+            FileUtils.forceDelete(tmpFolder);
         }
 
     }
