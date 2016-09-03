@@ -60,8 +60,6 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     // hashmap for the itemset
     private static List<String> itemset;
 
-    
-
     public static class WordFrequencyInDocMapper extends Mapper<AvroKey<Term>, NullWritable, Text, IntWritable> {
 
         public WordFrequencyInDocMapper() {
@@ -77,17 +75,19 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
                 description += text + " ";
             }
 
-            description = description.toLowerCase();
+            description = description.toLowerCase().trim();
 
             for (String s : itemset) {
-                if (description.contains(s)) {
-                    while (description.contains(s)) {
+                s = s.trim();
+
+                if (description.contains(" " + s + " ") && s.length() > 1) {
+                    while (description.contains(" " + s + " ")) {
                         StringBuilder valueBuilder = new StringBuilder();
                         valueBuilder.append(s);
                         valueBuilder.append("@");
                         valueBuilder.append(uid);
                         context.write(new Text(valueBuilder.toString()), new IntWritable(1));
-                        description = description.replaceFirst(s, "");
+                        description = description.replaceFirst(" " + s + " ", " ");
                     }
                 }
             }
@@ -135,7 +135,6 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 //            jobconf.set("fs.defaultFS", "hdfs://master.ib.cluster:8020");
 //            jobconf.set("mapred.job.tracker", "localhost:9001");
 //        }
-
 //        try {
         new Path(args[1]).getFileSystem(jobconf).delete(new Path(args[1]), true);
 //        } catch (java.net.ConnectException ex) {
