@@ -60,32 +60,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     // hashmap for the itemset
     private static List<String> itemset;
 
-    private boolean isHaddopOn() {
-        SocketAddress sockaddr = new InetSocketAddress("fs0.das4.cs.vu.nl", 8080);
-// Create your socket
-        Socket socket = new Socket();
-        boolean online = true;
-// Connect with 10 s timeout
-        try {
-            socket.connect(sockaddr, 200);
-        } catch (SocketTimeoutException stex) {
-            // treating timeout errors separately from other io exceptions
-            // may make sense
-            online = false;
-        } catch (IOException iOException) {
-            online = false;
-        } finally {
-            // As the close() operation can also throw an IOException
-            // it must caught here
-            try {
-                socket.close();
-            } catch (IOException ex) {
-                // feel free to do something moderately useful here, eg log the event
-            }
-
-        }
-        return online;
-    }
+    
 
     public static class WordFrequencyInDocMapper extends Mapper<AvroKey<Term>, NullWritable, Text, IntWritable> {
 

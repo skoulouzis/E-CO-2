@@ -250,7 +250,12 @@ public class Main {
             ITFIDFDriver tfidfDriver = new TFIDFDriverImpl(contextName);
             File inFile = new File(in);
 
-            tmpFolder = Files.createTempDir();
+            String workingFolder = System.getProperty("working.folder");
+            if (workingFolder == null) {
+                workingFolder = prop.getProperty("working.folder", System.getProperty("java.io.tmpdir"));
+            }
+
+            tmpFolder = new File(workingFolder);
 
 //        File tmpFolder = new File(System.getProperty("java.io.tmpdir") + File.separator + "avro");
             tmpFolder.mkdir();
