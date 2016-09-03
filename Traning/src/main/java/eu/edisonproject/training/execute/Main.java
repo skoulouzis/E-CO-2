@@ -273,7 +273,7 @@ public class Main {
             }
         } finally {
             tmpFolder.delete();
-//            FileUtils.forceDelete(tmpFolder);
+            FileUtils.forceDelete(tmpFolder);
         }
 
     }
