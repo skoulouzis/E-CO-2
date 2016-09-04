@@ -272,10 +272,11 @@ public class Main {
                 }
             }
         } finally {
-            tmpFolder.delete();
-            FileUtils.forceDelete(tmpFolder);
+            if (tmpFolder != null && tmpFolder.exists()) {
+                tmpFolder.delete();
+                FileUtils.forceDelete(tmpFolder);
+            }
         }
-
     }
 
     private static void setPaths(File inFile, File tmpFolder) throws IOException {

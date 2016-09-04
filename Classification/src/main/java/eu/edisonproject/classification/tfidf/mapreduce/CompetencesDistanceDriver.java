@@ -128,7 +128,8 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
     } // end of mapper class
 
 //    public static class CompetencesDistanceReducer extends TableReducer<Text, Text, ImmutableBytesWritable> {
-    public static class CompetencesDistanceReducer extends Reducer<Text, Text, ImmutableBytesWritable, Put> {
+//    public static class CompetencesDistanceReducer extends Reducer<Text, Text, ImmutableBytesWritable, Put> {
+    public static class CompetencesDistanceReducer extends Reducer<Text, Text, Text, Text> {
 
         public CompetencesDistanceReducer() {
         }
@@ -152,7 +153,7 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
             //for (HashMap<String, Double> competence : listOfCompetencesVector) {
             Set<String> names = CATEGORIES_LIST.keySet();
             Iterator<String> iter = names.iterator();
-            System.out.println("Competence dimension: "+names.size());
+//            System.out.println("Competence dimension: " + names.size());
             while (iter.hasNext()) {
                 String key = iter.next();
                 HashMap<String, Double> competence = CATEGORIES_LIST.get(key);
@@ -180,10 +181,10 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
                 }
 
                 if (!competenceValue.isEmpty()) {
-                    double distance = cosineFunction.computeDistance(competenceValue,documentValue);
-                    System.out.println(distance);
+                    double distance = cosineFunction.computeDistance(competenceValue, documentValue);
+//                    System.out.println(distance);
                     distancesNameAndValue.put(key, distance);
-                    System.out.println(key + "--" + distancesNameAndValue.get(key));
+//                    System.out.println(key + "--" + distancesNameAndValue.get(key));
                 } else {
                     distancesNameAndValue.put(key, 0.0);
                 }
@@ -208,32 +209,34 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
                 }
             }
 
-            DBTools.createOrUpdateTable(JOB_POST_COMETENCE_TBL_NAME, families, true);
-            try (Admin admin = DBTools.getConn().getAdmin()) {
-                try (Table tbl = DBTools.getConn().getTable(JOB_POST_COMETENCE_TBL_NAME)) {
-                    Put put = new Put(Bytes.toBytes(docIdAndDate[0]));
-                    // put.addColumn(Bytes.toBytes("details"), Bytes.toBytes("total"), Bytes.toBytes(sum));
-                    // column family info
-                    put.addColumn(Bytes.toBytes("info"), Bytes.toBytes("title"), Bytes.toBytes(docIdAndDate[1]));
-                    put.addColumn(Bytes.toBytes("info"), Bytes.toBytes("date"), Bytes.toBytes(docIdAndDate[2]));
-
-                    for (String family : distancesNameAndValue.keySet()) {
-                        //String key = family; //iterColumn.next();
-                        Double d = distancesNameAndValue.get(family);
-                        String columnFamily = family.split("-")[0];
-                        String columnQualifier = family.split("-")[1];
-                        put.addColumn(Bytes.toBytes(columnFamily), Bytes.toBytes(columnQualifier), Bytes.toBytes(d));
-                    }
-                    tbl.put(put);
-                    LOGGER.log(Level.INFO, "{0}...... {1}", new Object[]{docIdAndDate[0], docIdAndDate[1]});
-                    context.write(new ImmutableBytesWritable(docIdAndDate[0].getBytes()), put);
-                    //context.write(new Text(text), new Text(distancesString));
-                }
-                admin.flush(JOB_POST_COMETENCE_TBL_NAME);
-            } catch (Exception ex) {
-                Logger.getLogger(CompetencesDistanceDriver.class.getName()).log(Level.SEVERE, null, ex);
+//            DBTools.createOrUpdateTable(JOB_POST_COMETENCE_TBL_NAME, families, true);
+//            try (Admin admin = DBTools.getConn().getAdmin()) {
+//                try (Table tbl = DBTools.getConn().getTable(JOB_POST_COMETENCE_TBL_NAME)) {
+//                    Put put = new Put(Bytes.toBytes(docIdAndDate[0]));
+//                    // column family info
+//                    put.addColumn(Bytes.toBytes("info"), Bytes.toBytes("title"), Bytes.toBytes(docIdAndDate[1]));
+//                    put.addColumn(Bytes.toBytes("info"), Bytes.toBytes("date"), Bytes.toBytes(docIdAndDate[2]));
+//
+            StringBuilder sb = new StringBuilder();
+            for (String family : distancesNameAndValue.keySet()) {
+                //String key = family; //iterColumn.next();
+                Double d = distancesNameAndValue.get(family);
+//                String columnFamily = family.split("-")[0];
+//                String columnQualifier = family.split("-")[1];
+//                        put.addColumn(Bytes.toBytes(columnFamily), Bytes.toBytes(columnQualifier), Bytes.toBytes(d));
+                sb.append(family).append(",").append(d).append("\n");
+//                context.write(new Text(family), new Text(d.toString()));
             }
+            LOGGER.log(Level.INFO, sb.toString());
+//                    tbl.put(put);
+//                    LOGGER.log(Level.INFO, "{0}...... {1}", new Object[]{docIdAndDate[0], docIdAndDate[1]});
+//                    context.write(new ImmutableBytesWritable(docIdAndDate[0].getBytes()), put);
 
+//                }
+//                admin.flush(JOB_POST_COMETENCE_TBL_NAME);
+//            } catch (Exception ex) {
+//                Logger.getLogger(CompetencesDistanceDriver.class.getName()).log(Level.SEVERE, null, ex);
+//            }
         }
 
     } // end of reducer class

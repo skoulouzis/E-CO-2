@@ -29,47 +29,48 @@ import org.apache.avro.file.DataFileReader;
 import org.apache.avro.io.DatumReader;
 import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.hadoop.util.ToolRunner;
+import term.avro.Term;
 
 /**
  *
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
  */
-public class TFIDFDriver implements ITFIDFDriver {
+public class TFIDFDriverImpl implements ITFIDFDriver {
 
     //where to read the frequent itemset
-    private String INPUT_ITEMSET;
+    public static String INPUT_ITEMSET;
     //where to read the data for MapReduce#1
-    private String INPUT_PATH1;
+    public static String INPUT_PATH1;
     //where to put the data in hdfs when MapReduce#1 will finish
-    private String OUTPUT_PATH1;
+    public static String OUTPUT_PATH1;
     // where to read the data for the MapReduce#2
-    private String INPUT_PATH2 ;
+    public static String INPUT_PATH2;
     // where to put the data in hdfs when the MapReduce#2 will finish
-    private String OUTPUT_PATH2;
+    public static String OUTPUT_PATH2;
     // where to read the data for the MapReduce#3
-    private String INPUT_PATH3;    
+    public static String INPUT_PATH3;
 // where to put the data in hdfs when the MapReduce#3 will finish
-    private String OUTPUT_PATH3;
-    
-    // where to read the data for the MapReduce#4.
-    private String INPUT_PATH4;
-    // where to put the data in hdfs when the MapReduce# will finish
-    private String OUTPUT_PATH4;
-    
-    private String DISTANCES_VECTOR_PATH; 
-    // where to put the csv with the tfidf
-    private String COMPETENCES_PATH;
-    
-    private String contextName;
-    private String finalOutputPath;
-    private List<Distances> distancesValues;
+    public static String OUTPUT_PATH3;
 
-    private static final Logger LOGGER = Logger.getLogger(TFIDFDriver.class.getName());
+    // where to read the data for the MapReduce#4.
+    public static String INPUT_PATH4;
+    // where to put the data in hdfs when the MapReduce# will finish
+    public static String OUTPUT_PATH4;
+
+    public static String DISTANCES_VECTOR_PATH;
+    // where to put the csv with the tfidf
+    public static String COMPETENCES_PATH;
+
+//    private final String contextName;
+    private String finalOutputPath;
+//    private final List<Distances> distancesValues;
+
+    private static final Logger LOGGER = Logger.getLogger(TFIDFDriverImpl.class.getName());
 
 //    private Connection conn;
 //    private final String[] families = {"info","data analytics","data management curation","data science engineering","scientific research methods","domain knowledge"};
-    public TFIDFDriver(String contextName, String inputRootPath) {
-          
+    public TFIDFDriverImpl(String contextName, String inputRootPath) {
+
         INPUT_ITEMSET = inputRootPath + File.separator + "etc" + File.separator + "itemset.csv";
         OUTPUT_PATH1 = inputRootPath + File.separator + "etc" + File.separator + "Classification" + File.separator + "1-word-freq";
         INPUT_PATH2 = inputRootPath + File.separator + "etc" + File.separator + "Classification" + File.separator + "1-word-freq";
@@ -81,14 +82,14 @@ public class TFIDFDriver implements ITFIDFDriver {
         DISTANCES_VECTOR_PATH = inputRootPath + File.separator + "etc" + File.separator + "Classification" + File.separator + "5-tf-idf-csv";
         COMPETENCES_PATH = inputRootPath + File.separator + "etc" + File.separator + "Classification" + File.separator + "competences-vector";
 
-        this.contextName = contextName + ".csv";
-        this.distancesValues = new LinkedList<>();
+//        this.contextName = contextName + ".csv";
+//        this.distancesValues = new LinkedList<>();
         File f = new File(DISTANCES_VECTOR_PATH);
         if (!f.exists()) {
             f.mkdir();
         }
         this.finalOutputPath = DISTANCES_VECTOR_PATH + File.separator + contextName;
-      
+
     }
 
     /**
@@ -101,7 +102,7 @@ public class TFIDFDriver implements ITFIDFDriver {
 //        try {
 //            createTable(TableName.valueOf("job post distance"), families);
 //        } catch (IOException ex) {
-//            Logger.getLogger(TFIDFDriver.class.getName()).log(Level.SEVERE, null, ex);
+//            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, null, ex);
 //        }
         INPUT_PATH1 = inputPath;
         int numberOfDocuments = 0;
@@ -110,8 +111,8 @@ public class TFIDFDriver implements ITFIDFDriver {
         if (file.isDirectory()) {
             filesInDir = file.listFiles();
             for (File fileSplit : filesInDir) {
-                DatumReader<Document> documentDatumReader = new SpecificDatumReader<>(Document.class);
-                DataFileReader<Document> dataFileReader;
+                DatumReader<Term> documentDatumReader = new SpecificDatumReader<>(Term.class);
+                DataFileReader<Term> dataFileReader;
                 try {
                     dataFileReader = new DataFileReader<>(fileSplit, documentDatumReader);
 
@@ -139,10 +140,10 @@ public class TFIDFDriver implements ITFIDFDriver {
                 String[] args4 = {INPUT_PATH4, OUTPUT_PATH4, COMPETENCES_PATH};
                 ToolRunner.run(new CompetencesDistanceDriver(), args4);
             } catch (Exception ex) {
-                Logger.getLogger(TFIDFDriver.class.getName()).log(Level.SEVERE, "MapReduce Fail", ex);
+                Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, "MapReduce Fail", ex);
             }
         } else {
-            Logger.getLogger(TFIDFDriver.class.getName()).log(Level.SEVERE, "You must specify the input folder not a specific document", file);
+            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, "You must specify the input folder not a specific document", file);
         }
 
     }

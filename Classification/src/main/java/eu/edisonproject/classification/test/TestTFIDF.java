@@ -15,7 +15,7 @@
  */
 package eu.edisonproject.classification.test;
 
-import eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriver;
+import eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl;
 import java.io.File;
 
 /**
@@ -25,11 +25,11 @@ import java.io.File;
 public class TestTFIDF {
 
     public static void execute(String[] args) {
-        String inputPath = args[0] + File.separator + "etc" + File.separator + 
-                "Classification" + File.separator + "Avro Document" + File.separator;
-        TFIDFDriver tfidfDriver = new TFIDFDriver("post",args[0]);
+        String inputPath = args[0] + File.separator + "etc" + File.separator
+                + "Classification" + File.separator + "Avro Document" + File.separator;
+        TFIDFDriverImpl tfidfDriver = new TFIDFDriverImpl("post", args[0]);
         tfidfDriver.executeTFIDF(inputPath);
-        //tfidfDriver.readDistancesOutputAndPrintCSV();
+//        tfidfDriver.readDistancesOutputAndPrintCSV();
     }
 
 }

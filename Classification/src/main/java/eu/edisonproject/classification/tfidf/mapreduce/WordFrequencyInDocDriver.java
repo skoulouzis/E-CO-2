@@ -114,8 +114,8 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
             for (IntWritable val : values) {
                 sum += val.get();
             }
-            System.out.println(key.toString());
-            System.out.println(sum.toString());
+//            System.out.println(key.toString());
+//            System.out.println(sum.toString());
             //context.write(new AvroKey<Text>(key), new AvroValue<Integer>(sum));
             context.write(key, sum);
         }
