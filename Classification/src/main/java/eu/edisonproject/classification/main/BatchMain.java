@@ -21,6 +21,7 @@
 package eu.edisonproject.classification.main;
 
 import com.google.common.io.Files;
+import eu.edisonproject.classification.prepare.controller.DataPrepare;
 import eu.edisonproject.classification.prepare.controller.IDataPrepare;
 import eu.edisonproject.classification.prepare.controller.Text2Avro;
 import eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl;
@@ -229,7 +230,7 @@ public class BatchMain {
             stopWordsPath = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
         }
 
-        IDataPrepare dp = new Text2Avro(inputPath, outputPath, stopWordsPath);
+        IDataPrepare dp = new DataPrepare(inputPath, outputPath, outputPath);
         dp.execute();
 
     }
