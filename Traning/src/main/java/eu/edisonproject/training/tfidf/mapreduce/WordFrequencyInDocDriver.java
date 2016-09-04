@@ -79,7 +79,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 
             for (String s : itemset) {
                 s = s.replaceAll("_", " ").trim();
-               
+
                 if (description.contains(" " + s + " ") && s.length() > 1) {
                     while (description.contains(" " + s + " ")) {
                         StringBuilder valueBuilder = new StringBuilder();

@@ -18,12 +18,12 @@ public class ReaderFile extends FileIO {
         String text = "";
         String line = null;
         try {
-            BufferedReader br = new BufferedReader(
-                    new InputStreamReader(new FileInputStream(this.getFilePath())));
-            while ((line = br.readLine()) != null) {
-                text += line + " ";
+            try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(new FileInputStream(this.getFilePath())))) {
+                while ((line = br.readLine()) != null) {
+                    text += line + " ";
+                }
             }
-            br.close();
         } catch (IOException e) {
             System.out.println("Can't read the following file: " + this.getFilePath());
         }
@@ -34,12 +34,12 @@ public class ReaderFile extends FileIO {
         String text = "";
         String line = null;
         try {
-            BufferedReader br = new BufferedReader(
-                    new InputStreamReader(new FileInputStream(this.getFilePath())));
-            while ((line = br.readLine()) != null) {
-                text += line + "\n";
+            try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(new FileInputStream(this.getFilePath())))) {
+                while ((line = br.readLine()) != null) {
+                    text += line + "\n";
+                }
             }
-            br.close();
         } catch (IOException e) {
             System.out.println("Can't read the following file: " + this.getFilePath());
         }

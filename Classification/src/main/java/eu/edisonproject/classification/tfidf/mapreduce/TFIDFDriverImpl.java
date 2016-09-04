@@ -111,16 +111,16 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
         if (file.isDirectory()) {
             filesInDir = file.listFiles();
             for (File fileSplit : filesInDir) {
-                DatumReader<Term> documentDatumReader = new SpecificDatumReader<>(Term.class);
-                DataFileReader<Term> dataFileReader;
-//                DatumReader<Document> documentDatumReader = new SpecificDatumReader<>(Document.class);
-//                DataFileReader<Document> dataFileReader;
+//                DatumReader<Term> documentDatumReader = new SpecificDatumReader<>(Term.class);
+//                DataFileReader<Term> dataFileReader;
+                DatumReader<Document> documentDatumReader = new SpecificDatumReader<>(Document.class);
+                DataFileReader<Document> dataFileReader;
                 try {
                     dataFileReader = new DataFileReader<>(fileSplit, documentDatumReader);
 
                     while (dataFileReader.hasNext()) {
                         //Count the number of rows inside the .avro
-                        dataFileReader.next();
+                        Document d = dataFileReader.next();
 //                        System.err.println(d.getDate());
 //                        System.err.println(d.getDescription());
 //                        System.err.println(d.getDocumentId());

@@ -34,6 +34,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.lucene.analysis.util.CharArraySet;
 
 /**
@@ -64,44 +65,47 @@ public class Text2Avro implements IDataPrepare {
             File[] filesInDir = file.listFiles();
             Arrays.sort(filesInDir);
             for (File f : filesInDir) {
-                try {
-                    Path p = Paths.get(f.getAbsolutePath());
-                    BasicFileAttributes attr = Files.readAttributes(p, BasicFileAttributes.class);
-                    FileTime date = attr.creationTime();
+                if (f.isFile() && FilenameUtils.getExtension(f.getName()).endsWith("txt")) {
+                    try {
+                        Path p = Paths.get(f.getAbsolutePath());
+                        BasicFileAttributes attr = Files.readAttributes(p, BasicFileAttributes.class);
+                        FileTime date = attr.creationTime();
 
-                    DateTimeFormatter formatter
-                            = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                        DateTimeFormatter formatter
+                                = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
-                    documentObject = new DocumentObject();
-                    System.err.println(LocalDate.parse(date.toString(), formatter));
-                    documentObject.setDate(LocalDate.parse(date.toString(), formatter));
-                    documentObject.setDocumentId(f.getName().replaceAll(".txt", ""));
-                    documentObject.setTitle(f.getParentFile().getName());
+                        documentObject = new DocumentObject();
+                        System.err.println(LocalDate.parse(date.toString(), formatter));
+                        documentObject.setDate(LocalDate.parse(date.toString(), formatter));
+                        documentObject.setDocumentId(f.getName().replaceAll(".txt", ""));
+                        documentObject.setTitle(f.getParentFile().getName());
 
-                    ReaderFile fileReader = new ReaderFile(f.getAbsolutePath());
-                    documentObject.setDescription(fileReader.readFile());
+                        ReaderFile fileReader = new ReaderFile(f.getAbsolutePath());
+                        documentObject.setDescription(fileReader.readFile());
 
 //                    documentObject.setDescription(documentObject.getDescription().toLowerCase());
-                    clean(this.getDocumentObject().getDescription());
-                    if (documentObject.getDescription().equals("")) {
-                        continue;
+                        clean(this.getDocumentObject().getDescription());
+                        if (documentObject.getDescription().equals("")) {
+                            continue;
+                        }
+                        documentObjectList.add(this.getDocumentObject());
+
+                        davro = new Document();
+                        davro.setDocumentId(documentObject.getDocumentId());
+                        davro.setTitle(documentObject.getTitle());
+                        davro.setDate(documentObject.getDate().toString());
+                        davro.setDescription(documentObject.getDescription());
+
+                        if (dAvroSerializer == null) {
+                            dAvroSerializer = new DocumentAvroSerializer(outputFolder + File.separator + documentObject.getTitle() + date + ".avro", davro.getSchema());
+                        }
+                        dAvroSerializer.serialize(davro);
+
+                    } catch (IOException ex) {
+                        Logger.getLogger(Text2Avro.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    documentObjectList.add(this.getDocumentObject());
-
-                    davro = new Document();
-                    davro.setDocumentId(documentObject.getDocumentId());
-                    davro.setTitle(documentObject.getTitle());
-                    davro.setDate(documentObject.getDate().toString());
-                    davro.setDescription(documentObject.getDescription());
-
-                    if (dAvroSerializer == null) {
-                        dAvroSerializer = new DocumentAvroSerializer(outputFolder + File.separator + documentObject.getTitle() + date + ".avro", davro.getSchema());
-                    }
-                    dAvroSerializer.serialize(davro);
-
-                } catch (IOException ex) {
-                    Logger.getLogger(Text2Avro.class.getName()).log(Level.SEVERE, null, ex);
                 }
+
             }
             if (dAvroSerializer != null) {
                 dAvroSerializer.close();
