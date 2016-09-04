@@ -1,5 +1,7 @@
 package eu.edisonproject.training.term.extraction;
 
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
+import edu.stanford.nlp.tagger.maxent.TaggerConfig;
 import eu.edisonproject.utility.file.CSVFileReader;
 import eu.edisonproject.utility.file.ConfigHelper;
 import eu.edisonproject.utility.text.processing.Cleaner;
@@ -33,6 +35,7 @@ public class LuceneExtractor implements TermExtractor {
     private Cleaner tokenizer;
 //    private Cleaner lematizer;
     private Stemming stemer;
+    private String taggerPath;
 
     @Override
     public void configure(Properties prop) {
@@ -52,6 +55,12 @@ public class LuceneExtractor implements TermExtractor {
         itemsFilePath = System.getProperty("itemset.file");
         if (itemsFilePath == null) {
             itemsFilePath = prop.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv");
+        }
+
+        taggerPath = System.getProperty("tagger.file");
+
+        if (taggerPath == null) {
+            taggerPath = prop.getProperty("tagger.file", ".." + File.separator + "etc" + File.separator + "model" + File.separator + "stanford" + File.separator + "english-left3words-distsim.tagger");
         }
     }
 
@@ -116,13 +125,13 @@ public class LuceneExtractor implements TermExtractor {
         ngText += lematizedText;
         Map<String, Double> termDictionaray = new HashMap();
         ngText = ngText.trim();
-
+        MaxentTagger tagger = new MaxentTagger(taggerPath);
         for (String term : ngText.split(" ")) {
 //            stemer.setDescription(term);
 //            String stemTerm = stemer.execute();
 //            if (itemsMap.containsKey(term)) {
 //            }
-     
+
             term = term.toLowerCase().trim().replaceAll(" ", "_");
             while (term.endsWith("_")) {
                 term = term.substring(0, term.lastIndexOf("_"));
@@ -130,7 +139,28 @@ public class LuceneExtractor implements TermExtractor {
             while (term.startsWith("_")) {
                 term = term.substring(term.indexOf("_") + 1, term.length());
             }
+
             Double tf;
+            String tagged = null;
+            tagged = tagger.tagString(term);
+            boolean add = true;
+            if (tagged != null) {
+                if (!tagged.contains("NN") || tagged.contains("RB")) {
+                    add = false;
+                }
+            } else {
+                add = true;
+            }
+            if (add) {
+                if (termDictionaray.containsKey(term)) {
+                    tf = termDictionaray.get(term);
+                    tf++;
+                } else {
+                    tf = 1.0;
+                }
+                termDictionaray.put(term, tf);
+            }
+
             if (termDictionaray.containsKey(term)) {
                 tf = termDictionaray.get(term);
                 tf++;
