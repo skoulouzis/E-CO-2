@@ -21,9 +21,8 @@
 package eu.edisonproject.classification.main;
 
 import com.google.common.io.Files;
-import document.avro.Document;
-import eu.edisonproject.classification.test.TestDataFlow;
-import eu.edisonproject.classification.test.TestTFIDF;
+import eu.edisonproject.classification.prepare.controller.IDataPrepare;
+import eu.edisonproject.classification.prepare.controller.Text2Avro;
 import eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl;
 import eu.edisonproject.utility.file.ConfigHelper;
 import java.io.File;
@@ -31,15 +30,11 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.avro.file.DataFileReader;
-import org.apache.avro.io.DatumReader;
-import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
@@ -57,7 +52,15 @@ public class BatchMain {
 //        args[0] = "..";
 //        TestDataFlow.execute(args);
 //            TestTFIDF.execute(args);
+
             Options options = new Options();
+
+            Option operation = new Option("op", "operation", true, "type of operation to perform. "
+                    + "To convert txt to avro 'a'.\n"
+                    + "For running clasification on avro documents 'c'");
+            operation.setRequired(true);
+            options.addOption(operation);
+
             Option input = new Option("i", "input", true, "input path");
             input.setRequired(true);
             options.addOption(input);
@@ -67,7 +70,7 @@ public class BatchMain {
             options.addOption(output);
 
             Option competencesVector = new Option("c", "competences-vector", true, "competences vectors");
-            competencesVector.setRequired(true);
+            competencesVector.setRequired(false);
             options.addOption(competencesVector);
 
             Option popertiesFile = new Option("p", "properties", true, "path for a properties file");
@@ -83,8 +86,16 @@ public class BatchMain {
                 prop = ConfigHelper.getProperties(propPath);
             }
 
-            calculateTFIDF(cmd.getOptionValue("input"), cmd.getOptionValue("output"), cmd.getOptionValue("competences-vector"));
-        } catch (ParseException | IOException ex) {
+            switch (cmd.getOptionValue("operation")) {
+                case "a":
+                    text2Avro(cmd.getOptionValue("input"), cmd.getOptionValue("output"));
+                    break;
+                case "c":
+                    calculateTFIDF(cmd.getOptionValue("input"), cmd.getOptionValue("output"), cmd.getOptionValue("competences-vector"));
+                    break;
+            }
+
+        } catch (Exception ex) {
             Logger.getLogger(BatchMain.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -112,10 +123,10 @@ public class BatchMain {
             tfidfDriver.executeTFIDF(tmpFolder.getAbsolutePath());
 
         } finally {
-//            if (tmpFolder != null && tmpFolder.exists()) {
-//                tmpFolder.delete();
-//                FileUtils.forceDelete(tmpFolder);
-//            }
+            if (tmpFolder != null && tmpFolder.exists()) {
+                FileUtils.forceDelete(tmpFolder);
+                tmpFolder.delete();
+            }
 
         }
     }
@@ -209,5 +220,17 @@ public class BatchMain {
         if (parent != null && !parent.exists()) {
             parent.mkdirs();
         }
+    }
+
+    private static void text2Avro(String inputPath, String outputPath) {
+        String stopWordsPath = System.getProperty("stop.words.file");
+
+        if (stopWordsPath == null) {
+            stopWordsPath = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
+        }
+
+        IDataPrepare dp = new Text2Avro(inputPath, outputPath, stopWordsPath);
+        dp.execute();
+
     }
 }

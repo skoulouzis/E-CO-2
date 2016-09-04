@@ -32,7 +32,6 @@ public class TestDataFlow {
                 System.out.println("TEST DATA FLOW");
                 System.out.println(inputFolder);
                 idf.dataPreProcessing(inputFolder,outputFolder, args[0]);
-		
 	}
 	
 }

@@ -88,8 +88,9 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
             try {
                 BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f.getAbsolutePath())));
                 String line = "";
+                String delimeter = ";";
                 while ((line = br.readLine()) != null) {
-                    String[] value = line.split(",");
+                    String[] value = line.split(delimeter);
                     categoriesFile.put(value[0], Double.parseDouble(value[1]));
                 }
             } catch (FileNotFoundException ex) {
@@ -157,7 +158,7 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
             while (iter.hasNext()) {
                 String key = iter.next();
                 HashMap<String, Double> competence = CATEGORIES_LIST.get(key);
-                HashMap<String, Double> documentToCompetenceSpace = new HashMap<>();
+//                HashMap<String, Double> documentToCompetenceSpace = new HashMap<>();
 
                 //Change to the common sub space
                 Set<String> words = competence.keySet();
@@ -241,41 +242,46 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 
     } // end of reducer class
 
-    public int run(String[] args) throws Exception {
-        Configuration conf = HBaseConfiguration.create();
-        //Configuration conf = new Configuration();
-        Job job = new Job(conf, "WordsGroupByTitleDriver");
-        //TableMapReduceUtil.addDependencyJars(job); 
-        job.setJarByClass(CompetencesDistanceDriver.class);
-        //This row must be changed
-        job.setJobName("Words Group By Title Driver");
+    @Override
+    public int run(String[] args) {
+        try {
+            Configuration conf = HBaseConfiguration.create();
+            //Configuration conf = new Configuration();
+            Job job = new Job(conf, "WordsGroupByTitleDriver");
+            //TableMapReduceUtil.addDependencyJars(job); 
+            job.setJarByClass(CompetencesDistanceDriver.class);
+            //This row must be changed
+            job.setJobName("Words Group By Title Driver");
 
-        Path inPath = new Path(args[0]);
-        Path outPath = new Path(args[1]);
+            Path inPath = new Path(args[0]);
+            Path outPath = new Path(args[1]);
 
-        readCompetences(args[2]);
+            readCompetences(args[2]);
 
-        FileInputFormat.setInputPaths(job, inPath);
-        FileOutputFormat.setOutputPath(job, outPath);
-        outPath.getFileSystem(conf).delete(outPath, true);
+            FileInputFormat.setInputPaths(job, inPath);
+            FileOutputFormat.setOutputPath(job, outPath);
+            outPath.getFileSystem(conf).delete(outPath, true);
 
-        job.setMapperClass(CompetencesDistanceMapper.class);
+            job.setMapperClass(CompetencesDistanceMapper.class);
 
-        job.setMapOutputKeyClass(Text.class);
-        job.setMapOutputValueClass(Text.class);
+            job.setMapOutputKeyClass(Text.class);
+            job.setMapOutputValueClass(Text.class);
 
-        job.setReducerClass(CompetencesDistanceReducer.class);
-        job.setOutputFormatClass(TableOutputFormat.class);
-        job.getConfiguration().set(TableOutputFormat.OUTPUT_TABLE, "jobpostcompetence");
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(Text.class);
+            job.setReducerClass(CompetencesDistanceReducer.class);
+            job.setOutputFormatClass(TableOutputFormat.class);
+            job.getConfiguration().set(TableOutputFormat.OUTPUT_TABLE, "jobpostcompetence");
+            job.setOutputKeyClass(Text.class);
+            job.setOutputValueClass(Text.class);
 
-        //additional output using TextOutputFormat.
-        MultipleOutputs.addNamedOutput(job, "text", TextOutputFormat.class,
-                Text.class, Text.class);
+            //additional output using TextOutputFormat.
+            MultipleOutputs.addNamedOutput(job, "text", TextOutputFormat.class,
+                    Text.class, Text.class);
 
-        return (job.waitForCompletion(true) ? 0 : 1);
-
+            return (job.waitForCompletion(true) ? 0 : 1);
+        } catch (Exception ex) {
+            Logger.getLogger(CompetencesDistanceDriver.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
     }
 
 }

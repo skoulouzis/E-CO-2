@@ -13,23 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package eu.edisonproject.classification.flow.model;
+
 /**
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
-*/
-
+ */
 
 import eu.edisonproject.classification.prepare.controller.DataPrepare;
 import eu.edisonproject.classification.prepare.controller.IDataPrepare;
 
 public class DataFlow implements IDataFlow {
 
-	@Override
-	public void dataPreProcessing(String inputPath, String outputPath,String relativeFolder) {
-		IDataPrepare dp = new DataPrepare(inputPath, outputPath, relativeFolder);
-		dp.execute();
-	}
+    @Override
+    public void dataPreProcessing(String inputPath, String outputPath, String relativeFolder) {
+        IDataPrepare dp = new DataPrepare(inputPath, outputPath, relativeFolder);
+        dp.execute();
+    }
 
-	
 }

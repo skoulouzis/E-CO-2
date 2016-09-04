@@ -76,6 +76,7 @@ public class DataPrepare implements IDataPrepare {
         return new CharArraySet(stopWords, false);
     }
 
+    @Override
     public void execute() {
         File file = new File(inputFolder);
         Document davro;
@@ -126,6 +127,7 @@ public class DataPrepare implements IDataPrepare {
 
     }
 
+    @Override
     public void extract(DocumentObject jp, String filePath) {
         Extractor extractorTitle = new Title();
         extractorTitle.setJp(jp);
