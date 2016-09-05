@@ -64,16 +64,21 @@ public class Text2Avro implements IDataPrepare {
         if (file.isDirectory()) {
             File[] filesInDir = file.listFiles();
             Arrays.sort(filesInDir);
-            for (File subFolder : filesInDir) {
+            for (File f : filesInDir) {
+                if (FilenameUtils.getExtension(f.getName()).endsWith("txt")) {
+                    Path p = Paths.get(f.getAbsolutePath());
+                    BasicFileAttributes attr = null;
+                    try {
+                        attr = Files.readAttributes(p, BasicFileAttributes.class);
+                    } catch (IOException ex) {
+                        Logger.getLogger(Text2Avro.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    FileTime date = attr.creationTime();
 
-                String date = subFolder.getName().replace("Data Scientis ", "");
-                System.out.println("retrived: " + date);
-                File[] files = subFolder.listFiles();
-                Arrays.sort(filesInDir);
-                // String newOutputFolder = outputFolder + File.separator + subFolder.getName() + LocalDate.now().toString();
-                //create a new Folder
-                //new File(newOutputFolder).mkdir();
-                for (File f : files) {
+                    DateTimeFormatter formatter
+                            = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+//                    System.err.println(LocalDate.parse(date.toString(), formatter));
                     documentObject = new DocumentObject();
                     extract(this.getDocumentObject(), f.getPath());
                     documentObject.setDescription(documentObject.getDescription().toLowerCase());
@@ -81,6 +86,7 @@ public class Text2Avro implements IDataPrepare {
                     if (documentObject.getDescription().equals("")) {
                         continue;
                     }
+                    documentObject.setDate(LocalDate.parse(date.toString(), formatter));
                     documentObjectList.add(this.getDocumentObject());
 
                     davro = new Document();
@@ -93,14 +99,13 @@ public class Text2Avro implements IDataPrepare {
                         dAvroSerializer = new DocumentAvroSerializer(outputFolder + File.separator + documentObject.getTitle() + date + ".avro", davro.getSchema());
                     }
                     dAvroSerializer.serialize(davro);
-
-                }
-
-                if (dAvroSerializer != null) {
-                    dAvroSerializer.close();
-                    dAvroSerializer = null;
                 }
             }
+            if (dAvroSerializer != null) {
+                dAvroSerializer.close();
+                dAvroSerializer = null;
+            }
+
         } else {
             System.out.println("NOT A DIRECTORY");
         }
