@@ -1,0 +1,49 @@
+The three levels of data modeling, conceptual data model, logical data model, and physical data model, were discussed in prior sections. Here we compare these three types of data models. The table below compares the different features:
+
+Feature	Conceptual	Logical	Physical
+Entity Names	
+✓
+	
+✓
+	 
+Entity Relationships	
+✓
+	
+✓
+	 
+Attributes	  	
+✓
+	 
+Primary Keys	  	
+✓
+	
+✓
+Foreign Keys	  	
+✓
+	
+✓
+Table Names	  	  	
+✓
+Column Names	  	  	
+✓
+Column Data Types	  	  	
+✓
+
+Below we show the conceptual, logical, and physical versions of a single data model.
+
+Conceptual Model Design
+
+
+Conceptual Model Design
+	
+Logical Model Design
+
+
+Logical Model Design
+	
+Physical Model Design
+
+
+Physical Model Design
+
+We can see that the complexity increases from conceptual to logical to physical. This is why we always first start with the conceptual data model (so we understand at high level what are the different entities in our data and how they relate to one another), then move on to the logical data model (so we understand the details of our data without worrying about how they will actually implemented), and finally the physical data model (so we know exactly how to implement our data model in the database of choice). In a data warehousing project, sometimes the conceptual data model and the logical data model are considered as a single deliverable. 
