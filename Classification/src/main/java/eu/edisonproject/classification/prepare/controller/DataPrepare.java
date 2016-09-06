@@ -95,7 +95,7 @@ public class DataPrepare implements IDataPrepare {
             DateTimeFormatter formatter
                     = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
             LocalDate date = LocalDate.parse(ct.toString(), formatter);
-            System.err.println(date);
+//            System.err.println(date);
 
 //            for (File subFolder : filesInDir) {
 //                String date = subFolder.getName().replace("Data Scientis ", "");
