@@ -7,14 +7,12 @@ package eu.edisonproject.classification.prepare.controller;
 
 import document.avro.Document;
 import eu.edisonproject.classification.avro.DocumentAvroSerializer;
-import eu.edisonproject.classification.prepare.controller.IDataPrepare;
 import eu.edisonproject.classification.prepare.model.Date;
 import eu.edisonproject.classification.prepare.model.DocumentObject;
 import eu.edisonproject.classification.prepare.model.Extractor;
 import eu.edisonproject.classification.prepare.model.Text;
 import eu.edisonproject.classification.prepare.model.Title;
 import eu.edisonproject.utility.file.ConfigHelper;
-import eu.edisonproject.utility.file.ReaderFile;
 import eu.edisonproject.utility.text.processing.Cleaner;
 import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
 import eu.edisonproject.utility.text.processing.StopWord;
@@ -25,13 +23,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.Locale;
-import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
@@ -78,7 +73,7 @@ public class Text2Avro implements IDataPrepare {
                     DateTimeFormatter formatter
                             = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
-//                    System.err.println(LocalDate.parse(date.toString(), formatter));
+                    System.err.println(LocalDate.parse(date.toString(), formatter));
                     documentObject = new DocumentObject();
                     extract(this.getDocumentObject(), f.getPath());
                     documentObject.setDescription(documentObject.getDescription().toLowerCase());
@@ -86,7 +81,7 @@ public class Text2Avro implements IDataPrepare {
                     if (documentObject.getDescription().equals("")) {
                         continue;
                     }
-                    documentObject.setDate(LocalDate.parse(date.toString(), formatter));
+//                    documentObject.setDate(LocalDate.parse(date.toString(), formatter));
                     documentObjectList.add(this.getDocumentObject());
 
                     davro = new Document();

@@ -41,7 +41,16 @@ import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
 import eu.edisonproject.classification.prepare.model.Text;
 import eu.edisonproject.classification.prepare.model.Title;
 import eu.edisonproject.classification.avro.DocumentAvroSerializer;
+import eu.edisonproject.utility.file.ConfigHelper;
 import eu.edisonproject.utility.file.ReaderFile;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
+import java.time.format.DateTimeFormatter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /*
@@ -57,23 +66,13 @@ public class DataPrepare implements IDataPrepare {
     private CharArraySet stopWordArraySet;
     private ReaderFile fileReader;
     private static final int maxNumberOfAvroPerFile = 10;
-    private String relativePath;
-    
-    public DataPrepare(String inputFolder, String outputFolder, String relativePath) {
-        
+
+    public DataPrepare(String inputFolder, String outputFolder, String stopWordsPath) {
+
         this.inputFolder = inputFolder;
         this.outputFolder = outputFolder;
-        this.relativePath = relativePath;
         documentObjectList = new LinkedList<DocumentObject>();
-        stopWordArraySet = loadStopWords();
-    }
-
-    public CharArraySet loadStopWords() {
-        fileReader = new ReaderFile(relativePath + File.separator + "etc" + File.separator + "stopwords.csv");
-
-        String[] stopWord = fileReader.readFileWithN().split("\n");
-        final List<String> stopWords = Arrays.asList(stopWord);
-        return new CharArraySet(stopWords, false);
+        stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(stopWordsPath), true);
     }
 
     @Override
@@ -84,43 +83,58 @@ public class DataPrepare implements IDataPrepare {
         if (file.isDirectory()) {
             File[] filesInDir = file.listFiles();
             Arrays.sort(filesInDir);
-            for (File subFolder : filesInDir) {
-
-                String date = subFolder.getName().replace("Data Scientis ", "");
-                System.out.println("retrived: " + date);
-                File[] files = subFolder.listFiles();
-                Arrays.sort(filesInDir);
-                // String newOutputFolder = outputFolder + File.separator + subFolder.getName() + LocalDate.now().toString();
-                //create a new Folder
-                //new File(newOutputFolder).mkdir();
-                for (File f : files) {
-                    documentObject = new DocumentObject();
-                    extract(this.getDocumentObject(), f.getPath());
-                    documentObject.setDescription(documentObject.getDescription().toLowerCase());
-                    clean(this.getDocumentObject().getDescription());
-                    if (documentObject.getDescription().equals("")) {
-                        continue;
-                    }
-                    documentObjectList.add(this.getDocumentObject());
-
-                    davro = new Document();
-                    davro.setDocumentId(documentObject.getDocumentId());
-                    davro.setTitle(documentObject.getTitle());
-                    davro.setDate(documentObject.getDate().toString());
-                    davro.setDescription(documentObject.getDescription());
-
-                    if (dAvroSerializer == null) {
-                        dAvroSerializer = new DocumentAvroSerializer(outputFolder + File.separator + documentObject.getTitle() + date + ".avro", davro.getSchema());
-                    }
-                    dAvroSerializer.serialize(davro);
-
-                }
-
-                if (dAvroSerializer != null) {
-                    dAvroSerializer.close();
-                    dAvroSerializer = null;
-                }
+            Path p = Paths.get(file.getAbsolutePath());
+            BasicFileAttributes attr = null;
+            try {
+                attr = Files.readAttributes(p, BasicFileAttributes.class);
+            } catch (IOException ex) {
+                Logger.getLogger(Text2Avro.class.getName()).log(Level.SEVERE, null, ex);
             }
+            FileTime date = attr.creationTime();
+
+            DateTimeFormatter formatter
+                    = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+            System.err.println(LocalDate.parse(date.toString(), formatter));
+
+//            for (File subFolder : filesInDir) {
+//                String date = subFolder.getName().replace("Data Scientis ", "");
+//                System.out.println("retrived: " + date);
+//                File[] files = subFolder.listFiles();
+            Arrays.sort(filesInDir);
+            // String newOutputFolder = outputFolder + File.separator + subFolder.getName() + LocalDate.now().toString();
+            //create a new Folder
+            //new File(newOutputFolder).mkdir();
+            for (File f : filesInDir) {
+                documentObject = new DocumentObject();
+                extract(this.getDocumentObject(), f.getPath());
+                documentObject.setDescription(documentObject.getDescription().toLowerCase());
+                clean(this.getDocumentObject().getDescription());
+                if (documentObject.getDescription().equals("")) {
+                    continue;
+                }
+                documentObjectList.add(this.getDocumentObject());
+
+                davro = new Document();
+                davro.setDocumentId(documentObject.getDocumentId());
+                davro.setTitle(documentObject.getTitle());
+                davro.setDate(documentObject.getDate().toString());
+                davro.setDescription(documentObject.getDescription());
+
+                if (dAvroSerializer == null) {
+                    dAvroSerializer = new DocumentAvroSerializer(outputFolder
+                            + File.separator + documentObject.getTitle().replaceAll(" ", "_")
+                            + date + ".avro", davro.getSchema());
+                }
+                dAvroSerializer.serialize(davro);
+
+            }
+
+            if (dAvroSerializer != null) {
+                dAvroSerializer.close();
+                dAvroSerializer = null;
+            }
+//            }
         } else {
             System.out.println("NOT A DIRECTORY");
         }
@@ -147,7 +161,7 @@ public class DataPrepare implements IDataPrepare {
     public void clean(String description) {
         //System.out.println("DESCRIZIONE"+description);
         Cleaner cleanStopWord = new StopWord(this.getStopWordArraySet());
-        cleanStopWord.setDescription("DESCRIZIONE PULITA " + description);
+        cleanStopWord.setDescription(description);
         documentObject.setDescription(cleanStopWord.execute());
         //System.out.println(documentObject.getDescription());
         Cleaner cleanStanfordLemmatizer = new StanfordLemmatizer();

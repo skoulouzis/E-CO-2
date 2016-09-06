@@ -56,6 +56,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
         public WordFrequencyInDocMapper() {
         }
 
+        @Override
         protected void map(AvroKey<Document> key, NullWritable value, Context context)
                 throws IOException, InterruptedException {
 
