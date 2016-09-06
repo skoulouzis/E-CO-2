@@ -90,12 +90,12 @@ public class DataPrepare implements IDataPrepare {
             } catch (IOException ex) {
                 Logger.getLogger(Text2Avro.class.getName()).log(Level.SEVERE, null, ex);
             }
-            FileTime date = attr.creationTime();
+            FileTime ct = attr.creationTime();
 
             DateTimeFormatter formatter
                     = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-
-            System.err.println(LocalDate.parse(date.toString(), formatter));
+            LocalDate date = LocalDate.parse(ct.toString(), formatter);
+            System.err.println(date);
 
 //            for (File subFolder : filesInDir) {
 //                String date = subFolder.getName().replace("Data Scientis ", "");
