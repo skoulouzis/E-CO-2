@@ -1,0 +1,38 @@
+
+
+Analytics help decision makers determine risk, weigh outcomes, and quantify costs and benefits associated with decisions.
+Learning Objective
+
+    Recognize the decision-making value of utilizing statistics and analytics to create accurate predictions
+
+Key Points
+
+        Predictive and descriptive analytics are two methods of using data to inform and evaluate alternatives during decision making. They can also be used to explain performance outcomes.
+        Predictive analytics encompass a variety of statistical techniques (such as modeling, machine learning, and data mining) that analyze current and historical facts to make predictions about future events.
+        Descriptive analytics focus on developing new insights and understanding of business performance based on data and statistical methods; these analytics are then used to make strategic decisions for the company.
+
+Term
+
+    analytics
+
+    The use of skills, technologies, and practices to explore and investigate past performance, gain insight, and drive business decision making.
+
+Register for FREE to remove ads and unlock more features! Learn more
+Full Text
+
+Analytics refer to the use of skills, technologies, and practices to explore and investigate past performance, gain insight, and drive business decision making. Predictive and descriptive analytics are two methods of using data and statistical methods to assess actual outcomes against target standards and goals. These types of analysis can explain the relationship between factors that influence outcomes; they can also help prioritize improvement and other planning efforts. Companies can use their analytic capabilities to create advantages over competitors and better perform in the marketplace.
+Analytical Tools
+
+Quantitative metrics and analysis can help decision makers make more accurate decisions and better predict risks associated with decisions.
+Predictive Analytics and Decision Making
+
+Predictive analytics encompass a variety of statistical techniques (such as modeling, machine learning, and data mining) that analyze current and historical facts to make estimates about future events. Models capture relationships among many factors, allowing an assessment of risk or potential associated with a particular set of conditions. This helps to guide decision making for candidate transactions. Data mining draws on large numbers of records to identify patterns that can then be identified as opportunities or risks. For example, by analyzing grades for an entire class of first-year students, academic advisers can predict which students are most likely to struggle in the class.
+
+Predictive analytics help decision makers to predict the outcome(s) of a decision before it is implemented. Using these probabilities, decision makers can calculate the expected value of alternatives once risks and benefits are taken into account. Predictive analytics are particularly useful when there is a high degree of uncertainty. By carefully considering what is not known, decision makers can build confidence in the estimates that inform their choices. Forecasting consumer behavior in response to a new product or marketing initiative are examples of the use of predictive analytics.
+Descriptive Analytics and Decision Making
+
+Descriptive analytics answer the questions, "What happened and why did it happen?" This approach seeks to understand past performances by using historical data to analyze the reasons behind past success or failure. Understanding cause and effect can help refine business and operational strategies. Most management reporting—such as sales, marketing, operations, and finance—uses this type of analysis. Descriptive analytics are used in quality management techniques and other methods of statistical process control.
+Analytics in the Modern Business World
+
+Descriptive and predictive analytics have increased greatly in popularity due to advances in computing technology, techniques for data analysis, and mathematical modeling. Desktop tools can easily create reports and summaries of analytic results that help decision makers readily understand the findings and their implications. These tools create tables, charts, and graphs to present the data visually, which can help to clearly communicate the meaning of the data.
+
