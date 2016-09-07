@@ -74,7 +74,7 @@ public class IDFSort implements SortTerms {
 //                    System.out.println(f.getName() + "," + cTerm + "," + wcount);
                     if (contents.contains(cTerm)) {
                         numOfDocsWithTerm++;
-                        System.out.println(f.getName() + "," + cTerm + "," + numOfDocsWithTerm);
+//                        System.out.println(f.getName() + "," + cTerm + "," + numOfDocsWithTerm);
                     }
 //                    try (InputStream fis = new FileInputStream(f)) {
 //                        String result = Unix4j.from(fis).grep(go.i.count, cTerm).toStringResult();
