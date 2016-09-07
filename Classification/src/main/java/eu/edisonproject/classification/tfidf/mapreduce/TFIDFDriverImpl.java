@@ -121,10 +121,6 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
                     while (dataFileReader.hasNext()) {
                         //Count the number of rows inside the .avro
                         Document d = dataFileReader.next();
-//                        System.err.println(d.getDate());
-//                        System.err.println(d.getDescription());
-//                        System.err.println(d.getDocumentId());
-//                        System.err.println(d.getTitle());
                         numberOfDocuments++;
                     }
                 } catch (Exception ex) {
@@ -133,7 +129,6 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
 
             }
             LOGGER.log(Level.INFO, "Number of Documents {0}", numberOfDocuments);
-//            System.out.println("Number of Documents "+numberOfDocuments);
 
             try {
                 String[] args1 = {INPUT_PATH1, OUTPUT_PATH1, INPUT_ITEMSET};

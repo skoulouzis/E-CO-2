@@ -93,9 +93,12 @@ public class DataPrepare implements IDataPrepare {
                 documentObject = new DocumentObject();
                 documentObject.setDate(date);
                 ReaderFile rf = new ReaderFile(f.getAbsolutePath());
-
-                cleanStopWord.setDescription(rf.readFile());
-                documentObject.setDescription(cleanStopWord.execute().toLowerCase());
+                String contents = rf.readFile();
+                System.err.println(contents);
+                cleanStopWord.setDescription(contents);
+                String cleanCont = cleanStopWord.execute().toLowerCase();
+                System.err.println(cleanCont);
+                documentObject.setDescription(cleanCont);
                 documentObject.setDocumentId(FilenameUtils.removeExtension(f.getName()));
                 documentObject.setTitle(f.getParentFile().getName());
 //                extract(this.getDocumentObject(), f.getPath());

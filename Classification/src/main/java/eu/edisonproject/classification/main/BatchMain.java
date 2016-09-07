@@ -124,10 +124,11 @@ public class BatchMain {
             tfidfDriver.executeTFIDF(tmpFolder.getAbsolutePath());
 
         } finally {
-            if (tmpFolder != null && tmpFolder.exists()) {
-                FileUtils.forceDelete(tmpFolder);
-                tmpFolder.delete();
-            }
+//            if (tmpFolder != null && tmpFolder.exists()) {
+            FileUtils.forceDelete(tmpFolder);
+            FileUtils.forceDelete(new File(tmpFolder.getAbsolutePath() + "-2"));
+//                tmpFolder.delete();
+//            }
 
         }
     }
@@ -229,7 +230,7 @@ public class BatchMain {
         if (stopWordsPath == null) {
             stopWordsPath = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
         }
-        
+
         IDataPrepare dp = new DataPrepare(inputPath, outputPath, stopWordsPath);
         dp.execute();
 

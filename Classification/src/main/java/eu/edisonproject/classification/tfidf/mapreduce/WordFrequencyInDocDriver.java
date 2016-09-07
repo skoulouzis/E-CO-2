@@ -48,7 +48,6 @@ import org.apache.hadoop.util.Tool;
 
 public class WordFrequencyInDocDriver extends Configured implements Tool {
 
-   
     private static List<String> itemset;
 
     public static class WordFrequencyInDocMapper extends Mapper<AvroKey<Document>, NullWritable, Text, IntWritable> {
@@ -66,8 +65,9 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
             String date = key.datum().getDate().toString();
 
             for (String s : itemset) {
-                if (description.contains(s)) {
-                    while (description.contains(s)) {
+                if (description.contains(" " + s + " ")) {
+                    while (description.contains(" " + s + " ")) {
+//                        System.err.println(s);
                         StringBuilder valueBuilder = new StringBuilder();
                         valueBuilder.append(s);
                         valueBuilder.append("@");
@@ -77,7 +77,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
                         valueBuilder.append("@");
                         valueBuilder.append(date);
                         context.write(new Text(valueBuilder.toString()), new IntWritable(1));
-                        description = description.replaceFirst(s, "");
+                        description = description.replaceFirst(" " + s + " ", "");
                     }
                 }
             }
@@ -115,9 +115,6 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
             for (IntWritable val : values) {
                 sum += val.get();
             }
-//            System.out.println(key.toString());
-//            System.out.println(sum.toString());
-            //context.write(new AvroKey<Text>(key), new AvroValue<Integer>(sum));
             context.write(key, sum);
         }
     } // end of reducer class
@@ -132,7 +129,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
             itemset.add(components[0]);
         }
         Configuration conf = new Configuration();
-        Job job = new Job(conf,"");
+        Job job = new Job(conf, "");
         job.setJarByClass(WordFrequencyInDocDriver.class);
         job.setJobName("Word Frequency In Doc Driver");
 

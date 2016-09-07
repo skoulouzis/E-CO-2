@@ -22,6 +22,8 @@ package eu.edisonproject.classification.tfidf.mapreduce;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
@@ -35,31 +37,35 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 
-public class WordCountsForDocsDriver extends Configured implements Tool{
+public class WordCountsForDocsDriver extends Configured implements Tool {
 
     public static class WordCountsForDocsMapper extends Mapper<LongWritable, Text, Text, Text> {
+
+        private static final Logger LOGGER = Logger.getLogger(WordCountsForDocsMapper.class.getName());
 
         public WordCountsForDocsMapper() {
         }
 
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             String[] keyValues = value.toString().split("\t");
-            System.out.println(value.toString());
+            LOGGER.log(Level.FINE, value.toString());
             String[] wordsKey = keyValues[0].toString().split("@");
             String documentId = wordsKey[1];
             String title = wordsKey[2];
             String date = wordsKey[3];
             String word = wordsKey[0];
             String sum = keyValues[1];
-            
-            String newKey = documentId+"@"+title+"@"+date;
-            String newValue = word+"="+sum;
-            System.out.println(newKey + "new value "+newValue);
-            context.write(new Text(newKey),new Text(newValue));
+
+            String newKey = documentId + "@" + title + "@" + date;
+            String newValue = word + "=" + sum;
+            LOGGER.log(Level.FINE, newKey + "new value " + newValue);
+            context.write(new Text(newKey), new Text(newValue));
         }
     } // end of mapper class
 
     public static class WordCountsForDocsReducer extends Reducer<Text, Text, Text, Text> {
+
+        private static final Logger LOGGER = Logger.getLogger(WordCountsForDocsReducer.class.getName());
 
         public WordCountsForDocsReducer() {
         }
@@ -75,13 +81,13 @@ public class WordCountsForDocsDriver extends Configured implements Tool{
             for (String wordKey : tempCounter.keySet()) {
                 Text newKey = new Text(wordKey + "@" + key.toString());
                 Text newValue = new Text(tempCounter.get(wordKey) + "/" + sumOfWordsInDocument);
-                System.out.println(newKey + "  ,  " + newValue);
+                LOGGER.log(Level.FINE, newKey + "  ,  " + newValue);
                 context.write(new Text(newKey), new Text(newValue));
             }
 
         }
     } // end of reducer class
-    
+
     @Override
     public int run(String[] args) throws Exception {
         Configuration conf = new Configuration();
