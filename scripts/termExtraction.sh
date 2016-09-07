@@ -26,8 +26,8 @@ index=0
 resLen=${#res[@]}
 for i in "${TRAIN_DOC_PATHS[@]}"
 do
-  for f in $i/*.txt
-  do
+  #for f in $i/*.txt
+  #do
         index=$((index+1))
         base=`basename $i`
         if [ "$index" -ge "$resLen" ];
@@ -38,5 +38,5 @@ do
         #echo res $res
         #echo len $resLen
         echo "screen -dmSL $base prun -reserve ${res[$index]} -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -Dtagger.file=$TAGGER_FILE -jar $JAR_PATH -op x -i $i -o $i/terms.csv -p $PROPS_FILE"
-  done
+  #done
 done
