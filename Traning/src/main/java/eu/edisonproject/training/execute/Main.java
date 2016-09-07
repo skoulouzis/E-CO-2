@@ -23,6 +23,8 @@ import eu.edisonproject.training.tfidf.mapreduce.ITFIDFDriver;
 import eu.edisonproject.training.tfidf.mapreduce.TFIDFDriverImpl;
 import eu.edisonproject.training.wsd.DisambiguatorImpl;
 import eu.edisonproject.training.wsd.MetaDisambiguator;
+import eu.edisonproject.utility.commons.SortTerms;
+import eu.edisonproject.utility.commons.TFIDF;
 import eu.edisonproject.utility.commons.Term;
 import eu.edisonproject.utility.commons.TermAvroSerializer;
 import eu.edisonproject.utility.commons.ValueComparator;
@@ -132,7 +134,7 @@ public class Main {
         }
     }
 
-    private static void termExtraxtion(String in, String out) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
+    private static void termExtraxtion(String in, String out) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, InterruptedException {
 //
         String[] extractors = prop.getProperty("term.extractors",
                 "eu.edisonproject.training.term.extraction.LuceneExtractor,"
@@ -151,9 +153,16 @@ public class Main {
             TermExtractor termExtractor = (TermExtractor) obj;
             termExtractor.configure(prop);
             termDictionaray.putAll(termExtractor.termXtraction(in));
-            writeDictionary2File(termDictionaray, out);
+        }
+        String stopWordsPath = System.getProperty("stop.words.file");
+
+        if (stopWordsPath == null) {
+            stopWordsPath = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
         }
 
+        SortTerms sorter = new TFIDF(stopWordsPath);
+        termDictionaray = sorter.sort(termDictionaray, in);
+        writeDictionary2File(termDictionaray, out);
     }
 
     public static void writeDictionary2File(Map<String, Double> keywordsDictionaray, String outkeywordsDictionarayFile) throws FileNotFoundException {
@@ -213,11 +222,19 @@ public class Main {
             }
             List<CharSequence> gl = t.getGlosses();
             if (gl == null || gl.isEmpty() || gl.contains(null)) {
-                t.setGlosses(empty);
+                ArrayList<CharSequence> lem = new ArrayList<>();
+                lem.add(t.lemma);
+                t.setGlosses(lem);
             } else {
                 StringBuilder glosses = new StringBuilder();
                 for (CharSequence n : gl) {
                     glosses.append(n).append(" ");
+                }
+                glosses.append(t.lemma.toString().replaceAll("_", " "));
+                if (alt != null && !alt.isEmpty() && !alt.contains(null)) {
+                    for (CharSequence c : alt) {
+                        glosses.append(c.toString().replaceAll("_", " ")).append(" ");
+                    }
                 }
                 gl = new ArrayList<>();
                 tokenizer.setDescription(glosses.toString());
