@@ -38,10 +38,12 @@ The Agile Manifesto
 
 In February 2001, 17 software developers met at the Snowbird resort in Utah to discuss lightweight development methods. They published the Manifesto for Agile Software Development, in which they said that by "uncovering better ways of developing software by doing it and helping others do it," they have come to value "individuals and interactions over processes and tools, working software over comprehensive documentation, customer collaboration over contract negotiation, and responding to change over following a plan".[4]
 
-    Individuals and interactions: self-organization and motivation are important, as are interactions like co-location and pair programming.
+    Individuals and interactions: self-organization and motivation are important, as are interans like co-location and pair programming.
     Working software: working software is more useful and welcome than just presenting documents to clients in meetings.
     Customer collaboration: requirements cannot be fully collected at the beginning of the software development cycle, therefore continuous customer or stakeholder involvement is very important.
-    Responding to change: agile methods are focused on quick responses to change and continuous development.[12]
+    Responding to change: agile methods are focused on quick responses to change and continuous development.
+
+That is, while there is value in the items on the right, we value the items on the left more. [12]
 
 Some of the authors formed the Agile Alliance, a non-profit organization that promotes software development according to the manifesto's values and principles. Introducing the manifesto on behalf of the Agile Alliance, Jim Highsmith said,
 
@@ -301,41 +303,40 @@ Agile development fixes time (iteration duration), quality, and ideally resource
 Measuring agility
 
 The best agile practitioners have always emphasized sound engineering principles. As a result, there are a number of agile best practices and tools for measuring the performance of product development and teams.
+Internal assessments
 
-The Agility Index Measurements (AIM)[94] scores product development against a number of agility factors to achieve a total. The similarly named Agility Measurement Index,[95] scores developments against five dimensions of product development (duration, risk, novelty, effort, and interaction). Other techniques are based on measurable goals.[96] Another study using fuzzy mathematics[97] has suggested that velocity can be used as a metric of agility. There are agile self-assessments to determine whether a team is using agile practices (Nokia test,[98] Karlskrona test,[99] 42 points test[100]).
+The Agility Index Measurements (AIM)[94] scores product development against a number of agility factors to achieve a total. The similarly named Agility Measurement Index,[95] scores developments against five dimensions of product development (duration, risk, novelty, effort, and interaction).
 
-While such approaches have been proposed to measure agility, the practical application of such metrics is still debated. Agile software development ROI data is available from the CSIAC ROI Dashboard.[101]
-Surveys
+Other techniques are based on measurable goals[96] and one study suggests that velocity can be used as a metric of agility.[97]
 
-One of the early studies reporting gains in quality, productivity, and business satisfaction by using agile methods was a survey conducted by Shine Technologies from November 2002 to January 2003.[102]
+There are also agile self-assessments to determine whether a team is using agile practices (Nokia test,[98] Karlskrona test,[99] 42 points test[100]).
+Public surveys
 
-A similar survey, the State of Agile, is conducted every year starting in 2006 with thousands of participants from around the software development community. This tracks trends on the benefits of agile, lessons learned, and good practices. Each survey has reported increasing numbers saying that agile development helps them deliver software faster; improves their ability to manage changing customer priorities; and increases their productivity.[103] Surveys have also consistently shown better results with agile product development methods compared to classical project management.[104][105] In balance, there are reports that some feel that agile development methods are still too young to enable extensive academic research of their success.[106]
+One of the early studies reporting gains in quality, productivity, and business satisfaction by using agile methods was a survey conducted by Shine Technologies from November 2002 to January 2003.[101]
+
+A similar survey, the State of Agile, is conducted every year starting in 2006 with thousands of participants from around the software development community. This tracks trends on the benefits of agile, lessons learned, and good practices. Each survey has reported increasing numbers saying that agile development helps them deliver software faster; improves their ability to manage changing customer priorities; and increases their productivity.[102] Surveys have also consistently shown better results with agile product development methods compared to classical project management.[103][104] In balance, there are reports that some feel that agile development methods are still too young to enable extensive academic research of their success.[105]
 Criticism
 
-Agile methodologies can be inefficient in large organizations and certain types of developments.[107] Agile methods seem best for early-stage non-sequential product development. Many organizations believe that agile methodologies are too extreme and adopt a hybrid approach that mixes elements of agile and plan-driven approaches.[108] Some methods, such as DSDM, have combined elements of agile and plan-driven approaches in a disciplined way, without sacrificing the fundamental principles that make agile work.
+Agile methodologies can be inefficient in large organizations and certain types of developments.[106] Agile methods seem best for early-stage non-sequential product development. Many organizations believe that agile methodologies are too extreme and adopt a hybrid approach that mixes elements of agile and plan-driven approaches.[107] Some methods, such as DSDM, have combined elements of agile and plan-driven approaches in a disciplined way, without sacrificing the fundamental principles that make agile work.
 
-The term "agile" has also been criticized as being a management fad that simply describes existing good practices under new jargon, promotes a "one size fits all" mindset towards development strategies, and wrongly emphasizes method over results.[109]
+The term "agile" has also been criticized as being a management fad that simply describes existing good practices under new jargon, promotes a "one size fits all" mindset towards development strategies, and wrongly emphasizes method over results.[108]
 
-Alistair Cockburn organized a celebration of the 10th anniversary of the Agile Manifesto in Snowbird, Utah on February 12, 2011, gathering some 30+ people who had been involved at the original meeting and since. A list of about 20 elephants in the room ("undiscussable" agile topics/issues) were collected, including aspects: the alliances, failures and limitations of agile practices and context (possible causes: commercial interests, decontextualization, no obvious way to make progress based on failure, limited objective evidence, cognitive biases and reasoning fallacies), politics and culture.[110] As Philippe Kruchten wrote:
+Alistair Cockburn organized a celebration of the 10th anniversary of the Agile Manifesto in Snowbird, Utah on February 12, 2011, gathering some 30+ people who had been involved at the original meeting and since. A list of about 20 elephants in the room ("undiscussable" agile topics/issues) were collected, including aspects: the alliances, failures and limitations of agile practices and context (possible causes: commercial interests, decontextualization, no obvious way to make progress based on failure, limited objective evidence, cognitive biases and reasoning fallacies), politics and culture.[109] As Philippe Kruchten wrote:
 
     The agile movement is in some ways a bit like a teenager: very self-conscious, checking constantly its appearance in a mirror, accepting few criticisms, only interested in being with its peers, rejecting en bloc all wisdom from the past, just because it is from the past, adopting fads and new jargon, at times cocky and arrogant. But I have no doubts that it will mature further, become more open to the outside world, more reflective, and also therefore more effective.
 
 Applications outside software development
 Agile Brazil 2014 conference
 
-Agile methods have been extensively used for development of software products and some of them use certain characteristics of software, such as object technologies.[111] However, these techniques can be applied to the development of non-software products, such as computers, motor vehicles,[112] medical devices, food, clothing, and music;[113] see Flexible product development. Agile methods have been used in non-development IT infrastructure deployments and migrations. Some of the wider principles of agile have also found application in general management[114] (e.g., strategy, governance, risk, finance) under the terms business agility or agile business management. Agile principles are also used in marketing.[115]
+Agile methods have been extensively used for development of software products and some of them use certain characteristics of software, such as object technologies.[110] However, these techniques can be applied to the development of non-software products, such as computers, motor vehicles,[111] medical devices, food, clothing, and music;[112] see Flexible product development. Agile methods have been used in non-development IT infrastructure deployments and migrations. Some of the wider principles of agile have also found application in general management[113] (e.g., strategy, governance, risk, finance) under the terms business agility or agile business management. Agile principles are also used in marketing.[114]
 
-Under an agile business management model, agile techniques, practices, principles and values are expressed across five domains.[116]
+Under an agile business management model, agile techniques, practices, principles and values are expressed across five domains.[115]
 
     Integrated customer engagement – to embed customers within any delivery process to share accountability for product/service delivery.
     Facilitation-based management – adopting agile management models, like the role of Scrum Master, to facilitate the day-to-day operation of teams.
-    Agile work practices – adopting specific iterative and incremental work practices such as Scrum, Kanban, test-driven development or feature-driven development across all business functions (from sales, human resources, finance[117] and Marketing).
+    Agile work practices – adopting specific iterative and incremental work practices such as Scrum, Kanban, test-driven development or feature-driven development across all business functions (from sales, human resources, finance[116] and Marketing).
     An enabling organisational structure – with a focus on staff engagement, personal autonomy and outcomes based governance.
     An education model 
     that blends agile practices and philosophies to create micro-schools that emphasize collaborative culture creation and self-directed learning.
 
-Agile development paradigms can be used in other areas of life such as raising children. Its success in child development might be founded on some basic management principles; communication, adaptation and awareness. Bruce Feiler has claimed that the basic agile development paradigms can be applied to household management and raising children. In his TED Talk "Agile programming – for your family",[118] these paradigms brought significant changes to his household environment, such as the kids doing dishes, taking out the trash, and decreasing his children's emotional outbreaks, which inadvertently increased their emotional stability.
-
-
-
-
+Agile development paradigms can be used in other areas of life such as raising children. Its success in child development might be founded on some basic management principles; communication, adaptation and awareness. Bruce Feiler has claimed that the basic agile development paradigms can be applied to household management and raising children. In his TED Talk "Agile programming – for your family",[117] these paradigms brought significant changes to his household environment, such as the kids doing dishes, taking out the trash, and decreasing his children's emotional outbreaks, which inadvertently increased their emotional stability.

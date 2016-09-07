@@ -1,0 +1,12 @@
+
+Engineering Principles
+"What are Engineering Principles?"
+
+By engineering principles we mean the ideas, rules, or concepts that need to be kept in mind when solving an engineering problem. However, there is no one specific list of engineering principles that can be written down or posted up on the web. That is because the concepts used to solve a problem will often be different depending on the type of problem encountered.
+
+The engineer must be aware of this and consider the most important features of a design before she begins. For example, one often-noted principle in engineering design is "keep it simple" or "KISS (keep it simple stupid)". This is something that engineers must remind themselves to do when they imagine very fancy complicated products that few people would really be able to use. On the other hand, simple designs can't always meet the needs of the customer. Another principle might be to "keep the target user in mind" when creating a product. If the user does not want a simple solution, then an engineer will have to make a choice between those two principles.
+
+Engineers designing a visual product will use principles of line, color, shape and form to make their design more visually pleasing, Others may not care what their product looks like, and will concentrate on principles like ease-of-use, or economy.
+
+There are usually a lot of things to keep in mind when starting a new design. It is up to you to decide what those things should be and to choose the most important principles when you evaluate the product for your essay.
+
