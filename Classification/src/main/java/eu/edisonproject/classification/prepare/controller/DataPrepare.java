@@ -51,6 +51,7 @@ import java.nio.file.attribute.FileTime;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.io.FilenameUtils;
 
 
 /*
@@ -63,16 +64,18 @@ public class DataPrepare implements IDataPrepare {
     private LinkedList<DocumentObject> documentObjectList;
     private DocumentObject documentObject;
     private String charArraySetPath;
-    private CharArraySet stopWordArraySet;
-    private ReaderFile fileReader;
-    private static final int maxNumberOfAvroPerFile = 10;
+//    private CharArraySet stopWordArraySet;
+//    private ReaderFile fileReader;
+//    private static final int maxNumberOfAvroPerFile = 10;
+    private final StopWord cleanStopWord;
 
     public DataPrepare(String inputFolder, String outputFolder, String stopWordsPath) {
 
         this.inputFolder = inputFolder;
         this.outputFolder = outputFolder;
-        documentObjectList = new LinkedList<DocumentObject>();
-        stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(stopWordsPath), true);
+        documentObjectList = new LinkedList<>();
+        CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(stopWordsPath), true);
+        cleanStopWord = new StopWord(stopWordArraySet);
     }
 
     @Override
@@ -82,34 +85,22 @@ public class DataPrepare implements IDataPrepare {
         DocumentAvroSerializer dAvroSerializer = null;
         if (file.isDirectory()) {
             File[] filesInDir = file.listFiles();
-            Arrays.sort(filesInDir);
-            Path p = Paths.get(file.getAbsolutePath());
-            BasicFileAttributes attr = null;
-            try {
-                attr = Files.readAttributes(p, BasicFileAttributes.class);
-            } catch (IOException ex) {
-                Logger.getLogger(Text2Avro.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            FileTime ct = attr.creationTime();
+//            Arrays.sort(filesInDir);
 
-            DateTimeFormatter formatter
-                    = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-            LocalDate date = LocalDate.parse(ct.toString(), formatter);
-//            System.err.println(date);
-
-//            for (File subFolder : filesInDir) {
-//                String date = subFolder.getName().replace("Data Scientis ", "");
-//                System.out.println("retrived: " + date);
-//                File[] files = subFolder.listFiles();
-            Arrays.sort(filesInDir);
-            // String newOutputFolder = outputFolder + File.separator + subFolder.getName() + LocalDate.now().toString();
-            //create a new Folder
-            //new File(newOutputFolder).mkdir();
+//            LocalDate date = getCreationDate(file);
             for (File f : filesInDir) {
+                LocalDate date = getCreationDate(f);
                 documentObject = new DocumentObject();
-                extract(this.getDocumentObject(), f.getPath());
-                documentObject.setDescription(documentObject.getDescription().toLowerCase());
-                clean(this.getDocumentObject().getDescription());
+                documentObject.setDate(date);
+                ReaderFile rf = new ReaderFile(f.getAbsolutePath());
+
+                cleanStopWord.setDescription(rf.readFile());
+                documentObject.setDescription(cleanStopWord.execute().toLowerCase());
+                documentObject.setDocumentId(FilenameUtils.removeExtension(f.getName()));
+                documentObject.setTitle(f.getParentFile().getName());
+//                extract(this.getDocumentObject(), f.getPath());
+//                documentObject.setDescription(documentObject.getDescription().toLowerCase());
+//                clean(this.getDocumentObject().getDescription());
                 if (documentObject.getDescription().equals("")) {
                     continue;
                 }
@@ -160,7 +151,7 @@ public class DataPrepare implements IDataPrepare {
 
     public void clean(String description) {
         //System.out.println("DESCRIZIONE"+description);
-        Cleaner cleanStopWord = new StopWord(this.getStopWordArraySet());
+//        Cleaner cleanStopWord = new StopWord(this.getStopWordArraySet());
         cleanStopWord.setDescription(description);
         documentObject.setDescription(cleanStopWord.execute());
         //System.out.println(documentObject.getDescription());
@@ -210,12 +201,26 @@ public class DataPrepare implements IDataPrepare {
         this.charArraySetPath = charArraySetPath;
     }
 
-    public CharArraySet getStopWordArraySet() {
-        return stopWordArraySet;
-    }
+//    public CharArraySet getStopWordArraySet() {
+//        return stopWordArraySet;
+//    }
+//
+//    public void setStopWordArraySet(CharArraySet charArraySet) {
+//        this.stopWordArraySet = charArraySet;
+//    }
+    private LocalDate getCreationDate(File file) {
+        Path p = Paths.get(file.getAbsolutePath());
+        BasicFileAttributes attr = null;
+        try {
+            attr = Files.readAttributes(p, BasicFileAttributes.class);
+        } catch (IOException ex) {
+            Logger.getLogger(Text2Avro.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        FileTime ct = attr.creationTime();
 
-    public void setStopWordArraySet(CharArraySet charArraySet) {
-        this.stopWordArraySet = charArraySet;
+        DateTimeFormatter formatter
+                = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        return LocalDate.parse(ct.toString(), formatter);
     }
 
 }
