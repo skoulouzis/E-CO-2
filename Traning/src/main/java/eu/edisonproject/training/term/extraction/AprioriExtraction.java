@@ -64,8 +64,9 @@ public class AprioriExtraction implements TermExtractor {
         if (taggerPath == null) {
             taggerPath = prop.getProperty("tagger.file", ".." + File.separator + "etc" + File.separator + "model" + File.separator + "stanford" + File.separator + "english-left3words-distsim.tagger");
         }
-
-        minSup = Double.valueOf(System.getProperty("apriory.min.setup"));
+        if (System.getProperty("apriory.min.setup") != null) {
+            minSup = Double.valueOf(System.getProperty("apriory.min.setup"));
+        }
 
         if (minSup == null) {
             minSup = Double.valueOf(prop.getProperty("apriory.min.setup", "0.01"));
