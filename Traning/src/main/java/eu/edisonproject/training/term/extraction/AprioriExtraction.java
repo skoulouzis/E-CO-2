@@ -89,7 +89,7 @@ public class AprioriExtraction implements TermExtractor {
                 for (File f : dir.listFiles()) {
                     if (FilenameUtils.getExtension(f.getName()).endsWith("txt")) {
                         count++;
-                        Logger.getLogger(JtopiaExtractor.class.getName()).log(Level.INFO, "{0}: {1} of {2}", new Object[]{f.getName(), count, dir.list().length});
+                        Logger.getLogger(AprioriExtraction.class.getName()).log(Level.INFO, "{0}: {1} of {2}", new Object[]{f.getName(), count, dir.list().length});
                         terms.addAll(extractFromFile(f));
                     }
                 }

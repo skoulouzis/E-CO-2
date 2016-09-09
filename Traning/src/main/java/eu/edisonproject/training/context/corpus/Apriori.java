@@ -104,7 +104,7 @@ public class Apriori {
      */
     private void log(String message) {
 //        System.out.println(message);
-        Logger.getLogger(Apriori.class.getName()).log(Level.FINE, message);
+        Logger.getLogger(Apriori.class.getName()).log(Level.INFO, message);
     }
 
     /**
