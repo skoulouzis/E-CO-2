@@ -46,7 +46,7 @@ public class AprioriExtraction implements TermExtractor {
 //    private static StanfordLemmatizer cleanLemmatisation;
     private static String taggerPath;
     private static final String[] rejectPOS = new String[]{"JJ", "JJR", "JJS", "VB", "VBD", "VBG", "VBN", "VBP", "VBZ", "RB", "RBR", "RBS"};
-    private Double minSup;
+    private String minSup;
 
     @Override
     public void configure(Properties prop) {
@@ -64,12 +64,11 @@ public class AprioriExtraction implements TermExtractor {
         if (taggerPath == null) {
             taggerPath = prop.getProperty("tagger.file", ".." + File.separator + "etc" + File.separator + "model" + File.separator + "stanford" + File.separator + "english-left3words-distsim.tagger");
         }
-        if (System.getProperty("apriory.min.setup") != null) {
-            minSup = Double.valueOf(System.getProperty("apriory.min.setup"));
-        }
+
+        minSup = System.getProperty("apriory.min.setup");
 
         if (minSup == null) {
-            minSup = Double.valueOf(prop.getProperty("apriory.min.setup", "0.01"));
+            minSup = (prop.getProperty("apriory.min.setup", "0.01"));
         }
 
     }
@@ -170,7 +169,7 @@ public class AprioriExtraction implements TermExtractor {
 //            contents = contents.replaceAll("\\s{2,}", " ");
             String[] args = new String[2];
             args[0] = fileContents.toString();
-            args[1] = "0.005";
+            args[1] = minSup;
             Apriori apriori = new Apriori(args);
             terms = apriori.go();
         }
