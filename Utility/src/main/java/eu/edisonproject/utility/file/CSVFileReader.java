@@ -51,6 +51,24 @@ public class CSVFileReader {
         }
         return map;
     }
+    
+     public static Map<String, Double> csvFileToMapDoubleValue(String csvFilePath, String delimeter) throws IOException {
+        Map<String, Double> map = new HashMap<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(new File(csvFilePath)))) {
+            for (String text; (text = br.readLine()) != null;) {
+                if (text.contains(delimeter)) {
+                    String[] parts = text.split(delimeter);
+                    map.put(parts[0],Double.valueOf(parts[1]));
+                } else {
+                    map.put(text, 0.0);
+                }
+
+            }
+        }
+        return map;
+    }
+     
+    
 
     public static Map<CharSequence, Map<String, Double>> tfidfResult2Map(String path) throws IOException {
         Map<CharSequence, Map<String, Double>> featureVectors = new HashMap<>();

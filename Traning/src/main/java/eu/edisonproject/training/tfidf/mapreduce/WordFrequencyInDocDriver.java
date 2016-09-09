@@ -65,6 +65,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
         public WordFrequencyInDocMapper() {
         }
 
+        @Override
         protected void map(AvroKey<Term> key, NullWritable value, Context context)
                 throws IOException, InterruptedException {
             String uid = key.datum().getUid().toString();
@@ -115,6 +116,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
         public WordFrequencyInDocReducer() {
         }
 
+        @Override
         protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
 
             Integer sum = 0;

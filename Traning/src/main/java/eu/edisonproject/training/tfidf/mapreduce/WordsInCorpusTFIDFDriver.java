@@ -19,18 +19,11 @@ package eu.edisonproject.training.tfidf.mapreduce;
  *
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
  */
-import eu.edisonproject.training.tfidf.avro.Tfidf;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.avro.Schema;
-import org.apache.avro.mapred.AvroKey;
-import org.apache.avro.mapred.AvroValue;
-import org.apache.avro.mapreduce.AvroJob;
-import org.apache.avro.mapreduce.AvroKeyValueInputFormat;
-import org.apache.avro.mapreduce.AvroKeyValueOutputFormat;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
@@ -56,6 +49,7 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool{
         public WordsInCorpusTFIDFMapper() {
         }
 
+        @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             /*
 			 * keyValues[0] --> word
@@ -85,6 +79,7 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool{
 		 * key --> word
 		 * values --> document = n/N
          */
+        @Override
         protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             // get the number of documents indirectly from the file-system (stored in the job name on purpose)
             int count = 0;

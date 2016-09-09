@@ -97,7 +97,7 @@ public class DataPrepare implements IDataPrepare {
                 System.err.println(contents);
                 cleanStopWord.setDescription(contents);
                 String cleanCont = cleanStopWord.execute().toLowerCase();
-                System.err.println(cleanCont);
+//                System.err.println(cleanCont);
                 documentObject.setDescription(cleanCont);
                 documentObject.setDocumentId(FilenameUtils.removeExtension(f.getName()));
                 documentObject.setTitle(f.getParentFile().getName());
@@ -152,6 +152,7 @@ public class DataPrepare implements IDataPrepare {
         extractorText.extract();
     }
 
+    @Override
     public void clean(String description) {
         //System.out.println("DESCRIZIONE"+description);
 //        Cleaner cleanStopWord = new StopWord(this.getStopWordArraySet());
