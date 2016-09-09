@@ -168,8 +168,8 @@ public class Main {
             stopWordsPath = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
         }
 
-        SortTerms sorter = new TFIDF(stopWordsPath);
-        termDictionaray = sorter.sort(termDictionaray, in);
+//        SortTerms sorter = new TFIDF(stopWordsPath);
+//        termDictionaray = sorter.sort(termDictionaray, in);
         writeDictionary2File(termDictionaray, out);
     }
 
