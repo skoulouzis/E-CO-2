@@ -15,7 +15,7 @@ done
 
 
 
-preserve -list |grep $USER | awk '{print $1}' > reservations
+preserve -list | grep $USER | awk '{print $1}' > reservations
 
 
 while read p; do

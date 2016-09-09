@@ -127,9 +127,9 @@ public class Main {
                 case "t":
                     calculateTFIDF(cmd.getOptionValue("input"), cmd.getOptionValue("output"));
                     break;
-                case "tt":
-                    calculateTermTFIDF(cmd.getOptionValue("input"), cmd.getOptionValue("terms"), cmd.getOptionValue("output"));
-                    break;
+//                case "tt":
+//                    calculateTermTFIDF(cmd.getOptionValue("input"), cmd.getOptionValue("terms"), cmd.getOptionValue("output"));
+//                    break;
                 case "a":
                     apriori(cmd.getOptionValue("input"), cmd.getOptionValue("output"));
                     break;
@@ -142,7 +142,7 @@ public class Main {
         }
     }
 
-    private static void termExtraction(String in, String out) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, InterruptedException {
+    private static void termExtraction(String docPath, String out) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, InterruptedException {
 //
         String[] extractors = prop.getProperty("term.extractors",
                 "eu.edisonproject.training.term.extraction.LuceneExtractor,"
@@ -160,7 +160,7 @@ public class Main {
             Object obj = c.newInstance();
             TermExtractor termExtractor = (TermExtractor) obj;
             termExtractor.configure(prop);
-            termDictionaray.putAll(termExtractor.termXtraction(in));
+            termDictionaray.putAll(termExtractor.termXtraction(docPath));
         }
         String stopWordsPath = System.getProperty("stop.words.file");
 
@@ -171,15 +171,17 @@ public class Main {
 //        SortTerms sorter = new TFIDF(stopWordsPath);
 //        termDictionaray = sorter.sort(termDictionaray, in);
         writeDictionary2File(termDictionaray, out);
+
+        calculateTermTFIDF(docPath, out, out);
     }
 
     public static void writeDictionary2File(Map<String, Double> keywordsDictionaray, String outkeywordsDictionarayFile) throws FileNotFoundException {
-        ValueComparator bvc = new ValueComparator(keywordsDictionaray);
-        Map<String, Double> sorted_map = new TreeMap(bvc);
-        sorted_map.putAll(keywordsDictionaray);
+//        ValueComparator bvc = new ValueComparator(keywordsDictionaray);
+//        Map<String, Double> sorted_map = new TreeMap(bvc);
+//        sorted_map.putAll(keywordsDictionaray);
 
         try (PrintWriter out = new PrintWriter(outkeywordsDictionarayFile)) {
-            for (String key : sorted_map.keySet()) {
+            for (String key : keywordsDictionaray.keySet()) {
                 Double value = keywordsDictionaray.get(key);
                 key = key.toLowerCase().trim().replaceAll(" ", "_");
                 if (key.endsWith("_")) {
@@ -350,9 +352,6 @@ public class Main {
     private static void calculateTermTFIDF(String docPath, String termsFile, String out) throws IOException {
         File tmpFolder = null;
         try {
-            if (new File(out).isFile()) {
-                throw new IOException(out + " is a file. Should specify directory");
-            }
 
             ITFIDFDriver tfidfDriver = new TFIDFTermsDriver();
             File inFile = new File(termsFile);
