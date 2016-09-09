@@ -89,7 +89,8 @@ public class Apriori {
 
             if (itemsets.size() != 0 && i + 1 < numberOfRound) {
                 nbFrequentSets += itemsets.size();
-                log("Found " + itemsets.size() + " frequent itemsets of size " + itemsetNumber + " (with support " + (minSup * 100) + "%)");;
+
+                Logger.getLogger(Apriori.class.getName()).log(Level.INFO, "Found " + itemsets.size() + " frequent itemsets of size " + itemsetNumber + " (with support " + (minSup * 100) + "%)");;
                 createNewItemsetsFromPreviousOnes();
             }
             i++;
@@ -97,14 +98,6 @@ public class Apriori {
         }
 
         return listOfItemsets;
-    }
-
-    /**
-     * outputs a message in Sys.err if not used as library
-     */
-    private void log(String message) {
-//        System.out.println(message);
-        Logger.getLogger(Apriori.class.getName()).log(Level.INFO, message);
     }
 
     /**
@@ -154,8 +147,8 @@ public class Apriori {
      */
     private void outputConfig() {
         //output config info to the user
-        log("Input configuration: " + numItems + " items, " + numTransactions + " transactions, ");
-        log("minsup = " + minSup + "%");
+        Logger.getLogger(Apriori.class.getName()).log(Level.INFO, "Input configuration: " + numItems + " items, " + numTransactions + " transactions, ");
+        Logger.getLogger(Apriori.class.getName()).log(Level.INFO, "minsup = " + minSup + "%");
     }
 
     /**
@@ -178,7 +171,7 @@ public class Apriori {
     private void createNewItemsetsFromPreviousOnes() {
         // by construction, all existing itemsets have the same size
         int currentSizeOfItemsets = itemsets.get(0).length;
-        log("Creating itemsets of size " + (currentSizeOfItemsets + 1) + " based on " + itemsets.size() + " itemsets of size " + currentSizeOfItemsets);
+        Logger.getLogger(Apriori.class.getName()).log(Level.INFO, "Creating itemsets of size " + (currentSizeOfItemsets + 1) + " based on " + itemsets.size() + " itemsets of size " + currentSizeOfItemsets);
 
         HashMap<String, String[]> tempCandidates = new HashMap<String, String[]>(); //temporary candidates
 
@@ -227,7 +220,7 @@ public class Apriori {
 
         //set the new itemsets
         itemsets = new ArrayList<String[]>(tempCandidates.values());
-        log("Created " + itemsets.size() + " unique itemsets of size " + (currentSizeOfItemsets + 1));
+        Logger.getLogger(Apriori.class.getName()).log(Level.INFO, "Created " + itemsets.size() + " unique itemsets of size " + (currentSizeOfItemsets + 1));
 
     }
 
@@ -241,7 +234,7 @@ public class Apriori {
         while (stFile.hasMoreTokens()) {
 
             String parsedVal = stFile.nextToken();
-            log(parsedVal);
+            Logger.getLogger(Apriori.class.getName()).log(Level.INFO, parsedVal);
             trans[words.indexOf(parsedVal)] = true; //if it is not a 0, assign the value to true
         }
     }
@@ -253,7 +246,7 @@ public class Apriori {
      */
     private void calculateFrequentItemsets() throws Exception {
 
-        log("Passing through the data to compute the frequency of " + itemsets.size() + " itemsets of size " + itemsets.get(0).length);
+        Logger.getLogger(Apriori.class.getName()).log(Level.INFO, "Passing through the data to compute the frequency of " + itemsets.size() + " itemsets of size " + itemsets.get(0).length);
 
         List<String[]> frequentCandidates = new ArrayList<String[]>(); //the frequent candidates for the current itemset
 
@@ -289,7 +282,7 @@ public class Apriori {
                 }
                 if (match) { // if at this point it is a match, increase the count
                     count[c]++;
-                    //log(Arrays.toString(cand)+" is contained in trans "+i+" ("+line+")");
+                    //Logger.getLogger(Apriori.class.getName()).log(Level.INFO, Arrays.toString(cand)+" is contained in trans "+i+" ("+line+")");
                 }
             }
 
@@ -302,7 +295,7 @@ public class Apriori {
                 //System.out.println(Arrays.toString(itemsets.get(i)) + "  ("+ ((count[i] / (double) numTransactions))+" "+count[i]+")");
                 frequentCandidates.add(itemsets.get(i));
             }
-            //else log("-- Remove candidate: "+ Arrays.toString(candidates.get(i)) + "  is: "+ ((count[i] / (double) numTransactions)));
+            //else Logger.getLogger(Apriori.class.getName()).log(Level.INFO, "-- Remove candidate: "+ Arrays.toString(candidates.get(i)) + "  is: "+ ((count[i] / (double) numTransactions)));
         }
 
         //new candidates are only the frequent candidates

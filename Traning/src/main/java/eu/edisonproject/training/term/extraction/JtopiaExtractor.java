@@ -147,7 +147,7 @@ public class JtopiaExtractor implements TermExtractor {
 
                 String contents = fileContents.toString().replaceAll("_", " ");
                 contents = contents.replaceAll("\\s{2,}", " ");
-                
+
                 tokenizer.setDescription(contents);
                 String cleanText = tokenizer.execute();
 //                lematizer.setDescription(cleanText);
