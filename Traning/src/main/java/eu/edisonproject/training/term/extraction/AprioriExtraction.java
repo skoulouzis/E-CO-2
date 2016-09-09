@@ -46,6 +46,7 @@ public class AprioriExtraction implements TermExtractor {
 //    private static StanfordLemmatizer cleanLemmatisation;
     private static String taggerPath;
     private static final String[] rejectPOS = new String[]{"JJ", "JJR", "JJS", "VB", "VBD", "VBG", "VBN", "VBP", "VBZ", "RB", "RBR", "RBS"};
+    private Double minSup;
 
     @Override
     public void configure(Properties prop) {
@@ -63,6 +64,13 @@ public class AprioriExtraction implements TermExtractor {
         if (taggerPath == null) {
             taggerPath = prop.getProperty("tagger.file", ".." + File.separator + "etc" + File.separator + "model" + File.separator + "stanford" + File.separator + "english-left3words-distsim.tagger");
         }
+
+        minSup = Double.valueOf(System.getProperty("apriory.min.setup"));
+
+        if (minSup == null) {
+            minSup = Double.valueOf(prop.getProperty("apriory.min.setup", "0.01"));
+        }
+
     }
 
     public String clean(String description) {

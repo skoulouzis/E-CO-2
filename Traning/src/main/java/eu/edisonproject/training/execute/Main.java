@@ -160,6 +160,7 @@ public class Main {
             Object obj = c.newInstance();
             TermExtractor termExtractor = (TermExtractor) obj;
             termExtractor.configure(prop);
+//            termExtractor.setDocPath(docPath);
             termDictionaray.putAll(termExtractor.termXtraction(docPath));
         }
         String stopWordsPath = System.getProperty("stop.words.file");

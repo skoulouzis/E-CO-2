@@ -57,6 +57,7 @@ public class Apriori {
      *
      * @param args configuration parameters: args[0] is a set of lines, args[1]
      * the min support (e.g. 0.8 for 80%)
+     * @throws java.lang.Exception
      */
     public Apriori(String[] args) throws Exception {
         configure(args);
@@ -70,12 +71,12 @@ public class Apriori {
      */
     public List<String> go() throws Exception {
         //start timer
-        long start = System.currentTimeMillis();
+//        long start = System.currentTimeMillis();
 
         // first we generate the candidates of size 1
         createItemsetsOfSize1();
         int itemsetNumber = 1; //the current itemset being looked at
-        int nbFrequentSets = 0;
+//        int nbFrequentSets = 0;
 
         // the variable numberOfRound represent the max length of the association rules. 
         // e.g 3 stay for max 3 words for each rules
@@ -87,10 +88,10 @@ public class Apriori {
         while (itemsets.size() > 0 && i < numberOfRound) {
             calculateFrequentItemsets();
 
-            if (itemsets.size() != 0 && i + 1 < numberOfRound) {
-                nbFrequentSets += itemsets.size();
+            if (!itemsets.isEmpty() && i + 1 < numberOfRound) {
+//                nbFrequentSets += itemsets.size();
 
-                Logger.getLogger(Apriori.class.getName()).log(Level.INFO, "Found " + itemsets.size() + " frequent itemsets of size " + itemsetNumber + " (with support " + (minSup * 100) + "%)");;
+                Logger.getLogger(Apriori.class.getName()).log(Level.INFO, "Found {0} frequent itemsets of size {1} (with support {2}%)", new Object[]{itemsets.size(), itemsetNumber, minSup * 100});;
                 createNewItemsetsFromPreviousOnes();
             }
             i++;
@@ -110,7 +111,7 @@ public class Apriori {
         postsText = args[0];
 
         // setting minsupport
-        minSup = (Double.valueOf(args[1]).doubleValue());
+        minSup = (Double.parseDouble(args[1]));
         // check if minsupport is a valid number in the range [0,1]
         if (minSup > 1 || minSup < 0) {
             throw new Exception("minSup: bad value");
@@ -125,7 +126,7 @@ public class Apriori {
          */
         String[] lines = postsText.split("\n");
 
-        words = new LinkedList<String>();
+        words = new LinkedList<>();
         for (String l : lines) {
             String[] lineWords = l.split(" ");
             for (String s : lineWords) {
@@ -147,8 +148,8 @@ public class Apriori {
      */
     private void outputConfig() {
         //output config info to the user
-        Logger.getLogger(Apriori.class.getName()).log(Level.INFO, "Input configuration: " + numItems + " items, " + numTransactions + " transactions, ");
-        Logger.getLogger(Apriori.class.getName()).log(Level.INFO, "minsup = " + minSup + "%");
+        Logger.getLogger(Apriori.class.getName()).log(Level.INFO, "Input configuration: {0} items, {1} transactions, ", new Object[]{numItems, numTransactions});
+        Logger.getLogger(Apriori.class.getName()).log(Level.INFO, "minsup = {0}%", minSup);
     }
 
     /**
@@ -171,9 +172,9 @@ public class Apriori {
     private void createNewItemsetsFromPreviousOnes() {
         // by construction, all existing itemsets have the same size
         int currentSizeOfItemsets = itemsets.get(0).length;
-        Logger.getLogger(Apriori.class.getName()).log(Level.INFO, "Creating itemsets of size " + (currentSizeOfItemsets + 1) + " based on " + itemsets.size() + " itemsets of size " + currentSizeOfItemsets);
+        Logger.getLogger(Apriori.class.getName()).log(Level.INFO, "Creating itemsets of size {0} based on {1} itemsets of size {2}", new Object[]{currentSizeOfItemsets + 1, itemsets.size(), currentSizeOfItemsets});
 
-        HashMap<String, String[]> tempCandidates = new HashMap<String, String[]>(); //temporary candidates
+        HashMap<String, String[]> tempCandidates = new HashMap<>(); //temporary candidates
 
         // compare each pair of itemsets of size n-1
         for (int i = 0; i < itemsets.size(); i++) {
@@ -219,8 +220,8 @@ public class Apriori {
         }
 
         //set the new itemsets
-        itemsets = new ArrayList<String[]>(tempCandidates.values());
-        Logger.getLogger(Apriori.class.getName()).log(Level.INFO, "Created " + itemsets.size() + " unique itemsets of size " + (currentSizeOfItemsets + 1));
+        itemsets = new ArrayList<>(tempCandidates.values());
+        Logger.getLogger(Apriori.class.getName()).log(Level.INFO, "Created {0} unique itemsets of size {1}", new Object[]{itemsets.size(), currentSizeOfItemsets + 1});
 
     }
 
