@@ -22,9 +22,11 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -247,9 +249,9 @@ public class Wikidata extends DisambiguatorImpl {
         Map<CharSequence, List<CharSequence>> map = new HashMap<>();
         if (terms.size() > 0) {
             int maxT = 2;
-            ExecutorService pool = new ThreadPoolExecutor(maxT, maxT,
-                    5000L, TimeUnit.MILLISECONDS,
-                    new ArrayBlockingQueue<>(maxT, true), new ThreadPoolExecutor.CallerRunsPolicy());
+            BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue(maxT);
+            ExecutorService pool = new ThreadPoolExecutor(maxT, maxT, 500L, TimeUnit.MICROSECONDS, workQueue);
+//            ExecutorService pool = new ThreadPoolExecutor(maxT, maxT, 5000L, TimeUnit.MILLISECONDS,  new ArrayBlockingQueue<>(maxT, true), new ThreadPoolExecutor.CallerRunsPolicy());
 
             Set<Future<Map<CharSequence, List<CharSequence>>>> set1 = new HashSet<>();
             String prop = "P31";
@@ -282,10 +284,12 @@ public class Wikidata extends DisambiguatorImpl {
 
         if (terms.size() > 0) {
             int maxT = 2;
-            ExecutorService pool = new ThreadPoolExecutor(maxT, maxT,
-                    5000L, TimeUnit.MILLISECONDS,
-                    new ArrayBlockingQueue<>(maxT, true), new ThreadPoolExecutor.CallerRunsPolicy());
+            BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue(maxT);
+            ExecutorService pool = new ThreadPoolExecutor(maxT, maxT, 500L, TimeUnit.MICROSECONDS, workQueue);
 
+//            ExecutorService pool = new ThreadPoolExecutor(maxT, maxT,
+//                    5000L, TimeUnit.MILLISECONDS,
+//                    new ArrayBlockingQueue<>(maxT, true), new ThreadPoolExecutor.CallerRunsPolicy());
             Set<Future<Map<CharSequence, List<CharSequence>>>> set1 = new HashSet<>();
             String prop = "P910";
             for (Term t : terms) {
@@ -308,11 +312,12 @@ public class Wikidata extends DisambiguatorImpl {
                     map.putAll(c);
                 }
             }
+            workQueue = new ArrayBlockingQueue(maxT);
+            pool = new ThreadPoolExecutor(maxT, maxT, 500L, TimeUnit.MICROSECONDS, workQueue);
 
-            pool = new ThreadPoolExecutor(maxT, maxT,
-                    5000L, TimeUnit.MILLISECONDS,
-                    new ArrayBlockingQueue<>(maxT, true), new ThreadPoolExecutor.CallerRunsPolicy());
-
+//            pool = new ThreadPoolExecutor(maxT, maxT,
+//                    5000L, TimeUnit.MILLISECONDS,
+//                    new ArrayBlockingQueue<>(maxT, true), new ThreadPoolExecutor.CallerRunsPolicy());
             Set<Future<Map<CharSequence, List<CharSequence>>>> set2 = new HashSet<>();
             for (Term t : terms) {
                 List<CharSequence> catIDs = map.get(t.getUid());

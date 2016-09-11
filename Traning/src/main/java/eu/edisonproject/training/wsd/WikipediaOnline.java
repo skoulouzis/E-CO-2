@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -181,10 +182,12 @@ public class WikipediaOnline extends Wikipedia {
 
     private Map<CharSequence, List<CharSequence>> getCategories(Set<Term> terms) throws MalformedURLException, InterruptedException, ExecutionException {
         int maxT = 2;
-        ExecutorService pool = new ThreadPoolExecutor(maxT, maxT,
-                5000L, TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<>(maxT, true), new ThreadPoolExecutor.CallerRunsPolicy());
+        BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue(maxT);
+        ExecutorService pool = new ThreadPoolExecutor(maxT, maxT, 500L, TimeUnit.MICROSECONDS, workQueue);
 
+//        ExecutorService pool = new ThreadPoolExecutor(maxT, maxT,
+//                5000L, TimeUnit.MILLISECONDS,
+//                new ArrayBlockingQueue<>(maxT, true), new ThreadPoolExecutor.CallerRunsPolicy());
         Map<CharSequence, List<CharSequence>> cats = new HashMap<>();
         Set<Future<Map<CharSequence, List<CharSequence>>>> set = new HashSet<>();
         for (Term t : terms) {
