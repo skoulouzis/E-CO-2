@@ -24,18 +24,13 @@ import eu.edisonproject.utility.file.ReaderFile;
 import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
-import org.apache.avro.mapred.AvroKey;
-import org.apache.avro.mapred.AvroValue;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -102,8 +97,12 @@ public class TFIDF extends Configured implements Tool {
             if (df > 0) {
                 idf = Math.log((double) docs.size() / (double) df);
             }
-            System.err.println(key + " " + (tf * idf));
-            context.write(key, (tf * idf));
+//            System.err.println(key + " " + (tf * idf));
+            double tfidf = tf * idf;
+            if (tfidf > 0) {
+                context.write(key, (tf * idf));
+            }
+
         }
     }
 
