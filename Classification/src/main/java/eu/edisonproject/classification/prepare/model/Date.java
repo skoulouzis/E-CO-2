@@ -40,7 +40,7 @@ public class Date extends Extractor {
             try {
                 date = LocalDate.parse(this.getJp().getDescription().substring(start, start + 50));
                 //System.out.println("F"+ date);
-            } catch (DateTimeParseException e) {
+            } catch (Exception e) {
                 //System.out.println("Exception date can't be parsed in LocalDate");
             }
         }
