@@ -144,15 +144,15 @@ public class Main {
 
     private static void termExtraction(String docPath, String out) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, InterruptedException {
 //
-//        String[] extractors = prop.getProperty("term.extractors",
-//                "eu.edisonproject.training.term.extraction.LuceneExtractor,"
-//                + "eu.edisonproject.training.term.extraction.JtopiaExtractor,"
-//                + "eu.edisonproject.training.term.extraction.AprioriExtraction").split(",");
+        String[] extractors = prop.getProperty("term.extractors",
+                "eu.edisonproject.training.term.extraction.LuceneExtractor,"
+                + "eu.edisonproject.training.term.extraction.JtopiaExtractor,"
+                + "eu.edisonproject.training.term.extraction.AprioriExtraction").split(",");
 
 //        String[] extractors = prop.getProperty("term.extractors",
 //                "eu.edisonproject.training.term.extraction.JtopiaExtractor,"
 //                + "eu.edisonproject.training.term.extraction.AprioriExtraction").split(",");
-        String[] extractors = "eu.edisonproject.training.term.extraction.JtopiaExtractor".split(",");
+//        String[] extractors = "eu.edisonproject.training.term.extraction.JtopiaExtractor".split(",");
 
         Map<String, Double> termDictionaray = new HashMap();
         for (String className : extractors) {
@@ -357,6 +357,7 @@ public class Main {
 
             ITFIDFDriver tfidfDriver = new TFIDFTermsDriver();
             inFile = new File(FilenameUtils.removeExtension(termsFile) + "_tmp.csv");
+            inFile.delete();
             FileUtils.moveFile(new File(termsFile), inFile);
 
             String workingFolder = System.getProperty("working.folder");
