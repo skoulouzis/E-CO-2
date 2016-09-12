@@ -43,14 +43,14 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 
-public class WordsGroupByTitleDriver extends Configured implements Tool{
+public class WordsGroupByTitleDriver extends Configured implements Tool {
 
-    
     public static class WordsGroupByTitleMapper extends Mapper<LongWritable, Text, Text, Text> {
 
         public WordsGroupByTitleMapper() {
         }
 
+        @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             /*
 			 * keyValues[0] --> word
@@ -71,16 +71,18 @@ public class WordsGroupByTitleDriver extends Configured implements Tool{
 
     public static class WordsGroupByTitleReducer extends Reducer<Text, Text, Text, Text> {
 
-        public WordsGroupByTitleReducer() {}
+        public WordsGroupByTitleReducer() {
+        }
 
+        @Override
         protected void reduce(Text text, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             //The object are grouped for them documentId    
-            List<CharSequence> wordToWrite = new LinkedList<>();
-            List<CharSequence> valuesToWrite = new LinkedList<>();
-            String pairWordValue="";
+//            List<CharSequence> wordToWrite = new LinkedList<>();
+//            List<CharSequence> valuesToWrite = new LinkedList<>();
+            String pairWordValue = "";
             for (Text value : values) {
                 String[] line = value.toString().split("@");
-                pairWordValue+=line[0]+":"+line[1]+"/";
+                pairWordValue += line[0] + ":" + line[1] + "/";
 //                wordToWrite.add(line[0]);
 //                valuesToWrite.add(line[1]);
             }
@@ -99,13 +101,13 @@ public class WordsGroupByTitleDriver extends Configured implements Tool{
     public int run(String[] args) throws Exception {
         //Configuration config = HBaseConfiguration.create();
         Configuration conf = new Configuration();
-        Job job = new Job(conf,"WordsGroupByTitleDriver");
+        Job job = new Job(conf, "WordsGroupByTitleDriver");
         //TableMapReduceUtil.addDependencyJars(job); 
         job.setJarByClass(WordsGroupByTitleDriver.class);
         //This row must be changed
         job.setJobName("Words Group By Title Driver");
 
-         Path inPath = new Path(args[0]);
+        Path inPath = new Path(args[0]);
         Path outPath = new Path(args[1]);
 
         FileInputFormat.setInputPaths(job, inPath);
@@ -113,7 +115,7 @@ public class WordsGroupByTitleDriver extends Configured implements Tool{
         outPath.getFileSystem(conf).delete(outPath, true);
 
         job.setMapperClass(WordsGroupByTitleMapper.class);
-        
+
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
         job.setReducerClass(WordsGroupByTitleReducer.class);

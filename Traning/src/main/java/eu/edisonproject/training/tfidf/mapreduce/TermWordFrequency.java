@@ -24,7 +24,9 @@ import eu.edisonproject.utility.file.ReaderFile;
 import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import org.apache.avro.mapred.AvroKey;
 import org.apache.avro.mapred.AvroValue;
@@ -49,7 +51,7 @@ public class TermWordFrequency extends Configured implements Tool {
 
     // hashmap for the terms
     private static StopWord cleanStopWord;
-    private static Set<String> docs;
+    public static Map<String, String> docs;
 
     public static class TermWordFrequencyMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
 
@@ -58,7 +60,7 @@ public class TermWordFrequency extends Configured implements Tool {
 
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-            int wcount = 0;
+            int totalWcount = 0;
             String term = value.toString().split(",")[0];
             if (term.length() > 1) {
                 cleanStopWord.setDescription(term.replaceAll("_", " ").trim());
@@ -70,10 +72,14 @@ public class TermWordFrequency extends Configured implements Tool {
                     cTerm = cTerm.substring(cTerm.indexOf(" ") + 1, cTerm.length());
                 }
 
-                for (String d : docs) {
+                for (String k : docs.keySet()) {
+                    String d = docs.get(k);
                     cleanStopWord.setDescription(d.toLowerCase());
                     String contents = cleanStopWord.execute();
-                    wcount += StringUtils.countMatches(contents, cTerm);
+                    int count = StringUtils.countMatches(contents, cTerm);
+                    totalWcount += count;
+//                    context.write(new Text(k + "@" + term), new IntWritable(count));                
+                    context.write(new Text(term + "@" + k), new IntWritable(count));
 //                    if (wcount > 0) {
 //                        System.err.println(term + ", " + wcount + ", " + d);
 //                    }
@@ -81,7 +87,7 @@ public class TermWordFrequency extends Configured implements Tool {
                 }
 
 //                System.err.println(new Text(term) + " " + new IntWritable(wcount));
-                context.write(new Text(term), new IntWritable(wcount));
+//                context.write(new Text(term), new IntWritable(wcount));
             }
         }
     }
@@ -110,7 +116,7 @@ public class TermWordFrequency extends Configured implements Tool {
         Configuration jobconf = getConf();
         new Path(args[1]).getFileSystem(jobconf).delete(new Path(args[1]), true);
         if (docs == null) {
-            docs = new HashSet<>();
+            docs = new HashMap<>();
         }
 
         if (docs.isEmpty()) {
@@ -121,7 +127,7 @@ public class TermWordFrequency extends Configured implements Tool {
                 if (FilenameUtils.getExtension(f.getName()).endsWith("txt")) {
                     ReaderFile rf = new ReaderFile(f.getAbsolutePath());
                     cleanStopWord.setDescription(rf.readFile());
-                    docs.add(cleanStopWord.execute());
+                    docs.put(f.getName(), cleanStopWord.execute());
                 }
             }
         }

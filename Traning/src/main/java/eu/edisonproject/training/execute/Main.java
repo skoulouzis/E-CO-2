@@ -24,11 +24,8 @@ import eu.edisonproject.training.tfidf.mapreduce.TFIDFDriverImpl;
 import eu.edisonproject.training.tfidf.mapreduce.TFIDFTermsDriver;
 import eu.edisonproject.training.wsd.DisambiguatorImpl;
 import eu.edisonproject.training.wsd.MetaDisambiguator;
-import eu.edisonproject.utility.commons.SortTerms;
-import eu.edisonproject.utility.commons.TFIDF;
 import eu.edisonproject.utility.commons.Term;
 import eu.edisonproject.utility.commons.TermAvroSerializer;
-import eu.edisonproject.utility.commons.ValueComparator;
 import eu.edisonproject.utility.file.ConfigHelper;
 import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
 import eu.edisonproject.utility.text.processing.StopWord;
@@ -43,7 +40,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.cli.BasicParser;
@@ -453,8 +449,11 @@ public class Main {
         File tiidfCSV = new File(TFIDFTermsDriver.TFIDFCSV_PATH);
         TFIDFTermsDriver.TFIDFCSV_PATH = tmpFolder.getAbsolutePath() + File.separator + tiidfCSV.getName();
 
-        File context = new File(TFIDFTermsDriver.TERMS);
-        TFIDFTermsDriver.TERMS = tmpFolder.getAbsolutePath() + File.separator + context.getName();
+        File terms = new File(TFIDFTermsDriver.TERMS);
+        TFIDFTermsDriver.TERMS = tmpFolder.getAbsolutePath() + File.separator + terms.getName();
+
+        File cntxPath = new File(TFIDFTermsDriver.CONTEXT_PATH);
+        TFIDFTermsDriver.CONTEXT_PATH = tmpFolder.getAbsolutePath() + File.separator + cntxPath.getName();
 
         if (FilenameUtils.getExtension(termsFile.getName()).endsWith("csv")) {
             FileUtils.copyFile(termsFile, new File(tmpFolder + File.separator + termsFile.getName()));
