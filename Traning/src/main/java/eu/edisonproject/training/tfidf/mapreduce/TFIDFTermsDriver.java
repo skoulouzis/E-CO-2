@@ -117,9 +117,12 @@ public class TFIDFTermsDriver implements ITFIDFDriver {
                 for (String key : sorted_map.keySet()) {
                     Double value = map.get(key);
                     key = key.toLowerCase().trim().replaceAll(" ", "_");
-                    if (key.endsWith("_")) {
-                        key = key.substring(0, key.lastIndexOf("_"));
-                    }
+                                  while (key.endsWith("_")) {
+                    key = key.substring(0, key.lastIndexOf("_"));
+                }
+                while (key.startsWith("_")) {
+                    key = key.substring(key.indexOf("_") + 1, key.length());
+                }
                     out.print(key + "," + value + "\n");
                 }
             }

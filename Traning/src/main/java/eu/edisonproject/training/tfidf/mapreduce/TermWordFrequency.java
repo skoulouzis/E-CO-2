@@ -67,14 +67,19 @@ public class TermWordFrequency extends Configured implements Tool {
                     cTerm = cTerm.substring(0, cTerm.lastIndexOf(" "));
                 }
                 while (cTerm.startsWith(" ")) {
-                    cTerm = cTerm.substring(term.indexOf(" ") + 1, cTerm.length());
+                    cTerm = cTerm.substring(cTerm.indexOf(" ") + 1, cTerm.length());
                 }
 
                 for (String d : docs) {
                     cleanStopWord.setDescription(d.toLowerCase());
                     String contents = cleanStopWord.execute();
                     wcount += StringUtils.countMatches(contents, cTerm);
+//                    if (wcount > 0) {
+//                        System.err.println(term + ", " + wcount + ", " + d);
+//                    }
+
                 }
+
 //                System.err.println(new Text(term) + " " + new IntWritable(wcount));
                 context.write(new Text(term), new IntWritable(wcount));
             }

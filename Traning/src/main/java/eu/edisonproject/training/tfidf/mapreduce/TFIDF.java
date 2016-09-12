@@ -90,7 +90,7 @@ public class TFIDF extends Configured implements Tool {
                 String[] dfidf = val.toString().split(",");
                 df += Integer.valueOf(dfidf[0]);
                 tf += Integer.valueOf(dfidf[1]);
-                System.err.println(val);
+//                System.err.println(val);
             }
 
             Double idf = 0.0;
@@ -100,7 +100,7 @@ public class TFIDF extends Configured implements Tool {
 //            System.err.println(key + " " + (tf * idf));
             double tfidf = tf * idf;
             if (tfidf > 0) {
-                context.write(key, (tf * idf));
+                context.write(key, tfidf);
             }
 
         }

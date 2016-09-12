@@ -144,16 +144,16 @@ public class Main {
 
     private static void termExtraction(String docPath, String out) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, InterruptedException {
 //
-        String[] extractors = prop.getProperty("term.extractors",
-                "eu.edisonproject.training.term.extraction.LuceneExtractor,"
-                + "eu.edisonproject.training.term.extraction.JtopiaExtractor,"
-                + "eu.edisonproject.training.term.extraction.AprioriExtraction").split(",");
 //        String[] extractors = prop.getProperty("term.extractors",
-//                "eu.edisonproject.training.term.extraction.JtopiaExtractor,"
+//                "eu.edisonproject.training.term.extraction.LuceneExtractor,"
+//                + "eu.edisonproject.training.term.extraction.JtopiaExtractor,"
 //                + "eu.edisonproject.training.term.extraction.AprioriExtraction").split(",");
 
 //        String[] extractors = prop.getProperty("term.extractors",
-//                "eu.edisonproject.training.term.extraction.AprioriExtraction").split(",");
+//                "eu.edisonproject.training.term.extraction.JtopiaExtractor,"
+//                + "eu.edisonproject.training.term.extraction.AprioriExtraction").split(",");
+        String[] extractors = "eu.edisonproject.training.term.extraction.JtopiaExtractor".split(",");
+
         Map<String, Double> termDictionaray = new HashMap();
         for (String className : extractors) {
             Class c = Class.forName(className);
@@ -352,10 +352,12 @@ public class Main {
 
     private static void calculateTermTFIDF(String docPath, String termsFile, String out) throws IOException {
         File tmpFolder = null;
+        File inFile = null;
         try {
 
             ITFIDFDriver tfidfDriver = new TFIDFTermsDriver();
-            File inFile = new File(termsFile);
+            inFile = new File(FilenameUtils.removeExtension(termsFile) + "_tmp.csv");
+            FileUtils.moveFile(new File(termsFile), inFile);
 
             String workingFolder = System.getProperty("working.folder");
             if (workingFolder == null) {
@@ -370,7 +372,6 @@ public class Main {
             setTFIDFTermDriverPaths(inFile, new File(docPath), tmpFolder);
 
             tfidfDriver.executeTFIDF(tmpFolder.getAbsolutePath() + File.separator + inFile.getName());
-            tfidfDriver.driveProcessResizeVector();
             File terms = new File(TFIDFTermsDriver.TERMS);
             if (FilenameUtils.getExtension(terms.getName()).endsWith("csv")) {
                 FileUtils.moveFile(terms, new File(out));
@@ -378,7 +379,8 @@ public class Main {
         } finally {
             if (tmpFolder != null && tmpFolder.exists()) {
                 tmpFolder.delete();
-                FileUtils.forceDelete(tmpFolder);
+                inFile.delete();
+//                FileUtils.forceDelete(tmpFolder);
             }
         }
     }
