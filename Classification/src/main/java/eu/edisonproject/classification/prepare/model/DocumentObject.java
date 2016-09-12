@@ -15,7 +15,10 @@
  */
 package eu.edisonproject.classification.prepare.model;
 
-import java.time.LocalDate;
+//import java.time.LocalDate;
+
+import org.joda.time.LocalDate;
+
 
 /**
  * 

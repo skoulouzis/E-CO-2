@@ -23,14 +23,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+//import java.time.LocalDate;
+//import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.lucene.analysis.util.CharArraySet;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 /**
  *
@@ -70,10 +72,11 @@ public class Text2Avro implements IDataPrepare {
                     }
                     FileTime date = attr.creationTime();
 
-                    DateTimeFormatter formatter
-                            = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+//                    DateTimeFormatter formatter
+//                            = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+//                    DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
-                    System.err.println(LocalDate.parse(date.toString(), formatter));
+//                    System.err.println(LocalDate.parse(date.toString(), formatter));
                     documentObject = new DocumentObject();
                     extract(this.getDocumentObject(), f.getPath());
                     documentObject.setDescription(documentObject.getDescription().toLowerCase());

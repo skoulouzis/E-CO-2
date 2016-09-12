@@ -22,7 +22,7 @@ package eu.edisonproject.classification.prepare.controller;
 import document.avro.Document;
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
+//import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,10 +48,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
-import java.time.format.DateTimeFormatter;
+//import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
+import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 
 /*
@@ -222,8 +225,7 @@ public class DataPrepare implements IDataPrepare {
         }
         FileTime ct = attr.creationTime();
 
-        DateTimeFormatter formatter
-                = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
         return LocalDate.parse(ct.toString(), formatter);
     }
 

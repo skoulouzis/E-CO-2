@@ -15,8 +15,11 @@
  */
 package eu.edisonproject.classification.prepare.model;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
+//import java.time.LocalDate;
+
+import org.joda.time.LocalDate;
+
+//import java.time.format.DateTimeParseException;
 
 /*
  * @author Michele Sparamonti

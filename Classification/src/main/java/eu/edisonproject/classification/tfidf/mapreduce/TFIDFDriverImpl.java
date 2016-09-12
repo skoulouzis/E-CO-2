@@ -124,7 +124,7 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
                         numberOfDocuments++;
                     }
                 } catch (Exception ex) {
-                    LOGGER.log(Level.SEVERE, ex, null);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
 
             }
