@@ -210,7 +210,7 @@ public class TermWordFrequency extends Configured implements Tool {
         NLineInputFormat.addInputPath(job, inHdfs);
 //        NLineInputFormat.setMaxInputSplitSize(job, 2000);
 //        NLineInputFormat.setMinInputSplitSize(job, 2000);
-        NLineInputFormat.setNumLinesPerSplit(job, 5000);
+        NLineInputFormat.setNumLinesPerSplit(job, 20000);
         Logger.getLogger(TermWordFrequency.class.getName()).log(Level.INFO, "Num. of lines: {0}", NLineInputFormat.getNumLinesPerSplit(job));
 
         job.setMapperClass(TermWordFrequencyMapper.class);

@@ -97,14 +97,14 @@ public class TFIDFTermsDriver implements ITFIDFDriver {
             String[] args1 = {inputPath, OUTPUT_PATH1, TEXT_FILES_DIR_PATH, STOPWORDS_PATH};
             ToolRunner.run(new TermWordFrequency(), args1);
 
-//            String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};
-//            ToolRunner.run(new WordCountsForDocsDriver(), args2);
-//
-//            String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(TermWordFrequency.docs.size())};
-//            ToolRunner.run(new WordsInCorpusTFIDFDriver(), args3);
-//
-//            String[] args4 = {INPUT_PATH4, OUTPUT_PATH4};
-//            ToolRunner.run(new WordsGroupByTitleDriver(), args4);
+            String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};
+            ToolRunner.run(new WordCountsForDocsDriver(), args2);
+
+            String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(TermWordFrequency.docs.size())};
+            ToolRunner.run(new WordsInCorpusTFIDFDriver(), args3);
+
+            String[] args4 = {INPUT_PATH4, OUTPUT_PATH4};
+            ToolRunner.run(new WordsGroupByTitleDriver(), args4);
 
 //            String[] args2 = {INPUT_PATH2, OUTPUT_PATH2, TEXT_FILES_DIR_PATH, STOPWORDS_PATH};
 //            ToolRunner.run(new TFIDF(), args2);
