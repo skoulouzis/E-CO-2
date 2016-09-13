@@ -208,7 +208,8 @@ public class TermWordFrequency extends Configured implements Tool {
 
         job.setInputFormatClass(NLineInputFormat.class);
         NLineInputFormat.addInputPath(job, inHdfs);
-        NLineInputFormat.setMaxInputSplitSize(job, 400);
+//        NLineInputFormat.setMaxInputSplitSize(job, 1000);
+        NLineInputFormat.setMinInputSplitSize(job, 400);
         job.setMapperClass(TermWordFrequencyMapper.class);
 
         job.setMapOutputKeyClass(Text.class);
