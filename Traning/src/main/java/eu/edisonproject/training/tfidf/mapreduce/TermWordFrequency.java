@@ -51,15 +51,17 @@ public class TermWordFrequency extends Configured implements Tool {
     // hashmap for the terms
     private static StopWord cleanStopWord;
     public static Map<String, String> docs;
-    private static String stopwordPath;
+    private static Path stopwords;
 
     public static class TermWordFrequencyMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
 
-        public TermWordFrequencyMapper() {
+        public TermWordFrequencyMapper() throws IOException {
+            Logger.getLogger(TermWordFrequencyMapper.class.getName()).log(Level.INFO, "Loading StopWord from: {0}", stopwords.toUri().toString());
             if (cleanStopWord == null) {
-                CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(stopwordPath), true);
+                FileSystem fs = FileSystem.get(new Configuration());
+
+                CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(fs.open(stopwords).getWrappedStream()), true);
                 cleanStopWord = new StopWord(stopWordArraySet);
-                Logger.getLogger(TermWordFrequencyMapper.class.getName()).log(Level.INFO, "Loaded StopWord from: " + stopwordPath);
             }
         }
 
@@ -123,9 +125,22 @@ public class TermWordFrequency extends Configured implements Tool {
         if (docs == null) {
             docs = new HashMap<>();
         }
-        stopwordPath = args[3];
+
+        FileSystem fs = FileSystem.get(jobconf);
+        fs.delete(new Path(args[1]), true);
+        Path in = new Path(args[0]);
+        Path inHdfs = new Path(in.getName());
+        fs.delete(inHdfs, true);
+        fs.copyFromLocalFile(in, inHdfs);
+        Logger.getLogger(TermWordFrequency.class.getName()).log(Level.INFO, "Copied: {0} to: {1}", new Object[]{in.toUri(), inHdfs.toUri()});
+
+        Path stopwordsLocal = new Path(args[3]);
+        stopwords = new Path(stopwordsLocal.getName());
+        fs.delete(stopwords, true);
+        fs.copyFromLocalFile(stopwordsLocal, stopwords);
+
         if (docs.isEmpty()) {
-            CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(stopwordPath), true);
+            CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(fs.open(stopwords).getWrappedStream()), true);
             cleanStopWord = new StopWord(stopWordArraySet);
             File docsDir = new File(args[2]);
             for (File f : docsDir.listFiles()) {
@@ -136,13 +151,6 @@ public class TermWordFrequency extends Configured implements Tool {
                 }
             }
         }
-        FileSystem fs = FileSystem.get(jobconf);
-        fs.delete(new Path(args[1]), true);
-        Path in = new Path(args[0]);
-        Path inHdfs = new Path(in.getName());
-        fs.delete(inHdfs, true);
-        fs.copyFromLocalFile(in, inHdfs);
-        Logger.getLogger(TermWordFrequency.class.getName()).log(Level.INFO, "Copied: {0} to: {1}", new Object[]{in.toUri(), inHdfs.toUri()});
 
         Job job = new Job(jobconf);
         job.setJarByClass(TermWordFrequency.class);
