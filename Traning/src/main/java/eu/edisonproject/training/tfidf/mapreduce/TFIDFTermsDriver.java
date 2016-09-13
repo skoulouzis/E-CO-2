@@ -95,7 +95,7 @@ public class TFIDFTermsDriver implements ITFIDFDriver {
     public void executeTFIDF(String inputPath) {
         try {
 
-            String[] args1 = {inputPath, OUTPUT_PATH1, TEXT_FILES_DIR_PATH, STOPWORDS_PATH,NUM_OF_LINES};
+            String[] args1 = {inputPath, OUTPUT_PATH1, TEXT_FILES_DIR_PATH, STOPWORDS_PATH, NUM_OF_LINES};
             ToolRunner.run(new TermWordFrequency(), args1);
 //            INPUT_PATH2 = "/tmp/1473765100879/1-word-freq";
             String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};
@@ -121,7 +121,7 @@ public class TFIDFTermsDriver implements ITFIDFDriver {
 
             readTFIDFResult(fs, hdfsRes);
 
-            Path outPath = new Path(OUT);
+//            Path outPath = new Path(OUT);
 //            printCSV(fs, outPath.ge);
             List<Double> sum = computeSum(transactionValues);
             for (int i = 0; i < sum.size(); i++) {
@@ -131,7 +131,7 @@ public class TFIDFTermsDriver implements ITFIDFDriver {
             computeMean();
             // Resize the hashmap wordtfidf
             wordTfidf = resizeVector(wordTfidf);
-            writeResizedOutputIntoCSV(fs, outPath, wordTfidf);
+            writeResizedOutputIntoCSV(OUT, wordTfidf);
 
         } catch (Exception ex) {
             Logger.getLogger(TFIDFTermsDriver.class.getName()).log(Level.SEVERE, "TFIDF fail", ex);
@@ -254,13 +254,13 @@ public class TFIDFTermsDriver implements ITFIDFDriver {
         return resizedVector;
     }
 
-    public void writeResizedOutputIntoCSV(FileSystem fs, Path fileOutputPath, Map<String, Double> wordSum) throws IOException {
+    public void writeResizedOutputIntoCSV(String fileOutputPath, Map<String, Double> wordSum) throws IOException {
 
         ValueComparator bvc = new ValueComparator(wordTfidf);
         Map<String, Double> sorted_map = new TreeMap(bvc);
         sorted_map.putAll(wordTfidf);
 
-        try (PrintWriter out = new PrintWriter(fs.create(fileOutputPath))) {
+        try (PrintWriter out = new PrintWriter(new File(fileOutputPath))) {
             for (String key : sorted_map.keySet()) {
                 Double value = wordTfidf.get(key);
                 key = key.toLowerCase().trim().replaceAll(" ", "_");
