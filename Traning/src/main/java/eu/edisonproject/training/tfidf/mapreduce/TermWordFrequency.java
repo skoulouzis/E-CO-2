@@ -187,7 +187,7 @@ public class TermWordFrequency extends Configured implements Tool {
         hdfsDocs = fs.getFileStatus(hdfsDocs).getPath();
         fs.delete(hdfsDocs, true);
 //        FileStatus[] stats = fs.listStatus(localDocs);
-        File[] stats = new File(localDocs.toUri()).listFiles();
+        File[] stats = new File(localDocs.toString()).listFiles();
 
         for (File stat : stats) {
 //        for (FileStatus stat : stats) {
