@@ -147,15 +147,15 @@ public class Main {
             throw new IOException(new File(docs).getAbsolutePath() + " don't exist");
         }
 //
-//        String[] extractors = prop.getProperty("term.extractors",
-//                "eu.edisonproject.training.term.extraction.LuceneExtractor,"
-//                + "eu.edisonproject.training.term.extraction.JtopiaExtractor,"
-//                + "eu.edisonproject.training.term.extraction.AprioriExtraction").split(",");
+        String[] extractors = prop.getProperty("term.extractors",
+                "eu.edisonproject.training.term.extraction.LuceneExtractor,"
+                + "eu.edisonproject.training.term.extraction.JtopiaExtractor,"
+                + "eu.edisonproject.training.term.extraction.AprioriExtraction").split(",");
 
 //        String[] extractors = prop.getProperty("term.extractors",
 //                "eu.edisonproject.training.term.extraction.JtopiaExtractor,"
 //                + "eu.edisonproject.training.term.extraction.AprioriExtraction").split(",");
-        String[] extractors = "eu.edisonproject.training.term.extraction.JtopiaExtractor".split(",");
+//        String[] extractors = "eu.edisonproject.training.term.extraction.JtopiaExtractor".split(",");
 
         Map<String, Double> termDictionaray = new HashMap();
         for (String className : extractors) {
