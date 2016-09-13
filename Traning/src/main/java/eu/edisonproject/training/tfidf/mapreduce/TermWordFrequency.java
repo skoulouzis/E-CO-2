@@ -145,6 +145,7 @@ public class TermWordFrequency extends Configured implements Tool {
         Path inHdfs = new Path(in.getName());
         fs.delete(inHdfs, true);
         fs.copyFromLocalFile(in, inHdfs);
+        fs.deleteOnExit(inHdfs);
         FileStatus inHdfsStatus = fs.getFileStatus(inHdfs);
         Logger.getLogger(TermWordFrequency.class.getName()).log(Level.INFO, "Copied: {0} to: {1}", new Object[]{in.toUri(), inHdfsStatus.getPath().toUri()});
 
@@ -152,6 +153,7 @@ public class TermWordFrequency extends Configured implements Tool {
         stopwords = new Path(stopwordsLocal.getName());
         fs.delete(stopwords, true);
         fs.copyFromLocalFile(stopwordsLocal, stopwords);
+        fs.deleteOnExit(stopwords);
 
         FileStatus stopwordsStatus = fs.getFileStatus(stopwords);
         stopwords = stopwordsStatus.getPath();
