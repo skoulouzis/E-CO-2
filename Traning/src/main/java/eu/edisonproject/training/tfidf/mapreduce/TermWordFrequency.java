@@ -166,12 +166,15 @@ public class TermWordFrequency extends Configured implements Tool {
         FileSystem fs = FileSystem.get(jobconf);
         fs.delete(new Path(args[1]), true);
         Path in = new Path(args[0]);
-        Path inHdfs = new Path(in.getName());
-        fs.delete(inHdfs, true);
-        fs.copyFromLocalFile(in, inHdfs);
-        fs.deleteOnExit(inHdfs);
-        FileStatus inHdfsStatus = fs.getFileStatus(inHdfs);
-        Logger.getLogger(TermWordFrequency.class.getName()).log(Level.INFO, "Copied: {0} to: {1}", new Object[]{in.toUri(), inHdfsStatus.getPath().toUri()});
+        Path inHdfs = in;
+        if (!jobconf.get(FileSystem.FS_DEFAULT_NAME_KEY).startsWith("file")) {
+            inHdfs = new Path(in.getName());
+            fs.delete(inHdfs, true);
+            fs.copyFromLocalFile(in, inHdfs);
+            fs.deleteOnExit(inHdfs);
+            FileStatus inHdfsStatus = fs.getFileStatus(inHdfs);
+            Logger.getLogger(TermWordFrequency.class.getName()).log(Level.INFO, "Copied: {0} to: {1}", new Object[]{in.toUri(), inHdfsStatus.getPath().toUri()});
+        }
 
         Job job = new Job(jobconf);
 
@@ -184,7 +187,7 @@ public class TermWordFrequency extends Configured implements Tool {
         FileStatus stopwordsStatus = fs.getFileStatus(stopwords);
         stopwords = stopwordsStatus.getPath();
         job.addCacheFile(stopwords.toUri());
-        Logger.getLogger(TermWordFrequency.class.getName()).log(Level.INFO, stopwords.toString());
+        
 
         Path localDocs = new Path(args[2]);
         Path hdfsDocs = new Path(localDocs.getName());

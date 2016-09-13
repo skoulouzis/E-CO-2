@@ -153,7 +153,7 @@ public class JtopiaExtractor implements TermExtractor {
 //                lematizer.setDescription(cleanText);
                 String lematizedText = cleanText;//lematizer.execute();
 
-                topiaDoc = termExtractor.extractTerms(lematizedText);                
+                topiaDoc = termExtractor.extractTerms(lematizedText);
                 terms = topiaDoc.getFinalFilteredTerms().keySet();
             }
         }

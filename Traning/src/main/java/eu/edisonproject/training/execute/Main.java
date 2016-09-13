@@ -361,9 +361,9 @@ public class Main {
                 TFIDFTermsDriver.STOPWORDS_PATH = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
             }
             TFIDFTermsDriver.NUM_OF_LINES = System.getProperty("map.reduce.num.of.lines");
-            
+
             if (TFIDFTermsDriver.NUM_OF_LINES == null) {
-                TFIDFTermsDriver.STOPWORDS_PATH = prop.getProperty("map.reduce.num.of.lines", "200");
+                TFIDFTermsDriver.NUM_OF_LINES = prop.getProperty("map.reduce.num.of.lines", "200");
             }
             setTFIDFTermDriverPaths(docPath, out);
             tfidfDriver.executeTFIDF(termsFile);
