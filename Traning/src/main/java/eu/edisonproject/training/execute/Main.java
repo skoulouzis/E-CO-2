@@ -355,7 +355,7 @@ public class Main {
     private static void calculateTermTFIDF(String docPath, String termsFile, String out) throws IOException {
         try {
             ITFIDFDriver tfidfDriver = new TFIDFTermsDriver();
-            setTFIDFTermDriverPaths(docPath);
+            setTFIDFTermDriverPaths(docPath, out);
             tfidfDriver.executeTFIDF(termsFile);
 //            File terms = new File(TFIDFTermsDriver.TERMS);
 //            if (FilenameUtils.getExtension(terms.getName()).endsWith("csv")) {
@@ -405,7 +405,7 @@ public class Main {
         Files.move(fout, fin);
     }
 
-    private static void setTFIDFTermDriverPaths(String textDocsPath) throws IOException {
+    private static void setTFIDFTermDriverPaths(String textDocsPath, String out) throws IOException {
 
         TFIDFTermsDriver.STOPWORDS_PATH = System.getProperty("stop.words.file");
 
@@ -413,6 +413,7 @@ public class Main {
             TFIDFTermsDriver.STOPWORDS_PATH = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
         }
         TFIDFTermsDriver.TEXT_FILES_DIR_PATH = textDocsPath;
+        TFIDFTermsDriver.OUT = out;
 
     }
 
