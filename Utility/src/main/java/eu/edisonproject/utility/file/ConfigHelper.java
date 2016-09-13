@@ -15,10 +15,13 @@
  */
 package eu.edisonproject.utility.file;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -36,6 +39,19 @@ public class ConfigHelper {
         ReaderFile fileReader = new ReaderFile(stopWordsPath);
         String[] stopWord = fileReader.readFile().split(" ");
         final List<String> stopWords = Arrays.asList(stopWord);
+
+        return new CharArraySet(stopWords, false);
+    }
+
+    public static CharArraySet loadStopWords(InputStream is) throws IOException {
+        String line;
+        List<String> stopWords = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(is))) {
+            while ((line = br.readLine()) != null) {
+                stopWords.add(line);
+            }
+        }
 
         return new CharArraySet(stopWords, false);
     }
