@@ -355,6 +355,16 @@ public class Main {
     private static void calculateTermTFIDF(String docPath, String termsFile, String out) throws IOException {
         try {
             ITFIDFDriver tfidfDriver = new TFIDFTermsDriver();
+            TFIDFTermsDriver.STOPWORDS_PATH = System.getProperty("stop.words.file");
+
+            if (TFIDFTermsDriver.STOPWORDS_PATH == null) {
+                TFIDFTermsDriver.STOPWORDS_PATH = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
+            }
+            TFIDFTermsDriver.NUM_OF_LINES = System.getProperty("map.reduce.num.of.lines");
+            
+            if (TFIDFTermsDriver.NUM_OF_LINES == null) {
+                TFIDFTermsDriver.STOPWORDS_PATH = prop.getProperty("map.reduce.num.of.lines", "200");
+            }
             setTFIDFTermDriverPaths(docPath, out);
             tfidfDriver.executeTFIDF(termsFile);
 //            File terms = new File(TFIDFTermsDriver.TERMS);
@@ -406,15 +416,8 @@ public class Main {
     }
 
     private static void setTFIDFTermDriverPaths(String textDocsPath, String out) throws IOException {
-
-        TFIDFTermsDriver.STOPWORDS_PATH = System.getProperty("stop.words.file");
-
-        if (TFIDFTermsDriver.STOPWORDS_PATH == null) {
-            TFIDFTermsDriver.STOPWORDS_PATH = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
-        }
         TFIDFTermsDriver.TEXT_FILES_DIR_PATH = textDocsPath;
         TFIDFTermsDriver.OUT = out;
-
     }
 
 }

@@ -83,6 +83,7 @@ public class TFIDFTermsDriver implements ITFIDFDriver {
 
     private double threshold;
     public static String STOPWORDS_PATH = ".." + File.separator + "etc" + File.separator + "stopwords.csv";
+    public static String NUM_OF_LINES;
 
     public TFIDFTermsDriver() {
         this.allWords = new LinkedList<>();
@@ -94,7 +95,7 @@ public class TFIDFTermsDriver implements ITFIDFDriver {
     public void executeTFIDF(String inputPath) {
         try {
 
-            String[] args1 = {inputPath, OUTPUT_PATH1, TEXT_FILES_DIR_PATH, STOPWORDS_PATH};
+            String[] args1 = {inputPath, OUTPUT_PATH1, TEXT_FILES_DIR_PATH, STOPWORDS_PATH,NUM_OF_LINES};
             ToolRunner.run(new TermWordFrequency(), args1);
 //            INPUT_PATH2 = "/tmp/1473765100879/1-word-freq";
             String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};
