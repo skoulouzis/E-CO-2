@@ -140,15 +140,15 @@ public class Main {
 
     private static void termExtraction(String docPath, String out) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, InterruptedException {
 //
-        String[] extractors = prop.getProperty("term.extractors",
-                "eu.edisonproject.training.term.extraction.LuceneExtractor,"
-                + "eu.edisonproject.training.term.extraction.JtopiaExtractor,"
-                + "eu.edisonproject.training.term.extraction.AprioriExtraction").split(",");
+//        String[] extractors = prop.getProperty("term.extractors",
+//                "eu.edisonproject.training.term.extraction.LuceneExtractor,"
+//                + "eu.edisonproject.training.term.extraction.JtopiaExtractor,"
+//                + "eu.edisonproject.training.term.extraction.AprioriExtraction").split(",");
 
 //        String[] extractors = prop.getProperty("term.extractors",
 //                "eu.edisonproject.training.term.extraction.JtopiaExtractor,"
 //                + "eu.edisonproject.training.term.extraction.AprioriExtraction").split(",");
-//        String[] extractors = "eu.edisonproject.training.term.extraction.JtopiaExtractor".split(",");
+        String[] extractors = "eu.edisonproject.training.term.extraction.JtopiaExtractor".split(",");
 
         Map<String, Double> termDictionaray = new HashMap();
         for (String className : extractors) {
@@ -347,38 +347,34 @@ public class Main {
     }
 
     private static void calculateTermTFIDF(String docPath, String termsFile, String out) throws IOException {
-        File tmpFolder = null;
-        File inFile = null;
+//        File tmpFolder = null;
+//        File inFile = null;
         try {
 
             ITFIDFDriver tfidfDriver = new TFIDFTermsDriver();
-            inFile = new File(FilenameUtils.removeExtension(termsFile) + "_tmp.csv");
-            inFile.delete();
-            FileUtils.moveFile(new File(termsFile), inFile);
+//            inFile = new File(FilenameUtils.removeExtension(termsFile) + "_tmp.csv");
+//            inFile.delete();
+//            FileUtils.moveFile(new File(termsFile), inFile);
 
-            String workingFolder = System.getProperty("working.folder");
-            if (workingFolder == null) {
-                workingFolder = prop.getProperty("working.folder", System.getProperty("java.io.tmpdir"));
-            }
-
-            tmpFolder = new File(workingFolder + File.separator + System.currentTimeMillis());
-
-            tmpFolder.mkdir();
-            tmpFolder.deleteOnExit();
-
-            setTFIDFTermDriverPaths(inFile, new File(docPath), tmpFolder);
-
-            tfidfDriver.executeTFIDF(tmpFolder.getAbsolutePath() + File.separator + inFile.getName());
-            File terms = new File(TFIDFTermsDriver.TERMS);
-            if (FilenameUtils.getExtension(terms.getName()).endsWith("csv")) {
-                FileUtils.moveFile(terms, new File(out));
-            }
+//            String workingFolder = System.getProperty("working.folder");
+//            if (workingFolder == null) {
+//                workingFolder = prop.getProperty("working.folder", System.getProperty("java.io.tmpdir"));
+//            }
+//            tmpFolder = new File(workingFolder + File.separator + System.currentTimeMillis());
+//            tmpFolder.mkdir();
+//            tmpFolder.deleteOnExit();
+            setTFIDFTermDriverPaths(docPath);
+            tfidfDriver.executeTFIDF(termsFile);
+//            File terms = new File(TFIDFTermsDriver.TERMS);
+//            if (FilenameUtils.getExtension(terms.getName()).endsWith("csv")) {
+//                FileUtils.moveFile(terms, new File(out));
+//            }
         } finally {
-            if (tmpFolder != null && tmpFolder.exists()) {
-                tmpFolder.delete();
-                inFile.delete();
-//                FileUtils.forceDelete(tmpFolder);
-            }
+//            if (tmpFolder != null && tmpFolder.exists()) {
+//                tmpFolder.delete();
+//                inFile.delete();
+////                FileUtils.forceDelete(tmpFolder);
+//            }
         }
     }
 
@@ -417,7 +413,7 @@ public class Main {
         Files.move(fout, fin);
     }
 
-    private static void setTFIDFTermDriverPaths(File termsFile, File textDocsPath, File tmpFolder) throws IOException {
+    private static void setTFIDFTermDriverPaths(String textDocsPath) throws IOException {
 
         TFIDFTermsDriver.STOPWORDS_PATH = System.getProperty("stop.words.file");
 
@@ -425,45 +421,45 @@ public class Main {
             TFIDFTermsDriver.STOPWORDS_PATH = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
         }
 
-        File outPath1 = new File(TFIDFTermsDriver.OUTPUT_PATH1);
-        TFIDFTermsDriver.OUTPUT_PATH1 = tmpFolder.getAbsolutePath() + File.separator + outPath1.getName();
-
-        File inPath2 = new File(TFIDFTermsDriver.INPUT_PATH2);
-        TFIDFTermsDriver.INPUT_PATH2 = tmpFolder.getAbsolutePath() + File.separator + inPath2.getName();
-
-        File outPath2 = new File(TFIDFTermsDriver.OUTPUT_PATH2);
-        TFIDFTermsDriver.OUTPUT_PATH2 = tmpFolder.getAbsolutePath() + File.separator + outPath2.getName();
-
-        File inPath3 = new File(TFIDFTermsDriver.INPUT_PATH3);
-        TFIDFTermsDriver.INPUT_PATH3 = tmpFolder.getAbsolutePath() + File.separator + inPath3.getName();
-
-        File outPath3 = new File(TFIDFTermsDriver.OUTPUT_PATH3);
-        TFIDFTermsDriver.OUTPUT_PATH3 = tmpFolder.getAbsolutePath() + File.separator + outPath3.getName();
-
-        File inPath4 = new File(TFIDFTermsDriver.INPUT_PATH4);
-        TFIDFTermsDriver.INPUT_PATH4 = tmpFolder.getAbsolutePath() + File.separator + inPath4.getName();
-
-        File outPath4 = new File(TFIDFTermsDriver.OUTPUT_PATH4);
-        TFIDFTermsDriver.OUTPUT_PATH4 = tmpFolder.getAbsolutePath() + File.separator + outPath4.getName();
-
-        File tiidfCSV = new File(TFIDFTermsDriver.TFIDFCSV_PATH);
-        TFIDFTermsDriver.TFIDFCSV_PATH = tmpFolder.getAbsolutePath() + File.separator + tiidfCSV.getName();
-
-        File terms = new File(TFIDFTermsDriver.TERMS);
-        TFIDFTermsDriver.TERMS = tmpFolder.getAbsolutePath() + File.separator + terms.getName();
-
-        File cntxPath = new File(TFIDFTermsDriver.CONTEXT_PATH);
-        TFIDFTermsDriver.CONTEXT_PATH = tmpFolder.getAbsolutePath() + File.separator + cntxPath.getName();
-
-        if (FilenameUtils.getExtension(termsFile.getName()).endsWith("csv")) {
-            FileUtils.copyFile(termsFile, new File(tmpFolder + File.separator + termsFile.getName()));
-        }
-        for (File f : textDocsPath.listFiles()) {
-            if (FilenameUtils.getExtension(f.getName()).endsWith("txt")) {
-                FileUtils.copyFile(f, new File(tmpFolder + File.separator + f.getName()));
-            }
-        }
-        TFIDFTermsDriver.TEXT_FILES_DIR_PATH = tmpFolder.getAbsolutePath();
+//        File outPath1 = new File(TFIDFTermsDriver.OUTPUT_PATH1);
+//        TFIDFTermsDriver.OUTPUT_PATH1 = tmpFolder.getAbsolutePath() + File.separator + outPath1.getName();
+//
+//        File inPath2 = new File(TFIDFTermsDriver.INPUT_PATH2);
+//        TFIDFTermsDriver.INPUT_PATH2 = tmpFolder.getAbsolutePath() + File.separator + inPath2.getName();
+//
+//        File outPath2 = new File(TFIDFTermsDriver.OUTPUT_PATH2);
+//        TFIDFTermsDriver.OUTPUT_PATH2 = tmpFolder.getAbsolutePath() + File.separator + outPath2.getName();
+//
+//        File inPath3 = new File(TFIDFTermsDriver.INPUT_PATH3);
+//        TFIDFTermsDriver.INPUT_PATH3 = tmpFolder.getAbsolutePath() + File.separator + inPath3.getName();
+//
+//        File outPath3 = new File(TFIDFTermsDriver.OUTPUT_PATH3);
+//        TFIDFTermsDriver.OUTPUT_PATH3 = tmpFolder.getAbsolutePath() + File.separator + outPath3.getName();
+//
+//        File inPath4 = new File(TFIDFTermsDriver.INPUT_PATH4);
+//        TFIDFTermsDriver.INPUT_PATH4 = tmpFolder.getAbsolutePath() + File.separator + inPath4.getName();
+//
+//        File outPath4 = new File(TFIDFTermsDriver.OUTPUT_PATH4);
+//        TFIDFTermsDriver.OUTPUT_PATH4 = tmpFolder.getAbsolutePath() + File.separator + outPath4.getName();
+//
+//        File tiidfCSV = new File(TFIDFTermsDriver.TFIDFCSV_PATH);
+//        TFIDFTermsDriver.TFIDFCSV_PATH = tmpFolder.getAbsolutePath() + File.separator + tiidfCSV.getName();
+//
+//        File terms = new File(TFIDFTermsDriver.TERMS);
+//        TFIDFTermsDriver.TERMS = tmpFolder.getAbsolutePath() + File.separator + terms.getName();
+//
+//        File cntxPath = new File(TFIDFTermsDriver.CONTEXT_PATH);
+//        TFIDFTermsDriver.CONTEXT_PATH = tmpFolder.getAbsolutePath() + File.separator + cntxPath.getName();
+//
+//        if (FilenameUtils.getExtension(termsFile.getName()).endsWith("csv")) {
+//            FileUtils.copyFile(termsFile, new File(tmpFolder + File.separator + termsFile.getName()));
+//        }
+//        for (File f : textDocsPath.listFiles()) {
+//            if (FilenameUtils.getExtension(f.getName()).endsWith("txt")) {
+//                FileUtils.copyFile(f, new File(tmpFolder + File.separator + f.getName()));
+//            }
+//        }
+        TFIDFTermsDriver.TEXT_FILES_DIR_PATH = textDocsPath;
     }
 
 }

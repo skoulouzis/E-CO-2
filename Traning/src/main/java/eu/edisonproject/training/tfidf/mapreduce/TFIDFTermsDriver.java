@@ -33,6 +33,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.apache.hadoop.util.ToolRunner;
 //import org.apache.avro.hadoop.io.AvroSerialization;
 
@@ -45,32 +46,31 @@ public class TFIDFTermsDriver implements ITFIDFDriver {
     //where to read the frequent itemset
     public static String TEXT_FILES_DIR_PATH;
     //where to read the data for MapReduce#1
-    private String TERMS_FILE_PATH;
     //where to put the data in hdfs when MapReduce#1 will finish
-    public static String OUTPUT_PATH1 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "1-word-freq";
+    public static String OUTPUT_PATH1 = "1-word-freq";
 
     // where to read the data for the MapReduce#2
-    public static String INPUT_PATH2 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "1-word-freq";
+    public static String INPUT_PATH2 = OUTPUT_PATH1;
     // where to put the data in hdfs when the MapReduce#2 will finish
-    public static String OUTPUT_PATH2 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "2-word-counts";
+    public static String OUTPUT_PATH2 = "2-word-counts";
 
     // where to read the data for the MapReduce#3
-    public static String INPUT_PATH3 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "2-word-counts";
+    public static String INPUT_PATH3 = OUTPUT_PATH2;
     // where to put the data in hdfs when the MapReduce#3 will finish
-    public static String OUTPUT_PATH3 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "3-tf-idf";
+    public static String OUTPUT_PATH3 = "3-tf-idf";
 
     // where to read the data for the MapReduce#4.
-    public static String INPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "3-tf-idf";
+    public static String INPUT_PATH4 = OUTPUT_PATH3;
     // where to put the data in hdfs when the MapReduce# will finish
-    public static String OUTPUT_PATH4 = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "4-tf-idf-document";
+    public static String OUTPUT_PATH4 = "4-tf-idf-document";
 
     // where to put the csv with the tfidf
-    public static String TFIDFCSV_PATH = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "5-csv";
+    public static String TFIDFCSV_PATH = "5-csv";
     // where to put the csv with the context vector
-    public static String TERMS = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "terms.csv";
+    public static String TERMS = "terms.csv";
 
     // where to put the csv with the context vector
-    public static String CONTEXT_PATH = ".." + File.separator + "etc" + File.separator + "Training" + File.separator + "6-context-vector";
+    public static String CONTEXT_PATH = "6-context-vector";
 
     // the list of all words
     private final List<String> allWords;
@@ -92,10 +92,9 @@ public class TFIDFTermsDriver implements ITFIDFDriver {
 
     @Override
     public void executeTFIDF(String inputPath) {
-        TERMS_FILE_PATH = inputPath;
-
         try {
-            String[] args1 = {TERMS_FILE_PATH, OUTPUT_PATH1, TEXT_FILES_DIR_PATH, STOPWORDS_PATH};
+
+            String[] args1 = {inputPath, OUTPUT_PATH1, TEXT_FILES_DIR_PATH, STOPWORDS_PATH};
             ToolRunner.run(new TermWordFrequency(), args1);
 
             String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};
