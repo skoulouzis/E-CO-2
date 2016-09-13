@@ -58,14 +58,14 @@ public class TermWordFrequency extends Configured implements Tool {
     private static StopWord cleanStopWord;
     public static Map<String, String> docs;
     private static Path stopwords;
-
+    
     public static class TermWordFrequencyMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
-
+        
         @Override
         protected void cleanup(Context context) throws IOException, InterruptedException {
             super.cleanup(context);
         }
-
+        
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
 //            long start = System.currentTimeMillis();
@@ -97,15 +97,15 @@ public class TermWordFrequency extends Configured implements Tool {
                             docs.put(filePath.getName(), cleanStopWord.execute());
                         }
                     }
-
+                    
                 }
             }
 //            System.err.println("conf elapsed : " + (System.currentTimeMillis() - start));
         }
-
+        
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-
+            
             int totalWcount = 0;
             String term = value.toString().split(",")[0];
             if (term.length() > 1) {
@@ -118,7 +118,7 @@ public class TermWordFrequency extends Configured implements Tool {
                 while (cTerm.startsWith(" ")) {
                     cTerm = cTerm.substring(cTerm.indexOf(" ") + 1, cTerm.length());
                 }
-
+                
                 for (String k : docs.keySet()) {
                     String d = docs.get(k);
                     cleanStopWord.setDescription(d.toLowerCase());
@@ -136,25 +136,25 @@ public class TermWordFrequency extends Configured implements Tool {
 //                System.err.println(new Text(term) + " " + new IntWritable(wcount));
 //                context.write(new Text(term), new IntWritable(wcount));
             }
-
+            
         }
     }
-
+    
     public static class TermWordFrequencyReducer extends Reducer<Text, IntWritable, Text, Integer> {
-
+        
         public TermWordFrequencyReducer() {
         }
-
+        
         @Override
         protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
-
+            
             Integer sum = 0;
             for (IntWritable val : values) {
                 sum += val.get();
             }
 //            System.err.println(key + " " + sum);
             context.write(key, sum);
-
+            
         }
     } // end of reducer class
 
@@ -162,7 +162,7 @@ public class TermWordFrequency extends Configured implements Tool {
     @Override
     public int run(String[] args) throws Exception {
         Configuration jobconf = getConf();
-
+        
         FileSystem fs = FileSystem.get(jobconf);
         fs.delete(new Path(args[1]), true);
         Path in = new Path(args[0]);
@@ -175,20 +175,19 @@ public class TermWordFrequency extends Configured implements Tool {
             FileStatus inHdfsStatus = fs.getFileStatus(inHdfs);
             Logger.getLogger(TermWordFrequency.class.getName()).log(Level.INFO, "Copied: {0} to: {1}", new Object[]{in.toUri(), inHdfsStatus.getPath().toUri()});
         }
-
+        
         Job job = new Job(jobconf);
-
+        
         Path stopwordsLocal = new Path(args[3]);
         stopwords = new Path(stopwordsLocal.getName());
         fs.delete(stopwords, true);
         fs.copyFromLocalFile(stopwordsLocal, stopwords);
         fs.deleteOnExit(stopwords);
-
+        
         FileStatus stopwordsStatus = fs.getFileStatus(stopwords);
         stopwords = stopwordsStatus.getPath();
         job.addCacheFile(stopwords.toUri());
         
-
         Path localDocs = new Path(args[2]);
         Path hdfsDocs = new Path(localDocs.getName());
         fs.mkdirs(hdfsDocs);
@@ -196,7 +195,7 @@ public class TermWordFrequency extends Configured implements Tool {
         fs.delete(hdfsDocs, true);
 //        FileStatus[] stats = fs.listStatus(localDocs);
         File[] stats = new File(localDocs.toString()).listFiles();
-
+        
         for (File stat : stats) {
 //        for (FileStatus stat : stats) {
             Path filePath = new Path(stat.getAbsolutePath());
@@ -205,32 +204,32 @@ public class TermWordFrequency extends Configured implements Tool {
                 fs.copyFromLocalFile(filePath, dest);
             }
         }
-
+        
         job.addCacheFile(hdfsDocs.toUri());
-
+        
         job.setJarByClass(TermWordFrequency.class);
         job.setJobName("Word Frequency Term Driver");
-
+        
         FileInputFormat.setInputPaths(job, inHdfs);
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
 //         job.setInputFormatClass(TextInputFormat.class);
         job.setInputFormatClass(NLineInputFormat.class);
         NLineInputFormat.addInputPath(job, inHdfs);
-        NLineInputFormat.setNumLinesPerSplit(job, 100);
+        NLineInputFormat.setNumLinesPerSplit(job, Integer.valueOf(args[4]));
         Logger.getLogger(TermWordFrequency.class.getName()).log(Level.INFO, "Num. of lines: {0}", NLineInputFormat.getNumLinesPerSplit(job));
-
+        
         job.setMapperClass(TermWordFrequencyMapper.class);
-
+        
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(IntWritable.class);
-
+        
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Integer.class);
         job.setReducerClass(TermWordFrequencyReducer.class);
-
+        
         return (job.waitForCompletion(true) ? 0 : 1);
-
+        
     }
-
+    
 }

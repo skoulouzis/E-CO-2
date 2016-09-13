@@ -367,16 +367,9 @@ public class Main {
             }
             setTFIDFTermDriverPaths(docPath, out);
             tfidfDriver.executeTFIDF(termsFile);
-//            File terms = new File(TFIDFTermsDriver.TERMS);
-//            if (FilenameUtils.getExtension(terms.getName()).endsWith("csv")) {
-//                FileUtils.moveFile(terms, new File(out));
-//            }
+
         } finally {
-//            if (tmpFolder != null && tmpFolder.exists()) {
-//                tmpFolder.delete();
-//                inFile.delete();
-////                FileUtils.forceDelete(tmpFolder);
-//            }
+
         }
     }
 
