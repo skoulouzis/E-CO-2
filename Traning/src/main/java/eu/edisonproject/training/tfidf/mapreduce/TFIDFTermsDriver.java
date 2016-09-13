@@ -22,6 +22,7 @@ import eu.edisonproject.utility.file.WriterFile;
 import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.HashMap;
@@ -100,7 +101,14 @@ public class TFIDFTermsDriver implements ITFIDFDriver {
             String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};
             ToolRunner.run(new WordCountsForDocsDriver(), args2);
 
-            String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(TermWordFrequency.docs.size())};
+            File docs = new File(TEXT_FILES_DIR_PATH);
+            File[] files = docs.listFiles(new FilenameFilter() {
+                public boolean accept(File dir, String name) {
+                    return name.toLowerCase().endsWith(".txt");
+                }
+            });
+
+            String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(docs.length())};
             ToolRunner.run(new WordsInCorpusTFIDFDriver(), args3);
 
             String[] args4 = {INPUT_PATH4, OUTPUT_PATH4};
