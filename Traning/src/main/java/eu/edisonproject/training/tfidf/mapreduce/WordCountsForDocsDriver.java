@@ -52,11 +52,12 @@ public class WordCountsForDocsDriver extends Configured implements Tool{
         public WordCountsForDocsMapper() {
         }
 
+        @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             String[] input = value.toString().split("\t");
             
             String[] keyValues = input[0].split("@");
-            String valueString = input[1].toString();
+            String valueString = input[1];
 
             context.write(new Text(keyValues[1]), new Text(keyValues[0] + "=" + valueString));
 
@@ -68,9 +69,10 @@ public class WordCountsForDocsDriver extends Configured implements Tool{
         public WordCountsForDocsReducer() {
         }
 
+        @Override
         protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             int sumOfWordsInDocument = 0;
-            Map<String, Integer> tempCounter = new HashMap<String, Integer>();
+            Map<String, Integer> tempCounter = new HashMap<>();
             for (Text val : values) {
                 String[] wordCounter = val.toString().split("=");
                 tempCounter.put(wordCounter[0], Integer.valueOf(wordCounter[1]));
@@ -79,12 +81,13 @@ public class WordCountsForDocsDriver extends Configured implements Tool{
             for (String wordKey : tempCounter.keySet()) {
                 Text newKey = new Text(wordKey + "@" + key.toString());
                 Text newValue = new Text(tempCounter.get(wordKey) + "/" + sumOfWordsInDocument);
-                context.write(new AvroKey<Text>(newKey), new AvroValue<Text>(newValue));
+                context.write(new AvroKey<>(newKey), new AvroValue<>(newValue));
             }
 
         }
     } // end of reducer class
     //changed run(String[]) in runWordCountsForDocsDriver(String[])
+    @Override
     public int run(String[] args) throws Exception {
         Configuration conf = new Configuration();
         Job job = new Job(conf, "WordsCountsForDocsDriver");

@@ -85,7 +85,7 @@ public class TermWordFrequency extends Configured implements Tool {
                     for (FileStatus stat : files) {
                         Path filePath = stat.getPath();
                         if (FilenameUtils.getExtension(filePath.getName()).endsWith("txt")) {
-                            StringBuffer contents = new StringBuffer();
+                            StringBuilder contents = new StringBuilder();
                             try (BufferedReader br = new BufferedReader(
                                     new InputStreamReader(fs.open(filePath)))) {
                                 while ((line = br.readLine()) != null) {
@@ -208,7 +208,7 @@ public class TermWordFrequency extends Configured implements Tool {
 
         job.setInputFormatClass(NLineInputFormat.class);
         NLineInputFormat.addInputPath(job, inHdfs);
-        NLineInputFormat.setMaxInputSplitSize(job, 400);
+        NLineInputFormat.setMaxInputSplitSize(job, 200);
         job.setMapperClass(TermWordFrequencyMapper.class);
 
         job.setMapOutputKeyClass(Text.class);
