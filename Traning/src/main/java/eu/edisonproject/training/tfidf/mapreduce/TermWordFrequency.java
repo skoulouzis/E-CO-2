@@ -51,10 +51,16 @@ public class TermWordFrequency extends Configured implements Tool {
     // hashmap for the terms
     private static StopWord cleanStopWord;
     public static Map<String, String> docs;
+    private static String stopwordPath;
 
     public static class TermWordFrequencyMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
 
         public TermWordFrequencyMapper() {
+            if (cleanStopWord == null) {
+                CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(stopwordPath), true);
+                cleanStopWord = new StopWord(stopWordArraySet);
+                Logger.getLogger(TermWordFrequencyMapper.class.getName()).log(Level.INFO, "Loaded StopWord from: " + stopwordPath);
+            }
         }
 
         @Override
@@ -117,9 +123,9 @@ public class TermWordFrequency extends Configured implements Tool {
         if (docs == null) {
             docs = new HashMap<>();
         }
-
+        stopwordPath = args[3];
         if (docs.isEmpty()) {
-            CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(args[3]), true);
+            CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(stopwordPath), true);
             cleanStopWord = new StopWord(stopWordArraySet);
             File docsDir = new File(args[2]);
             for (File f : docsDir.listFiles()) {
@@ -134,8 +140,9 @@ public class TermWordFrequency extends Configured implements Tool {
         fs.delete(new Path(args[1]), true);
         Path in = new Path(args[0]);
         Path inHdfs = new Path(in.getName());
+        fs.delete(inHdfs, true);
         fs.copyFromLocalFile(in, inHdfs);
-        Logger.getLogger(TermWordFrequency.class.getName()).log(Level.INFO, "Copied " + in.toUri() + " to " + inHdfs.toUri());
+        Logger.getLogger(TermWordFrequency.class.getName()).log(Level.INFO, "Copied: {0} to: {1}", new Object[]{in.toUri(), inHdfs.toUri()});
 
         Job job = new Job(jobconf);
         job.setJarByClass(TermWordFrequency.class);
