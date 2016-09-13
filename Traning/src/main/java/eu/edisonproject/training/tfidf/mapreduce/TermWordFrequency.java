@@ -68,6 +68,7 @@ public class TermWordFrequency extends Configured implements Tool {
 
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
+//            long start = System.currentTimeMillis();
             if (context.getCacheFiles() != null && context.getCacheFiles().length > 0) {
                 URI[] uris = context.getCacheFiles();
                 URI stopwordFile = uris[0];
@@ -99,13 +100,16 @@ public class TermWordFrequency extends Configured implements Tool {
 
                 }
             }
+//            System.err.println("conf elapsed : " + (System.currentTimeMillis() - start));
         }
 
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+
             int totalWcount = 0;
             String term = value.toString().split(",")[0];
             if (term.length() > 1) {
+//                long start = System.currentTimeMillis();
                 cleanStopWord.setDescription(term.replaceAll("_", " ").trim());
                 String cTerm = cleanStopWord.execute();
                 while (cTerm.endsWith(" ")) {
@@ -128,10 +132,11 @@ public class TermWordFrequency extends Configured implements Tool {
 //                    }
 
                 }
-
+//                System.err.println("line elapsed : " + (System.currentTimeMillis() - start));
 //                System.err.println(new Text(term) + " " + new IntWritable(wcount));
 //                context.write(new Text(term), new IntWritable(wcount));
             }
+
         }
     }
 
@@ -210,7 +215,7 @@ public class TermWordFrequency extends Configured implements Tool {
         NLineInputFormat.addInputPath(job, inHdfs);
 //        NLineInputFormat.setMaxInputSplitSize(job, 2000);
 //        NLineInputFormat.setMinInputSplitSize(job, 2000);
-        NLineInputFormat.setNumLinesPerSplit(job, 20000);
+        NLineInputFormat.setNumLinesPerSplit(job, 10);
         Logger.getLogger(TermWordFrequency.class.getName()).log(Level.INFO, "Num. of lines: {0}", NLineInputFormat.getNumLinesPerSplit(job));
 
         job.setMapperClass(TermWordFrequencyMapper.class);
