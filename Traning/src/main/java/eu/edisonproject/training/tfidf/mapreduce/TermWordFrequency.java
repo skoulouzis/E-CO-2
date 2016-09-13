@@ -22,8 +22,10 @@ package eu.edisonproject.training.tfidf.mapreduce;
 import eu.edisonproject.utility.file.ConfigHelper;
 import eu.edisonproject.utility.file.ReaderFile;
 import eu.edisonproject.utility.text.processing.StopWord;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,11 +71,32 @@ public class TermWordFrequency extends Configured implements Tool {
             if (context.getCacheFiles() != null && context.getCacheFiles().length > 0) {
                 URI[] uris = context.getCacheFiles();
                 URI stopwordFile = uris[0];
+                FileSystem fs = FileSystem.get(context.getConfiguration());
                 if (cleanStopWord == null) {
-
-                    FileSystem fs = FileSystem.get(context.getConfiguration());
                     CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(fs.open(new Path(stopwordFile)).getWrappedStream()), true);
                     cleanStopWord = new StopWord(stopWordArraySet);
+                }
+                if (docs == null || docs.isEmpty()) {
+                    URI hdfsDocs = uris[1];
+                    String line;
+                    docs = new HashMap<>();
+                    Path docPath = new Path(hdfsDocs);
+                    FileStatus[] files = fs.listStatus(docPath);
+                    for (FileStatus stat : files) {
+                        Path filePath = stat.getPath();
+                        if (FilenameUtils.getExtension(filePath.getName()).endsWith("txt")) {
+                            StringBuffer contents = new StringBuffer();
+                            try (BufferedReader br = new BufferedReader(
+                                    new InputStreamReader(fs.open(filePath)))) {
+                                while ((line = br.readLine()) != null) {
+                                    contents.append(line).append(" ");
+                                }
+                            }
+                            cleanStopWord.setDescription(contents.toString());
+                            docs.put(filePath.getName(), cleanStopWord.execute());
+                        }
+                    }
+
                 }
             }
         }
@@ -135,10 +158,6 @@ public class TermWordFrequency extends Configured implements Tool {
     public int run(String[] args) throws Exception {
         Configuration jobconf = getConf();
 
-        if (docs == null) {
-            docs = new HashMap<>();
-        }
-
         FileSystem fs = FileSystem.get(jobconf);
         fs.delete(new Path(args[1]), true);
         Path in = new Path(args[0]);
@@ -149,6 +168,8 @@ public class TermWordFrequency extends Configured implements Tool {
         FileStatus inHdfsStatus = fs.getFileStatus(inHdfs);
         Logger.getLogger(TermWordFrequency.class.getName()).log(Level.INFO, "Copied: {0} to: {1}", new Object[]{in.toUri(), inHdfsStatus.getPath().toUri()});
 
+        Job job = new Job(jobconf);
+
         Path stopwordsLocal = new Path(args[3]);
         stopwords = new Path(stopwordsLocal.getName());
         fs.delete(stopwords, true);
@@ -157,24 +178,13 @@ public class TermWordFrequency extends Configured implements Tool {
 
         FileStatus stopwordsStatus = fs.getFileStatus(stopwords);
         stopwords = stopwordsStatus.getPath();
+        job.addCacheFile(stopwords.toUri());
         Logger.getLogger(TermWordFrequency.class.getName()).log(Level.INFO, stopwords.toString());
 
-        if (docs.isEmpty()) {
-            CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(fs.open(stopwords).getWrappedStream()), true);
-            cleanStopWord = new StopWord(stopWordArraySet);
-            File docsDir = new File(args[2]);
-            for (File f : docsDir.listFiles()) {
-                if (FilenameUtils.getExtension(f.getName()).endsWith("txt")) {
-                    ReaderFile rf = new ReaderFile(f.getAbsolutePath());
-                    cleanStopWord.setDescription(rf.readFile());
-                    docs.put(f.getName(), cleanStopWord.execute());
-                }
-            }
-        }
-
-        Job job = new Job(jobconf);
-
-        job.addCacheFile(stopwords.toUri());
+        Path localDocs = new Path(args[2]);
+        Path hdfsDocs = new Path(localDocs.getName());
+        hdfsDocs = fs.getFileStatus(hdfsDocs).getPath();
+        job.addCacheFile(hdfsDocs.toUri());
 
         job.setJarByClass(TermWordFrequency.class);
         job.setJobName("Word Frequency Term Driver");
@@ -184,7 +194,7 @@ public class TermWordFrequency extends Configured implements Tool {
 
         job.setInputFormatClass(NLineInputFormat.class);
         NLineInputFormat.addInputPath(job, inHdfs);
-        NLineInputFormat.setMaxInputSplitSize(job, 10);
+        NLineInputFormat.setMaxInputSplitSize(job, 100);
         job.setMapperClass(TermWordFrequencyMapper.class);
 
         job.setMapOutputKeyClass(Text.class);
