@@ -25,11 +25,9 @@ import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-import org.apache.avro.mapred.AvroKey;
-import org.apache.avro.mapred.AvroValue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -42,6 +40,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.util.Tool;
@@ -114,7 +113,7 @@ public class TermWordFrequency extends Configured implements Tool {
     @Override
     public int run(String[] args) throws Exception {
         Configuration jobconf = getConf();
-        new Path(args[1]).getFileSystem(jobconf).delete(new Path(args[1]), true);
+
         if (docs == null) {
             docs = new HashMap<>();
         }
@@ -131,12 +130,18 @@ public class TermWordFrequency extends Configured implements Tool {
                 }
             }
         }
+        FileSystem fs = FileSystem.get(jobconf);
+        fs.delete(new Path(args[1]), true);
+        Path in = new Path(args[0]);
+        Path inHdfs = new Path(in.getName());
+        fs.copyFromLocalFile(in, inHdfs);
+        Logger.getLogger(TermWordFrequency.class.getName()).log(Level.INFO, "Copied " + in.toUri() + " to " + inHdfs.toUri());
 
         Job job = new Job(jobconf);
         job.setJarByClass(TermWordFrequency.class);
         job.setJobName("Word Frequency Term Driver");
 
-        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        FileInputFormat.setInputPaths(job, inHdfs);
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
         job.setInputFormatClass(TextInputFormat.class);

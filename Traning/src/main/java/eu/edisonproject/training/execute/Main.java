@@ -49,6 +49,9 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.lucene.analysis.util.CharArraySet;
 
 /**
@@ -138,7 +141,10 @@ public class Main {
         }
     }
 
-    private static void termExtraction(String docPath, String out) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, InterruptedException {
+    private static void termExtraction(String docs, String out) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, InterruptedException {
+        if (!new File(docs).exists()) {
+            throw new IOException(new File(docs).getAbsolutePath() + " don't exist");
+        }
 //
 //        String[] extractors = prop.getProperty("term.extractors",
 //                "eu.edisonproject.training.term.extraction.LuceneExtractor,"
@@ -157,7 +163,7 @@ public class Main {
             TermExtractor termExtractor = (TermExtractor) obj;
             termExtractor.configure(prop);
 //            termExtractor.setDocPath(docPath);
-            termDictionaray.putAll(termExtractor.termXtraction(docPath));
+            termDictionaray.putAll(termExtractor.termXtraction(docs));
         }
         String stopWordsPath = System.getProperty("stop.words.file");
 
@@ -169,14 +175,13 @@ public class Main {
 //        termDictionaray = sorter.sort(termDictionaray, in);
         writeDictionary2File(termDictionaray, out);
 
-        calculateTermTFIDF(docPath, out, out);
+        calculateTermTFIDF(docs, out, out);
     }
 
     public static void writeDictionary2File(Map<String, Double> keywordsDictionaray, String outkeywordsDictionarayFile) throws FileNotFoundException {
 //        ValueComparator bvc = new ValueComparator(keywordsDictionaray);
 //        Map<String, Double> sorted_map = new TreeMap(bvc);
 //        sorted_map.putAll(keywordsDictionaray);
-
         try (PrintWriter out = new PrintWriter(outkeywordsDictionarayFile)) {
             for (String key : keywordsDictionaray.keySet()) {
                 Double value = keywordsDictionaray.get(key);
