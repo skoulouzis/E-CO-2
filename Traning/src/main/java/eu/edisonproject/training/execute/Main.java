@@ -354,7 +354,7 @@ public class Main {
 
     private static void calculateTermTFIDF(String docPath, String termsFile, String out) throws IOException {
         try {
-          
+            ITFIDFDriver tfidfDriver = new TFIDFTermsDriver();
             setTFIDFTermDriverPaths(docPath);
             tfidfDriver.executeTFIDF(termsFile);
 //            File terms = new File(TFIDFTermsDriver.TERMS);
