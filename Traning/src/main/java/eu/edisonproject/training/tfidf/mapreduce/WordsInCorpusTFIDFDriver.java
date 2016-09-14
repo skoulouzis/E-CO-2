@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
@@ -34,7 +36,6 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.NLineInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 
@@ -46,9 +47,6 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
 //    private static final String INPUT_PATH = ".."+File.separator+"etc"+File.separator+"2-word-counts";
     public static class WordsInCorpusTFIDFMapper extends Mapper<LongWritable, Text, Text, Text> {
 
-        public WordsInCorpusTFIDFMapper() {
-        }
-
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             /*
@@ -57,10 +55,14 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
 			 * 
 			 * value --> n/N
              */
-            System.err.println(value);
+            Logger.getLogger(WordsInCorpusTFIDFMapper.class.getName()).log(Level.WARNING, "<K,V>: " + key.toString() + " " + value.toString());
+
             String[] line = value.toString().split("\t");
+            Logger.getLogger(WordsInCorpusTFIDFMapper.class.getName()).log(Level.WARNING, "line: " + line);
             String[] keyValues = line[0].split("@");
+            Logger.getLogger(WordsInCorpusTFIDFMapper.class.getName()).log(Level.WARNING, "keyValues: " + keyValues);
             String valueString = line[1];
+            Logger.getLogger(WordsInCorpusTFIDFMapper.class.getName()).log(Level.WARNING, "valueString: " + valueString);
 
             context.write(new Text(keyValues[0]), new Text(keyValues[1] + "=" + valueString));
 
