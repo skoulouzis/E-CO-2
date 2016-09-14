@@ -15,15 +15,11 @@
  */
 package eu.edisonproject.training.tfidf.mapreduce;
 
-import static eu.edisonproject.training.tfidf.mapreduce.TFIDFDriverImpl.CONTEXT_PATH;
 import eu.edisonproject.utility.commons.ValueComparator;
-import eu.edisonproject.utility.file.WriterFile;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Collection;
@@ -108,7 +104,7 @@ public class TFIDFTermsDriver implements ITFIDFDriver {
                 }
             });
 
-            String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(docs.length())};
+            String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(files.length)};
             ToolRunner.run(new WordsInCorpusTFIDFDriver(), args3);
 
             String[] args4 = {INPUT_PATH4, OUTPUT_PATH4};

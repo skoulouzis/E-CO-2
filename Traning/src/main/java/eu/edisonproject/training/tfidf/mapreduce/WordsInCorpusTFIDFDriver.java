@@ -87,7 +87,7 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool{
             int numberOfDocumentsInCorpus = Integer.parseInt(context.getJobName());
             // total frequency of this word
             int numberOfDocumentsInCorpusWhereKeyAppears = 0;
-            Map<String, String> tempFrequencies = new HashMap<String, String>();
+            Map<String, String> tempFrequencies = new HashMap<>();
             for (Text val : values) {
                 String[] documentAndFrequencies = val.toString().split("=");
                 numberOfDocumentsInCorpusWhereKeyAppears++;
@@ -100,8 +100,8 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool{
                 String[] wordFrequenceAndTotalWords = tempFrequencies.get(document).split("/");
 
                 //Term frequency is the quocient of the number of terms in document and the total number of terms in doc
-                double tf = Double.valueOf(Double.valueOf(wordFrequenceAndTotalWords[0])
-                        / Double.valueOf(wordFrequenceAndTotalWords[1]));
+                double tf = Double.valueOf(wordFrequenceAndTotalWords[0])
+                        / Double.valueOf(wordFrequenceAndTotalWords[1]);
               //  System.out.println("TF "+tf);
                 //interse document frequency quocient between the number of docs in corpus and number of docs the term appears
                 double idf = (double) numberOfDocumentsInCorpus / (double) numberOfDocumentsInCorpusWhereKeyAppears;
@@ -126,6 +126,7 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool{
         }
     } // end of reducer class
     //changed run(String[]) in runWordsInCorpusTFIDFDriver(String[])
+    @Override
     public int run(String[] rawArgs) throws Exception {
         Configuration conf = new Configuration();
         Job job = new Job(conf,"WordsInCorpusTFIDFDriver");
