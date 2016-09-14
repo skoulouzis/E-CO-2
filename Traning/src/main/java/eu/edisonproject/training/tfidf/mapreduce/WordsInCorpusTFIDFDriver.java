@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
@@ -32,6 +30,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -41,29 +40,21 @@ import org.apache.hadoop.util.Tool;
 
 public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
 
-    // where to put the data in hdfs when we're done
-    //  private static final String OUTPUT_PATH = ".."+File.separator+"etc"+File.separator+"3-tf-idf";
-    // where to read the data from.
-//    private static final String INPUT_PATH = ".."+File.separator+"etc"+File.separator+"2-word-counts";
     public static class WordsInCorpusTFIDFMapper extends Mapper<LongWritable, Text, Text, Text> {
 
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             /*
-			 * keyValues[0] --> word
-			 * keyValues[1] --> title/document
-			 * 
-			 * value --> n/N
+             * keyValues[0] --> word
+             * keyValues[1] --> title/document
+             *
+             * value --> n/N
              */
-            Logger.getLogger(WordsInCorpusTFIDFMapper.class.getName()).log(Level.WARNING, "<K,V>: " + key.toString() + " " + value.toString());
+            InputSplit in = context.getInputSplit();
 
             String[] line = value.toString().split("\t");
-            Logger.getLogger(WordsInCorpusTFIDFMapper.class.getName()).log(Level.WARNING, "line: " + line);
             String[] keyValues = line[0].split("@");
-            Logger.getLogger(WordsInCorpusTFIDFMapper.class.getName()).log(Level.WARNING, "keyValues: " + keyValues);
             String valueString = line[1];
-            Logger.getLogger(WordsInCorpusTFIDFMapper.class.getName()).log(Level.WARNING, "valueString: " + valueString);
-
             context.write(new Text(keyValues[0]), new Text(keyValues[1] + "=" + valueString));
 
         }
@@ -73,9 +64,6 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
     public static class WordsInCorpusTFIDFReducer extends Reducer<Text, Text, Text, Text> {
 
         private static final DecimalFormat DF = new DecimalFormat("###.########");
-
-        public WordsInCorpusTFIDFReducer() {
-        }
 
         /*
 		 * Reducer Input
@@ -128,7 +116,6 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
             }
         }
     } // end of reducer class
-    //changed run(String[]) in runWordsInCorpusTFIDFDriver(String[])
 
     @Override
     public int run(String[] rawArgs) throws Exception {
@@ -139,15 +126,14 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
         //This row must be changed
         job.setJobName(rawArgs[2]);
 
+        FileSystem fs = FileSystem.get(conf);
         Path inPath = new Path(rawArgs[0]);
         Path outPath = new Path(rawArgs[1]);
-        FileSystem fs = FileSystem.get(conf);
         fs.delete(outPath, true);
 
         FileInputFormat.setInputPaths(job, inPath);
         FileOutputFormat.setOutputPath(job, outPath);
-        outPath.getFileSystem(conf).delete(outPath, true);
-
+        
         job.setMapperClass(WordsInCorpusTFIDFMapper.class);
 //        job.setInputFormatClass(NLineInputFormat.class);
 //        NLineInputFormat.addInputPath(job, inPath);

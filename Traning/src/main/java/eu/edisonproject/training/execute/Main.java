@@ -156,26 +156,16 @@ public class Main {
 //                "eu.edisonproject.training.term.extraction.JtopiaExtractor,"
 //                + "eu.edisonproject.training.term.extraction.AprioriExtraction").split(",");
 //        String[] extractors = "eu.edisonproject.training.term.extraction.JtopiaExtractor".split(",");
-
         Map<String, Double> termDictionaray = new HashMap();
         for (String className : extractors) {
             Class c = Class.forName(className);
             Object obj = c.newInstance();
             TermExtractor termExtractor = (TermExtractor) obj;
             termExtractor.configure(prop);
-//            termExtractor.setDocPath(docPath);
             termDictionaray.putAll(termExtractor.termXtraction(docs));
         }
-        String stopWordsPath = System.getProperty("stop.words.file");
 
-        if (stopWordsPath == null) {
-            stopWordsPath = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
-        }
-
-//        SortTerms sorter = new TFIDF(stopWordsPath);
-//        termDictionaray = sorter.sort(termDictionaray, in);
         writeDictionary2File(termDictionaray, out);
-
         calculateTermTFIDF(docs, out, out);
     }
 

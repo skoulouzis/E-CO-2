@@ -37,9 +37,6 @@ public class WordsGroupByTitleDriver extends Configured implements Tool {
 
     public static class WordsGroupByTitleMapper extends Mapper<LongWritable, Text, Text, Text> {
 
-        public WordsGroupByTitleMapper() {
-        }
-
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             /*
@@ -60,10 +57,7 @@ public class WordsGroupByTitleDriver extends Configured implements Tool {
     } // end of mapper class
 
     public static class WordsGroupByTitleReducer extends Reducer<Text, Text, Text, Text> {
-
-        public WordsGroupByTitleReducer() {
-        }
-
+        
         @Override
         protected void reduce(Text text, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             //The object are grouped for them documentId    
@@ -108,7 +102,6 @@ public class WordsGroupByTitleDriver extends Configured implements Tool {
         outPath.getFileSystem(conf).delete(outPath, true);
 
         job.setMapperClass(WordsGroupByTitleMapper.class);
-        job.setMapperClass(WordsInCorpusTFIDFDriver.WordsInCorpusTFIDFMapper.class);
 //        job.setInputFormatClass(NLineInputFormat.class);
 //        NLineInputFormat.addInputPath(job, inPath);
 //        NLineInputFormat.setNumLinesPerSplit(job, Integer.valueOf(args[2]));

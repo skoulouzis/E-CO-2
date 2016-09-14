@@ -22,6 +22,8 @@ package eu.edisonproject.training.tfidf.mapreduce;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.avro.mapred.AvroKey;
 import org.apache.avro.mapred.AvroValue;
@@ -40,12 +42,7 @@ import org.apache.hadoop.util.Tool;
 
 public class WordCountsForDocsDriver extends Configured implements Tool {
 
-    // where to put the data in hdfs when we're done     private static final String OUTPUT_PATH = ".."+File.separator+"etc"+File.separator+"2-word-counts";
-    // where to read the data from.    private static final String INPUT_PATH = ".."+File.separator+"etc"+File.separator+"1-word-freq";
     public static class WordCountsForDocsMapper extends Mapper<LongWritable, Text, Text, Text> {
-
-        public WordCountsForDocsMapper() {
-        }
 
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
@@ -53,7 +50,7 @@ public class WordCountsForDocsDriver extends Configured implements Tool {
 
             String[] keyValues = input[0].split("@");
             String valueString = input[1];
-
+            
             context.write(new Text(keyValues[1]), new Text(keyValues[0] + "=" + valueString));
 
         }
@@ -61,13 +58,11 @@ public class WordCountsForDocsDriver extends Configured implements Tool {
 
     public static class WordCountsForDocsReducer extends Reducer<Text, Text, AvroKey<Text>, AvroValue<Text>> {
 
-        public WordCountsForDocsReducer() {
-        }
-
         @Override
         protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             int sumOfWordsInDocument = 0;
             Map<String, Integer> tempCounter = new HashMap<>();
+
             for (Text val : values) {
                 String[] wordCounter = val.toString().split("=");
                 tempCounter.put(wordCounter[0], Integer.valueOf(wordCounter[1]));
