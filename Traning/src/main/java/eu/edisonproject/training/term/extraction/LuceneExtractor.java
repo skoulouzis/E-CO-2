@@ -77,18 +77,18 @@ public class LuceneExtractor implements TermExtractor {
 
             ng = new NGramGenerator(stopwordsCharArray, maxNgrams);
 
-            Map<String, String> itemsMap = CSVFileReader.csvFileToMap(itemsFilePath, ",");
+//            Map<String, String> itemsMap = CSVFileReader.csvFileToMap(itemsFilePath, ",");
             if (dir.isDirectory()) {
                 for (File f : dir.listFiles()) {
                     count++;
                     Logger.getLogger(LuceneExtractor.class.getName()).log(Level.INFO, "{0}: {1} of {2}", new Object[]{f.getName(), count, dir.list().length});
                     if (FilenameUtils.getExtension(f.getName()).endsWith("txt")) {
-                        return extractFromFile(f, itemsMap);
+                        return extractFromFile(f);
                     }
                 }
             } else if (dir.isFile()) {
                 if (FilenameUtils.getExtension(dir.getName()).endsWith("txt")) {
-                    return extractFromFile(dir, itemsMap);
+                    return extractFromFile(dir);
                 }
 
             }
@@ -101,7 +101,7 @@ public class LuceneExtractor implements TermExtractor {
         return null;
     }
 
-    private Map<String, Double> extractFromFile(File f, Map<String, String> itemsMap) throws IOException, MalformedURLException, Exception {
+    private Map<String, Double> extractFromFile(File f) throws IOException, MalformedURLException, Exception {
 
         StringBuilder fileContents = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new FileReader(f))) {
