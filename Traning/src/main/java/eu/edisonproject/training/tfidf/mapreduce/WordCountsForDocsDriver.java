@@ -38,15 +38,14 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.NLineInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 
-public class WordCountsForDocsDriver extends Configured implements Tool{
+public class WordCountsForDocsDriver extends Configured implements Tool {
 
     // where to put the data in hdfs when we're done     private static final String OUTPUT_PATH = ".."+File.separator+"etc"+File.separator+"2-word-counts";
-
     // where to read the data from.    private static final String INPUT_PATH = ".."+File.separator+"etc"+File.separator+"1-word-freq";
-
     public static class WordCountsForDocsMapper extends Mapper<LongWritable, Text, Text, Text> {
 
         public WordCountsForDocsMapper() {
@@ -55,7 +54,7 @@ public class WordCountsForDocsDriver extends Configured implements Tool{
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             String[] input = value.toString().split("\t");
-            
+
             String[] keyValues = input[0].split("@");
             String valueString = input[1];
 
@@ -87,6 +86,7 @@ public class WordCountsForDocsDriver extends Configured implements Tool{
         }
     } // end of reducer class
     //changed run(String[]) in runWordCountsForDocsDriver(String[])
+
     @Override
     public int run(String[] args) throws Exception {
         Configuration conf = new Configuration();
@@ -103,6 +103,10 @@ public class WordCountsForDocsDriver extends Configured implements Tool{
         outPath.getFileSystem(conf).delete(outPath, true);
 
         job.setMapperClass(WordCountsForDocsMapper.class);
+        job.setInputFormatClass(NLineInputFormat.class);
+        NLineInputFormat.addInputPath(job, inPath);
+        NLineInputFormat.setNumLinesPerSplit(job, Integer.valueOf(args[2]));
+        NLineInputFormat.setMaxInputSplitSize(job, 2000);
         /*Here it is possible put the combiner class
 		job.setCombinerClass(AvroAverageCombiner.class);
          */
@@ -110,7 +114,7 @@ public class WordCountsForDocsDriver extends Configured implements Tool{
 //        job.setReducerClass(WordCountsForDocsReducer.class);
 //        AvroJob.setOutputKeySchema(job, Schema.create(Schema.Type.STRING));
 //        AvroJob.setOutputValueSchema(job, Schema.create(Schema.Type.STRING));
-        
+
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
         job.setReducerClass(WordCountsForDocsReducer.class);
