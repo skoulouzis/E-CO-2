@@ -104,10 +104,10 @@ public class TFIDFTermsDriver implements ITFIDFDriver {
                 }
             });
 
-            String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(files.length)};
+            String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(files.length), NUM_OF_LINES};
             ToolRunner.run(new WordsInCorpusTFIDFDriver(), args3);
 
-            String[] args4 = {INPUT_PATH4, OUTPUT_PATH4};
+            String[] args4 = {INPUT_PATH4, OUTPUT_PATH4, NUM_OF_LINES};
             ToolRunner.run(new WordsGroupByTitleDriver(), args4);
 
             Configuration conf = new Configuration();

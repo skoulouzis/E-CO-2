@@ -33,6 +33,7 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.NLineInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 
@@ -143,6 +144,10 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool{
         outPath.getFileSystem(conf).delete(outPath, true);
 
         job.setMapperClass(WordsInCorpusTFIDFMapper.class);
+        job.setInputFormatClass(NLineInputFormat.class);
+        NLineInputFormat.addInputPath(job, inPath);
+        NLineInputFormat.setNumLinesPerSplit(job, Integer.valueOf(rawArgs[3]));
+        
 //        job.setInputFormatClass(AvroKeyValueInputFormat.class);
 //        job.setMapperClass(WordsInCorpusTFIDFMapper.class);
 //        AvroJob.setInputKeySchema(job, Schema.create(Schema.Type.STRING));

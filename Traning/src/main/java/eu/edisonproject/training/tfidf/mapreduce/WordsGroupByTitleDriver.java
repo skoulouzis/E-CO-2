@@ -19,18 +19,7 @@ package eu.edisonproject.training.tfidf.mapreduce;
  *
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
  */
-import eu.edisonproject.training.tfidf.avro.Tfidf;
-import eu.edisonproject.training.tfidf.avro.TfidfDocument;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.apache.avro.Schema;
-import org.apache.avro.mapred.AvroKey;
-import org.apache.avro.mapred.AvroValue;
-import org.apache.avro.mapreduce.AvroJob;
-import org.apache.avro.mapreduce.AvroKeyValueInputFormat;
-import org.apache.avro.mapreduce.AvroKeyValueOutputFormat;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
@@ -40,6 +29,7 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.NLineInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 
@@ -98,6 +88,7 @@ public class WordsGroupByTitleDriver extends Configured implements Tool {
         }
     } // end of reducer class
 
+    @Override
     public int run(String[] args) throws Exception {
         //Configuration config = HBaseConfiguration.create();
         Configuration conf = new Configuration();
@@ -115,6 +106,10 @@ public class WordsGroupByTitleDriver extends Configured implements Tool {
         outPath.getFileSystem(conf).delete(outPath, true);
 
         job.setMapperClass(WordsGroupByTitleMapper.class);
+        job.setMapperClass(WordsInCorpusTFIDFDriver.WordsInCorpusTFIDFMapper.class);
+        job.setInputFormatClass(NLineInputFormat.class);
+        NLineInputFormat.addInputPath(job, inPath);
+        NLineInputFormat.setNumLinesPerSplit(job, Integer.valueOf(args[2]));
 
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
