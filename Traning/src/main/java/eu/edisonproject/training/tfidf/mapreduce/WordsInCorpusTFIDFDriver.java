@@ -37,14 +37,12 @@ import org.apache.hadoop.mapreduce.lib.input.NLineInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 
-public class WordsInCorpusTFIDFDriver extends Configured implements Tool{
+public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
 
     // where to put the data in hdfs when we're done
-  //  private static final String OUTPUT_PATH = ".."+File.separator+"etc"+File.separator+"3-tf-idf";
-
+    //  private static final String OUTPUT_PATH = ".."+File.separator+"etc"+File.separator+"3-tf-idf";
     // where to read the data from.
 //    private static final String INPUT_PATH = ".."+File.separator+"etc"+File.separator+"2-word-counts";
-
     public static class WordsInCorpusTFIDFMapper extends Mapper<LongWritable, Text, Text, Text> {
 
         public WordsInCorpusTFIDFMapper() {
@@ -58,6 +56,7 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool{
 			 * 
 			 * value --> n/N
              */
+            System.err.println(value);
             String[] line = value.toString().split("\t");
             String[] keyValues = line[0].split("@");
             String valueString = line[1];
@@ -103,15 +102,15 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool{
                 //Term frequency is the quocient of the number of terms in document and the total number of terms in doc
                 double tf = Double.valueOf(wordFrequenceAndTotalWords[0])
                         / Double.valueOf(wordFrequenceAndTotalWords[1]);
-              //  System.out.println("TF "+tf);
+                //  System.out.println("TF "+tf);
                 //interse document frequency quocient between the number of docs in corpus and number of docs the term appears
                 double idf = (double) numberOfDocumentsInCorpus / (double) numberOfDocumentsInCorpusWhereKeyAppears;
-              //  System.out.println("IDF"+idf);
+                //  System.out.println("IDF"+idf);
                 //given that log(10) = 0, just consider the term frequency in documents
-               double tfIdf = numberOfDocumentsInCorpus == numberOfDocumentsInCorpusWhereKeyAppears
+                double tfIdf = numberOfDocumentsInCorpus == numberOfDocumentsInCorpusWhereKeyAppears
                         ? tf : tf * Math.log10(idf);
-               String[] documentFields = document.split("@");
-              //  System.out.println(tfIdf);
+                String[] documentFields = document.split("@");
+                //  System.out.println(tfIdf);
                 lineValue += documentFields[0] + ";" + key.toString() + ";" + DF.format(tfIdf) + "\n";
 //
 //                Tfidf tfidfJson = new Tfidf();
@@ -119,18 +118,19 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool{
 //                tfidfJson.setWord(key.toString());
 //                tfidfJson.setTfidf(DF.format(tfIdf));
 
-                String newKey = documentFields[0]+"/"+key.toString();
+                String newKey = documentFields[0] + "/" + key.toString();
                 String newValue = DF.format(tfIdf);
 //                context.write(new AvroKey<Text>(new Text(String.valueOf(count++))), new AvroValue<Tfidf>(tfidfJson));
-                context.write(new Text(newKey),new Text(newValue));
+                context.write(new Text(newKey), new Text(newValue));
             }
         }
     } // end of reducer class
     //changed run(String[]) in runWordsInCorpusTFIDFDriver(String[])
+
     @Override
     public int run(String[] rawArgs) throws Exception {
         Configuration conf = new Configuration();
-        Job job = new Job(conf,"WordsInCorpusTFIDFDriver");
+        Job job = new Job(conf, "WordsInCorpusTFIDFDriver");
 
         job.setJarByClass(WordsInCorpusTFIDFDriver.class);
         //This row must be changed
@@ -148,7 +148,7 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool{
 //        NLineInputFormat.addInputPath(job, inPath);
 //        NLineInputFormat.setNumLinesPerSplit(job, Integer.valueOf(rawArgs[3]));
 //         NLineInputFormat.setMaxInputSplitSize(job, 2000);
-        
+
 //        job.setInputFormatClass(AvroKeyValueInputFormat.class);
 //        job.setMapperClass(WordsInCorpusTFIDFMapper.class);
 //        AvroJob.setInputKeySchema(job, Schema.create(Schema.Type.STRING));
@@ -158,7 +158,6 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool{
 //        job.setReducerClass(WordsInCorpusTFIDFReducer.class);
 //        AvroJob.setOutputKeySchema(job, Schema.create(Schema.Type.STRING));
 //        AvroJob.setOutputValueSchema(job, Tfidf.getClassSchema());
-
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
         job.setReducerClass(WordsInCorpusTFIDFReducer.class);
