@@ -107,10 +107,10 @@ public class WordsGroupByTitleDriver extends Configured implements Tool {
 
         job.setMapperClass(WordsGroupByTitleMapper.class);
         job.setMapperClass(WordsInCorpusTFIDFDriver.WordsInCorpusTFIDFMapper.class);
-        job.setInputFormatClass(NLineInputFormat.class);
-        NLineInputFormat.addInputPath(job, inPath);
-        NLineInputFormat.setNumLinesPerSplit(job, Integer.valueOf(args[2]));
-        NLineInputFormat.setMaxInputSplitSize(job, 2000);
+//        job.setInputFormatClass(NLineInputFormat.class);
+//        NLineInputFormat.addInputPath(job, inPath);
+//        NLineInputFormat.setNumLinesPerSplit(job, Integer.valueOf(args[2]));
+//        NLineInputFormat.setMaxInputSplitSize(job, 2000);
 
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);

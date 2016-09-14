@@ -103,10 +103,10 @@ public class WordCountsForDocsDriver extends Configured implements Tool {
         outPath.getFileSystem(conf).delete(outPath, true);
 
         job.setMapperClass(WordCountsForDocsMapper.class);
-        job.setInputFormatClass(NLineInputFormat.class);
-        NLineInputFormat.addInputPath(job, inPath);
-        NLineInputFormat.setNumLinesPerSplit(job, Integer.valueOf(args[2]));
-        NLineInputFormat.setMaxInputSplitSize(job, 2000);
+//        job.setInputFormatClass(NLineInputFormat.class);
+//        NLineInputFormat.addInputPath(job, inPath);
+//        NLineInputFormat.setNumLinesPerSplit(job, Integer.valueOf(args[2]));
+//        NLineInputFormat.setMaxInputSplitSize(job, 2000);
         /*Here it is possible put the combiner class
 		job.setCombinerClass(AvroAverageCombiner.class);
          */

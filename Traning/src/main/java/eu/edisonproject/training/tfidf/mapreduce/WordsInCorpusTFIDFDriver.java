@@ -144,10 +144,10 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool{
         outPath.getFileSystem(conf).delete(outPath, true);
 
         job.setMapperClass(WordsInCorpusTFIDFMapper.class);
-        job.setInputFormatClass(NLineInputFormat.class);
-        NLineInputFormat.addInputPath(job, inPath);
-        NLineInputFormat.setNumLinesPerSplit(job, Integer.valueOf(rawArgs[3]));
-         NLineInputFormat.setMaxInputSplitSize(job, 2000);
+//        job.setInputFormatClass(NLineInputFormat.class);
+//        NLineInputFormat.addInputPath(job, inPath);
+//        NLineInputFormat.setNumLinesPerSplit(job, Integer.valueOf(rawArgs[3]));
+//         NLineInputFormat.setMaxInputSplitSize(job, 2000);
         
 //        job.setInputFormatClass(AvroKeyValueInputFormat.class);
 //        job.setMapperClass(WordsInCorpusTFIDFMapper.class);
