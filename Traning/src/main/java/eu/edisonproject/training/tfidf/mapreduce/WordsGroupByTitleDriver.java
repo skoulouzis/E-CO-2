@@ -22,6 +22,7 @@ package eu.edisonproject.training.tfidf.mapreduce;
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -100,6 +101,8 @@ public class WordsGroupByTitleDriver extends Configured implements Tool {
 
         Path inPath = new Path(args[0]);
         Path outPath = new Path(args[1]);
+        FileSystem fs = FileSystem.get(conf);
+        fs.delete(outPath, true);
 
         FileInputFormat.setInputPaths(job, inPath);
         FileOutputFormat.setOutputPath(job, outPath);

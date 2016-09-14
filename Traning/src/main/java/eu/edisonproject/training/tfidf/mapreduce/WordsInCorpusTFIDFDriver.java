@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -138,6 +139,8 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
 
         Path inPath = new Path(rawArgs[0]);
         Path outPath = new Path(rawArgs[1]);
+        FileSystem fs = FileSystem.get(conf);
+        fs.delete(outPath, true);
 
         FileInputFormat.setInputPaths(job, inPath);
         FileOutputFormat.setOutputPath(job, outPath);
