@@ -15,19 +15,16 @@
  */
 package eu.edisonproject.classification.tfidf.mapreduce;
 
-import eu.edisonproject.utility.file.ConfigHelper;
-import eu.edisonproject.utility.file.ReaderFile;
-import eu.edisonproject.utility.file.WriterFile;
-import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
-import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.util.ToolRunner;
-import org.apache.lucene.analysis.util.CharArraySet;
 
 /**
  *
@@ -57,14 +54,13 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
     // where to put the csv with the tfidf
     public static String COMPETENCES_PATH;
 
-    private String finalOutputPath;
-
+//    private String finalOutputPath;
     public static String NUM_OF_LINES;
     public static String STOPWORDS_PATH = ".." + File.separator + "etc" + File.separator + "stopwords.csv";
+    public String OUT;
 
     public TFIDFDriverImpl(String contextName, String inputRootPath) {
-        this.finalOutputPath = DISTANCES_VECTOR_PATH + File.separator + contextName;
-
+//        this.finalOutputPath = DISTANCES_VECTOR_PATH + File.separator + contextName;
     }
 
     /**
@@ -82,12 +78,12 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
         try {
 
 //                String[] args1 = {INPUT_PATH1, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES};
-//                ToolRunner.run(new WordFrequencyInDocDriver(), args1);
-//            String[] args1 = {INPUT_ITEMSET, OUTPUT_PATH1, inputPath, STOPWORDS_PATH, NUM_OF_LINES};
-//            ToolRunner.run(new TermWordFrequency(), args1);
-//
-//            String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};
-//            ToolRunner.run(new WordCountsForDocsDriver(), args2);
+//            ToolRunner.run(new WordFrequencyInDocDriver(), args1);
+            String[] args1 = {INPUT_ITEMSET, OUTPUT_PATH1, inputPath, STOPWORDS_PATH, NUM_OF_LINES};
+            ToolRunner.run(new TermWordFrequency(), args1);
+
+            String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};
+            ToolRunner.run(new WordCountsForDocsDriver(), args2);
 //
             File docs = new File(inputPath);
             File[] files = docs.listFiles(new FilenameFilter() {
@@ -99,8 +95,8 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
             int numberOfDocuments = files.length;
 
 //
-//            String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(numberOfDocuments)};
-//            ToolRunner.run(new WordsInCorpusTFIDFDriver(), args3);
+            String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(numberOfDocuments)};
+            ToolRunner.run(new WordsInCorpusTFIDFDriver(), args3);
             StringBuilder fileNames = new StringBuilder();
             String prefix = "";
             for (File name : files) {
@@ -111,28 +107,39 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
 
             String[] args4 = {INPUT_PATH4, OUTPUT_PATH4, COMPETENCES_PATH, fileNames.toString()};
             ToolRunner.run(new CompetencesDistanceDriver(), args4);
+
+            Configuration conf = new Configuration();
+            FileSystem fs = FileSystem.get(conf);
+            Path hdfsRes = new Path(OUTPUT_PATH4 + File.separator + "");
+            FileStatus[] results = fs.listStatus(hdfsRes);
+
+            for (FileStatus s : results) {
+                fs.copyToLocalFile(s.getPath(), new Path(OUT + "/" + s.getPath().getName()));
+            }
+            fs.delete(hdfsRes, true);
+
         } catch (Exception ex) {
             Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
 
-    public void readDistancesOutputAndPrintCSV() {
-        ReaderFile rf = new ReaderFile(OUTPUT_PATH4 + File.separator + "part-r-00000");
-        String text = rf.readFileWithN();
-        String[] textLine = text.split("\n");
-        WriterFile fileWriter = new WriterFile(finalOutputPath);
-        String textToPrint = "";
-        for (String line : textLine) {
-            String[] keyValue = line.split("\t");
-            String[] field = keyValue[0].split("@");
-            String[] distances = keyValue[1].split(";");
-            textToPrint += field[1] + ";" + field[0] + ";" + field[2] + ";";
-            for (String d : distances) {
-                textToPrint += d + ";";
-            }
-            textToPrint += "\n";
-        }
-        fileWriter.writeFile(textToPrint);
-    }
+//    public void readDistancesOutputAndPrintCSV() {
+//        ReaderFile rf = new ReaderFile(OUTPUT_PATH4 + File.separator + "part-r-00000");
+//        String text = rf.readFileWithN();
+//        String[] textLine = text.split("\n");
+//        WriterFile fileWriter = new WriterFile(finalOutputPath);
+//        String textToPrint = "";
+//        for (String line : textLine) {
+//            String[] keyValue = line.split("\t");
+//            String[] field = keyValue[0].split("@");
+//            String[] distances = keyValue[1].split(";");
+//            textToPrint += field[1] + ";" + field[0] + ";" + field[2] + ";";
+//            for (String d : distances) {
+//                textToPrint += d + ";";
+//            }
+//            textToPrint += "\n";
+//        }
+//        fileWriter.writeFile(textToPrint);
+//    }
 }

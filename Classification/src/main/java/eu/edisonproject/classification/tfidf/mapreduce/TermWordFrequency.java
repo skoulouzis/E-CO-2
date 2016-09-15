@@ -122,7 +122,6 @@ public class TermWordFrequency extends Configured implements Tool {
 //                        valueBuilder.append("@");
 //                        valueBuilder.append(date);
                         context.write(new Text(valueBuilder.toString()), new IntWritable(1));
-                        System.err.println(valueBuilder.toString());
                         description = description.replaceFirst(" " + s + " ", "");
                     }
 

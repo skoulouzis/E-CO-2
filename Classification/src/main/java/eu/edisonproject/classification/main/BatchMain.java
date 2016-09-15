@@ -20,9 +20,6 @@
  */
 package eu.edisonproject.classification.main;
 
-import com.google.common.io.Files;
-import eu.edisonproject.classification.prepare.controller.DataPrepare;
-import eu.edisonproject.classification.prepare.controller.IDataPrepare;
 import eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl;
 import eu.edisonproject.utility.file.ConfigHelper;
 import eu.edisonproject.utility.file.ReaderFile;
@@ -40,7 +37,6 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.lucene.analysis.util.CharArraySet;
 
@@ -109,12 +105,8 @@ public class BatchMain {
     }
 
     private static void calculateTFIDF(String in, String out, String competencesVectorPath) throws IOException {
-        File tmpFolder = null;
-        try {
-            if (new File(out).isFile()) {
-                throw new IOException(out + " is a file. Should specify directory");
-            }
 
+        try {
             TFIDFDriverImpl tfidfDriver = new TFIDFDriverImpl("", "");
 
             if (tfidfDriver.NUM_OF_LINES == null) {
@@ -132,6 +124,7 @@ public class BatchMain {
             }
 
             tfidfDriver.COMPETENCES_PATH = competencesVectorPath;
+            tfidfDriver.OUT = out;
             tfidfDriver.executeTFIDF(in);
 
         } finally {
