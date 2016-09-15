@@ -10,4 +10,6 @@ find $CATEGORIES_FOLDER -name '*.csv' -exec cat {} \; > $HOME/workspace/E-CO-2/e
 ALL_TERMS=$HOME/workspace/E-CO-2/etc/allTerms.csv
 
 
-echo "time  hadoop jar $JAR_PATH -op c -i $1 -o $2 -p $PROPS_FILE"
+echo "time  hadoop jar $JAR_PATH -op c -i $1 -o $2 -c $CATEGORIES_FOLDER -p $PROPS_FILE"
+
+
