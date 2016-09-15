@@ -42,7 +42,6 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.lib.input.NLineInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.lucene.analysis.util.CharArraySet;
 
@@ -121,7 +120,7 @@ public class TermWordFrequency extends Configured implements Tool {
 //                        valueBuilder.append("@");
 //                        valueBuilder.append(date);
                         context.write(new Text(valueBuilder.toString()), new IntWritable(1));
-                        System.err.println(valueBuilder.toString());
+//                        System.err.println(valueBuilder.toString());
                         description = description.replaceFirst(" " + s + " ", "");
                     }
 

@@ -15,6 +15,13 @@
  */
 package eu.edisonproject.classification.tfidf.mapreduce;
 
+import eu.edisonproject.classification.prepare.controller.DataPrepare;
+import eu.edisonproject.classification.prepare.controller.IDataPrepare;
+import eu.edisonproject.utility.file.ConfigHelper;
+import eu.edisonproject.utility.file.ReaderFile;
+import eu.edisonproject.utility.file.WriterFile;
+import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
+import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.logging.Level;
@@ -25,6 +32,7 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.util.ToolRunner;
+import org.apache.lucene.analysis.util.CharArraySet;
 
 /**
  *
@@ -49,8 +57,6 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
     public static String INPUT_PATH4 = OUTPUT_PATH3;
     // where to put the data in hdfs when the MapReduce# will finish
     public static String OUTPUT_PATH4 = "4-distances";
-
-    public static String DISTANCES_VECTOR_PATH = "5-tf-idf-csv";
     // where to put the csv with the tfidf
     public static String COMPETENCES_PATH;
 
@@ -58,6 +64,7 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
     public static String NUM_OF_LINES;
     public static String STOPWORDS_PATH = ".." + File.separator + "etc" + File.separator + "stopwords.csv";
     public String OUT;
+    public String AVRO_FILE = "avro";
 
     public TFIDFDriverImpl(String contextName, String inputRootPath) {
 //        this.finalOutputPath = DISTANCES_VECTOR_PATH + File.separator + contextName;
@@ -76,11 +83,16 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
 //            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, null, ex);
 //        }
         try {
+            File items = new File(INPUT_ITEMSET);
+            if (items.length() < 200000000) {
+                text2Avro(inputPath, AVRO_FILE);
 
-//            String[] args1 = {INPUT_PATH1, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES};
-//            ToolRunner.run(new WordFrequencyInDocDriver(), args1);
-            String[] args1 = {INPUT_ITEMSET, OUTPUT_PATH1, inputPath, STOPWORDS_PATH, NUM_OF_LINES};
-            ToolRunner.run(new TermWordFrequency(), args1);
+                String[] args1 = {AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES};
+                ToolRunner.run(new WordFrequencyInDocDriver(), args1);
+            } else {
+                String[] args1 = {INPUT_ITEMSET, OUTPUT_PATH1, inputPath, STOPWORDS_PATH, NUM_OF_LINES};
+                ToolRunner.run(new TermWordFrequency(), args1);
+            }
 
             String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};
             ToolRunner.run(new WordCountsForDocsDriver(), args2);
@@ -142,4 +154,26 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
 //        }
 //        fileWriter.writeFile(textToPrint);
 //    }
+    private static void text2Avro(String inputPath, String outputPath) {
+        new File(outputPath).mkdirs();
+//        CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(STOPWORDS_PATH), true);
+//        StopWord cleanStopWord = new StopWord(stopWordArraySet);
+//        StanfordLemmatizer cleanLemmatisation = new StanfordLemmatizer();
+//        File filesInDir = new File(inputPath);
+//        for (File f : filesInDir.listFiles()) {
+//            if (f.isFile() && FilenameUtils.getExtension(f.getName()).endsWith("txt")) {
+//                ReaderFile rf = new ReaderFile(f.getAbsolutePath());
+//                String contents = rf.readFile();
+//                cleanStopWord.setDescription(contents);
+//                String cleanCont = cleanStopWord.execute().toLowerCase();
+//                cleanLemmatisation.setDescription(cleanCont);
+//                cleanCont = cleanLemmatisation.execute();
+//                WriterFile wf = new WriterFile(outputPath + File.separator + f.getName());
+//                wf.writeFile(cleanCont);
+//            }
+//        }
+        IDataPrepare dp = new DataPrepare(inputPath, outputPath, STOPWORDS_PATH);
+        dp.execute();
+
+    }
 }

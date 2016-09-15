@@ -24,6 +24,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,7 +53,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 //    private static List<String> itemset;
     public static class WordFrequencyInDocMapper extends Mapper<AvroKey<Document>, NullWritable, Text, IntWritable> {
 
-        private Path dictionaryFilePath;
+        private static Set<String> terms = new HashSet<>();
 
         @Override
         protected void cleanup(Context context) throws IOException, InterruptedException {
@@ -62,7 +64,16 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
         protected void setup(Context context) throws IOException, InterruptedException {
             if (context.getCacheFiles() != null && context.getCacheFiles().length > 0) {
                 URI[] uris = context.getCacheFiles();
-                dictionaryFilePath = new Path(uris[0]);
+                Path dictionaryFilePath = new Path(uris[0]);
+                FileSystem fs = FileSystem.get(context.getConfiguration());
+                String s;
+                try (BufferedReader br = new BufferedReader(
+                        new InputStreamReader(fs.open(dictionaryFilePath)))) {
+                    while ((s = br.readLine()) != null) {
+                        s = s.replaceAll("_", " ").trim();
+                        terms.add(s);
+                    }
+                }
             }
         }
 
@@ -71,31 +82,23 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
                 throws IOException, InterruptedException {
 
             String documentId = key.datum().getDocumentId().toString();
-            String title = key.datum().getTitle().toString();
+//            String title = key.datum().getTitle().toString();
             String description = key.datum().getDescription().toString().toLowerCase();
-            String date = key.datum().getDate().toString();
+//            String date = key.datum().getDate().toString();
 
-            FileSystem fs = FileSystem.get(context.getConfiguration());
-            String s;
-            try (BufferedReader br = new BufferedReader(
-                    new InputStreamReader(fs.open(dictionaryFilePath)))) {
-                while ((s = br.readLine()) != null) {
-                    s = s.replaceAll("_", " ").trim();
-                    
-//                    if (description.contains(" " + s + " ")) {
-                    while (description.contains(" " + s + " ")) {
+            for (String s : terms) {
+                while (description.contains(" " + s + " ")) {
 //                        System.err.println(s);
-                        StringBuilder valueBuilder = new StringBuilder();
-                        valueBuilder.append(s);
-                        valueBuilder.append("@");
-                        valueBuilder.append(documentId);
-                        valueBuilder.append("@");
-                        valueBuilder.append(title);
-                        valueBuilder.append("@");
-                        valueBuilder.append(date);
-                        context.write(new Text(valueBuilder.toString()), new IntWritable(1));
-                        description = description.replaceFirst(" " + s + " ", "");
-                    }
+                    StringBuilder valueBuilder = new StringBuilder();
+                    valueBuilder.append(s);
+                    valueBuilder.append("@");
+                    valueBuilder.append(documentId);
+//                        valueBuilder.append("@");
+//                        valueBuilder.append(title);
+//                        valueBuilder.append("@");
+//                        valueBuilder.append(date);
+                    context.write(new Text(valueBuilder.toString()), new IntWritable(1));
+                    description = description.replaceFirst(" " + s + " ", "");
                 }
             }
 
@@ -117,24 +120,23 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 //                }
 //            }
             // Compile all the words using regex
-            Pattern p = Pattern.compile("\\w+");
-            Matcher m = p.matcher(description);
-
-            // build the values and write <k,v> pairs through the context
-            while (m.find()) {
-                String matchedKey = m.group().toLowerCase();
-                StringBuilder valueBuilder = new StringBuilder();
-                valueBuilder.append(matchedKey);
-                valueBuilder.append("@");
-                valueBuilder.append(documentId);
-                valueBuilder.append("@");
-                valueBuilder.append(title);
-                valueBuilder.append("@");
-                valueBuilder.append(date);
-                // emit the partial <k,v>
-                context.write(new Text(valueBuilder.toString()), new IntWritable(1));
-            }
-
+//            Pattern p = Pattern.compile("\\w+");
+//            Matcher m = p.matcher(description);
+//
+//            // build the values and write <k,v> pairs through the context
+//            while (m.find()) {
+//                String matchedKey = m.group().toLowerCase();
+//                StringBuilder valueBuilder = new StringBuilder();
+//                valueBuilder.append(matchedKey);
+//                valueBuilder.append("@");
+//                valueBuilder.append(documentId);
+//                valueBuilder.append("@");
+//                valueBuilder.append(title);
+//                valueBuilder.append("@");
+//                valueBuilder.append(date);
+//                // emit the partial <k,v>
+//                context.write(new Text(valueBuilder.toString()), new IntWritable(1));
+//            }
         }
     }
 
