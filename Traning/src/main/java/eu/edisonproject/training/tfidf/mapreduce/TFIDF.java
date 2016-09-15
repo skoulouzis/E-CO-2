@@ -49,9 +49,6 @@ public class TFIDF extends Configured implements Tool {
 
     public static class IDFMapper extends Mapper<LongWritable, Text, Text, Text> {
 
-        public IDFMapper() {
-        }
-
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             String[] input = value.toString().split("\t");
@@ -78,10 +75,7 @@ public class TFIDF extends Configured implements Tool {
     }
 
     public static class IDFReducer extends Reducer<Text, Text, Text, Double> {
-
-        public IDFReducer() {
-        }
-
+        
         @Override
         protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             Integer df = 0;

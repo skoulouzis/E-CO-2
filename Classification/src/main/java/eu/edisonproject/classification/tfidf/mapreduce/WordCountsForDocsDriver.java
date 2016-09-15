@@ -43,36 +43,31 @@ public class WordCountsForDocsDriver extends Configured implements Tool {
 
         private static final Logger LOGGER = Logger.getLogger(WordCountsForDocsMapper.class.getName());
 
-        public WordCountsForDocsMapper() {
-        }
-
+        @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             String[] keyValues = value.toString().split("\t");
             LOGGER.log(Level.FINE, value.toString());
-            String[] wordsKey = keyValues[0].toString().split("@");
+            String[] wordsKey = keyValues[0].split("@");
             String documentId = wordsKey[1];
-            String title = wordsKey[2];
-            String date = wordsKey[3];
+//            String title = wordsKey[2];
+//            String date = wordsKey[3];
             String word = wordsKey[0];
             String sum = keyValues[1];
 
-            String newKey = documentId + "@" + title + "@" + date;
+//            String newKey = documentId + "@" + title + "@" + date;
+            String newKey = documentId;
             String newValue = word + "=" + sum;
-            LOGGER.log(Level.FINE, newKey + "new value " + newValue);
+            LOGGER.log(Level.FINE, "{0}new value {1}", new Object[]{newKey, newValue});
             context.write(new Text(newKey), new Text(newValue));
         }
     } // end of mapper class
 
     public static class WordCountsForDocsReducer extends Reducer<Text, Text, Text, Text> {
 
-        private static final Logger LOGGER = Logger.getLogger(WordCountsForDocsReducer.class.getName());
-
-        public WordCountsForDocsReducer() {
-        }
-
+        @Override
         protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             int sumOfWordsInDocument = 0;
-            Map<String, Integer> tempCounter = new HashMap<String, Integer>();
+            Map<String, Integer> tempCounter = new HashMap<>();
             for (Text val : values) {
                 String[] wordCounter = val.toString().split("=");
                 tempCounter.put(wordCounter[0], Integer.valueOf(wordCounter[1]));
@@ -81,7 +76,6 @@ public class WordCountsForDocsDriver extends Configured implements Tool {
             for (String wordKey : tempCounter.keySet()) {
                 Text newKey = new Text(wordKey + "@" + key.toString());
                 Text newValue = new Text(tempCounter.get(wordKey) + "/" + sumOfWordsInDocument);
-                LOGGER.log(Level.FINE, newKey + "  ,  " + newValue);
                 context.write(new Text(newKey), new Text(newValue));
             }
 

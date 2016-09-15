@@ -25,6 +25,10 @@ import eu.edisonproject.classification.prepare.controller.DataPrepare;
 import eu.edisonproject.classification.prepare.controller.IDataPrepare;
 import eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl;
 import eu.edisonproject.utility.file.ConfigHelper;
+import eu.edisonproject.utility.file.ReaderFile;
+import eu.edisonproject.utility.file.WriterFile;
+import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
+import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
@@ -35,8 +39,10 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.lucene.analysis.util.CharArraySet;
 
 /**
  *
@@ -96,7 +102,7 @@ public class BatchMain {
                     break;
             }
 
-        } catch (Exception ex) {
+        } catch (IllegalArgumentException | ParseException | IOException ex) {
             Logger.getLogger(BatchMain.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -109,118 +115,26 @@ public class BatchMain {
                 throw new IOException(out + " is a file. Should specify directory");
             }
 
-            String workingFolder = System.getProperty("working.folder");
-            if (workingFolder == null) {
-                workingFolder = prop.getProperty("working.folder", System.getProperty("java.io.tmpdir"));
+            TFIDFDriverImpl tfidfDriver = new TFIDFDriverImpl("", "");
+
+            if (tfidfDriver.NUM_OF_LINES == null) {
+                tfidfDriver.NUM_OF_LINES = prop.getProperty("map.reduce.num.of.lines", "200");
             }
 
-            tmpFolder = new File(workingFolder + File.separator + System.currentTimeMillis());
-            tmpFolder.mkdir();
-            tmpFolder.deleteOnExit();
+            TFIDFDriverImpl.STOPWORDS_PATH = System.getProperty("stop.words.file");
 
-            TFIDFDriverImpl tfidfDriver = new TFIDFDriverImpl("post", "");
-            setPaths(new File(in), tmpFolder, competencesVectorPath, tfidfDriver);
+            if (TFIDFDriverImpl.STOPWORDS_PATH == null) {
+                TFIDFDriverImpl.STOPWORDS_PATH = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
+            }
+            tfidfDriver.INPUT_ITEMSET = System.getProperty("itemset.file");
+            if (tfidfDriver.INPUT_ITEMSET == null) {
+                tfidfDriver.INPUT_ITEMSET = prop.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv");
+            }
 
-            tfidfDriver.executeTFIDF(tmpFolder.getAbsolutePath());
+            tfidfDriver.COMPETENCES_PATH = competencesVectorPath;
+            tfidfDriver.executeTFIDF(in);
 
         } finally {
-//            if (tmpFolder != null && tmpFolder.exists()) {
-            FileUtils.forceDelete(tmpFolder);
-            FileUtils.forceDelete(new File(tmpFolder.getAbsolutePath() + "-2"));
-//                tmpFolder.delete();
-//            }
-
-        }
-    }
-
-    private static void setPaths(File inFile, File tmpFolder, String competencesVectorPath, TFIDFDriverImpl tfidfDriver) throws IOException {
-        tfidfDriver.INPUT_ITEMSET = System.getProperty("itemset.file");
-        if (tfidfDriver.INPUT_ITEMSET == null) {
-            tfidfDriver.INPUT_ITEMSET = prop.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv");
-        }
-
-        File outPath1 = new File(tfidfDriver.OUTPUT_PATH1);
-        tfidfDriver.OUTPUT_PATH1 = tmpFolder.getAbsolutePath() + File.separator + outPath1.getName();
-
-        File inPath2 = new File(tfidfDriver.INPUT_PATH2);
-        tfidfDriver.INPUT_PATH2 = tmpFolder.getAbsolutePath() + File.separator + inPath2.getName();
-
-        File outPath2 = new File(tfidfDriver.OUTPUT_PATH2);
-        tfidfDriver.OUTPUT_PATH2 = tmpFolder.getAbsolutePath() + File.separator + outPath2.getName();
-
-        File inPath3 = new File(tfidfDriver.INPUT_PATH3);
-        tfidfDriver.INPUT_PATH3 = tmpFolder.getAbsolutePath() + File.separator + inPath3.getName();
-
-        File outPath3 = new File(tfidfDriver.OUTPUT_PATH3);
-        tfidfDriver.OUTPUT_PATH3 = tmpFolder.getAbsolutePath() + File.separator + outPath3.getName();
-
-        File inPath4 = new File(tfidfDriver.INPUT_PATH4);
-        tfidfDriver.INPUT_PATH4 = tmpFolder.getAbsolutePath() + File.separator + inPath4.getName();
-
-        File outPath4 = new File(tfidfDriver.OUTPUT_PATH4);
-        tfidfDriver.OUTPUT_PATH4 = tmpFolder.getAbsolutePath() + File.separator + outPath4.getName();
-
-        File dist_vec_path = new File(tfidfDriver.DISTANCES_VECTOR_PATH);
-        tfidfDriver.DISTANCES_VECTOR_PATH = tmpFolder.getAbsolutePath() + File.separator + dist_vec_path.getName();
-
-        File comp_path = new File(tfidfDriver.COMPETENCES_PATH);
-        File tmpFolder2 = new File(tmpFolder.getAbsolutePath() + "-2");
-        tmpFolder2.mkdir();
-        tmpFolder2.deleteOnExit();
-
-        tfidfDriver.COMPETENCES_PATH = tmpFolder2.getAbsolutePath() + File.separator + comp_path.getName();
-        copyFileOrFolder(new File(competencesVectorPath), new File(tfidfDriver.COMPETENCES_PATH));
-
-        if (inFile.isFile() && FilenameUtils.getExtension(inFile.getName()).endsWith("avro")) {
-//            File converted = convertToDocumet(inFile);
-            FileUtils.copyFile(inFile, new File(tmpFolder + File.separator + inFile.getName()));
-
-        } else {
-            for (File f : inFile.listFiles()) {
-                if (FilenameUtils.getExtension(f.getName()).endsWith("avro")) {
-//                    File converted = convertToDocumet(f);
-
-                    FileUtils.copyFile(f, new File(tmpFolder + File.separator + f.getName()));
-                }
-            }
-        }
-
-    }
-
-    public static void copyFileOrFolder(File source, File dest) throws IOException {
-        if (source.isDirectory()) {
-            copyFolder(source, dest);
-        } else {
-            ensureParentFolder(dest);
-            copyFile(source, dest);
-        }
-    }
-
-    private static void copyFolder(File source, File dest) throws IOException {
-        if (!dest.exists()) {
-            dest.mkdirs();
-        }
-        File[] contents = source.listFiles();
-        if (contents != null) {
-            for (File f : contents) {
-                File newFile = new File(dest.getAbsolutePath() + File.separator + f.getName());
-                if (f.isFile() && FilenameUtils.getExtension(f.getName()).endsWith("csv") && !f.getName().equals("terms.csv")) {
-                    copyFile(f, newFile);
-                } else {
-                    copyFolder(f, dest);
-                }
-            }
-        }
-    }
-
-    private static void copyFile(File source, File dest) throws IOException {
-        Files.copy(source, dest);
-    }
-
-    private static void ensureParentFolder(File file) {
-        File parent = file.getParentFile();
-        if (parent != null && !parent.exists()) {
-            parent.mkdirs();
         }
     }
 
@@ -230,9 +144,24 @@ public class BatchMain {
         if (stopWordsPath == null) {
             stopWordsPath = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
         }
-
-        IDataPrepare dp = new DataPrepare(inputPath, outputPath, stopWordsPath);
-        dp.execute();
+        CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(stopWordsPath), true);
+        StopWord cleanStopWord = new StopWord(stopWordArraySet);
+        StanfordLemmatizer cleanLemmatisation = new StanfordLemmatizer();
+        File filesInDir = new File(inputPath);
+        for (File f : filesInDir.listFiles()) {
+            if (f.isFile() && FilenameUtils.getExtension(f.getName()).endsWith("txt")) {
+                ReaderFile rf = new ReaderFile(f.getAbsolutePath());
+                String contents = rf.readFile();
+                cleanStopWord.setDescription(contents);
+                String cleanCont = cleanStopWord.execute().toLowerCase();
+                cleanLemmatisation.setDescription(cleanCont);
+                cleanCont = cleanLemmatisation.execute();
+                WriterFile wf = new WriterFile(outputPath + File.separator + f.getName());
+                wf.writeFile(cleanCont);
+            }
+        }
+//        IDataPrepare dp = new DataPrepare(inputPath, outputPath, stopWordsPath);
+//        dp.execute();
 
     }
 }

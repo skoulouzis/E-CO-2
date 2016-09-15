@@ -15,21 +15,19 @@
  */
 package eu.edisonproject.classification.tfidf.mapreduce;
 
-import distances.avro.Distances;
-import document.avro.Document;
+import eu.edisonproject.utility.file.ConfigHelper;
 import eu.edisonproject.utility.file.ReaderFile;
 import eu.edisonproject.utility.file.WriterFile;
+import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
+import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.File;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
+import java.io.FilenameFilter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.avro.file.DataFileReader;
-import org.apache.avro.io.DatumReader;
-import org.apache.avro.specific.SpecificDatumReader;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.util.ToolRunner;
-import term.avro.Term;
+import org.apache.lucene.analysis.util.CharArraySet;
 
 /**
  *
@@ -39,55 +37,32 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
 
     //where to read the frequent itemset
     public static String INPUT_ITEMSET;
-    //where to read the data for MapReduce#1
-    public static String INPUT_PATH1;
     //where to put the data in hdfs when MapReduce#1 will finish
-    public static String OUTPUT_PATH1;
+    public static String OUTPUT_PATH1 = "1-word-freq";
     // where to read the data for the MapReduce#2
-    public static String INPUT_PATH2;
+    public static String INPUT_PATH2 = OUTPUT_PATH1;
     // where to put the data in hdfs when the MapReduce#2 will finish
-    public static String OUTPUT_PATH2;
+    public static String OUTPUT_PATH2 = "2-word-counts";
     // where to read the data for the MapReduce#3
-    public static String INPUT_PATH3;
+    public static String INPUT_PATH3 = OUTPUT_PATH2;
 // where to put the data in hdfs when the MapReduce#3 will finish
-    public static String OUTPUT_PATH3;
+    public static String OUTPUT_PATH3 = "3-tf-idf";
 
     // where to read the data for the MapReduce#4.
-    public static String INPUT_PATH4;
+    public static String INPUT_PATH4 = OUTPUT_PATH3;
     // where to put the data in hdfs when the MapReduce# will finish
-    public static String OUTPUT_PATH4;
+    public static String OUTPUT_PATH4 = "4-distances";
 
-    public static String DISTANCES_VECTOR_PATH;
+    public static String DISTANCES_VECTOR_PATH = "5-tf-idf-csv";
     // where to put the csv with the tfidf
     public static String COMPETENCES_PATH;
 
-//    private final String contextName;
     private String finalOutputPath;
-//    private final List<Distances> distancesValues;
 
-    private static final Logger LOGGER = Logger.getLogger(TFIDFDriverImpl.class.getName());
+    public static String NUM_OF_LINES;
+    public static String STOPWORDS_PATH = ".." + File.separator + "etc" + File.separator + "stopwords.csv";
 
-//    private Connection conn;
-//    private final String[] families = {"info","data analytics","data management curation","data science engineering","scientific research methods","domain knowledge"};
     public TFIDFDriverImpl(String contextName, String inputRootPath) {
-
-        INPUT_ITEMSET = inputRootPath + File.separator + "etc" + File.separator + "itemset.csv";
-        OUTPUT_PATH1 = inputRootPath + File.separator + "etc" + File.separator + "Classification" + File.separator + "1-word-freq";
-        INPUT_PATH2 = inputRootPath + File.separator + "etc" + File.separator + "Classification" + File.separator + "1-word-freq";
-        OUTPUT_PATH2 = inputRootPath + File.separator + "etc" + File.separator + "Classification" + File.separator + "2-word-counts";
-        INPUT_PATH3 = inputRootPath + File.separator + "etc" + File.separator + "Classification" + File.separator + "2-word-counts";
-        OUTPUT_PATH3 = inputRootPath + File.separator + "etc" + File.separator + "Classification" + File.separator + "3-tf-idf";
-        INPUT_PATH4 = inputRootPath + File.separator + "etc" + File.separator + "Classification" + File.separator + "3-tf-idf";
-        OUTPUT_PATH4 = inputRootPath + File.separator + "etc" + File.separator + "Classification" + File.separator + "4-distances";
-        DISTANCES_VECTOR_PATH = inputRootPath + File.separator + "etc" + File.separator + "Classification" + File.separator + "5-tf-idf-csv";
-        COMPETENCES_PATH = inputRootPath + File.separator + "etc" + File.separator + "Classification" + File.separator + "competences-vector";
-
-//        this.contextName = contextName + ".csv";
-//        this.distancesValues = new LinkedList<>();
-        File f = new File(DISTANCES_VECTOR_PATH);
-        if (!f.exists()) {
-            f.mkdir();
-        }
         this.finalOutputPath = DISTANCES_VECTOR_PATH + File.separator + contextName;
 
     }
@@ -104,47 +79,40 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
 //        } catch (IOException ex) {
 //            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, null, ex);
 //        }
-        INPUT_PATH1 = inputPath;
-        int numberOfDocuments = 0;
-        File file = new File(INPUT_PATH1);
-        File[] filesInDir;
-        if (file.isDirectory()) {
-            filesInDir = file.listFiles();
-            for (File fileSplit : filesInDir) {
-//                DatumReader<Term> documentDatumReader = new SpecificDatumReader<>(Term.class);
-//                DataFileReader<Term> dataFileReader;
-                DatumReader<Document> documentDatumReader = new SpecificDatumReader<>(Document.class);
-                DataFileReader<Document> dataFileReader;
-                try {
-                    dataFileReader = new DataFileReader<>(fileSplit, documentDatumReader);
+        try {
 
-                    while (dataFileReader.hasNext()) {
-                        //Count the number of rows inside the .avro
-                        Document d = dataFileReader.next();
-                        numberOfDocuments++;
-                    }
-                } catch (Exception ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
+//                String[] args1 = {INPUT_PATH1, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES};
+//                ToolRunner.run(new WordFrequencyInDocDriver(), args1);
+//            String[] args1 = {INPUT_ITEMSET, OUTPUT_PATH1, inputPath, STOPWORDS_PATH, NUM_OF_LINES};
+//            ToolRunner.run(new TermWordFrequency(), args1);
+//
+//            String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};
+//            ToolRunner.run(new WordCountsForDocsDriver(), args2);
+//
+            File docs = new File(inputPath);
+            File[] files = docs.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.toLowerCase().endsWith(".txt");
                 }
+            });
+            int numberOfDocuments = files.length;
 
+//
+//            String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(numberOfDocuments)};
+//            ToolRunner.run(new WordsInCorpusTFIDFDriver(), args3);
+            StringBuilder fileNames = new StringBuilder();
+            String prefix = "";
+            for (File name : files) {
+                fileNames.append(prefix);
+                prefix = ",";
+                fileNames.append(FilenameUtils.removeExtension(name.getName()));
             }
-            LOGGER.log(Level.INFO, "Number of Documents {0}", numberOfDocuments);
 
-            try {
-                String[] args1 = {INPUT_PATH1, OUTPUT_PATH1, INPUT_ITEMSET};
-                ToolRunner.run(new WordFrequencyInDocDriver(), args1);
-
-                String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};
-                ToolRunner.run(new WordCountsForDocsDriver(), args2);
-                String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(numberOfDocuments)};
-                ToolRunner.run(new WordsInCorpusTFIDFDriver(), args3);
-                String[] args4 = {INPUT_PATH4, OUTPUT_PATH4, COMPETENCES_PATH};
-                ToolRunner.run(new CompetencesDistanceDriver(), args4);
-            } catch (Exception ex) {
-                Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, "MapReduce Fail", ex);
-            }
-        } else {
-            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, "You must specify the input folder not a specific document", file);
+            String[] args4 = {INPUT_PATH4, OUTPUT_PATH4, COMPETENCES_PATH, fileNames.toString()};
+            ToolRunner.run(new CompetencesDistanceDriver(), args4);
+        } catch (Exception ex) {
+            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }

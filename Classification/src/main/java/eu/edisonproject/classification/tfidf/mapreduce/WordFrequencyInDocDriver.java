@@ -21,11 +21,9 @@ package eu.edisonproject.classification.tfidf.mapreduce;
  */
 import document.avro.Document;
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.List;
+import java.net.URI;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,6 +32,8 @@ import org.apache.avro.mapreduce.AvroJob;
 import org.apache.avro.mapreduce.AvroKeyInputFormat;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
 
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
@@ -48,11 +48,22 @@ import org.apache.hadoop.util.Tool;
 
 public class WordFrequencyInDocDriver extends Configured implements Tool {
 
-    private static List<String> itemset;
-
+//    private static List<String> itemset;
     public static class WordFrequencyInDocMapper extends Mapper<AvroKey<Document>, NullWritable, Text, IntWritable> {
 
-        public WordFrequencyInDocMapper() {
+        private Path dictinaryFilePath;
+
+        @Override
+        protected void cleanup(Context context) throws IOException, InterruptedException {
+            super.cleanup(context);
+        }
+
+        @Override
+        protected void setup(Context context) throws IOException, InterruptedException {
+            if (context.getCacheFiles() != null && context.getCacheFiles().length > 0) {
+                URI[] uris = context.getCacheFiles();
+                dictinaryFilePath = new Path(uris[0]);
+            }
         }
 
         @Override
@@ -64,8 +75,14 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
             String description = key.datum().getDescription().toString().toLowerCase();
             String date = key.datum().getDate().toString();
 
-            for (String s : itemset) {
-                if (description.contains(" " + s + " ")) {
+            FileSystem fs = FileSystem.get(context.getConfiguration());
+            String s;
+            try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(fs.open(dictinaryFilePath)))) {
+                while ((s = br.readLine()) != null) {
+                    s = s.replaceAll("_", " ").trim();
+                    
+//                    if (description.contains(" " + s + " ")) {
                     while (description.contains(" " + s + " ")) {
 //                        System.err.println(s);
                         StringBuilder valueBuilder = new StringBuilder();
@@ -82,6 +99,23 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
                 }
             }
 
+//            for (String s : itemset) {
+//                if (description.contains(" " + s + " ")) {
+//                    while (description.contains(" " + s + " ")) {
+////                        System.err.println(s);
+//                        StringBuilder valueBuilder = new StringBuilder();
+//                        valueBuilder.append(s);
+//                        valueBuilder.append("@");
+//                        valueBuilder.append(documentId);
+//                        valueBuilder.append("@");
+//                        valueBuilder.append(title);
+//                        valueBuilder.append("@");
+//                        valueBuilder.append(date);
+//                        context.write(new Text(valueBuilder.toString()), new IntWritable(1));
+//                        description = description.replaceFirst(" " + s + " ", "");
+//                    }
+//                }
+//            }
             // Compile all the words using regex
             Pattern p = Pattern.compile("\\w+");
             Matcher m = p.matcher(description);
@@ -106,9 +140,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 
     public static class WordFrequencyInDocReducer extends Reducer<Text, IntWritable, Text, Integer> { //AvroKey<Text>, AvroValue<Integer>> {
 
-        public WordFrequencyInDocReducer() {
-        }
-
+        @Override
         protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
 
             Integer sum = 0;
@@ -121,22 +153,43 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 
     @Override
     public int run(String[] args) throws Exception {
-        itemset = new LinkedList<String>();
-        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(args[2])));
-        String line;
-        while ((line = br.readLine()) != null) {
-            String[] components = line.split("/");
-            itemset.add(components[0]);
-        }
+//        itemset = new LinkedList<String>();
+//        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(args[2])));
+//        String line;
+//        while ((line = br.readLine()) != null) {
+//            String[] components = line.split("/");
+//            itemset.add(components[0]);
+//        }
         Configuration conf = new Configuration();
         Job job = new Job(conf, "");
         job.setJarByClass(WordFrequencyInDocDriver.class);
         job.setJobName("Word Frequency In Doc Driver");
 
-        FileInputFormat.setInputPaths(job, new Path(args[0]));
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+        FileSystem fs = FileSystem.get(conf);
+        fs.delete(new Path(args[1]), true);
+        Path in = new Path(args[0]);
+        Path inHdfs = in;
 
-        new Path(args[1]).getFileSystem(conf).delete(new Path(args[1]), true);
+        Path dictionaryLocal = new Path(args[2]);
+        Path dictionaryHDFS = dictionaryLocal;
+        if (!conf.get(FileSystem.FS_DEFAULT_NAME_KEY).startsWith("file")) {
+            inHdfs = new Path(in.getName());
+            fs.delete(inHdfs, true);
+            fs.copyFromLocalFile(in, inHdfs);
+            fs.deleteOnExit(inHdfs);
+
+            dictionaryHDFS = new Path(dictionaryLocal.getName());
+            if (!fs.exists(dictionaryHDFS)) {
+                fs.copyFromLocalFile(dictionaryLocal, dictionaryHDFS);
+            }
+        }
+
+        FileStatus dictionaryStatus = fs.getFileStatus(dictionaryHDFS);
+        dictionaryHDFS = dictionaryStatus.getPath();
+        job.addCacheFile(dictionaryHDFS.toUri());
+
+        FileInputFormat.setInputPaths(job, inHdfs);
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
         job.setInputFormatClass(AvroKeyInputFormat.class);
         job.setMapperClass(WordFrequencyInDocMapper.class);

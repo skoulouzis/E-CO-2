@@ -139,9 +139,6 @@ public class TermWordFrequency extends Configured implements Tool {
 
     public static class TermWordFrequencyReducer extends Reducer<Text, IntWritable, Text, Integer> {
 
-        public TermWordFrequencyReducer() {
-        }
-
         @Override
         protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
 

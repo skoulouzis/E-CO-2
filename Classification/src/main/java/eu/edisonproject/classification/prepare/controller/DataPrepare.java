@@ -71,14 +71,15 @@ public class DataPrepare implements IDataPrepare {
 //    private ReaderFile fileReader;
 //    private static final int maxNumberOfAvroPerFile = 10;
     private final StopWord cleanStopWord;
+    private final StanfordLemmatizer cleanLemmatisation;
 
     public DataPrepare(String inputFolder, String outputFolder, String stopWordsPath) {
-
         this.inputFolder = inputFolder;
         this.outputFolder = outputFolder;
         documentObjectList = new LinkedList<>();
         CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(stopWordsPath), true);
         cleanStopWord = new StopWord(stopWordArraySet);
+        cleanLemmatisation = new StanfordLemmatizer();
     }
 
     @Override
@@ -92,38 +93,40 @@ public class DataPrepare implements IDataPrepare {
 
 //            LocalDate date = getCreationDate(file);
             for (File f : filesInDir) {
-                LocalDate date = getCreationDate(f);
-                documentObject = new DocumentObject();
-                documentObject.setDate(date);
-                ReaderFile rf = new ReaderFile(f.getAbsolutePath());
-                String contents = rf.readFile();
-                System.err.println(contents);
-                cleanStopWord.setDescription(contents);
-                String cleanCont = cleanStopWord.execute().toLowerCase();
-//                System.err.println(cleanCont);
-                documentObject.setDescription(cleanCont);
-                documentObject.setDocumentId(FilenameUtils.removeExtension(f.getName()));
-                documentObject.setTitle(f.getParentFile().getName());
+                if (f.isFile() && FilenameUtils.getExtension(f.getName()).endsWith("txt")) {
+                    LocalDate date = getCreationDate(f);
+                    documentObject = new DocumentObject();
+                    documentObject.setDate(date);
+                    ReaderFile rf = new ReaderFile(f.getAbsolutePath());
+                    String contents = rf.readFile();
+                    cleanStopWord.setDescription(contents);
+                    String cleanCont = cleanStopWord.execute().toLowerCase();
+                    cleanLemmatisation.setDescription(cleanCont);
+                    cleanCont = cleanLemmatisation.execute();
+                    documentObject.setDescription(cleanCont);
+                    documentObject.setDocumentId(FilenameUtils.removeExtension(f.getName()));
+                    documentObject.setTitle(f.getParentFile().getName());
 //                extract(this.getDocumentObject(), f.getPath());
 //                documentObject.setDescription(documentObject.getDescription().toLowerCase());
 //                clean(this.getDocumentObject().getDescription());
-                if (documentObject.getDescription().equals("")) {
-                    continue;
-                }
-                documentObjectList.add(this.getDocumentObject());
+                    if (documentObject.getDescription().equals("")) {
+                        continue;
+                    }
+                    documentObjectList.add(this.getDocumentObject());
 
-                davro = new Document();
-                davro.setDocumentId(documentObject.getDocumentId());
-                davro.setTitle(documentObject.getTitle());
-                davro.setDate(documentObject.getDate().toString());
-                davro.setDescription(documentObject.getDescription());
+                    davro = new Document();
+                    davro.setDocumentId(documentObject.getDocumentId());
+                    davro.setTitle(documentObject.getTitle());
+                    davro.setDate(documentObject.getDate().toString());
+                    davro.setDescription(documentObject.getDescription());
 
-                if (dAvroSerializer == null) {
-                    dAvroSerializer = new DocumentAvroSerializer(outputFolder
-                            + File.separator + documentObject.getTitle().replaceAll(" ", "_")
-                            + date + ".avro", davro.getSchema());
+                    if (dAvroSerializer == null) {
+                        dAvroSerializer = new DocumentAvroSerializer(outputFolder
+                                + File.separator + documentObject.getTitle().replaceAll(" ", "_")
+                                + date + ".avro", davro.getSchema());
+                    }
+                    dAvroSerializer.serialize(davro);
                 }
-                dAvroSerializer.serialize(davro);
 
             }
 
@@ -131,9 +134,6 @@ public class DataPrepare implements IDataPrepare {
                 dAvroSerializer.close();
                 dAvroSerializer = null;
             }
-//            }
-        } else {
-            System.out.println("NOT A DIRECTORY");
         }
 
     }

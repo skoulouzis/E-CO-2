@@ -24,7 +24,6 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
@@ -41,19 +40,21 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
 
     public static class WordsInCorpusTFIDFMapper extends Mapper<LongWritable, Text, Text, Text> {
 
-        public WordsInCorpusTFIDFMapper() {
-        }
-
+        @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             /*
             *   key word@documentId@title@date
             *   value n/N
              */
             String[] pairKeyValue = value.toString().split("\t");
-            String[] keyValues = pairKeyValue[0].toString().split("@");
+            String[] keyValues = pairKeyValue[0].split("@");
+            String outKey = "";
+            for (int i = 1; i < keyValues.length; i++) {
+                outKey += keyValues[i] + "@";
+            }
             String valueString = pairKeyValue[1];
 
-            context.write(new Text(keyValues[0]), new Text(keyValues[1] + "@" + keyValues[2] + "@" + keyValues[3] + "@" + valueString));
+            context.write(new Text(keyValues[0]), new Text(outKey + valueString));
 
         }
     } // end of mapper class
@@ -63,14 +64,12 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
 
         private static final DecimalFormat DF = new DecimalFormat("###.########");
 
-        public WordsInCorpusTFIDFReducer() {
-        }
-
         /*
 		 * Reducer Input
 		 * key --> word
 		 * values --> document = n/N = date
          */
+        @Override
         protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             // get the number of documents indirectly from the file-system (stored in the job name on purpose)
             int count = 0;
@@ -78,21 +77,21 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
             int numberOfDocumentsInCorpus = Integer.parseInt(context.getJobName());
             // total frequency of this word
             int numberOfDocumentsInCorpusWhereKeyAppears = 0;
-            Map<String, String> tempFrequencies = new HashMap<String, String>();
+            Map<String, String> tempFrequencies = new HashMap<>();
             for (Text val : values) {
                 String[] documentAndFrequencies = val.toString().split("@");
                 numberOfDocumentsInCorpusWhereKeyAppears++;
-                tempFrequencies.put(documentAndFrequencies[0] + "@" + documentAndFrequencies[1] + "@" + documentAndFrequencies[2], documentAndFrequencies[3]);
+                tempFrequencies.put(documentAndFrequencies[0], documentAndFrequencies[1]);
+//                tempFrequencies.put(documentAndFrequencies[0] + "@" + documentAndFrequencies[1] + "@" + documentAndFrequencies[2], documentAndFrequencies[3]);
             }
 
-            String lineValue = "";
-
+//            String lineValue = "";
             for (String document : tempFrequencies.keySet()) {
                 String[] wordFrequenceAndTotalWords = tempFrequencies.get(document).split("/");
 
                 //Term frequency is the quocient of the number of terms in document and the total number of terms in doc
-                double tf = Double.valueOf(Double.valueOf(wordFrequenceAndTotalWords[0])
-                        / Double.valueOf(wordFrequenceAndTotalWords[1]));
+                double tf = Double.valueOf(wordFrequenceAndTotalWords[0])
+                        / Double.valueOf(wordFrequenceAndTotalWords[1]);
 
                 //interse document frequency quocient between the number of docs in corpus and number of docs the term appears
                 double idf = (double) numberOfDocumentsInCorpus / (double) numberOfDocumentsInCorpusWhereKeyAppears;
@@ -101,13 +100,12 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
                 double tfIdf = numberOfDocumentsInCorpus == numberOfDocumentsInCorpusWhereKeyAppears
                         ? tf : tf * Math.log10(idf);
 
-                String[] documentFields = document.split("@");
-
-                lineValue += documentFields[0] + ";" + key.toString() + ";" + DF.format(tfIdf) + "\n";
-
-                String newKey = documentFields[0] + "@" + documentFields[1]+"@"+documentFields[2];
+//                String[] documentFields = document.split("@");
+//                lineValue += documentFields[0] + ";" + key.toString() + ";" + DF.format(tfIdf) + "\n";
+//                String newKey = documentFields[0] + "@" + documentFields[1] + "@" + documentFields[2];
+                String newKey = document;
                 String newValue = key.toString() + "/" + DF.format(tfIdf);
-//                System.out.println(newKey + ":"+newValue);
+//                System.err.println(newKey + "," + newValue);
                 context.write(new Text(newKey), new Text(newValue));
 
             }
@@ -115,6 +113,7 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
     } // end of reducer class
     //changed run(String[]) in runWordsInCorpusTFIDFDriver(String[])
 
+    @Override
     public int run(String[] rawArgs) throws Exception {
         Configuration conf = new Configuration();
         Job job = new Job(conf, "WordsInCorpusTFIDFDriver");
