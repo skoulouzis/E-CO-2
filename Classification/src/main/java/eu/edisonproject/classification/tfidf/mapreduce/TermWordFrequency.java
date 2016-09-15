@@ -27,8 +27,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -43,6 +41,7 @@ import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.mapreduce.lib.input.NLineInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.lucene.analysis.util.CharArraySet;
@@ -122,6 +121,7 @@ public class TermWordFrequency extends Configured implements Tool {
 //                        valueBuilder.append("@");
 //                        valueBuilder.append(date);
                         context.write(new Text(valueBuilder.toString()), new IntWritable(1));
+                        System.err.println(valueBuilder.toString());
                         description = description.replaceFirst(" " + s + " ", "");
                     }
 
@@ -207,7 +207,7 @@ public class TermWordFrequency extends Configured implements Tool {
                 }
             }
             stopwordsHDFS = new Path(stopwordsLocal.getName());
-            if (!fs.equals(stopwordsHDFS)) {
+            if (!fs.exists(stopwordsHDFS)) {
                 fs.copyFromLocalFile(stopwordsLocal, stopwordsHDFS);
             }
         }
@@ -224,12 +224,11 @@ public class TermWordFrequency extends Configured implements Tool {
         FileInputFormat.setInputPaths(job, dictionaryHdfs);
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
-        job.setInputFormatClass(TextInputFormat.class);
-//        job.setInputFormatClass(NLineInputFormat.class);
-//        NLineInputFormat.addInputPath(job, dictionaryHdfs);
-//        NLineInputFormat.setNumLinesPerSplit(job, Integer.valueOf(args[4]));
-//        NLineInputFormat.setMaxInputSplitSize(job, 500);
-//        Logger.getLogger(TermWordFrequency.class.getName()).log(Level.INFO, "Num. of lines: {0}", NLineInputFormat.getNumLinesPerSplit(job));
+//        job.setInputFormatClass(TextInputFormat.class);
+        job.setInputFormatClass(NLineInputFormat.class);
+        NLineInputFormat.addInputPath(job, dictionaryHdfs);
+        NLineInputFormat.setNumLinesPerSplit(job, Integer.valueOf(args[4]));
+        NLineInputFormat.setMaxInputSplitSize(job, 500);
 
         job.setMapperClass(TermWordFrequencyMapper.class);
 

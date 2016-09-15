@@ -51,7 +51,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 //    private static List<String> itemset;
     public static class WordFrequencyInDocMapper extends Mapper<AvroKey<Document>, NullWritable, Text, IntWritable> {
 
-        private Path dictinaryFilePath;
+        private Path dictionaryFilePath;
 
         @Override
         protected void cleanup(Context context) throws IOException, InterruptedException {
@@ -62,7 +62,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
         protected void setup(Context context) throws IOException, InterruptedException {
             if (context.getCacheFiles() != null && context.getCacheFiles().length > 0) {
                 URI[] uris = context.getCacheFiles();
-                dictinaryFilePath = new Path(uris[0]);
+                dictionaryFilePath = new Path(uris[0]);
             }
         }
 
@@ -78,7 +78,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
             FileSystem fs = FileSystem.get(context.getConfiguration());
             String s;
             try (BufferedReader br = new BufferedReader(
-                    new InputStreamReader(fs.open(dictinaryFilePath)))) {
+                    new InputStreamReader(fs.open(dictionaryFilePath)))) {
                 while ((s = br.readLine()) != null) {
                     s = s.replaceAll("_", " ").trim();
                     

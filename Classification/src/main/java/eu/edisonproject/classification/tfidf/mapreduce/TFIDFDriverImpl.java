@@ -77,7 +77,7 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
 //        }
         try {
 
-//                String[] args1 = {INPUT_PATH1, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES};
+//            String[] args1 = {INPUT_PATH1, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES};
 //            ToolRunner.run(new WordFrequencyInDocDriver(), args1);
             String[] args1 = {INPUT_ITEMSET, OUTPUT_PATH1, inputPath, STOPWORDS_PATH, NUM_OF_LINES};
             ToolRunner.run(new TermWordFrequency(), args1);
