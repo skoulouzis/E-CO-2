@@ -24,7 +24,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,7 +55,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 //    private static List<String> itemset;
     public static class WordFrequencyInDocMapper extends Mapper<AvroKey<Document>, NullWritable, Text, IntWritable> {
 
-        private static Set<String> terms = new HashSet<>();
+        private static final List<String> TERMS = new ArrayList<>();
 
         @Override
         protected void cleanup(Context context) throws IOException, InterruptedException {
@@ -71,7 +73,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
                         new InputStreamReader(fs.open(dictionaryFilePath)))) {
                     while ((s = br.readLine()) != null) {
                         s = s.replaceAll("_", " ").trim();
-                        terms.add(s);
+                        TERMS.add(s);
                     }
                 }
             }
@@ -86,9 +88,9 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
             String description = key.datum().getDescription().toString().toLowerCase();
 //            String date = key.datum().getDate().toString();
 
-            for (String s : terms) {
+            for (String s : TERMS) {
+//                System.err.println(s);
                 while (description.contains(" " + s + " ")) {
-//                        System.err.println(s);
                     StringBuilder valueBuilder = new StringBuilder();
                     valueBuilder.append(s);
                     valueBuilder.append("@");

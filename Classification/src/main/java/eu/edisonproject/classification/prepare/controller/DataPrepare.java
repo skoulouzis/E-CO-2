@@ -23,12 +23,9 @@ import document.avro.Document;
 import java.io.File;
 import java.io.IOException;
 //import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.apache.lucene.analysis.util.CharArraySet;
-import org.jsoup.Jsoup;
 
 import eu.edisonproject.utility.text.processing.Cleaner;
 

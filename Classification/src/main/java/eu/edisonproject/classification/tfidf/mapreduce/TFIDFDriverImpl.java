@@ -17,11 +17,6 @@ package eu.edisonproject.classification.tfidf.mapreduce;
 
 import eu.edisonproject.classification.prepare.controller.DataPrepare;
 import eu.edisonproject.classification.prepare.controller.IDataPrepare;
-import eu.edisonproject.utility.file.ConfigHelper;
-import eu.edisonproject.utility.file.ReaderFile;
-import eu.edisonproject.utility.file.WriterFile;
-import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
-import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.logging.Level;
@@ -32,7 +27,6 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.util.ToolRunner;
-import org.apache.lucene.analysis.util.CharArraySet;
 
 /**
  *
@@ -126,7 +120,9 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
             FileStatus[] results = fs.listStatus(hdfsRes);
 
             for (FileStatus s : results) {
-                fs.copyToLocalFile(s.getPath(), new Path(OUT + "/" + s.getPath().getName()));
+                Path dest = new Path(OUT + "/" + s.getPath().getName());
+                Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Copy: " + s.getPath() + " to: " + dest);
+                fs.copyToLocalFile(s.getPath(), dest);
             }
             fs.delete(hdfsRes, true);
 
