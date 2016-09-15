@@ -116,9 +116,9 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
 
             Configuration conf = new Configuration();
             FileSystem fs = FileSystem.get(conf);
-            Path hdfsRes = new Path(OUTPUT_PATH4 + File.separator + "");
+            Path hdfsRes = new Path(OUTPUT_PATH4);
+            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Result is in: " + hdfsRes);
             FileStatus[] results = fs.listStatus(hdfsRes);
-
             for (FileStatus s : results) {
                 Path dest = new Path(OUT + "/" + s.getPath().getName());
                 Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Copy: " + s.getPath() + " to: " + dest);
