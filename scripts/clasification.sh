@@ -8,6 +8,9 @@ CATEGORIES_FOLDER=$HOME/workspace/E-CO-2/Competences
 
 find $CATEGORIES_FOLDER -name '*.csv' -exec cat {} \; > $HOME/workspace/E-CO-2/etc/allTerms.csv
 ALL_TERMS=$HOME/workspace/E-CO-2/etc/allTerms.csv
+sort -r $ALL_TERMS | uniq > tmp
+mv tmp $ALL_TERMS
+
 
 
 echo "time  hadoop jar $JAR_PATH -op c -i $1 -o $2 -c $CATEGORIES_FOLDER -p $PROPS_FILE"
