@@ -24,8 +24,9 @@ do
     NUM_OF_LINES=`cat $f | wc -l`
     echo $NUM_OF_LINES
     for ((x = 0 ; x <= $NUM_OF_LINES ; x=x+$NUM_OF_TERMS)); do
-	screen -dmSL $base cat $f #java -Xmx2g -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -Dnum.of.terms=$NUM_OF_TERMS -Doffset.terms=$x -jar $JAR_PATH -op w -i $f -o $i/$base.avro -p $PROPS_FILE &
+	screen -dmSL $base date #java -Xmx2g -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -Dnum.of.terms=$NUM_OF_TERMS -Doffset.terms=$x -jar $JAR_PATH -op w -i $f -o $i/$base.avro -p $PROPS_FILE &
 	pid=$!
+	echo $pid
 	cpulimit -p $pid -l 10 &
 	
 	CPU_USAGE=$[100-$(vmstat|tail -1|awk '{print $15}')]
