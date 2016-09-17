@@ -31,12 +31,12 @@ do
 	  cpulimit -p $p -l 5 &
 	done < pids
 	
-	CPU_USAGE=`top -b -n1 | grep "Cpu(s)" | awk '{print $2}' | sed  "s/,/./g"`
+	CPU_USAGE=$[100-$(vmstat|tail -1|awk '{print $15}')]
 	CPU_USAGE=${CPU_USAGE%.*}
-	while [ $CPU_USAGE -gt 150 ]; do
+	while [ $CPU_USAGE -gt 90 ]; do
 	  echo "CPU: $CPU_USAGE seeling" 
 	  sleep 10;
-	  CPU_USAGE=`top -b -n1 | grep "Cpu(s)" | awk '{print $2}' | sed  "s/,/./g"`
+	  CPU_USAGE=$[100-$(vmstat|tail -1|awk '{print $15}')]
 	  CPU_USAGE=${CPU_USAGE%.*}
 	done
 	
