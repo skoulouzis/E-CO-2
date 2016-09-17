@@ -12,14 +12,23 @@ do
   TRAIN_DOC_PATHS+=($i)
 done
 
+
+NUM_OF_TERMS=20;
 for i in "${TRAIN_DOC_PATHS[@]}"
 do
   for f in $i/*.csv
   do
     base=`basename $i`
-    echo $base
-    screen -dmSL $base  nice -n 15 java -Xmx2g -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -Dnum.of.terms=500 -Doffset.terms=1 -jar $JAR_PATH -op w -i $f -o $i/$base.avro -p $PROPS_FILE
-    screen -dmSL $base  nice -n 15 java -Xmx2g -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -Dnum.of.terms=1000 -Doffset.terms=500 -jar $JAR_PATH -op w -i $f -o $i/$base.avro -p $PROPS_FILE
+#     echo $base
+#     echo $f
+    NUM_OF_LINES=`cat $f | wc -l`
+    echo $NUM_OF_LINES
+    for ((x = 0 ; x <= $NUM_OF_LINES ; x=x+$NUM_OF_TERMS)); do
+         screen -dmSL $base  nice -n 15 java -Xmx2g -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -Dnum.of.terms=$NUM_OF_TERMS -Doffset.terms=$x -jar $JAR_PATH -op w -i $f -o $i/$base.avro -p $PROPS_FILE
+    done
+
+#     screen -dmSL $base  nice -n 15 java -Xmx2g -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -Dnum.of.terms=500 -Doffset.terms=1 -jar $JAR_PATH -op w -i $f -o $i/$base.avro -p $PROPS_FILE
+#     screen -dmSL $base  nice -n 15 java -Xmx2g -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -Dnum.of.terms=1000 -Doffset.terms=500 -jar $JAR_PATH -op w -i $f -o $i/$base.avro -p $PROPS_FILE
   done
 done
 
@@ -27,5 +36,5 @@ done
 screen -ls | grep Detached | cut -d. -f1 | awk '{print $1}' > pids
 
 while read p; do
-  cpulimit -p $p -l 25 &
+  cpulimit -p $p -l 5 &
 done < pids
