@@ -24,7 +24,7 @@ do
     NUM_OF_LINES=`cat $f | wc -l`
     echo $NUM_OF_LINES
     for ((x = 0 ; x <= $NUM_OF_LINES ; x=x+$NUM_OF_TERMS)); do
-         echo "screen -dmSL $base  nice -n 19 java -Xmx2g -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -Dnum.of.terms=$NUM_OF_TERMS -Doffset.terms=$x -jar $JAR_PATH -op w -i $f -o $i/$base.avro -p $PROPS_FILE"
+         screen -dmSL $base  nice -n 19 java -Xmx2g -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -Dnum.of.terms=$NUM_OF_TERMS -Doffset.terms=$x -jar $JAR_PATH -op w -i $f -o $i/$base.avro -p $PROPS_FILE
          
          screen -ls | grep Detached | cut -d. -f1 | awk '{print $1}' > pids
          while read p; do
@@ -32,9 +32,12 @@ do
 	done < pids
 	
 	CPU_USAGE=`top -b -n1 | grep "Cpu(s)" | awk '{print $2}' | sed  "s/,/./g"`
-	while [ $($CPU_USAGE | bc) -ge 150 ]; do
-	  sleep 5;
+	CPU_USAGE=${CPU_USAGE%.*}
+	while [ $CPU_USAGE -gt 150 ]; do
+	  echo "CPU: $CPU_USAGE seeling" 
+	  sleep 10;
 	  CPU_USAGE=`top -b -n1 | grep "Cpu(s)" | awk '{print $2}' | sed  "s/,/./g"`
+	  CPU_USAGE=${CPU_USAGE%.*}
 	done
 	
       done
