@@ -14,7 +14,6 @@ done
 
 
 NUM_OF_TERMS=300;
-NUM_OF_JOBS=0;
 for i in "${TRAIN_DOC_PATHS[@]}"
 do
   for f in $i/*.csv
@@ -38,6 +37,7 @@ do
 	  CPU_USAGE=`top -b -n1 | grep "Cpu(s)" | awk '{print $2}' | sed  "s/,/./g"`
 	done
 	
+      done
     done
 done
 
