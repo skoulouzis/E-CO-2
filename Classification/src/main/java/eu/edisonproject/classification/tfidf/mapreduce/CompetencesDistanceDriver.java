@@ -27,7 +27,6 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -88,6 +87,7 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 
         @Override
         protected void reduce(Text text, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+            String fileName = FilenameUtils.removeExtension(text.toString()).replaceAll("_", "");
             //The object are grouped for them documentId
             Map<String, Double> distancesNameAndValue = new HashMap<>();
             Map<String, Double> documentWords = new HashMap<>();
@@ -137,9 +137,9 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
                 }
 
             }
-            String[] docIdAndDate = text.toString().split("@");
+//            String[] docIdAndDate = text.toString().split("@");
             List<String> families = new ArrayList<>();
-            families.add("info");
+//            families.add("info");
 
             for (String family : distancesNameAndValue.keySet()) {
                 String columnFamily = family.split("-")[0];
@@ -155,8 +155,10 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
             }
 
             StringBuilder sb = new StringBuilder();
-            sb.append(docIdAndDate[0]).append("\n");
+//            sb.append(docIdAndDate[0]).append("\n");
 
+            sb.append(fileName);
+            System.err.println(fileName);
             for (String family : distancesNameAndValue.keySet()) {
                 //String key = family; //iterColumn.next();
                 Double d = distancesNameAndValue.get(family);
@@ -164,8 +166,10 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 //                        String columnQualifier = family.split("-")[1];
 //                put.addColumn(Bytes.toBytes(family), Bytes.toBytes(family), Bytes.toBytes(d));
                 sb.append(family).append(",").append(d).append("\n");
-                context.write(new Text(docIdAndDate[0] + "\t" + family), new Text(d.toString()));
-                mos.write(FilenameUtils.removeExtension(docIdAndDate[0]), family, new Text(d.toString()));
+//                context.write(new Text(docIdAndDate[0] + "\t" + family), new Text(d.toString()));
+                context.write(new Text(fileName + "\t" + family), new Text(d.toString()));
+//                mos.write(FilenameUtils.removeExtension(docIdAndDate[0]), family, new Text(d.toString()));
+                mos.write(fileName, family, new Text(d.toString()));
             }
 //            System.err.println(sb.toString());
         }
@@ -189,8 +193,8 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 
             }
             mos = new MultipleOutputs(context);
-            Configuration config = context.getConfiguration();
-            String names = config.get("file.names");
+//            Configuration config = context.getConfiguration();
+//            String names = config.get("file.names");
 //            Set<String> fileName = new HashSet<>();
 
         }
@@ -237,6 +241,7 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 
             Path inPath = new Path(args[0]);
             Path outPath = new Path(args[1]);
+
             Path competencesPath = new Path(args[2]);
             Path competencesPathHDFS = competencesPath;
             FileSystem fs = FileSystem.get(conf);
@@ -258,6 +263,7 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
             job.addCacheFile(competencesPathHDFS.toUri());
 
             FileInputFormat.setInputPaths(job, inPath);
+
             FileOutputFormat.setOutputPath(job, outPath);
             fs.delete(outPath, true);
 

@@ -122,6 +122,7 @@ public class DataPrepare implements IDataPrepare {
                                 + File.separator + documentObject.getTitle().replaceAll(" ", "_")
                                 + date + ".avro", davro.getSchema());
                     }
+//                    Logger.getLogger(Text2Avro.class.getName()).log(Level.INFO, "Adding :{0} to: {1}{2}{3}{4}.avro", new Object[]{documentObject.getDocumentId(), outputFolder, File.separator, documentObject.getTitle().replaceAll(" ", "_"), date});
                     dAvroSerializer.serialize(davro);
                 }
 

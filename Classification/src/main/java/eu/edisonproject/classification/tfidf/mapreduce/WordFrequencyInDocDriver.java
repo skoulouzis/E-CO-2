@@ -77,6 +77,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
                     }
                 }
             }
+//            System.err.println("terms array has :" + TERMS.size() + " elemnts");
         }
 
         @Override
@@ -84,6 +85,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
                 throws IOException, InterruptedException {
 
             String documentId = key.datum().getDocumentId().toString();
+//            System.err.println("Processing :" + documentId);
 //            String title = key.datum().getTitle().toString();
             String description = key.datum().getDescription().toString().toLowerCase();
 //            String date = key.datum().getDate().toString();

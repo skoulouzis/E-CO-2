@@ -19,6 +19,7 @@ import eu.edisonproject.classification.prepare.controller.DataPrepare;
 import eu.edisonproject.classification.prepare.controller.IDataPrepare;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
@@ -78,6 +79,9 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
 //        }
         try {
             File items = new File(INPUT_ITEMSET);
+            if (!items.exists()) {
+                throw new IOException(items.getAbsoluteFile() + " not found");
+            }
             if (items.length() < 200000000) {
                 text2Avro(inputPath, AVRO_FILE);
 
@@ -106,9 +110,12 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
             StringBuilder fileNames = new StringBuilder();
             String prefix = "";
             for (File name : files) {
-                fileNames.append(prefix);
-                prefix = ",";
-                fileNames.append(FilenameUtils.removeExtension(name.getName()));
+                if (name.isFile() && FilenameUtils.getExtension(name.getName()).endsWith("txt")) {
+                    fileNames.append(prefix);
+                    prefix = ",";
+                    fileNames.append(FilenameUtils.removeExtension(name.getName()).replaceAll("_", ""));
+                }
+
             }
 
             String[] args4 = {INPUT_PATH4, OUTPUT_PATH4, COMPETENCES_PATH, fileNames.toString()};
@@ -117,7 +124,6 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
             Configuration conf = new Configuration();
             FileSystem fs = FileSystem.get(conf);
             Path hdfsRes = new Path(OUTPUT_PATH4);
-            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Result is in: " + fs.getStatus(hdfsRes));
             FileStatus[] results = fs.listStatus(hdfsRes);
             for (FileStatus s : results) {
                 Path dest = new Path(OUT + "/" + s.getPath().getName());
