@@ -20,6 +20,9 @@ package eu.edisonproject.classification.tfidf.mapreduce;
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
  */
 import document.avro.Document;
+import eu.edisonproject.utility.file.ConfigHelper;
+import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
+import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -49,6 +52,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
+import org.apache.lucene.analysis.util.CharArraySet;
 
 public class WordFrequencyInDocDriver extends Configured implements Tool {
 
@@ -56,6 +60,8 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     public static class WordFrequencyInDocMapper extends Mapper<AvroKey<Document>, NullWritable, Text, IntWritable> {
 
         private static final List<String> TERMS = new ArrayList<>();
+        private static StopWord cleanStopWord;
+        private StanfordLemmatizer cleanLemmatisation;
 
         @Override
         protected void cleanup(Context context) throws IOException, InterruptedException {
@@ -76,8 +82,24 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
                         TERMS.add(s);
                     }
                 }
+                URI stopwordFile = uris[1];
+                if (cleanStopWord == null) {
+                    CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(fs.open(new Path(stopwordFile)).getWrappedStream()), true);
+                    cleanStopWord = new StopWord(stopWordArraySet);
+                }
+                cleanLemmatisation = new StanfordLemmatizer();
             }
 //            System.err.println("terms array has :" + TERMS.size() + " elemnts");
+        }
+
+        private String trim(String s) {
+            while (s.endsWith(" ")) {
+                s = s.substring(0, s.lastIndexOf(" "));
+            }
+            while (s.startsWith(" ")) {
+                s = s.substring(s.indexOf(" ") + 1, s.length());
+            }
+            return s;
         }
 
         @Override
@@ -91,8 +113,13 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 //            String date = key.datum().getDate().toString();
 
             for (String s : TERMS) {
-//                System.err.println(s);
+                s = trim(s.replaceAll("_", " "));
+                cleanStopWord.setDescription(s);
+
+                cleanLemmatisation.setDescription(cleanStopWord.execute());
+                s = trim(cleanLemmatisation.execute());
                 while (description.contains(" " + s + " ")) {
+//                while (description.contains(s)) {
                     StringBuilder valueBuilder = new StringBuilder();
                     valueBuilder.append(s);
                     valueBuilder.append("@");
@@ -102,45 +129,29 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 //                        valueBuilder.append("@");
 //                        valueBuilder.append(date);
                     context.write(new Text(valueBuilder.toString()), new IntWritable(1));
-                    description = description.replaceFirst(" " + s + " ", "");
+                    description = description.replaceFirst(" " + s + " ", " ");
+//                    description = description.replaceFirst(s, "");
                 }
             }
 
-//            for (String s : itemset) {
-//                if (description.contains(" " + s + " ")) {
-//                    while (description.contains(" " + s + " ")) {
-////                        System.err.println(s);
-//                        StringBuilder valueBuilder = new StringBuilder();
-//                        valueBuilder.append(s);
-//                        valueBuilder.append("@");
-//                        valueBuilder.append(documentId);
-//                        valueBuilder.append("@");
-//                        valueBuilder.append(title);
-//                        valueBuilder.append("@");
-//                        valueBuilder.append(date);
-//                        context.write(new Text(valueBuilder.toString()), new IntWritable(1));
-//                        description = description.replaceFirst(" " + s + " ", "");
-//                    }
-//                }
-//            }
-            // Compile all the words using regex
-//            Pattern p = Pattern.compile("\\w+");
-//            Matcher m = p.matcher(description);
-//
-//            // build the values and write <k,v> pairs through the context
-//            while (m.find()) {
-//                String matchedKey = m.group().toLowerCase();
-//                StringBuilder valueBuilder = new StringBuilder();
-//                valueBuilder.append(matchedKey);
-//                valueBuilder.append("@");
-//                valueBuilder.append(documentId);
-//                valueBuilder.append("@");
+//             Compile all the words using regex
+            Pattern p = Pattern.compile("\\w+");
+            Matcher m = p.matcher(description);
+
+            // build the values and write <k,v> pairs through the context
+            while (m.find()) {
+                String matchedKey = m.group().toLowerCase();
+                StringBuilder valueBuilder = new StringBuilder();
+                valueBuilder.append(matchedKey);
+                valueBuilder.append("@");
+                valueBuilder.append(documentId);
+                valueBuilder.append("@");
 //                valueBuilder.append(title);
 //                valueBuilder.append("@");
 //                valueBuilder.append(date);
-//                // emit the partial <k,v>
-//                context.write(new Text(valueBuilder.toString()), new IntWritable(1));
-//            }
+                // emit the partial <k,v>
+                context.write(new Text(valueBuilder.toString()), new IntWritable(1));
+            }
         }
     }
 
@@ -178,6 +189,10 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 
         Path dictionaryLocal = new Path(args[2]);
         Path dictionaryHDFS = dictionaryLocal;
+
+        Path stopwordsLocal = new Path(args[4]);
+        Path stopwordsHDFS = stopwordsLocal;
+
         if (!conf.get(FileSystem.FS_DEFAULT_NAME_KEY).startsWith("file")) {
             inHdfs = new Path(in.getName());
             fs.delete(inHdfs, true);
@@ -188,11 +203,19 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
             if (!fs.exists(dictionaryHDFS)) {
                 fs.copyFromLocalFile(dictionaryLocal, dictionaryHDFS);
             }
+            stopwordsHDFS = new Path(stopwordsLocal.getName());
+            if (!fs.exists(stopwordsHDFS)) {
+                fs.copyFromLocalFile(stopwordsLocal, stopwordsHDFS);
+            }
         }
 
         FileStatus dictionaryStatus = fs.getFileStatus(dictionaryHDFS);
         dictionaryHDFS = dictionaryStatus.getPath();
         job.addCacheFile(dictionaryHDFS.toUri());
+
+        FileStatus stopwordsStatus = fs.getFileStatus(stopwordsHDFS);
+        stopwordsHDFS = stopwordsStatus.getPath();
+        job.addCacheFile(stopwordsHDFS.toUri());
 
         FileInputFormat.setInputPaths(job, inHdfs);
         FileOutputFormat.setOutputPath(job, new Path(args[1]));

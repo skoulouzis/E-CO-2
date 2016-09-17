@@ -123,11 +123,17 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
                         word = word.replaceAll("_", " ");
                     }
                     if (documentWords.containsKey(word)) {
-                        competenceValue.add(competence.get(originalWord));
                         documentValue.add(documentWords.get(word));
                         //documentToCompetenceSpace.put(word, documentWords.get(word));
+                    } else {
+                        documentValue.add(0.0);
                     }
+
+                    competenceValue.add(competence.get(originalWord));
                 }
+//                System.err.println(words);
+//                System.err.println(competenceValue);
+//                System.err.println(documentValue);
 
                 if (!competenceValue.isEmpty()) {
                     double distance = cosineFunction.computeDistance(competenceValue, documentValue);
@@ -158,7 +164,6 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 //            sb.append(docIdAndDate[0]).append("\n");
 
             sb.append(fileName);
-            System.err.println(fileName);
             for (String family : distancesNameAndValue.keySet()) {
                 //String key = family; //iterColumn.next();
                 Double d = distancesNameAndValue.get(family);

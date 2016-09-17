@@ -85,7 +85,7 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
             if (items.length() < 200000000) {
                 text2Avro(inputPath, AVRO_FILE);
 
-                String[] args1 = {AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES};
+                String[] args1 = {AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES, STOPWORDS_PATH};
                 ToolRunner.run(new WordFrequencyInDocDriver(), args1);
             } else {
                 String[] args1 = {INPUT_ITEMSET, OUTPUT_PATH1, inputPath, STOPWORDS_PATH, NUM_OF_LINES};
@@ -157,7 +157,10 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
 //        fileWriter.writeFile(textToPrint);
 //    }
     private static void text2Avro(String inputPath, String outputPath) {
-        new File(outputPath).mkdirs();
+        File out = new File(outputPath);
+        out.getAbsoluteFile().delete();
+        out.getAbsoluteFile().mkdirs();
+
 //        CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(STOPWORDS_PATH), true);
 //        StopWord cleanStopWord = new StopWord(stopWordArraySet);
 //        StanfordLemmatizer cleanLemmatisation = new StanfordLemmatizer();
