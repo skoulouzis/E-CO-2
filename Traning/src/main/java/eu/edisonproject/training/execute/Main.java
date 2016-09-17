@@ -64,8 +64,6 @@ import org.apache.lucene.analysis.util.CharArraySet;
 public class Main {
 
     private static Properties prop;
-//    private static final String[] rejectPOS = new String[]{"JJ", "JJR", "JJS",
-//        "VB", "VBD", "VBG", "VBN", "VBP", "VBZ", "RB", "RBR", "RBS"};
 
     public static void main(String args[]) {
         Options options = new Options();
