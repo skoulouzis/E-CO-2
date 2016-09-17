@@ -32,7 +32,7 @@ do
 	done < pids
 	
 	CPU_USAGE=`top -b -n1 | grep "Cpu(s)" | awk '{print $2}' | sed  "s/,/./g"`
-	while [ $CPU_USAGE -ge 150 ]; do
+	while [ $($CPU_USAGE | bc) -ge 150 ]; do
 	  sleep 5;
 	  CPU_USAGE=`top -b -n1 | grep "Cpu(s)" | awk '{print $2}' | sed  "s/,/./g"`
 	done
