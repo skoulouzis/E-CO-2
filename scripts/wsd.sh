@@ -19,24 +19,30 @@ do
   for f in $i/*.csv
   do
     base=`basename $i`
-#     echo $base
-#     echo $f
+    echo $base
     NUM_OF_LINES=`cat $f | wc -l`
     echo $NUM_OF_LINES
     for ((x = 0 ; x <= $NUM_OF_LINES ; x=x+$NUM_OF_TERMS)); do
-	screen -dmSL $base date #java -Xmx2g -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -Dnum.of.terms=$NUM_OF_TERMS -Doffset.terms=$x -jar $JAR_PATH -op w -i $f -o $i/$base.avro -p $PROPS_FILE &
-	pid=$!
-	echo $pid
-	cpulimit -p $pid -l 10 &
+	screen -dmSL $base java -Xmx2g -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -Dnum.of.terms=$NUM_OF_TERMS -Doffset.terms=$x -jar $JAR_PATH -op w -i $f -o $i/$base.avro -p $PROPS_FILE 
 	
-	CPU_USAGE=$[100-$(vmstat|tail -1|awk '{print $15}')]
+	screen -ls | grep Detached | cut -d. -f1 | awk '{print $1}' > pids
+
+	while read p; do
+	  cpulimit -p $p -l 5 &
+	done < pids
+	sleep 1;
+
+	
+	CPU_USAGE=`grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}'`
 	CPU_USAGE=${CPU_USAGE%.*}
-	while [ $CPU_USAGE -gt 90 ]; do
+	while [ $CPU_USAGE -gt 50 ]; do
 	  echo "CPU: $CPU_USAGE seeling" 
-	  sleep 10;
-	  CPU_USAGE=$[100-$(vmstat|tail -1|awk '{print $15}')]
+	  sleep 20;
+	  CPU_USAGE=`grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}'`
 	  CPU_USAGE=${CPU_USAGE%.*}
 	done
+	
+	
 	
       done
     done
