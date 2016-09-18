@@ -222,8 +222,15 @@ public class DataPrepare implements IDataPrepare {
             Logger.getLogger(Text2Avro.class.getName()).log(Level.SEVERE, null, ex);
         }
         FileTime ct = attr.creationTime();
+         DateTimeFormatter formatter;
+        if(ct.toString().split(".")[1].length() > 2){
+//            2016-09-18T11:40:03.750522Z
+            formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");
+        }else{
+            formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        }
 
-        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        
         return LocalDate.parse(ct.toString(), formatter);
     }
 
