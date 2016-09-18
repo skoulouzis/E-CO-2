@@ -223,17 +223,10 @@ public class DataPrepare implements IDataPrepare {
         }
         FileTime ct = attr.creationTime();
         DateTimeFormatter formatter;
-        String[] parts = ct.toString().split(".");
-        if (parts != null && parts.length == 2) {
-            String s = "";
-            for (int i = 0; i < parts[1].length() - 2; i++) {
-                s += "S";
-            }
-//               2016-09-18T11:40:03.750522Z
-            formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss." + s + "'Z'");
-        } else {
-            formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        }
+
+//        formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");
+//        LocalDate.parse("2016-09-18T11:40:03.750522Z", formatter);
+        formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
         return LocalDate.parse(ct.toString(), formatter);
     }
