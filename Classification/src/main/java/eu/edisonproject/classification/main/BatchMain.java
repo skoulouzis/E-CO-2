@@ -20,7 +20,10 @@
  */
 package eu.edisonproject.classification.main;
 
+import eu.edisonproject.classification.distance.CosineSimilarityMatrix;
 import eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl;
+import eu.edisonproject.utility.commons.ValueComparator;
+import eu.edisonproject.utility.file.CSVFileReader;
 import eu.edisonproject.utility.file.ConfigHelper;
 import eu.edisonproject.utility.file.ReaderFile;
 import eu.edisonproject.utility.file.WriterFile;
@@ -28,7 +31,12 @@ import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
 import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.cli.BasicParser;
@@ -65,16 +73,24 @@ public class BatchMain {
             options.addOption(operation);
 
             Option input = new Option("i", "input", true, "input path");
-            input.setRequired(true);
+            input.setRequired(false);
             options.addOption(input);
 
             Option output = new Option("o", "output", true, "output file");
-            output.setRequired(true);
+            output.setRequired(false);
             options.addOption(output);
 
             Option competencesVector = new Option("c", "competences-vector", true, "competences vectors");
             competencesVector.setRequired(false);
             options.addOption(competencesVector);
+
+            Option v1 = new Option("v1", "vector1", true, "");
+            v1.setRequired(false);
+            options.addOption(v1);
+
+            Option v2 = new Option("v2", "vector2", true, "");
+            v2.setRequired(false);
+            options.addOption(v2);
 
             Option popertiesFile = new Option("p", "properties", true, "path for a properties file");
             popertiesFile.setRequired(false);
@@ -95,6 +111,9 @@ public class BatchMain {
                     break;
                 case "c":
                     calculateTFIDF(cmd.getOptionValue("input"), cmd.getOptionValue("output"), cmd.getOptionValue("competences-vector"));
+                    break;
+                case "p":
+                    profile(cmd.getOptionValue("v1"), cmd.getOptionValue("v2"));
                     break;
             }
 
@@ -155,6 +174,31 @@ public class BatchMain {
         }
 //        IDataPrepare dp = new DataPrepare(inputPath, outputPath, stopWordsPath);
 //        dp.execute();
+
+    }
+
+    private static void profile(String csvFile1, String csvFile2) throws IOException {
+        Map<String, Collection<Double>> cv = CSVFileReader.csvCompetanceToMap(csvFile1, ",", Boolean.TRUE);
+        Map<String, Collection<Double>> jobVec = CSVFileReader.csvCompetanceToMap(csvFile2, ",", Boolean.TRUE);
+        CosineSimilarityMatrix cosineFunction = new CosineSimilarityMatrix();
+        String k1 = cv.keySet().iterator().next();
+        Map<String, Double> winners = new HashMap<>();
+        for (String k : jobVec.keySet()) {
+            Collection<Double> j = jobVec.get(k);
+            double d = cosineFunction.computeDistance(cv.get(k1), j);
+            if (!Double.isNaN(d)) {
+                winners.put(k, d);
+            }
+
+        }
+
+        ValueComparator bvc = new ValueComparator(winners);
+        Map<String, Double> sorted_map = new TreeMap(bvc);
+        sorted_map.putAll(winners);
+        for (String k : sorted_map.keySet()) {
+            System.err.println(jobVec.get(k));
+        }
+        System.err.println(cv.get(k1));
 
     }
 }

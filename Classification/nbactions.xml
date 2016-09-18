@@ -10,7 +10,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Dstop.words.file=/home/alogo/workspace/E-CO-2/etc/stopwords.csv -Ditemset.file=/home/alogo/workspace/E-CO-2/etc/allTerms.csv -Dtagger.file=/home/alogo/workspace/E-CO-2/etc/model/stanford/english-left3words-distsim.tagger -Dmodel.path=/home/alogo/workspace/E-CO-2/etc/model/ -classpath %classpath eu.edisonproject.classification.main.BatchMain -op c -i  /home/alogo/Downloads/trainData -o /home/alogo/Downloads/trainData -c /home/alogo/workspace/E-CO-2/Competences -p /home/alogo/workspace/E-CO-2/etc/configure.properties</exec.args>
+                <exec.args>-Dstop.words.file=/home/alogo/workspace/E-CO-2/etc/stopwords.csv -Ditemset.file=/home/alogo/workspace/E-CO-2/etc/allTerms.csv -Dtagger.file=/home/alogo/workspace/E-CO-2/etc/model/stanford/english-left3words-distsim.tagger -Dmodel.path=/home/alogo/workspace/E-CO-2/etc/model/ -classpath %classpath eu.edisonproject.classification.main.BatchMain -op p -v1 /home/alogo/Downloads/cv1.csv -v2 /home/alogo/Downloads/jobs.csv</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
@@ -24,7 +24,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -Dstop.words.file=/home/alogo/workspace/E-CO-2/etc/stopwords.csv -Ditemset.file=/home/alogo/workspace/E-CO-2/etc/allTerms.csv -Dtagger.file=/home/alogo/workspace/E-CO-2/etc/model/stanford/english-left3words-distsim.tagger -Dmodel.path=/home/alogo/workspace/E-CO-2/etc/model/ -classpath %classpath eu.edisonproject.classification.main.BatchMain -op c -i  /home/alogo/Downloads/trainData -o /home/alogo/Downloads/trainData -c /home/alogo/workspace/E-CO-2/Competences -p /home/alogo/workspace/E-CO-2/etc/configure.properties</exec.args>
+                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -Dstop.words.file=/home/alogo/workspace/E-CO-2/etc/stopwords.csv -Ditemset.file=/home/alogo/workspace/E-CO-2/etc/allTerms.csv -Dtagger.file=/home/alogo/workspace/E-CO-2/etc/model/stanford/english-left3words-distsim.tagger -Dmodel.path=/home/alogo/workspace/E-CO-2/etc/model/ -classpath %classpath eu.edisonproject.classification.main.BatchMain -op p -v1 /home/alogo/Downloads/cv1.csv -v2 /home/alogo/Downloads/jobs.csv</exec.args>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
             </properties>
@@ -39,7 +39,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Dstop.words.file=/home/alogo/workspace/E-CO-2/etc/stopwords.csv -Ditemset.file=/home/alogo/workspace/E-CO-2/etc/allTerms.csv -Dtagger.file=/home/alogo/workspace/E-CO-2/etc/model/stanford/english-left3words-distsim.tagger -Dmodel.path=/home/alogo/workspace/E-CO-2/etc/model/ -classpath %classpath eu.edisonproject.classification.main.BatchMain -op c -i  /home/alogo/Downloads/trainData -o /home/alogo/Downloads/trainData -c /home/alogo/workspace/E-CO-2/Competences -p /home/alogo/workspace/E-CO-2/etc/configure.properties</exec.args>
+                <exec.args>-Dstop.words.file=/home/alogo/workspace/E-CO-2/etc/stopwords.csv -Ditemset.file=/home/alogo/workspace/E-CO-2/etc/allTerms.csv -Dtagger.file=/home/alogo/workspace/E-CO-2/etc/model/stanford/english-left3words-distsim.tagger -Dmodel.path=/home/alogo/workspace/E-CO-2/etc/model/ -classpath %classpath eu.edisonproject.classification.main.BatchMain -op p -v1 /home/alogo/Downloads/cv1.csv -v2 /home/alogo/Downloads/jobs.csv</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
