@@ -131,9 +131,11 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 
                     competenceValue.add(competence.get(originalWord));
                 }
-//                System.err.println(words);
-//                System.err.println(competenceValue);
-//                System.err.println(documentValue);
+                if (key.equals("DSDA02")) {
+                    System.err.println(words);
+                    System.err.println(competenceValue);
+                    System.err.println(documentValue);
+                }
 
                 if (!competenceValue.isEmpty()) {
                     double distance = cosineFunction.computeDistance(competenceValue, documentValue);
