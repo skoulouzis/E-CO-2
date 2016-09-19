@@ -110,27 +110,27 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
             String description = key.datum().getDescription().toString().toLowerCase();
 //            String date = key.datum().getDate().toString();
 
-            for (String s : TERMS) {
-                s = trim(s.replaceAll("_", " "));
-                cleanStopWord.setDescription(s);
-
-                cleanLemmatisation.setDescription(cleanStopWord.execute());
-                s = trim(cleanLemmatisation.execute());
-                while (description.contains(" " + s + " ")) {
-//                while (description.contains(s)) {
-                    StringBuilder valueBuilder = new StringBuilder();
-                    valueBuilder.append(s);
-                    valueBuilder.append("@");
-                    valueBuilder.append(documentId);
-//                        valueBuilder.append("@");
-//                        valueBuilder.append(title);
-//                        valueBuilder.append("@");
-//                        valueBuilder.append(date);
-                    context.write(new Text(valueBuilder.toString()), new IntWritable(1));
-                    description = description.replaceFirst(" " + s + " ", " ");
-//                    description = description.replaceFirst(s, "");
-                }
-            }
+//            for (String s : TERMS) {
+//                s = trim(s.replaceAll("_", " "));
+//                cleanStopWord.setDescription(s);
+//
+//                cleanLemmatisation.setDescription(cleanStopWord.execute());
+//                s = trim(cleanLemmatisation.execute());
+//                while (description.contains(" " + s + " ")) {
+////                while (description.contains(s)) {
+//                    StringBuilder valueBuilder = new StringBuilder();
+//                    valueBuilder.append(s);
+//                    valueBuilder.append("@");
+//                    valueBuilder.append(documentId);
+////                        valueBuilder.append("@");
+////                        valueBuilder.append(title);
+////                        valueBuilder.append("@");
+////                        valueBuilder.append(date);
+//                    context.write(new Text(valueBuilder.toString()), new IntWritable(1));
+//                    description = description.replaceFirst(" " + s + " ", " ");
+////                    description = description.replaceFirst(s, "");
+//                }
+//            }
 
 //             Compile all the words using regex
             Pattern p = Pattern.compile("\\w+");
