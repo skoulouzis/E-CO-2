@@ -24,7 +24,10 @@ import java.util.Iterator;
  */
 public class CosineSimilarityMatrix {
 
-    public double computeDistance(Collection<Double> c1, Collection<Double> c2) {
+    public double computeDistance(Collection<Double> c1, Collection<Double> c2) throws Exception {
+        if(c1.size() != c2.size()){
+            throw new Exception("vectors must be of same length");
+        }
         double dotProduct = 0.0;
         double magnitude1 = 0.0;
         double magnitude2 = 0.0;

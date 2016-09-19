@@ -56,7 +56,7 @@ public class BatchMain {
 
     private static Properties prop;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         try {
 //            args = new String[1];
 //            args[0] = "..";
@@ -177,7 +177,7 @@ public class BatchMain {
 
     }
 
-    private static void profile(String csvFile1, String csvFile2) throws IOException {
+    private static void profile(String csvFile1, String csvFile2) throws IOException, Exception {
         Map<String, Collection<Double>> cv = CSVFileReader.csvCompetanceToMap(csvFile1, ",", Boolean.TRUE);
         Map<String, Collection<Double>> jobVec = CSVFileReader.csvCompetanceToMap(csvFile2, ",", Boolean.TRUE);
         CosineSimilarityMatrix cosineFunction = new CosineSimilarityMatrix();

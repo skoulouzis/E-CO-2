@@ -138,8 +138,12 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 //                }
 
                 if (!competenceValue.isEmpty()) {
-                    double distance = cosineFunction.computeDistance(competenceValue, documentValue);
-                    distancesNameAndValue.put(key, distance);
+                    try {
+                        double distance = cosineFunction.computeDistance(competenceValue, documentValue);
+                        distancesNameAndValue.put(key, distance);
+                    } catch (Exception ex) {
+                        Logger.getLogger(CompetencesDistanceDriver.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 } else {
                     distancesNameAndValue.put(key, 0.0);
                 }
