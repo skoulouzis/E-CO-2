@@ -57,11 +57,13 @@ public class LuceneExtractor implements TermExtractor {
             itemsFilePath = prop.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv");
         }
 
-        taggerPath = System.getProperty("tagger.file");
+        taggerPath = System.getProperty("model.path");
 
         if (taggerPath == null) {
-            taggerPath = prop.getProperty("tagger.file", ".." + File.separator + "etc" + File.separator + "model" + File.separator + "stanford" + File.separator + "english-left3words-distsim.tagger");
+            taggerPath = prop.getProperty("model.path", ".." + File.separator + "etc" + File.separator + "model");
         }
+
+        taggerPath+=  File.separator + "stanford" + File.separator + "english-left3words-distsim.tagger";
     }
 
     @Override

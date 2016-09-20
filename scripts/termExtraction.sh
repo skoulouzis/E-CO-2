@@ -37,7 +37,7 @@ do
         #echo index $index
         #echo res $res
         #echo len $resLen
-        echo "screen -dmSL $base prun -reserve ${res[$index]} -np 1 java -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -Dtagger.file=$TAGGER_FILE -jar $JAR_PATH -op x -i $i -o $i/terms.csv -p $PROPS_FILE"
+        echo "screen -dmSL $base prun -reserve ${res[$index]} -np 1 java -Dstop.words.file=$STOPWORDS -Ditemset.file=$DICTIONARY_ALL -Dmodel.path=$MODEL_PATH -jar $JAR_PATH -op x -i $i -o $i/terms.csv -p $PROPS_FILE"
         echo "time  hadoop jar $JAR_PATH -op x -i $i -o $i/terms.csv -p $PROPS_FILE"
   #done
 done

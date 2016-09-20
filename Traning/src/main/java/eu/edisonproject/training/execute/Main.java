@@ -365,12 +365,16 @@ public class Main {
         }
         DataPrepare dataPrepare = new DataPrepare(in, out, stopWordsPath);
         dataPrepare.execute();
-        String taggerPath = System.getProperty("tagger.file");
+        String taggerPath = System.getProperty("model.path");
 
         if (taggerPath == null) {
-            taggerPath = prop.getProperty("tagger.file", ".." + File.separator + "etc" + File.separator + "model" + File.separator + "stanford" + File.separator + "english-left3words-distsim.tagger");
+            taggerPath = prop.getProperty("model.path", ".." + File.separator + "etc" + File.separator + "model");
         }
 
+        taggerPath+=  File.separator + "stanford" + File.separator + "english-left3words-distsim.tagger";
+        
+                
+                
         File fin = new File(out + File.separator + "itemset.csv");
         File fout = new File(out + File.separator + "tmp.csv");
         MaxentTagger tagger = new MaxentTagger(taggerPath);
