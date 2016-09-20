@@ -11,7 +11,7 @@ ALL_TERMS=$HOME/workspace/E-CO-2/etc/allTerms.csv
 cat $ALL_TERMS | awk 'BEGIN{FS=","} {print $1}' > tmp
 sort -r tmp | uniq > $ALL_TERMS
 
-preserve -list | grep $USER | awk '{print $1}' > reservations
+preserve -list | grep $USER |  grep -i r | awk '{print $1}' > reservations
 
 
 while read p; do
@@ -32,7 +32,7 @@ for ((i = 0 ; i < $resLen ; i++)); do
       index=0
       break
     fi
-    cp $f /tmp/$i
+    cp $f /tmp/classification_$i
     index=$((index+1))
   done
 done
