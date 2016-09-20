@@ -23,6 +23,7 @@ resLen=${#res[@]}
 FILECOUNT=$(find $2 -type f | wc -l)
 FILE_PER_JOB=$(( FILECOUNT / resLen))
 
+rm -r /tmp/classification_*
 for ((i = 0 ; i < $resLen ; i++)); do
   mkdir /tmp/classification_$i
   for f in $2/*.txt
