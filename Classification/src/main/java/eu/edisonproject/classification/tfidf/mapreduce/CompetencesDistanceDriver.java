@@ -20,6 +20,7 @@ package eu.edisonproject.classification.tfidf.mapreduce;
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
  */
 import eu.edisonproject.classification.distance.CosineSimilarityMatrix;
+import eu.edisonproject.utility.file.WriterFile;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -73,7 +74,8 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
             String documentID = keyValues[0];
             String word = keyValues[1].split("/")[0];
             String tfidf = keyValues[1].split("/")[1];
-
+            WriterFile rf = new WriterFile(System.getProperty("user.home")+"/"+this.getClass().getName()+".dbg");
+            rf.writeFile(documentID+" , "+word + "@" + tfidf);
             context.write(new Text(documentID), new Text(word + "@" + tfidf));
 
         }
