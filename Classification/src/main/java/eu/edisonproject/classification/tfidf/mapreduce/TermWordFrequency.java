@@ -27,6 +27,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -124,23 +126,23 @@ public class TermWordFrequency extends Configured implements Tool {
                         description = description.replaceFirst(" " + s + " ", "");
                     }
 
-//                    Pattern p = Pattern.compile("\\w+");
-//                    Matcher m = p.matcher(description);
-//                    // build the values and write <k,v> pairs through the context
-//                    while (m.find()) {
-//                        String matchedKey = m.group().toLowerCase();
-//                        StringBuilder valueBuilder = new StringBuilder();
-//                        valueBuilder.append(matchedKey);
-//                        valueBuilder.append("@");
-//                        valueBuilder.append(stat.getPath().getName());
-//                        valueBuilder.append("@");
-//                        valueBuilder.append(stat.getPath().getName());
-////                valueBuilder.append("@");
-////                valueBuilder.append(date);
-//                        // emit the partial <k,v>
-//                        context.write(new Text(valueBuilder.toString()), new IntWritable(1));
-//                        System.err.println(valueBuilder.toString());
-//                    }
+                    Pattern p = Pattern.compile("\\w+");
+                    Matcher m = p.matcher(description);
+                    // build the values and write <k,v> pairs through the context
+                    while (m.find()) {
+                        String matchedKey = m.group().toLowerCase();
+                        StringBuilder valueBuilder = new StringBuilder();
+                        valueBuilder.append(matchedKey);
+                        valueBuilder.append("@");
+                        valueBuilder.append(stat.getPath().getName());
+                        valueBuilder.append("@");
+                        valueBuilder.append(stat.getPath().getName());
+//                valueBuilder.append("@");
+//                valueBuilder.append(date);
+                        // emit the partial <k,v>
+                        context.write(new Text(valueBuilder.toString()), new IntWritable(1));
+                        System.err.println(valueBuilder.toString());
+                    }
                 }
             }
 

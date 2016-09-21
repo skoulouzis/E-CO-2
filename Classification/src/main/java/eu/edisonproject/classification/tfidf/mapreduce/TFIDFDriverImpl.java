@@ -38,20 +38,20 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
     //where to read the frequent itemset
     public static String INPUT_ITEMSET;
     //where to put the data in hdfs when MapReduce#1 will finish
-    public static String OUTPUT_PATH1 = "1-word-freq";
+    public static String OUTPUT_PATH1 = "TFIDFDriverImpl-1-word-freq";
     // where to read the data for the MapReduce#2
     public static String INPUT_PATH2 = OUTPUT_PATH1;
     // where to put the data in hdfs when the MapReduce#2 will finish
-    public static String OUTPUT_PATH2 = "2-word-counts";
+    public static String OUTPUT_PATH2 = "TFIDFDriverImpl-2-word-counts";
     // where to read the data for the MapReduce#3
     public static String INPUT_PATH3 = OUTPUT_PATH2;
 // where to put the data in hdfs when the MapReduce#3 will finish
-    public static String OUTPUT_PATH3 = "3-tf-idf";
+    public static String OUTPUT_PATH3 = "TFIDFDriverImpl-3-tf-idf";
 
     // where to read the data for the MapReduce#4.
     public static String INPUT_PATH4 = OUTPUT_PATH3;
     // where to put the data in hdfs when the MapReduce# will finish
-    public static String OUTPUT_PATH4 = "4-distances";
+    public static String OUTPUT_PATH4 = "TFIDFDriverImpl-4-distances";
     // where to put the csv with the tfidf
     public static String COMPETENCES_PATH;
 
@@ -59,10 +59,9 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
     public static String NUM_OF_LINES;
     public static String STOPWORDS_PATH = ".." + File.separator + "etc" + File.separator + "stopwords.csv";
     public String OUT;
-    public String AVRO_FILE = "avro";
+    public String AVRO_FILE = "TFIDFDriverImpl-avro";
 
-    public TFIDFDriverImpl(String contextName, String inputRootPath) {
-//        this.finalOutputPath = DISTANCES_VECTOR_PATH + File.separator + contextName;
+    public TFIDFDriverImpl() {
     }
 
     /**

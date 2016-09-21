@@ -20,6 +20,7 @@
  */
 package eu.edisonproject.classification.main;
 
+import eu.edisonproject.utility.file.MyProperties;
 import eu.edisonproject.classification.distance.CosineSimilarityMatrix;
 import eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl;
 import eu.edisonproject.utility.commons.ValueComparator;
@@ -53,7 +54,7 @@ import org.apache.lucene.analysis.util.CharArraySet;
  */
 public class BatchMain {
 
-    private static Properties prop;
+    private static MyProperties prop;
 
     public static void main(String[] args) throws Exception {
         try {
@@ -125,7 +126,7 @@ public class BatchMain {
     private static void calculateTFIDF(String in, String out, String competencesVectorPath) throws IOException {
 
         try {
-            TFIDFDriverImpl tfidfDriver = new TFIDFDriverImpl("", "");
+            TFIDFDriverImpl tfidfDriver = new TFIDFDriverImpl();
 
             if (tfidfDriver.NUM_OF_LINES == null) {
                 tfidfDriver.NUM_OF_LINES = prop.getProperty("map.reduce.num.of.lines", "200");
