@@ -102,9 +102,11 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
                 }
             });
             int numberOfDocuments = files.length;
+//
+//            String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(numberOfDocuments)};
+//            ToolRunner.run(new WordsInCorpusTFIDFDriver(), args3);
+            
 
-            String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(numberOfDocuments)};
-            ToolRunner.run(new WordsInCorpusTFIDFDriver(), args3);
             StringBuilder fileNames = new StringBuilder();
             String prefix = "";
             for (File name : files) {
@@ -115,8 +117,8 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
                 }
             }
 //
-//            String[] args4 = {INPUT_PATH4, OUTPUT_PATH4, COMPETENCES_PATH, fileNames.toString()};
-//            ToolRunner.run(new CompetencesDistanceDriver(), args4);
+            String[] args4 = {INPUT_PATH4, OUTPUT_PATH4, COMPETENCES_PATH, fileNames.toString()};
+            ToolRunner.run(new CompetencesDistanceDriver(), args4);
 //
 //            Configuration conf = new Configuration();
 //            FileSystem fs = FileSystem.get(conf);
