@@ -20,6 +20,7 @@ import eu.edisonproject.classification.prepare.controller.IDataPrepare;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
@@ -116,7 +117,7 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
                 }
             }
             String[] args4 = {INPUT_PATH4, OUTPUT_PATH4, COMPETENCES_PATH, fileNames.toString()};
-            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "args4:" + args4);
+            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "args4:" + Arrays.toString(args4));
             ToolRunner.run(new CompetencesDistanceDriver(), args4);
 //
 //            Configuration conf = new Configuration();
