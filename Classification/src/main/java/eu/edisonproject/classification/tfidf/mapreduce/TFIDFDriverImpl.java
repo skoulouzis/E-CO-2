@@ -76,23 +76,24 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
 //        } catch (IOException ex) {
 //            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, null, ex);
 //        }
+
         try {
-            File items = new File(INPUT_ITEMSET);
-            if (!items.exists()) {
-                throw new IOException(items.getAbsoluteFile() + " not found");
-            }
-            if (items.length() < 200000000) {
-                text2Avro(inputPath, AVRO_FILE);
+//            File items = new File(INPUT_ITEMSET);
+//            if (!items.exists()) {
+//                throw new IOException(items.getAbsoluteFile() + " not found");
+//            }
+//            if (items.length() < 200000000) {
+//                text2Avro(inputPath, AVRO_FILE);
+//
+//                String[] args1 = {AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES, STOPWORDS_PATH};
+//                ToolRunner.run(new WordFrequencyInDocDriver(), args1);
+//            } else {
+//                String[] args1 = {INPUT_ITEMSET, OUTPUT_PATH1, inputPath, STOPWORDS_PATH, NUM_OF_LINES};
+//                ToolRunner.run(new TermWordFrequency(), args1);
+//            }
 
-                String[] args1 = {AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES, STOPWORDS_PATH};
-                ToolRunner.run(new WordFrequencyInDocDriver(), args1);
-            } else {
-                String[] args1 = {INPUT_ITEMSET, OUTPUT_PATH1, inputPath, STOPWORDS_PATH, NUM_OF_LINES};
-                ToolRunner.run(new TermWordFrequency(), args1);
-            }
-
-//            String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};
-//            ToolRunner.run(new WordCountsForDocsDriver(), args2);
+            String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};
+            ToolRunner.run(new WordCountsForDocsDriver(), args2);
 ////
 //            File docs = new File(inputPath);
 //            File[] files = docs.listFiles(new FilenameFilter() {
