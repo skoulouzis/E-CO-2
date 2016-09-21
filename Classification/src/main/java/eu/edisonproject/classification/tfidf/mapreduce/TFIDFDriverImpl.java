@@ -105,7 +105,6 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
 //
 //            String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(numberOfDocuments)};
 //            ToolRunner.run(new WordsInCorpusTFIDFDriver(), args3);
-            
 
             StringBuilder fileNames = new StringBuilder();
             String prefix = "";
@@ -116,8 +115,8 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
                     fileNames.append(FilenameUtils.removeExtension(name.getName()).replaceAll("_", ""));
                 }
             }
-//
             String[] args4 = {INPUT_PATH4, OUTPUT_PATH4, COMPETENCES_PATH, fileNames.toString()};
+            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "args4:" + args4);
             ToolRunner.run(new CompetencesDistanceDriver(), args4);
 //
 //            Configuration conf = new Configuration();
