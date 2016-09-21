@@ -24,7 +24,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.lucene.analysis.util.CharArraySet;
@@ -56,7 +55,7 @@ public class ConfigHelper {
         return new CharArraySet(stopWords, false);
     }
 
-    public static Properties getProperties(String propertiesPath) throws IOException {
+    public static MyProperties getProperties(String propertiesPath) throws IOException {
         Logger.getLogger(ConfigHelper.class.getName()).log(Level.INFO, "Reading properties from: {0}", propertiesPath);
         InputStream in = null;
         try {
@@ -66,7 +65,7 @@ public class ConfigHelper {
                 ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
                 in = classLoader.getResourceAsStream(propertiesPath);
             }
-            Properties properties = new Properties();
+            MyProperties properties = new MyProperties();
             properties.load(in);
             return properties;
         } catch (IOException ex) {

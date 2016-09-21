@@ -11,7 +11,7 @@ ALL_TERMS=$HOME/workspace/E-CO-2/etc/allTerms.csv
 cat $ALL_TERMS | awk 'BEGIN{FS=","} {print $1}' > tmp
 sort -r tmp | uniq > $ALL_TERMS
 
-preserve -list | grep $USER |  grep -i r | awk '{print $1}' > reservations
+# preserve -list | grep $USER |  grep -i r | awk '{print $1}' > reservations
 
 
 while read p; do
@@ -42,8 +42,7 @@ done
 
 for ((i = 0 ; i < $resLen; i++)); do
   folder=$((i+1))
-#   echo "run in ${res[$i]} classification_$i"
-  screen -dmSL jobs prun -reserve ${res[$i]} -np 1  time  java -Dstop.words.file=$HOME/workspace/E-CO-2/etc/stopwords.csv -Ditemset.file=$HOME/workspace/E-CO-2/etc/allTerms.csv -Dmodel.path=$HOME/workspace/E-CO-2/etc/model/ -jar $HOME/workspace/E-CO-2/Classification/target/Classification-1.0-SNAPSHOT-jar-with-dependencies.jar -op c -i /tmp/classification_$i -o $3 -c $HOME/workspace/E-CO-2/Categories -p $HOME/workspace/E-CO-2/etc/classification.properties
+  echo "screen -dmSL jobs prun -reserve ${res[$i]} -np 1  time  java -Dstop.words.file=$HOME/workspace/E-CO-2/etc/stopwords.csv -Ditemset.file=$HOME/workspace/E-CO-2/etc/allTerms.csv -Dmodel.path=$HOME/workspace/E-CO-2/etc/model/ -jar $HOME/workspace/E-CO-2/Classification/target/Classification-1.0-SNAPSHOT-jar-with-dependencies.jar -op c -i /tmp/classification_$i -o $3 -c $HOME/workspace/E-CO-2/Categories -p $HOME/workspace/E-CO-2/etc/classification.properties"
 done
 
-screen -dmSL jobs prun -reserve ${res[0]} -np 1  time  java -Dstop.words.file=$HOME/workspace/E-CO-2/etc/stopwords.csv -Ditemset.file=$HOME/workspace/E-CO-2/etc/allTerms.csv -Dmodel.path=$HOME/workspace/E-CO-2/etc/model/ -jar $HOME/workspace/E-CO-2/Classification/target/Classification-1.0-SNAPSHOT-jar-with-dependencies.jar -op c -i /tmp/classification_$resLen -o $3 -c $HOME/workspace/E-CO-2/Categories -p $HOME/workspace/E-CO-2/etc/classification.properties
+echo "screen -dmSL jobs prun -reserve ${res[0]} -np 1  time  java -Dstop.words.file=$HOME/workspace/E-CO-2/etc/stopwords.csv -Ditemset.file=$HOME/workspace/E-CO-2/etc/allTerms.csv -Dmodel.path=$HOME/workspace/E-CO-2/etc/model/ -jar $HOME/workspace/E-CO-2/Classification/target/Classification-1.0-SNAPSHOT-jar-with-dependencies.jar -op c -i /tmp/classification_$resLen -o $3 -c $HOME/workspace/E-CO-2/Categories -p $HOME/workspace/E-CO-2/etc/classification.properties"

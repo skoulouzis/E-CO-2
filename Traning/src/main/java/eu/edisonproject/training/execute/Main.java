@@ -27,6 +27,7 @@ import eu.edisonproject.training.wsd.MetaDisambiguator;
 import eu.edisonproject.utility.commons.Term;
 import eu.edisonproject.utility.commons.TermAvroSerializer;
 import eu.edisonproject.utility.file.ConfigHelper;
+import eu.edisonproject.utility.file.MyProperties;
 import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
 import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.BufferedReader;
@@ -39,7 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.cli.BasicParser;
@@ -63,7 +64,7 @@ import org.apache.lucene.analysis.util.CharArraySet;
  */
 public class Main {
 
-    private static Properties prop;
+    private static MyProperties prop;
 
     public static void main(String args[]) {
         Options options = new Options();
@@ -111,6 +112,18 @@ public class Main {
             } else {
                 prop = ConfigHelper.getProperties(propPath);
             }
+            Set<Object> keys = prop.keySet();
+            for (Object k : keys) {
+                String v = prop.getProperty((String) k);
+                if (v.contains("$")) {
+//                    v = v.replaceFirst("\\$", "").replaceFirst("\\{", "").replaceFirst("\\}", "");
+//                    v = System.getProperty(v);
+//                    System.err.println(k + " " + v);
+                }
+
+            }
+//            ${user.home}
+
             switch (cmd.getOptionValue("operation")) {
                 case "x":
                     termExtraction(cmd.getOptionValue("input"), cmd.getOptionValue("output"));
@@ -371,10 +384,8 @@ public class Main {
             taggerPath = prop.getProperty("model.path", ".." + File.separator + "etc" + File.separator + "model");
         }
 
-        taggerPath+=  File.separator + "stanford" + File.separator + "english-left3words-distsim.tagger";
-        
-                
-                
+        taggerPath += File.separator + "stanford" + File.separator + "english-left3words-distsim.tagger";
+
         File fin = new File(out + File.separator + "itemset.csv");
         File fout = new File(out + File.separator + "tmp.csv");
         MaxentTagger tagger = new MaxentTagger(taggerPath);
