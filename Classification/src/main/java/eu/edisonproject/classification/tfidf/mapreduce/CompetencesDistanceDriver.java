@@ -70,12 +70,15 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 			 * 
 			 * value --> n/N
              */
+
+            Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "key: " + key + " value: " + value);
             String[] keyValues = value.toString().split("\t");
             String documentID = keyValues[0];
             String word = keyValues[1].split("/")[0];
             String tfidf = keyValues[1].split("/")[1];
-            WriterFile rf = new WriterFile(System.getProperty("user.home")+"/"+this.getClass().getName()+".dbg");
-            rf.writeFile(documentID+" , "+word + "@" + tfidf);
+            WriterFile rf = new WriterFile(System.getProperty("user.home") + "/" + this.getClass().getName() + ".dbg");
+            rf.writeFile(documentID + " , " + word + "@" + tfidf);
+            Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, documentID + " , " + word + "@" + tfidf);
             context.write(new Text(documentID), new Text(word + "@" + tfidf));
 
         }
@@ -97,6 +100,7 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 //            List<CharSequence> valuesToWrite = new LinkedList<>();
 
             for (Text value : values) {
+                Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "key: " + text + " value: " + value);
                 String[] line = value.toString().split("@");
                 documentWords.put(line[0], Double.parseDouble(line[1].replace(",", ".")));
             }
