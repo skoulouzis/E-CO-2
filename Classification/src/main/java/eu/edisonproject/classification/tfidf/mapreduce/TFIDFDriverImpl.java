@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
@@ -116,6 +117,12 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
                     fileNames.append(FilenameUtils.removeExtension(name.getName()).replaceAll("_", ""));
                 }
             }
+
+            Set<Object> set = System.getProperties().keySet();
+            for (Object o : set) {
+                System.err.println(o + " , " + System.getProperty((String) o));
+            }
+
             String[] args4 = {INPUT_PATH4, OUTPUT_PATH4, COMPETENCES_PATH, fileNames.toString()};
             Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "args4:" + Arrays.toString(args4));
             ToolRunner.run(new CompetencesDistanceDriver(), args4);
