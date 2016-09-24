@@ -1,0 +1,808 @@
+Volume 34
+Article 65
+1263
+Many data scientists don’t have degrees in busin
+ess. To be effective, however, they need to understand the specific 
+industry  and  organization  in  which  they  work.  To  make  up  for  this  potential  deficiency,  it  is  common  to  have  data 
+scientists work closely with people in the organization who have business 
+domain knowledge.
+Big  data  analytics  users  make  up  a  continuum.  The  reason  is  that  there  are  users  all  along  the  continuum.  For 
+example, some end users become power users in their departments and perform analyst roles such as developing 
+reports  for  other  u
+sers. 
+Other
+analysts  further  develop  their  skills  and  are  able  to  perform  some  of  the  tasks 
+associated with data scientists, especially when provided analytical workbenches like SAS Enterprise Miner and IBM 
+SPSS Modeler.
+Appendix  A  describes  how  universiti
+es,  companies,  and  vendors  are  responding  to  meet  the  demand  for  people 
+skilled in the use of big data analytics.
+VIII. BIG DATA AND P
+RIVACY
+The collection, storage, and mining of big data will only increase. A big data issue that is gaining attention and 
+will 
+beco
+me  more  important  is  individual  privacy:  What  data  should  the  government  and  organizations  be  allowed  to 
+collect and what safeguards should be in place about how it is used? The Target story provides a glimpse into the 
+uses that make some 
+people
+u
+ne
+asy. Other  people see no  problem with this use of big data
+,
+because it results in 
+better customer
+service and appealing offers. 
+In 
+the 
+summer 
+of 
+2013,  there  were  numerous  news  stories  about  Edward  Snowden,  a  former  CIA  employee  and 
+NSA consultant, who r
+evealed secrets about how the U.S. government was tracking private individuals’ phone calls 
+and  using  this  information.  Many  people,  especially  in
+the  government,  viewed  Snowden  as  a  traitor  who 
+jeopardized the country’s national security in the fight agai
+nst  terrorism
+;
+others  saw  him  as  a  whistle
+-
+blower  who 
+informed the public about a practice t
+hat threatens civil liberties. 
+Clemons
+et al. [2014] identify three different ways to characterize privacy  and online invasions of privacy. The first 
+way  is  an  uni
+nvited intrusion into a user’s p
+ersonal  space.  This  includes  online  marketing,  spam  advertising,  pop
+-
+ups,  and  sponsored  sites  around  the  edges  of  a  Web  page.  In  their  study,  most  people  see  this  is  as  the  most 
+salient 
+type 
+of  privacy  invasion,  even  though 
+its  potential  consequences  are  the  least  harmful.  The  most  serious 
+threats  are  fraudulent  e
+-
+commerce  transactions  and  identity  theft.  Although  these  are  concerns,  people  are  not 
+worried  that  these  kinds  of  activities  would 
+be 
+perpetrated 
+by
+big  data  compan
+ies  like  Google  and  Facebook. The 
+third  kind  of  invasion  is  personal  profiling  for  commercial  advantage.  This  occurs  when  companies  like  Google, 
+Facebook, and Yahoo! combine hundreds or thousands of pieces of data from different sources (i.e., data blendin
+g) 
+to  understand  who  you  are,  where  you  live,  where  you  go,  who  your  friends  are,  what  you  buy,  and  the  like.  This 
+blended information may be used 
+simply 
+to
+make offers that are likely to appeal to you, or for less benign purposes
+such as knowing 
+whether
+y
+ou  engage in risky hobbies and should be charged higher  insurance rates [Clemons et 
+al., 2014].
+Research shows that most people have very little understanding and concern about how organizations are using big 
+da
+ta  [Clemons
+et  al.,  2014].  However,  as  indivi
+duals  understand  the  potential  uses  better,  their  concerns  increase 
+quickly. This sugg
+ests that as companies increasingly use big data analytics on customer data, the public is l
+ikely to 
+become more concerned.
+Although 
+some laws
+limit the activities of tel
+ecommunications companies (e.g., they can’t listen to phone calls), 
+few 
+regulations  and  laws 
+are 
+applicable  for  the  new  digital  age  and  are  largely  non
+-
+existent  for  Internet  firms.  These 
+companies  privacy  policies  largely  serve  their  commercial  interests  r
+ather than protecting individuals’ privacy. We 
+need  laws  about  individual  privacy  that  people  think  that  are  consistent,  reasonable,  transparent,  and  easy  to 
+understand [Clemons et al., 2014]. 
+I
+X
+. CONCLUSION
+From  a  historical  perspective,  big  data  can  be 
+viewed  as  the  latest  generation  in  the  evolution  of  decision  support 
+data management [Watson and Marjanovic 2013c]. The need for  data to support computer
+-
+based decision  making 
+has existed at least 
+since the early 1970s with 
+DSS
+.  This period can be thought
+of as the first generation of decision 
+support data management. It was very application
+-
+centric
+,
+with data organized to support a single decision or a set 
+of related decisions. By the 1990s, th
+ere was a need to support a wide variety of BI and analytic ap
+plications (e.g., 
+reporting,  executive  information  systems)  with  data.  Having  separate  databases  (i.e.,  independent  data  marts)  for 
+each  application  was  costly,  resulted  in  data  inconsistencies  across  applications,  and  failed  to  support  enterprise
+-
+wide  app
+lications.  The  outcome  was  the  emergence  of 
+enterprise  data  warehouses
+, 
+the  second  generation,  which 
+represent
+ed  a  data
+-
+centric  approach  to  data  management.  The 
+third 
+generation  was 
+real
+-
+time  data  warehousing
+. 
+1264
+Volume 34
+Article 65
+Technology had improved by 2000 so that it was
+possible to capture data in real time and trickle
+-
+feed it into the data 
+warehouse.  The  significance  of  this  evolution  is  that  it  changed  the  paradigm for  what  kinds  of  decisions  could  be 
+supported.  With  real
+-
+time  data,  operational  decisions  and  processes 
+could  be  supported. 
+Big  data
+is  the  fourth 
+generation 
+of 
+decision  support  data  management.  The  ability  to  capture,  store,  and  analyze  high
+-
+volume,  high
+-
+velocity,  and  high
+-
+variety  data  is  allowing  decisions  to  be  supported  in  new  ways.  It  is  also  creating 
+n
+ew  data 
+management challenges.
+For many years, companies developed data warehouses as the focal point for data to support decision making. This 
+is changing as new data sources, platforms, and cloud
+-
+based services emerge. As a result, data is becoming more 
+federated
+; that is, data is stored and accessed from multiple places. Adding to this trend are business units such as 
+finance  and  marketing  that  have  the  business  need
+s
+,  resources,  and  political  clout  to  acquire  their  own  platforms, 
+services,  and  tools.  In
+many  organizations,  IT  is  losing  some  control  over  data  management.  This  is  not  bad  if  it 
+leads to more agility and better organizational performance. The downside, however, includes data silos that don’t 
+sha
+re  data,  data  inconsistencies,  inefficiencies  i
+n  storing  data,  and  duplication  of  resources.  Organizations  are 
+accepting  that  data  federation  is  going  to  exist,  at  least  in  the  short  to  medium  term,  and  are  instituting  greater 
+controls  over  their  data  management  practices.  Some  are  putting  more  emphasi
+s  on  data  governance  (e.g.,  data 
+stewards, metadata management, and master data management). They are also creating BI or analytics centers of 
+excellence  to  provide  strategic  direction  for  the  use  of  data  and  analytics,  prioritize  projects,  provide  shareab
+le 
+resources, establish guidelines and standards, participate in tool selection, troubleshoot problems, and more.
+Organizations  are  gaining  unprecedented  insights  into  customers  and  operations  because  of  the  ability  to  analyze 
+new data sources and large vo
+lumes of highly detailed data [Russom, 201
+1
+]. This data is bringing more context and 
+insight  to  organizational  decision  making.  Success  with  big  data  is  not  guaranteed,  h
+owever,  as  there  are  specific 
+requirements that must be met. Organizations should star
+t with specific, narrowly defined objectives, often related to 
+better  understanding  and  connecting  with  customers  and  improving  operations.  There  must  be  strong,  committed 
+sponsorship. Depending on the project(s), the sponsorship can be departmental or at 
+the senior executive level. The 
+CIO  is  typically  responsible  for  developing  and  maintaining  the  big  data  infrastructure.  For  some  companies  (e.g., 
+Google), alignment bet
+ween the business and IT strategies is second nature because big data is what the busin
+ess 
+is  all  about.  For  others,  careful  consideration  needs  to  be  given  to  organization  structure  issues;  governance;  the 
+skills,  experiences,  and  perspectives  of  organizational  personnel;  how  business  needs  are  turned  into  successful 
+projects; and more. The
+re should be a fact
+-
+based decision
+-
+making
+culture where the business is 
+run by the numbers 
+and there is constant experimentation to see what works best. The creation
+and maintenance of this culture depends 
+on  senior  management.  Big  data  has  spawned  a  varie
+ty  of  new  data  management  technologies,  platforms,  and 
+approaches.  These  must  be  blended  with  traditional  platforms 
+such  as 
+data  warehouses  in  a  way  that  meets 
+organizational  needs  cost  effectively.  The  analysis  of  big  data  requires  traditional  tools  like 
+SQL,  analytical 
+workbenches 
+like 
+SAS  Enterprise  Miner
+,
+and  data  analysis  and  visualization  languages  like  R.  All  of  this  is  for 
+naught, however, unless there are 
+business users, analysts, and data scientists who can work with and use big data. 
+As organizat
+ions make greater use of big data, it is likely that there will be increased concerns and legislation abo
+ut 
+individual privacy issues.
+REFERENCES
+Editor’s Note
+:  The  following  reference  list  contains  hyperlinks  to  World  Wide  Web  pages.  Readers  who  have  the
+ability  to  access  the Web  directly  from  their  word  processor  or  are  reading  the  paper  on  the Web,  can  gain  direct 
+access to these linked references. Readers are wa
+rned, however, that: 
+1.
+These links existed as of the date of publication but are not guarante
+ed to be working thereafter.
+2.
+The  contents  of  Web  pages  may  change  over  time.  Where  version  information  is  provided  in  the 
+References, different versions may not contain the information or the conclusions referenced.
+3.
+The author(s) of the Web pages, not AIS,
+is (are) responsible for the accuracy of their content.
+4.
+The  author(s)  of  this 
+article,  not  AIS,  is  (are)  responsible  for  the  accuracy  of  the  URL  and  version 
+information.
+Ayers, I. (2007) 
+Super Crunchers
+, 
+New York: Bantam Books.
+Babcock, C. (2011) “Zynga’
+s Unusual Cloud Strategy Is Key to Success
+", 
+Information Week
+, 
+http://www.informationweek.com/cloud
+-
+computing/infrastructure/zyn
+gas
+-
+unusual
+-
+cloud
+-
+strategy
+-
+is
+-
+key
+-
+to/231000908
+(
+current March 7, 2014)
+.
+Babcock, C. (2013) “Zynga, Cloud Pioneer, Must Fix Revenue Woes
+", 
+Information Week
+, 
+http://www.informationweek.com/cloud
+-
+computing/software/zynga
+-
+cloud
+-
+pioneer
+-
+must
+-
+fix
+-
+revenue
+-
+woe/240156007
+(current March 7, 2014)
+1266
+Volume 34
+Article 65
+IBM. (2013) “Exploiting 
+Big Data in Telecommunications to Increase Revenue, Reduce Customer Churn and 
+Operating 
+Costs", 
+http://www
+-
+01.ibm.c
+om/software/data/bigdata/industry
+-
+telco.html
+(current March 7, 2014).
+Imhoff, C. (2013) “
+Seeing RedShift: How Amazon Changed Data Warehousing Forever
+", 
+Inside Analytics
+,
+http://archive.constantcontact.com/fs108/1104983460042/archive/1112865946329.html
+(current March 7, 
+2014).
+Kavanagh, E. (2013) “Throwing Down the Gauntlet: Cloud Bi for $1/hr
+", 
+Inside 
+Analytics, 
+http://insideanalysis.com/2013/07/throwing
+-
+down
+-
+the
+-
+gauntlet
+-
+cloud
+-
+bi
+-
+for
+-
+1hr/?utm_source=Throwing+Down+the
++Gauntlet%3A+Cloud+BI+for+%241%2Fhr&utm_campaign=Advance&
+utm_medium=email
+(current March 7, 2014).
+LaValle, S., E. Lesser. R. Shockley, M.S. Hopkins, and N. Kruschwitz (2011) “Big Data, Analytics and the Path from 
+Insights to Value,” 
+Sloan Management Revi
+ew, 
+(52)2, pp. 21
+-
+31. 
+http://www.ibm.com/smarterplanet/global/files/in_idea_smarter_computing_to_big
+-
+data
+-
+analy
+tics_and_path_from_insights
+-
+to
+-
+value.pdf
+(current March 7, 2014).
+Lewis, M. (2003) 
+Moneyball: The Art of Winning an Unfair Game, 
+New York: W.W. Norton & Company.
+Manyika, J., M. Chui, B. Brown, J. Bughin, R. Dobbs, C.  Roxburgh, and A.H. Byers (2011) “Big
+Data:  The  Next 
+Frontier   of   Innovation,   Competition,   and   Productivity,”   McKinsey   Global   Institute,   May.  
+http://www.mckinsey.co
+m/Insights/MGI/Research/Technology_and_Innovation/Big_data_The_next_frontier_fo
+r_innovation
+(current March 7, 2014).
+Miller
+, B. 
+,
+J. M. Chui, B. Brown, J. Bughin, R. Dobbs, C.  Roxburgh, and A.H. Byers
+(2011) 
+Moneyball
+, Columbia 
+Pictures.
+Mills
+, S., S. L
+ucas, L. Irakliotis, M. Ruppa, T. Carlson and B. Perlowitz (2012) “Demystifying Big Data: A Practical 
+Guide to Transforming the Business of Government
+", 
+Washington: TechAmerica Foundation. Available at
+http://breakinggov.com/documents/demystifying
+-
+big
+-
+data
+-
+a
+-
+practical
+-
+guide
+-
+to
+-
+transforming
+-
+the
+-
+bus/
+, (current 
+March 7, 2014).
+Oracle
+. (2013) “Utilities and Big Data: Accelerating the Drive to Value
+", 
+Oracle, 
+http://www.oracle.com/us/in
+dustries/utilities/oracle
+-
+utilities
+-
+2013
+-
+report
+-
+1977336.pdf
+(current March 7, 2014).
+Palfreyman, J. (2013) 
+“Big Data 
+–
+Vexed by Veracity?”,
+http://insights
+-
+on
+-
+business.com/government/big
+-
+data
+-
+vexed
+-
+by
+-
+veracity/
+(current March 7, 2014).
+Power, D.J. (2007) “A Brief History of Decision Support Systems
+", 
+DSSResources.com
+, 
+http://DSSResources.COM/history/dsshistory.html, version 4.0
+(current March 7, 2014).
+Read, K. (2013) “Is ‘In
+-
+Memory’ Always the Right Choice?” 
+Business Intelligence Journal
+,
+(18)1, pp. 46
+-
+50.
+Rose
+, S. (2013) “Telematics: How Big Data is Tra
+nsforming the Auto Insurance Industry
+", 
+SAS White Paper, SAS. 
+http://www.sas.com/resources/whitepaper/wp_56343.pdf
+, (current March 7, 2014).
+Rudin, K. (2010) “Actionable Analytics at Zyn
+ga: Leveraging Big Data to Make Online Games More Fun and Social
+", 
+TDWI BI Executive Summit, San Diego,
+CA, USA
+,
+http://tdwi.org/videos/2010/08/actionable
+-
+analytics
+-
+at
+-
+zynga
+-
+leveraging
+-
+big
+-
+data
+-
+to
+-
+make
+-
+online
+-
+games
+-
+more
+-
+fun
+-
+and
+-
+social.aspx
+(current March 7, 2014).
+Russom, P. (2011) “Big Data Analytics
+", 
+TDWI Best Practices Report. Seattle: The Data Wareho
+using Insti
+tute, 
+Fourth Quarter,
+http://tdwi.org/research/2011/09/best
+-
+practices
+-
+report
+-
+q4
+-
+big
+-
+data
+-
+analytics.aspx
+(current 
+March 7, 2014).
+Russom, P. (2013) “Integrati
+ng Hadoop into Business Intelligence and Data Warehousing
+", 
+TDWI Best Practices 
+Report. Seattle,
+WA, USA,
+The Data Wareho
+using Institute. Second Quarter,
+http://tdwi.org/research/2013/04/tdwi
+-
+best
+-
+practices
+-
+report
+-
+integrating
+-
+hadoop
+-
+into
+-
+business
+-
+intelligence
+-
+and
+-
+data
+-
+warehousing.aspx
+(current March 7, 2014).
+Schroeck, M., R. Schockley, J. Smart, D. Romero
+-
+Mora
+les and P. Tufano (2012) 
+"
+Analytics: The 
+Real
+-
+World Use of 
+Big D
+ata
+"
+, 
+IBM Institute for Business Value
+,
+http://www
+-
+935.ibm.com/services/us/gbs/thoughtleaders
+hip/ibv
+-
+big
+-
+data
+-
+at
+-
+work.html
+(current March 7, 2014).
+Sicular, S. (2013) “
+Gartner's Big Data Definition Consists of Three Parts, Not to Be Confused with Three 
+'
+V
+'
+s
+", 
+Forbes
+, 
+http://www.forbes.com/sites/gartnergroup/2013/03/27/gartners
+-
+big
+-
+data
+-
+definition
+-
+consists
+-
+of
+-
+three
+-
+parts
+-
+not
+-
+to
+-
+be
+-
+confused
+-
+with
+-
+three
+-
+vs/
+(current March 7, 2014).
+van Groningen, M. (2009) “Introduction to Hadoop
+", 
+TRIFORK Blog
+, 
+http://blog.trifork.com/2009/08/04/introduction
+-
+to
+-
+hadoop/
+(current March 7, 2014).
+Volume 34
+Article 65
+1267
+Watson, H.J. and L. Volonino (2000) “Harrah’s High Payoff from Customer Information", W. Eckerson and H.J. 
+W
+atson (eds.), 
+Harnessing Customer Information for Strategic Advantage: Technical Challenges and 
+Business Solutions
+", Seattle, WA, USA: The Data Warehousing Institute, 
+www.tera
+dataunivesitynetwork.com
+(current March 7, 2014).
+Watson, H. J. (2009a) "Tutorial: Business Intelligence 
+–
+Past, Present, and Future", 
+Communications of the 
+Association for Information Systems
+, (25)39,
+http://aisel.aisnet.org/cais/vol25/iss1/39
+(current March 7, 2014).
+Watson, H.J., J.A. Hofer and B.H. Wixom (2009b) “RetailStore.com", Teradata University Network
+,
+http://teradatauniversitynetwor
+k.com
+(current March 7, 2014).
+Watson, H.J. and T. Leonard (2011) “U.S. Xpress: Where Trucks and BI Hit the Road
+", 
+Business Intelligence 
+Journal
+, (16)1, pp. 4
+-
+7.
+Watson, H.J. (2012
+) “This Isn’t Your Mother’s BI Architecture
+", 
+Business Intelligence Journal
+, 
+(17)1, pp. 4
+-
+6.
+Watson, H.J. 
+(2013a) “All about Analytics
+", 
+International Journal of Business Intelligence Research
+,
+(4)2, pp.13
+-
+28.
+Watson, H.J., 
+B.H. 
+Wixom
+and T. Ariyachandra (2013b) “Insights on Hiring for BI and Analytics
+", 
+Business 
+Intelligence Jou
+rnal
+,
+(18)2, pp. 4
+-
+7.
+Watson, H.J
+.
+and O. Marjanovic (2013c) “Big Data: The Fourth Data Management Generation
+", 
+Business 
+Intelligence Journal
+,
+(18)3, pp.4
+-
+7.
+Williams, S. (2004) “Assessing BI Readiness: A Key to BI ROI
+", 
+Business Intelligence Journal
+, Summ
+er 2004.
+Wyllie, D. (2013) “How ‘Big Data’ is 
+H
+elping 
+L
+aw 
+E
+nforcement
+", 
+PoliceOne.com, 
+http://www.policeone.com/police
+-
+products
+/investigation/articles/6396543
+-
+How
+-
+Big
+-
+Data
+-
+is
+-
+helping
+-
+law
+-
+enforcement/
+(current March 7, 2014).
+APPENDIX A: MEETING 
+THE DEMAND FOR PEOPL
+E SKILLED IN BIG DAT
+A ANALYTICS
+As the McKinsey Global Institute and Gartner studies cited earlier show, there is a g
+rowing demand for people who 
+can work with analytics and big data. Universities, companies, and vendors are responding in a variety of ways. 
+Many universities are adding a required course in analytics (including big data analytics) to their undergraduate 
+and 
+graduate  programs.  From  a  historical  perspective,  this  is  interesting  for  faculty  in  business  schools  because  most 
+business schools used to require a course in management science or quantit
+at
+ive methods but phased it out when 
+the marketplace did not re
+quire it. Obviously, businesses now want gra
+duates with analytical skills. 
+Another   significant   change   is   the   rapid   emergence   of   undergraduate   degree   programs,   certificates,   MBA 
+concentrations, and graduate degree programs in analytics. To illustrate the g
+rowth in analytics offerings, a survey in 
+the 
+fall
+of
+2012  found  59  universities  offering  business  intelligence/business  analytics  degree
+s
+,  with  22  at  the 
+undergraduate  level.  Only  two  years  earlier,  a  similar  survey  found  only  12  schools  that  offered    BI/
+BA  degree
+s
+[Watson, 
+Wixom and Ariyachandra
+, 2013b]. 
+Graduate  analytics  offerings  are  located  across  campus,  including 
+in  business,  engineering,  and  s
+tatistics.  The 
+instructional  delivery  varies  from  on
+-
+campus  to  online.  One  of  the  first  and  best  known  pro
+grams  is  the  Master  of 
+Science  in  Analytics  at  North  Carolina  State  University.  SAS  has  been  an  important  contributor  to  the  program, 
+which is offered through the Institute for Advanced Analytics and has its own facility on campus. Deloitte Consulting 
+part
+nered  with  the  Kelly  School  of  Business  at  Indiana  University  to  offer  a  certificate  in  business  analytics  for 
+Deloitte’s  professionals.  Last  year,  N
+orthwestern  University  initiated  an  online  Master  of  Science  in  Predictive 
+Analytics  offered  through  its  Sc
+hool  of  Continuing  Studies.  Still  unknown,  however,  is  how  many  students  will 
+choose to study big data analytics, because it is an intellectua
+lly c
+hallenging field of study.
+Companies are responding in several ways. One approach is to create educational op
+portunities for people who are 
+already  on  board  (e.g.,  business  and  BI  analysts)  and  have  the  interest  and  aptitude  to  further  develop  their  skills
+through  in
+-
+house  programs,  conferences,  and  college  courses.  In  the  past,  there  have  been  dire  forecasts  of 
+shortages of people with specific skills (even COBOL programmers), and people acquired the needed skills and took 
+advantage 
+of the opportunities [Healy, 2012]. 
+For  companies  that  want  to  hire  data  scientists,  Davenport  and  Patil 
+[
+2012
+]
+have  useful  ideas  f
+or  how  to  proceed, 
+including scanning the membership rolls of user groups dedicated to data science tools like R; looking for them on 
+LinkedIn; engaging them at conferences like Strata,  Structure:Data, 
+and Hadoop World; and hosting a competition 
+on Kaggle 
+or TopCoder, the analytics and co
+ding sites

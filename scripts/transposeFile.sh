@@ -1,7 +1,7 @@
 #!/bin/bash
 
-for i in $(ls -d $1/*)
-do
+
+transpose(){
   echo transposing $i
   awk '
   { 
@@ -18,12 +18,18 @@ do
 	  }
 	  print str
       }
-  }' $i > tmpFile 
+  }' $1 > tmpFile 
   
-  mv tmpFile $i.trans
+  mv tmpFile $1.trans
+  rm tmpFile
+}
+  
+for i in $(ls -d $1/*)
+do
+  transpose $i
 done
 
-rm tmpFile
+
 
 
 index=0

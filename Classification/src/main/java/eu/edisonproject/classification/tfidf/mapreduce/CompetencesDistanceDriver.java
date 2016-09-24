@@ -71,14 +71,14 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 			 * value --> n/N
              */
 
-            Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "key: " + key + " value: " + value);
+            Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "key: {0} value: {1}", new Object[]{key, value});
             String[] keyValues = value.toString().split("\t");
             String documentID = keyValues[0];
             String word = keyValues[1].split("/")[0];
             String tfidf = keyValues[1].split("/")[1];
-            WriterFile rf = new WriterFile(System.getProperty("user.home") + "/" + this.getClass().getName() + ".dbg");
-            rf.writeFile(documentID + " , " + word + "@" + tfidf);
-            Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, documentID + " , " + word + "@" + tfidf);
+//            WriterFile rf = new WriterFile(System.getProperty("user.home") + "/" + this.getClass().getName() + ".dbg");
+//            rf.writeFile(documentID + " , " + word + "@" + tfidf);
+            Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "{0} , {1}@{2}", new Object[]{documentID, word, tfidf});
             context.write(new Text(documentID), new Text(word + "@" + tfidf));
 
         }

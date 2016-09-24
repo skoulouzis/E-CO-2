@@ -79,23 +79,23 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
 //            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, null, ex);
 //        }
         try {
-//            File items = new File(INPUT_ITEMSET);
-//            if (!items.exists()) {
-//                throw new IOException(items.getAbsoluteFile() + " not found");
-//            }
-//            if (items.length() < 200000000) {
-//                text2Avro(inputPath, AVRO_FILE);
-//
-//                String[] args1 = {AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES, STOPWORDS_PATH};
-//                ToolRunner.run(new WordFrequencyInDocDriver(), args1);
-//            } else {
-//                String[] args1 = {INPUT_ITEMSET, OUTPUT_PATH1, inputPath, STOPWORDS_PATH, NUM_OF_LINES};
-//                ToolRunner.run(new TermWordFrequency(), args1);
-//            }
+            File items = new File(INPUT_ITEMSET);
+            if (!items.exists()) {
+                throw new IOException(items.getAbsoluteFile() + " not found");
+            }
+            if (items.length() < 200000000) {
+                text2Avro(inputPath, AVRO_FILE);
 
-//            String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};
-//            ToolRunner.run(new WordCountsForDocsDriver(), args2);
-////
+                String[] args1 = {AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES, STOPWORDS_PATH};
+                ToolRunner.run(new WordFrequencyInDocDriver(), args1);
+            } else {
+                String[] args1 = {INPUT_ITEMSET, OUTPUT_PATH1, inputPath, STOPWORDS_PATH, NUM_OF_LINES};
+                ToolRunner.run(new TermWordFrequency(), args1);
+            }
+
+            String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};
+            ToolRunner.run(new WordCountsForDocsDriver(), args2);
+
             File docs = new File(inputPath);
             File[] files = docs.listFiles(new FilenameFilter() {
                 @Override
@@ -104,9 +104,9 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
                 }
             });
             int numberOfDocuments = files.length;
-//
-//            String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(numberOfDocuments)};
-//            ToolRunner.run(new WordsInCorpusTFIDFDriver(), args3);
+
+            String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(numberOfDocuments)};
+            ToolRunner.run(new WordsInCorpusTFIDFDriver(), args3);
 
             StringBuilder fileNames = new StringBuilder();
             String prefix = "";
@@ -126,17 +126,17 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
             String[] args4 = {INPUT_PATH4, OUTPUT_PATH4, COMPETENCES_PATH, fileNames.toString()};
             Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "args4:" + Arrays.toString(args4));
             ToolRunner.run(new CompetencesDistanceDriver(), args4);
-//
-//            Configuration conf = new Configuration();
-//            FileSystem fs = FileSystem.get(conf);
-//            Path hdfsRes = new Path(OUTPUT_PATH4);
-//            FileStatus[] results = fs.listStatus(hdfsRes);
-//            for (FileStatus s : results) {
-//                Path dest = new Path(OUT + "/" + s.getPath().getName());
-//                Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Copy: {0} to: {1}", new Object[]{s.getPath(), dest});
-//                fs.copyToLocalFile(s.getPath(), dest);
-//            }
-//            fs.delete(hdfsRes, true);
+
+            Configuration conf = new Configuration();
+            FileSystem fs = FileSystem.get(conf);
+            Path hdfsRes = new Path(OUTPUT_PATH4);
+            FileStatus[] results = fs.listStatus(hdfsRes);
+            for (FileStatus s : results) {
+                Path dest = new Path(OUT + "/" + s.getPath().getName());
+                Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Copy: {0} to: {1}", new Object[]{s.getPath(), dest});
+                fs.copyToLocalFile(s.getPath(), dest);
+            }
+            fs.delete(hdfsRes, true);
 
         } catch (Exception ex) {
             Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, null, ex);
