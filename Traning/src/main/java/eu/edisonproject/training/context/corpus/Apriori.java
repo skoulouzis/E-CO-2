@@ -235,7 +235,7 @@ public class Apriori {
         while (stFile.hasMoreTokens()) {
 
             String parsedVal = stFile.nextToken();
-            Logger.getLogger(Apriori.class.getName()).log(Level.INFO, parsedVal);
+//            Logger.getLogger(Apriori.class.getName()).log(Level.INFO, parsedVal);
             trans[words.indexOf(parsedVal)] = true; //if it is not a 0, assign the value to true
         }
     }

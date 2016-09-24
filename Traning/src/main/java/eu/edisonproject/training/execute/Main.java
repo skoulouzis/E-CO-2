@@ -112,16 +112,6 @@ public class Main {
             } else {
                 prop = ConfigHelper.getProperties(propPath);
             }
-            Set<Object> keys = prop.keySet();
-            for (Object k : keys) {
-                String v = prop.getProperty((String) k);
-                if (v.contains("$")) {
-//                    v = v.replaceFirst("\\$", "").replaceFirst("\\{", "").replaceFirst("\\}", "");
-//                    v = System.getProperty(v);
-//                    System.err.println(k + " " + v);
-                }
-
-            }
 //            ${user.home}
 
             switch (cmd.getOptionValue("operation")) {
