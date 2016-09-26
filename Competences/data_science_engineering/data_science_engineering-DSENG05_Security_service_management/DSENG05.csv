@@ -1,10 +1,15 @@
+al,0.28062533
+manage,0.27320539
 security,0.23002483999999998
-al,0.16951422000000002
-manage,0.16209428
-management,0.10835579000000001
+management,0.21946690000000002
+op,0.15086894
+implement,0.12255649
+data,0.12229054
+design,0.11511196
+collection,0.11134749
+engineering_principles_design,0.11111111
 managed,0.04420841
 process,0.04072508
-op,0.03975783
 business,0.03937228000000001
 managed_security,0.03763027
 requirements,0.03122528
@@ -44,8 +49,6 @@ ensure,0.01332554
 customer,0.01315628
 iso,0.01295337
 change,0.01169657
-implement,0.011445380000000002
-data,0.01117943
 control,0.010846350000000001
 management_process,0.01060856
 external,0.01048228
@@ -167,7 +170,6 @@ internal,0.00412713
 activity,0.00401034
 reporting,0.00400225
 safety,0.00400085
-design,0.00400085
 confidence,0.00400085
 highly,0.00399416
 software,0.00399416
@@ -912,7 +914,6 @@ audit_external_audit,2.3638E-4
 subprocess_measures,2.3638E-4
 running,2.3638E-4
 audit_result_examination,2.3638E-4
-collection,2.3638E-4
 tse,2.3638E-4
 process_ends_maintained,2.3638E-4
 process_maintain,2.3638E-4
