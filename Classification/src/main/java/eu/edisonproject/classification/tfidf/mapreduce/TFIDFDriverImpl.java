@@ -40,20 +40,20 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
     //where to read the frequent itemset
     public static String INPUT_ITEMSET;
     //where to put the data in hdfs when MapReduce#1 will finish
-    public static String OUTPUT_PATH1 = "TFIDFDriverImpl-1-word-freq";
+    public static String OUTPUT_PATH1 = System.currentTimeMillis()+"-TFIDFDriverImpl-1-word-freq";
     // where to read the data for the MapReduce#2
     public static String INPUT_PATH2 = OUTPUT_PATH1;
     // where to put the data in hdfs when the MapReduce#2 will finish
-    public static String OUTPUT_PATH2 = "TFIDFDriverImpl-2-word-counts";
+    public static String OUTPUT_PATH2 = System.currentTimeMillis()+"-TFIDFDriverImpl-2-word-counts";
     // where to read the data for the MapReduce#3
     public static String INPUT_PATH3 = OUTPUT_PATH2;
 // where to put the data in hdfs when the MapReduce#3 will finish
-    public static String OUTPUT_PATH3 = "TFIDFDriverImpl-3-tf-idf";
+    public static String OUTPUT_PATH3 = System.currentTimeMillis()+"-TFIDFDriverImpl-3-tf-idf";
 
     // where to read the data for the MapReduce#4.
     public static String INPUT_PATH4 = OUTPUT_PATH3;
     // where to put the data in hdfs when the MapReduce# will finish
-    public static String OUTPUT_PATH4 = "TFIDFDriverImpl-4-distances";
+    public static String OUTPUT_PATH4 = System.currentTimeMillis()+"-TFIDFDriverImpl-4-distances";
     // where to put the csv with the tfidf
     public static String COMPETENCES_PATH;
 
@@ -97,12 +97,15 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
             ToolRunner.run(new WordCountsForDocsDriver(), args2);
 
             File docs = new File(inputPath);
+            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "inputPath:" + inputPath);
+            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "docs:" + docs.getAbsolutePath());
             File[] files = docs.listFiles(new FilenameFilter() {
                 @Override
                 public boolean accept(File dir, String name) {
                     return name.toLowerCase().endsWith(".txt");
                 }
             });
+             Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "files:" + files);
             int numberOfDocuments = files.length;
 
             String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(numberOfDocuments)};
@@ -118,13 +121,9 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
                 }
             }
 
-            Set<Object> set = System.getProperties().keySet();
-            for (Object o : set) {
-                System.err.println(o + " , " + System.getProperty((String) o));
-            }
 
             String[] args4 = {INPUT_PATH4, OUTPUT_PATH4, COMPETENCES_PATH, fileNames.toString()};
-            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "args4:" + Arrays.toString(args4));
+            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "args4:{0}", Arrays.toString(args4));
             ToolRunner.run(new CompetencesDistanceDriver(), args4);
 
             Configuration conf = new Configuration();
