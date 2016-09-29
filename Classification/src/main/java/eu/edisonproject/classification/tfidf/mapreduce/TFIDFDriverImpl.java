@@ -99,12 +99,13 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
             File docs = new File(inputPath);
             Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "inputPath:" + inputPath);
             Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "docs:" + docs.getAbsolutePath());
-            File[] files = docs.listFiles(new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    return name.toLowerCase().endsWith(".txt");
-                }
-            });
+            File[] files = docs.listFiles();
+//            File[] files = docs.listFiles(new FilenameFilter() {
+//                @Override
+//                public boolean accept(File dir, String name) {
+//                    return name.toLowerCase().endsWith(".txt");
+//                }
+//            });
              Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "files:" + files);
             int numberOfDocuments = files.length;
 
