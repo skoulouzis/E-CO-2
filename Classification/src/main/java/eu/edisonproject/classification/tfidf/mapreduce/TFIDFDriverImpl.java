@@ -97,21 +97,13 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
             ToolRunner.run(new WordCountsForDocsDriver(), args2);
 
             File docs = new File(inputPath);
-            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "inputPath:" + inputPath);
-            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "docs:" + docs.getAbsolutePath());
-            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, " docs.isDirectory():" + docs.isDirectory());
-            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, " docs.exists():" + docs.exists());
-            File[] files = docs.listFiles();
-            for (File f : files) {
-                Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "File:" + f.getAbsolutePath());
-            }
-
-//            File[] files = docs.listFiles(new FilenameFilter() {
-//                @Override
-//                public boolean accept(File dir, String name) {
-//                    return name.toLowerCase().endsWith(".txt");
-//                }
-//            });
+            
+            File[] files = docs.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.toLowerCase().endsWith(".txt");
+                }
+            });
             Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "docs:" + docs.getAbsolutePath());
             int numberOfDocuments = files.length;
 
