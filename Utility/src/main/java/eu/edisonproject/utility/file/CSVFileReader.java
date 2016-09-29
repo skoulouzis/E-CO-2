@@ -48,13 +48,16 @@ public class CSVFileReader {
                     passed = true;
                     continue;
                 }
-                String[] parts = text.split(delimeter);
-                String id = parts[0];
-                List<Double> vals = new ArrayList<>();
-                for (int i = 1; i < parts.length; i++) {
-                    vals.add(Double.parseDouble(parts[i]));
+                if (text.contains(delimeter)) {
+                    String[] parts = text.split(delimeter);
+                    String id = parts[0];
+                    List<Double> vals = new ArrayList<>();
+                    for (int i = 1; i < parts.length; i++) {
+                        vals.add(Double.parseDouble(parts[i]));
+                    }
+                    map.put(id, vals);
                 }
-                map.put(id, vals);
+
             }
         }
         return map;

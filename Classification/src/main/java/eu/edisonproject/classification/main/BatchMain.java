@@ -112,6 +112,7 @@ public class BatchMain {
                     calculateTFIDF(cmd.getOptionValue("input"), cmd.getOptionValue("output"), cmd.getOptionValue("competences-vector"));
                     break;
                 case "p":
+//                    -op p -v2 $HOME/Downloads/msc.csv -v1 $HOME/Downloads/job.csv -p $HOME/workspace/E-CO-2/etc/classification.properties
                     profile(cmd.getOptionValue("v1"), cmd.getOptionValue("v2"));
                     break;
             }
@@ -191,13 +192,13 @@ public class BatchMain {
 
         }
 
+        System.err.println(k1 + "," + cv.get(k1));
         ValueComparator bvc = new ValueComparator(winners);
         Map<String, Double> sorted_map = new TreeMap(bvc);
         sorted_map.putAll(winners);
         for (String k : sorted_map.keySet()) {
-            System.err.println(jobVec.get(k));
+            System.err.println(k + "," + jobVec.get(k));
         }
-        System.err.println(cv.get(k1));
 
     }
 }
