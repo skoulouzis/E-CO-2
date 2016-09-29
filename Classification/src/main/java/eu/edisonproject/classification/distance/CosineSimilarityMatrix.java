@@ -31,7 +31,7 @@ public class CosineSimilarityMatrix {
         double dotProduct = 0.0;
         double magnitude1 = 0.0;
         double magnitude2 = 0.0;
-        double cosineSimilarity = 0.0;
+        double cosineSimilarity;
         
         Iterator<Double> s1 = c1.iterator();
         Iterator<Double> s2 = c2.iterator();
