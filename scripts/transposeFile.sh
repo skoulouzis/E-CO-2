@@ -20,7 +20,7 @@ transpose(){
       }
   }' $1 > tmpFile 
   
-  mv tmpFile $1.trans
+  sort tmpFile > $1.trans
   rm tmpFile
 }
   

@@ -7,12 +7,12 @@ TAGGER_FILE=$HOME/workspace/E-CO-2/etc/model/stanford/english-left3words-distsim
 CATEGORIES_FOLDER=$1
 SPLIT_FOLDER=/var/scratch/skoulouz/
 
-find $CATEGORIES_FOLDER -name '*.csv' -exec cat {} \; > $HOME/workspace/E-CO-2/etc/allTerms.csv
-ALL_TERMS=$HOME/workspace/E-CO-2/etc/allTerms.csv
-cat $ALL_TERMS | awk 'BEGIN{FS=","} {print $1}' > tmp
-sort -r tmp | uniq > $ALL_TERMS
+# find $CATEGORIES_FOLDER -name '*.csv' -exec cat {} \; > $HOME/workspace/E-CO-2/etc/allTerms.csv
+# ALL_TERMS=$HOME/workspace/E-CO-2/etc/allTerms.csv
+# cat $ALL_TERMS | awk 'BEGIN{FS=","} {print $1}' > tmp
+# sort -r tmp | uniq > $ALL_TERMS
 
-preserve -list | grep $USER |  grep -i r | awk '{print $1}' > reservations
+# preserve -list | grep $USER |  grep -i r | awk '{print $1}' > reservations
 
 
 while read p; do
@@ -25,20 +25,17 @@ FILECOUNT=$(find $2 -type f | wc -l)
 FILE_PER_JOB=$(( FILECOUNT / resLen))
 
 rm -r $SPLIT_FOLDER/classification_*
-for ((i = 0 ; i < $resLen ; i++)); do
-  mkdir $SPLIT_FOLDER/classification_$i
-  for f in $2/*.txt
-  do
-    if [ "$index" -ge "$FILE_PER_JOB" ];
-    then
-      index=0
-      break
-    fi
-    cp $f $SPLIT_FOLDER/classification_$i
-    index=$((index+1))
-  done
-done
 
+n=0
+for i in $2/*.txt
+do
+  if [ $((n+=1)) -gt $resLen ]; then
+    n=1
+  fi
+  todir=$SPLIT_FOLDER/classification_$n
+  [ -d "$todir" ] || mkdir "$todir" 
+  cp "$i" "$todir" 
+done
 
 
 for ((i = 0 ; i < $resLen; i++)); do
