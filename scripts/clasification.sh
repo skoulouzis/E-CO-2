@@ -43,7 +43,7 @@ done
 
 for ((i = 0 ; i < $resLen; i++)); do
   folder=$((i+1))
-  echo "screen -dmSL jobs prun -reserve ${res[$i]} -np 1  time  java -Dstop.words.file=$HOME/workspace/E-CO-2/etc/stopwords.csv -Ditemset.file=$HOME/workspace/E-CO-2/etc/allTerms.csv -Dmodel.path=$HOME/workspace/E-CO-2/etc/model/ -jar $HOME/workspace/E-CO-2/Classification/target/Classification-1.0-SNAPSHOT-jar-with-dependencies.jar -op c -i $SPLIT_FOLDER/classification_$i -o $3 -c $HOME/workspace/E-CO-2/Categories -p $HOME/workspace/E-CO-2/etc/classification.properties"
+  echo "screen -dmSL jobs prun -reserve ${res[$i]} -np 1  time  java -Dstop.words.file=$HOME/workspace/E-CO-2/etc/stopwords.csv -Ditemset.file=$HOME/workspace/E-CO-2/etc/allTerms.csv -Dmodel.path=$HOME/workspace/E-CO-2/etc/model/ -jar $HOME/workspace/E-CO-2/Classification/target/Classification-1.0-SNAPSHOT-jar-with-dependencies.jar -op c -i $SPLIT_FOLDER/classification_$i -o $3 -c $CATEGORIES_FOLDER -p $HOME/workspace/E-CO-2/etc/classification.properties"
 done
 
-echo "screen -dmSL jobs prun -reserve ${res[0]} -np 1  time  java -Dstop.words.file=$HOME/workspace/E-CO-2/etc/stopwords.csv -Ditemset.file=$HOME/workspace/E-CO-2/etc/allTerms.csv -Dmodel.path=$HOME/workspace/E-CO-2/etc/model/ -jar $HOME/workspace/E-CO-2/Classification/target/Classification-1.0-SNAPSHOT-jar-with-dependencies.jar -op c -i $SPLIT_FOLDER/classification_$resLen -o $3 -c $HOME/workspace/E-CO-2/Categories -p $HOME/workspace/E-CO-2/etc/classification.properties"
+echo "screen -dmSL jobs prun -reserve ${res[0]} -np 1  time  java -Dstop.words.file=$HOME/workspace/E-CO-2/etc/stopwords.csv -Ditemset.file=$HOME/workspace/E-CO-2/etc/allTerms.csv -Dmodel.path=$HOME/workspace/E-CO-2/etc/model/ -jar $HOME/workspace/E-CO-2/Classification/target/Classification-1.0-SNAPSHOT-jar-with-dependencies.jar -op c -i $SPLIT_FOLDER/classification_$resLen -o $3 -c $CATEGORIES_FOLDER -p $HOME/workspace/E-CO-2/etc/classification.properties"
