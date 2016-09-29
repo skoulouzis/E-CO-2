@@ -20,7 +20,6 @@ package eu.edisonproject.classification.tfidf.mapreduce;
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
  */
 import eu.edisonproject.classification.distance.CosineSimilarityMatrix;
-import eu.edisonproject.utility.file.WriterFile;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -71,14 +70,14 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 			 * value --> n/N
              */
 
-            Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "key: {0} value: {1}", new Object[]{key, value});
+//            Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "key: {0} value: {1}", new Object[]{key, value});
             String[] keyValues = value.toString().split("\t");
             String documentID = keyValues[0];
             String word = keyValues[1].split("/")[0];
             String tfidf = keyValues[1].split("/")[1];
 //            WriterFile rf = new WriterFile(System.getProperty("user.home") + "/" + this.getClass().getName() + ".dbg");
 //            rf.writeFile(documentID + " , " + word + "@" + tfidf);
-            Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "{0} , {1}@{2}", new Object[]{documentID, word, tfidf});
+//            Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "{0} , {1}@{2}", new Object[]{documentID, word, tfidf});
             context.write(new Text(documentID), new Text(word + "@" + tfidf));
 
         }
@@ -100,7 +99,7 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 //            List<CharSequence> valuesToWrite = new LinkedList<>();
 
             for (Text value : values) {
-                Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "key: " + text + " value: " + value);
+//                Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "key: " + text + " value: " + value);
                 String[] line = value.toString().split("@");
                 documentWords.put(line[0], Double.parseDouble(line[1].replace(",", ".")));
             }
