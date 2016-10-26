@@ -6,9 +6,8 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>Traning</module>
-        <module>Utility</module>
-        <module>Classification</module>
+        <module>termExtraction</module>
+        <module>common</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

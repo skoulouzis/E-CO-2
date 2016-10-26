@@ -1,7 +1,0 @@
-What is a data management plan?
-
-A data management plan is a brief (usually no more than two-page) document that describes what kind of data you will be collecting during the course of your research, how you will describe and manage the data, who the responsible parties will be, how you plan to share the data, and where you will preserve the data for the long-term. You have likely considered most if not all of these points at some time in the past, but may not have formally written them down.
-
-Do you have any tools to help me write a data management plan?
-
-We provide access via SUNet ID to the DMPTool from the California Digital Library. This tool is customized to provide information and links specific to researchers at Stanford. It also includes guidance specific to each of the different funding agencies and NSF directorates that requires a data management plan.

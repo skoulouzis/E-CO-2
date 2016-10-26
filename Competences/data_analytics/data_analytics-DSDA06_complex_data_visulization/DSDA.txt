@@ -1,1 +1,0 @@
-Use appropriate statistical techniques and predictive analytics on available data to deliver insights and discover new relations
