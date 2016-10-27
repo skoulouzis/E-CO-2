@@ -6,17 +6,23 @@
 
 package eu.edisonproject.common;
 
+import static org.junit.Assert.assertFalse;
+
+import eu.edisonproject.common.utils.file.ReaderFile;
+import java.io.BufferedReader;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.util.ToolRunner;
+import org.junit.Assert;
 
 /**
  *
@@ -84,13 +90,28 @@ public class StopwordsTest {
 
   /**
    * Test of run method, of class Stopwords.
+   *
    * @throws java.lang.Exception
    */
   @org.junit.Test
   public void testRun() throws Exception {
-    String[] args = new String[]{TMP_IN_PATH, TMP_OUT_PATH, new File(STOP_WORDS_FILE_PATH).getAbsolutePath()};
+    File stopwordFile = new File(STOP_WORDS_FILE_PATH);
+    String[] args = new String[]{TMP_IN_PATH, TMP_OUT_PATH, stopwordFile.getAbsolutePath()};
     ToolRunner.run(new Stopwords(), args);
 
+    File outPath = new File(TMP_OUT_PATH);
+    for (File f : outPath.listFiles()) {
+      if (f.getName().contains("part") && !f.getName().endsWith(".crc")) {
+        ReaderFile rf = new ReaderFile(f.getAbsolutePath());
+        try (BufferedReader br = new BufferedReader(new FileReader(stopwordFile))) {
+          String line;
+          while ((line = br.readLine()) != null) {
+            String fileContents = rf.readFile();
+            assertFalse(fileContents.contains(" " + line + " "));
+          }
+        }
+      }
+    }
   }
 
 }
