@@ -6,8 +6,11 @@
 
 package eu.edisonproject.common;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.util.Tool;
 
@@ -17,6 +20,7 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 /**
@@ -31,14 +35,26 @@ public class Stopwords extends Configured implements Tool {
 
     Job job = new Job(jobconf);
     job.setOutputKeyClass(Text.class);
-    job.setOutputValueClass(IntWritable.class);
+    job.setOutputValueClass(Text.class);
     job.setJarByClass(Stopwords.class);
     job.setMapperClass(StopwordsMapper.class);
-    job.setNumReduceTasks(0);
+
     job.setInputFormatClass(TextInputFormat.class);
     job.setOutputFormatClass(TextOutputFormat.class);
     Path inPath = new Path(args[0]);
     FileInputFormat.setInputPaths(job, inPath);
+
+    job.setReducerClass(CleanReducer.class);
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(Text.class);
+
+    FileSystem fs = FileSystem.get(getConf());
+    FileStatus[] statusList = fs.listStatus(inPath);
+    for (FileStatus fileStatus : statusList) {
+      String name = FilenameUtils.removeExtension(fileStatus.getPath().getName());
+      MultipleOutputs.addNamedOutput(job, name, TextOutputFormat.class,
+              Text.class, Text.class);
+    }
 
     Path outPath = new Path(args[1]);
     FileOutputFormat.setOutputPath(job, outPath);
