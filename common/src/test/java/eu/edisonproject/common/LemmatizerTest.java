@@ -6,6 +6,8 @@
 
 package eu.edisonproject.common;
 
+import eu.edisonproject.common.tools.Lemmatize;
+
 import static org.junit.Assert.assertFalse;
 
 import eu.edisonproject.common.utils.file.ReaderFile;

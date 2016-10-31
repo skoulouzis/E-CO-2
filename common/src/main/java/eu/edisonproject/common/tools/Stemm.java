@@ -4,8 +4,10 @@
  * and open the template in the editor.
  */
 
-package eu.edisonproject.common;
+package eu.edisonproject.common.tools;
 
+import eu.edisonproject.common.mappers.StemmerMapper;
+import eu.edisonproject.common.reducers.CleanReducer;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
@@ -14,7 +16,6 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.util.Tool;
 
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -27,7 +28,7 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
  *
  * @author S. Koulouzis
  */
-public class Stopwords extends Configured implements Tool {
+public class Stemm extends Configured implements Tool {
 
   @Override
   public int run(String[] args) throws Exception {
@@ -36,8 +37,8 @@ public class Stopwords extends Configured implements Tool {
     Job job = new Job(jobconf);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(Text.class);
-    job.setJarByClass(Stopwords.class);
-    job.setMapperClass(StopwordsMapper.class);
+    job.setJarByClass(Stemm.class);
+    job.setMapperClass(StemmerMapper.class);
 
     job.setInputFormatClass(TextInputFormat.class);
     job.setOutputFormatClass(TextOutputFormat.class);

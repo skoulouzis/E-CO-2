@@ -4,12 +4,11 @@
  * and open the template in the editor.
  */
 
-package eu.edisonproject.common;
+package eu.edisonproject.common.reducers;
 
 import java.io.IOException;
 import java.util.Iterator;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
@@ -18,14 +17,13 @@ import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
  *
  * @author S. Koulouzis
  */
-class CleanReducer extends Reducer<Text, Text, Text, Text> {
+public class CleanReducer extends Reducer<Text, Text, Text, Text> {
 
   private MultipleOutputs mos;
 
   @Override
   protected void setup(Context context) {
     mos = new MultipleOutputs(context);
-
   }
 
   @Override

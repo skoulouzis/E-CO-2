@@ -4,8 +4,11 @@
  * and open the template in the editor.
  */
 
-package eu.edisonproject.common;
+package eu.edisonproject.term.extraction.tools;
 
+
+import eu.edisonproject.term.extraction.mappers.JtopiaMapper;
+import eu.edisonproject.term.extraction.reducers.TermReducer;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
@@ -26,40 +29,40 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
  *
  * @author S. Koulouzis
  */
-public class Stemm extends Configured implements Tool {
+public class JTopiaTermExtraction extends Configured implements Tool {
 
   @Override
   public int run(String[] args) throws Exception {
     Configuration jobconf = getConf();
+    
+    jobconf.set("tagger.type", args[3]);
+    jobconf.set("single.strength", args[4]);
+    jobconf.set("no.limit.strength", args[5]);
+    
 
     Job job = new Job(jobconf);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(Text.class);
-    job.setJarByClass(Stemm.class);
-    job.setMapperClass(StemmerMapper.class);
+    job.setJarByClass(JTopiaTermExtraction.class);
+    job.setMapperClass(JtopiaMapper.class);
 
     job.setInputFormatClass(TextInputFormat.class);
     job.setOutputFormatClass(TextOutputFormat.class);
     Path inPath = new Path(args[0]);
     FileInputFormat.setInputPaths(job, inPath);
 
-    job.setReducerClass(CleanReducer.class);
+    job.setReducerClass(TermReducer.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(Text.class);
-
-    FileSystem fs = FileSystem.get(getConf());
-    FileStatus[] statusList = fs.listStatus(inPath);
-    for (FileStatus fileStatus : statusList) {
-      String name = FilenameUtils.removeExtension(fileStatus.getPath().getName());
-      MultipleOutputs.addNamedOutput(job, name, TextOutputFormat.class,
-              Text.class, Text.class);
-    }
-
+    
     Path outPath = new Path(args[1]);
     FileOutputFormat.setOutputPath(job, outPath);
 
     Path stopwords = new Path(args[2]);
     job.addCacheFile(stopwords.toUri());
+    
+    
+    
 
     return (job.waitForCompletion(true) ? 0 : 1);
 

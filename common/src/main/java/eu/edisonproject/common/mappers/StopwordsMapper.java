@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package eu.edisonproject.common;
+package eu.edisonproject.common.mappers;
 
 import eu.edisonproject.common.utils.ConfigHelper;
 import eu.edisonproject.common.utils.StopWord;

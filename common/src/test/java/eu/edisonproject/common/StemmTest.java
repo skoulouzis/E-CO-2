@@ -6,6 +6,7 @@
 
 package eu.edisonproject.common;
 
+import eu.edisonproject.common.tools.Stemm;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
