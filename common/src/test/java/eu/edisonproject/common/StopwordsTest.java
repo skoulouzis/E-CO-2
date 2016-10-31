@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.util.ToolRunner;
-import org.junit.Assert;
 
 /**
  *
@@ -58,7 +57,6 @@ public class StopwordsTest {
 
   private static final String TEST_TEXT_FILE_NAME_2 = "tmp2.txt";
   private static final File TEST_TEXT_FILE_2 = new File(TMP_IN_PATH + File.separator + TEST_TEXT_FILE_NAME_2);
-
   private static final String STOP_WORDS_FILE_PATH = "../etc" + File.separator + "stopwords";
 
   @BeforeClass

@@ -8,6 +8,8 @@ package eu.edisonproject.common.utils;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.core.LowerCaseFilter;
@@ -33,18 +35,19 @@ public final class StopWord extends Cleaner {
   @Override
   public String execute() {
 
-    String fullText = this.getDescription();
-
-    // replace any punctuation char but apostrophes and dashes with a space
-    fullText = fullText.replaceAll("((https?|ftp|gopher|telnet|file|Unsure|http):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)", " ");
-
-    fullText = fullText.replaceAll("www.", "");
-    fullText = fullText.replaceAll("http.", "");
-    fullText = fullText.replaceAll("[^a-zA-Z ]", "");
-
-    CharArraySet stopWords = this.getCharArraySet();
-    StandardTokenizer stdToken = new StandardTokenizer();
     try {
+      String fullText = this.getDescription();
+
+      // replace any punctuation char but apostrophes and dashes with a space
+      fullText = fullText.replaceAll("((https?|ftp|gopher|telnet|file|Unsure|http):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)", " ");
+
+      fullText = fullText.replaceAll("www.", "");
+      fullText = fullText.replaceAll("http.", "");
+      fullText = fullText.replaceAll("[^a-zA-Z ]", "");
+
+      CharArraySet stopWords = this.getCharArraySet();
+      StandardTokenizer stdToken = new StandardTokenizer();
+
       stdToken.setReader(new StringReader(fullText));
 
       TokenStream tokenStream;
@@ -60,11 +63,10 @@ public final class StopWord extends Cleaner {
       tokenStream.close();
 
       return description;
-    } catch (IOException e) {
-      e.printStackTrace();
-      return null;
+    } catch (IOException ex) {
+      Logger.getLogger(StopWord.class.getName()).log(Level.SEVERE, null, ex);
     }
-
+    return null;
   }
 
   public CharArraySet getCharArraySet() {
