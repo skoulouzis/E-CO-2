@@ -22,9 +22,7 @@ import org.json.simple.parser.ParseException;
 public interface Disambiguator {
 
   public List<Term> disambiguateTerms(String filterredDictionary) throws IOException, ParseException;
-
-  public List<Term> disambiguateTerms(Set<Term> candidateTerms) throws IOException, ParseException;
-
+  
   public void configure(Properties properties);
 
   public Term getTerm(String term) throws IOException, ParseException;

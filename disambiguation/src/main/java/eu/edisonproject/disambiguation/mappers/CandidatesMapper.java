@@ -75,9 +75,7 @@ public class CandidatesMapper extends Mapper<LongWritable, Text, Text, Text> {
           JSONObject json = TermFactory.term2Json(t);
           context.write(new Text(term), new Text(json.toJSONString()));
         }
-
       }
-
     } catch (ParseException | ExecutionException ex) {
       Logger.getLogger(CandidatesMapper.class.getName()).log(Level.SEVERE, null, ex);
     }

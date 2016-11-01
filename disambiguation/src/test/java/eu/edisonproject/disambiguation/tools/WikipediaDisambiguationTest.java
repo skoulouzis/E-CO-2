@@ -83,9 +83,9 @@ public class WikipediaDisambiguationTest {
     args = new String[]{TMP_OUT_PATH_1, TMP_OUT_PATH_2, "stanford", "3", "2", modelDir.getAbsolutePath()};
     ToolRunner.run(new JTopiaTermExtraction(), args);
 
-    String numOfTerms = "2";
+    String numOfTerms = "1";
     String offsetTerms = "0";
-    String minimumSimilarity = "-10";
+    String minimumSimilarity = "-5";
     String className = eu.edisonproject.disambiguation.WikipediaOnline.class.getName();
     args = new String[]{TMP_OUT_PATH_2, TMP_OUT_PATH_3, numOfTerms, offsetTerms, minimumSimilarity, className, stopwords.getAbsolutePath(), ngramsFile.getAbsolutePath()};
     ToolRunner.run(new Disambiguation(), args);
