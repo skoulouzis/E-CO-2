@@ -1,0 +1,61 @@
+2016-11-01 11:30:26 NativeCodeLoader [WARN] Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+2016-11-01 11:30:26 deprecation [INFO] session.id is deprecated. Instead, use dfs.metrics.session-id
+2016-11-01 11:30:26 JvmMetrics [INFO] Initializing JVM Metrics with processName=JobTracker, sessionId=
+2016-11-01 11:30:27 JobResourceUploader [WARN] No job jar file set.  User classes may not be found. See Job or Job#setJar(String).
+2016-11-01 11:30:27 JobSubmitter [INFO] Cleaning up the staging area file:/tmp/hadoop-alogo/mapred/staging/alogo383685295/.staging/job_local383685295_0001
+2016-11-01 11:31:55 NativeCodeLoader [WARN] Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+2016-11-01 11:31:55 deprecation [INFO] session.id is deprecated. Instead, use dfs.metrics.session-id
+2016-11-01 11:31:55 JvmMetrics [INFO] Initializing JVM Metrics with processName=JobTracker, sessionId=
+2016-11-01 11:31:56 JobResourceUploader [WARN] No job jar file set.  User classes may not be found. See Job or Job#setJar(String).
+2016-11-01 11:31:56 FileInputFormat [INFO] Total input paths to process : 2
+2016-11-01 11:31:56 JobSubmitter [INFO] number of splits:2
+2016-11-01 11:31:56 JobSubmitter [INFO] Submitting tokens for job: job_local999354723_0001
+2016-11-01 11:31:56 Job [INFO] The url to track the job: http://localhost:8080/
+2016-11-01 11:31:56 Job [INFO] Running job: job_local999354723_0001
+2016-11-01 11:31:56 LocalJobRunner [INFO] OutputCommitter set in config null
+2016-11-01 11:31:56 FileOutputCommitter [INFO] File Output Committer Algorithm version is 1
+2016-11-01 11:31:56 LocalJobRunner [INFO] OutputCommitter is org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter
+2016-11-01 11:31:56 LocalJobRunner [INFO] Waiting for map tasks
+2016-11-01 11:31:56 LocalJobRunner [INFO] Starting task: attempt_local999354723_0001_m_000000_0
+2016-11-01 11:31:56 FileOutputCommitter [INFO] File Output Committer Algorithm version is 1
+2016-11-01 11:31:56 Task [INFO]  Using ResourceCalculatorProcessTree : [ ]
+2016-11-01 11:31:56 MapTask [INFO] Processing split: file:/tmp/testInFolder/tmp2.txt:0+508
+2016-11-01 11:31:57 MapTask [INFO] (EQUATOR) 0 kvi 26214396(104857584)
+2016-11-01 11:31:57 MapTask [INFO] mapreduce.task.io.sort.mb: 100
+2016-11-01 11:31:57 MapTask [INFO] soft limit at 83886080
+2016-11-01 11:31:57 MapTask [INFO] bufstart = 0; bufvoid = 104857600
+2016-11-01 11:31:57 MapTask [INFO] kvstart = 26214396; length = 6553600
+2016-11-01 11:31:57 MapTask [INFO] Map output collector class = org.apache.hadoop.mapred.MapTask$MapOutputBuffer
+2016-11-01 11:31:57 Job [INFO] Job job_local999354723_0001 running in uber mode : false
+2016-11-01 11:31:57 Job [INFO]  map 0% reduce 0%
+2016-11-01 11:32:12 MapTask [INFO] Starting flush of map output
+2016-11-01 11:32:12 LocalJobRunner [INFO] Starting task: attempt_local999354723_0001_m_000001_0
+2016-11-01 11:32:12 FileOutputCommitter [INFO] File Output Committer Algorithm version is 1
+2016-11-01 11:32:12 Task [INFO]  Using ResourceCalculatorProcessTree : [ ]
+2016-11-01 11:32:12 MapTask [INFO] Processing split: file:/tmp/testInFolder/tmp1.txt:0+505
+2016-11-01 11:32:13 MapTask [INFO] (EQUATOR) 0 kvi 26214396(104857584)
+2016-11-01 11:32:13 MapTask [INFO] mapreduce.task.io.sort.mb: 100
+2016-11-01 11:32:13 MapTask [INFO] soft limit at 83886080
+2016-11-01 11:32:13 MapTask [INFO] bufstart = 0; bufvoid = 104857600
+2016-11-01 11:32:13 MapTask [INFO] kvstart = 26214396; length = 6553600
+2016-11-01 11:32:13 MapTask [INFO] Map output collector class = org.apache.hadoop.mapred.MapTask$MapOutputBuffer
+2016-11-01 11:32:16 MapTask [INFO] Starting flush of map output
+2016-11-01 11:32:16 LocalJobRunner [INFO] map task executor complete.
+2016-11-01 11:32:16 LocalJobRunner [WARN] job_local999354723_0001
+java.lang.Exception: java.lang.NullPointerException
+	at org.apache.hadoop.mapred.LocalJobRunner$Job.runTasks(LocalJobRunner.java:462)
+	at org.apache.hadoop.mapred.LocalJobRunner$Job.run(LocalJobRunner.java:522)
+Caused by: java.lang.NullPointerException
+	at eu.edisonproject.term.extraction.mappers.JtopiaMapper.map(JtopiaMapper.java:70)
+	at eu.edisonproject.term.extraction.mappers.JtopiaMapper.map(JtopiaMapper.java:25)
+	at org.apache.hadoop.mapreduce.Mapper.run(Mapper.java:146)
+	at org.apache.hadoop.mapred.MapTask.runNewMapper(MapTask.java:787)
+	at org.apache.hadoop.mapred.MapTask.run(MapTask.java:341)
+	at org.apache.hadoop.mapred.LocalJobRunner$Job$MapTaskRunnable.run(LocalJobRunner.java:243)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+2016-11-01 11:32:16 Job [INFO] Job job_local999354723_0001 failed with state FAILED due to: NA
+2016-11-01 11:32:16 Job [INFO] Counters: 0

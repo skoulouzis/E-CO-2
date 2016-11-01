@@ -60,9 +60,6 @@ public class Stemm extends Configured implements Tool {
     Path outPath = new Path(args[1]);
     FileOutputFormat.setOutputPath(job, outPath);
 
-    Path stopwords = new Path(args[2]);
-    job.addCacheFile(stopwords.toUri());
-
     return (job.waitForCompletion(true) ? 0 : 1);
 
   }

@@ -6,6 +6,7 @@
 
 package eu.edisonproject.term.extraction.mappers;
 
+
 import com.sree.textbytes.jtopia.TermDocument;
 import com.sree.textbytes.jtopia.TermsExtractor;
 import java.io.File;
@@ -13,12 +14,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Set;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 
 /**
  *
@@ -60,7 +58,7 @@ public class JtopiaMapper extends Mapper<LongWritable, Text, Text, Text> {
       }
 
     }
-    com.sree.textbytes.jtopia.Configuration.setSingleStrength(Integer.valueOf(singleStrength));
+      com.sree.textbytes.jtopia.Configuration.setSingleStrength(Integer.valueOf(singleStrength));
     com.sree.textbytes.jtopia.Configuration.setNoLimitStrength(Integer.valueOf(noLimitStrength));
     termExtractor = new TermsExtractor();
     topiaDoc = new TermDocument();
