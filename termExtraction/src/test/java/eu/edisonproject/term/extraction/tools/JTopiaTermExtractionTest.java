@@ -6,6 +6,7 @@
 
 package eu.edisonproject.term.extraction.tools;
 
+import static eu.edisonproject.common.test.TestProperties.MODEL_PATH;
 import static eu.edisonproject.common.test.TestProperties.STRING_CONTENTS_1;
 import static eu.edisonproject.common.test.TestProperties.STRING_CONTENTS_2;
 import static eu.edisonproject.common.test.TestProperties.TEST_TEXT_FILE_1;
@@ -67,7 +68,8 @@ public class JTopiaTermExtractionTest {
    */
   @Test
   public void testRun() throws Exception {
-    String[] args = new String[]{TMP_IN_PATH, TMP_OUT_PATH, "stanford", "3", "2",MODEL_PATH};
+    File modelDir = new File(MODEL_PATH);
+    String[] args = new String[]{TMP_IN_PATH, TMP_OUT_PATH, "stanford", "3", "2", modelDir.getAbsolutePath()};
     ToolRunner.run(new JTopiaTermExtraction(), args);
   }
 

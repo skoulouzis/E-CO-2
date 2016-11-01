@@ -19,10 +19,11 @@ public class TermReducer extends Reducer<Text, Text, Text, Text> {
 
   @Override
   protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+
     Iterator<Text> iter = values.iterator();
     while (iter.hasNext()) {
-      Text text = iter.next();
-      System.err.println(text);
+      Text fileName = iter.next();
+      context.write(key, fileName);
     }
   }
 
