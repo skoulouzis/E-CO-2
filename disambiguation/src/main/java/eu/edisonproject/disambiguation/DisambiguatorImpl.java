@@ -121,6 +121,33 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
   }
 
   @Override
+  public List<Term> disambiguateTerms(Set<Term> candidateTerms) throws IOException, ParseException {
+    List<Term> terms = new ArrayList<>();
+
+    int count = 0;
+    int lineCount = 1;
+    for (Term t : candidateTerms) {
+      if (lineCount >= getLineOffset()) {
+
+//                Integer score = Integer.valueOf(parts[1]);
+        if (t.getLemma().length() >= 1) {
+          count++;
+          if (count > getLimit()) {
+            break;
+          }
+          LOGGER.log(Level.INFO, "Processing: {0}  at line: {1} of " + getLimit(), new Object[]{t.getLemma(), lineCount});
+          Term tt = getTerm(t.getLemma().toString());
+          if (tt != null) {
+            terms.add(tt);
+          }
+        }
+      }
+      lineCount++;
+    }
+    return terms;
+  }
+
+  @Override
   public void configure(Properties properties) {
     String numOfTerms = System.getProperty("num.of.terms");
 
@@ -435,7 +462,6 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
             } else {
               deleteEntryFromTerms(r.getRow());
             }
-
           }
           return jsonTerms;
         }

@@ -70,7 +70,7 @@ public class JtopiaMapper extends Mapper<LongWritable, Text, Text, Text> {
     topiaDoc = termExtractor.extractTerms(value.toString());
     Set<String> terms = topiaDoc.getFinalFilteredTerms().keySet();
     for (String t : terms) {
-      String text = t.replaceAll(" ", "_");
+      String text = t.replaceAll(" ", "_").toLowerCase();
       Path filePath = ((FileSplit) context.getInputSplit()).getPath();
       context.write(new Text(text), new Text(filePath.toString()));
     }

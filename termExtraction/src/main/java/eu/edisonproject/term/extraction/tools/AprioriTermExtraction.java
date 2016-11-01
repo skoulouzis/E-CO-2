@@ -8,7 +8,7 @@ package eu.edisonproject.term.extraction.tools;
 
 import eu.edisonproject.term.extraction.mappers.AprioriMapper;
 import eu.edisonproject.term.extraction.mappers.JtopiaMapper;
-import eu.edisonproject.term.extraction.reducers.TermReducer;
+import eu.edisonproject.common.reducers.GenericReducer;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
@@ -45,7 +45,7 @@ public class AprioriTermExtraction extends Configured implements Tool {
     Path inPath = new Path(args[0]);
     FileInputFormat.setInputPaths(job, inPath);
 
-    job.setReducerClass(TermReducer.class);
+    job.setReducerClass(GenericReducer.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(Text.class);
 
