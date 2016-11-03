@@ -29,6 +29,8 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -87,7 +89,8 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
                 }
                 cleanLemmatisation = new StanfordLemmatizer();
             }
-//            System.err.println("terms array has :" + TERMS.size() + " elemnts");
+            
+            Logger.getLogger(WordFrequencyInDocDriver.class.getName()).log(Level.INFO, "terms array has :{0} elemnts", TERMS.size());
         }
 
         private String trim(String s) {
