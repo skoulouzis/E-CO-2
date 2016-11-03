@@ -37,109 +37,112 @@ import org.apache.hadoop.util.ToolRunner;
  */
 public class TFIDFDriverImpl implements ITFIDFDriver {
 
-    //where to read the frequent itemset
-    public static String INPUT_ITEMSET;
-    //where to put the data in hdfs when MapReduce#1 will finish
-    public static String OUTPUT_PATH1 = System.currentTimeMillis() + "-TFIDFDriverImpl-1-word-freq";
-    // where to read the data for the MapReduce#2
-    public static String INPUT_PATH2 = OUTPUT_PATH1;
-    // where to put the data in hdfs when the MapReduce#2 will finish
-    public static String OUTPUT_PATH2 = System.currentTimeMillis() + "-TFIDFDriverImpl-2-word-counts";
-    // where to read the data for the MapReduce#3
-    public static String INPUT_PATH3 = OUTPUT_PATH2;
+  //where to read the frequent itemset
+  public static String INPUT_ITEMSET;
+  //where to put the data in hdfs when MapReduce#1 will finish
+  public static String OUTPUT_PATH1 = System.currentTimeMillis() + "-TFIDFDriverImpl-1-word-freq";
+  // where to read the data for the MapReduce#2
+  public static String INPUT_PATH2 = OUTPUT_PATH1;
+  // where to put the data in hdfs when the MapReduce#2 will finish
+  public static String OUTPUT_PATH2 = System.currentTimeMillis() + "-TFIDFDriverImpl-2-word-counts";
+  // where to read the data for the MapReduce#3
+  public static String INPUT_PATH3 = OUTPUT_PATH2;
 // where to put the data in hdfs when the MapReduce#3 will finish
-    public static String OUTPUT_PATH3 = System.currentTimeMillis() + "-TFIDFDriverImpl-3-tf-idf";
+  public static String OUTPUT_PATH3 = System.currentTimeMillis() + "-TFIDFDriverImpl-3-tf-idf";
 
-    // where to read the data for the MapReduce#4.
-    public static String INPUT_PATH4 = OUTPUT_PATH3;
-    // where to put the data in hdfs when the MapReduce# will finish
-    public static String OUTPUT_PATH4 = System.currentTimeMillis() + "-TFIDFDriverImpl-4-distances";
-    // where to put the csv with the tfidf
-    public static String COMPETENCES_PATH;
+  // where to read the data for the MapReduce#4.
+  public static String INPUT_PATH4 = OUTPUT_PATH3;
+  // where to put the data in hdfs when the MapReduce# will finish
+  public static String OUTPUT_PATH4 = System.currentTimeMillis() + "-TFIDFDriverImpl-4-distances";
+  // where to put the csv with the tfidf
+  public static String COMPETENCES_PATH;
 
 //    private String finalOutputPath;
-    public static String NUM_OF_LINES;
-    public static String STOPWORDS_PATH = ".." + File.separator + "etc" + File.separator + "stopwords.csv";
-    public String OUT;
-    public String AVRO_FILE = System.currentTimeMillis() + "-TFIDFDriverImpl-avro";
+  public static String NUM_OF_LINES;
+  public static String STOPWORDS_PATH = ".." + File.separator + "etc" + File.separator + "stopwords.csv";
+  public String OUT;
+  public String AVRO_FILE = System.currentTimeMillis() + "-TFIDFDriverImpl-avro";
 
-    public TFIDFDriverImpl() {
-    }
+  public TFIDFDriverImpl() {
+  }
 
-    /**
-     *
-     * @param inputPath
-     */
-    @Override
-    public void executeTFIDF(String inputPath) {
+  /**
+   *
+   * @param inputPath
+   */
+  @Override
+  public void executeTFIDF(String inputPath) {
 
 //        try {
 //            createTable(TableName.valueOf("job post distance"), families);
 //        } catch (IOException ex) {
 //            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, null, ex);
 //        }
-        try {
-            File items = new File(INPUT_ITEMSET);
-            if (!items.exists()) {
-                throw new IOException(items.getAbsoluteFile() + " not found");
-            }
-            if (items.length() < 200000000) {
-                text2Avro(inputPath, AVRO_FILE);
+    try {
+      File items = new File(INPUT_ITEMSET);
+      if (!items.exists()) {
+        throw new IOException(items.getAbsoluteFile() + " not found");
+      }
+      if (items.length() < 200000000) {
+        Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Starting text2Avro");
+        text2Avro(inputPath, AVRO_FILE);
 
-                String[] args1 = {AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES, STOPWORDS_PATH};
-                ToolRunner.run(new WordFrequencyInDocDriver(), args1);
-            } else {
-                String[] args1 = {INPUT_ITEMSET, OUTPUT_PATH1, inputPath, STOPWORDS_PATH, NUM_OF_LINES};
-                ToolRunner.run(new TermWordFrequency(), args1);
-            }
+        Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Starting WordFrequencyInDocDriver");
+        String[] args1 = {AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES, STOPWORDS_PATH};
+        ToolRunner.run(new WordFrequencyInDocDriver(), args1);
+      } else {
+        Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Starting TermWordFrequency");
+        String[] args1 = {INPUT_ITEMSET, OUTPUT_PATH1, inputPath, STOPWORDS_PATH, NUM_OF_LINES};
+        ToolRunner.run(new TermWordFrequency(), args1);
+      }
 
-            String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};
-            ToolRunner.run(new WordCountsForDocsDriver(), args2);
+      String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};
+      ToolRunner.run(new WordCountsForDocsDriver(), args2);
 
-            File docs = new File(inputPath);
-            
-            File[] files = docs.listFiles(new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    return name.toLowerCase().endsWith(".txt");
-                }
-            });
-            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "docs:" + docs.getAbsolutePath());
-            int numberOfDocuments = files.length;
+      File docs = new File(inputPath);
 
-            String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(numberOfDocuments)};
-            ToolRunner.run(new WordsInCorpusTFIDFDriver(), args3);
-
-            StringBuilder fileNames = new StringBuilder();
-            String prefix = "";
-            for (File name : files) {
-                if (name.isFile() && FilenameUtils.getExtension(name.getName()).endsWith("txt")) {
-                    fileNames.append(prefix);
-                    prefix = ",";
-                    fileNames.append(FilenameUtils.removeExtension(name.getName()).replaceAll("_", ""));
-                }
-            }
-
-            String[] args4 = {INPUT_PATH4, OUTPUT_PATH4, COMPETENCES_PATH, fileNames.toString()};
-            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "args4:{0}", Arrays.toString(args4));
-            ToolRunner.run(new CompetencesDistanceDriver(), args4);
-
-            Configuration conf = new Configuration();
-            FileSystem fs = FileSystem.get(conf);
-            Path hdfsRes = new Path(OUTPUT_PATH4);
-            FileStatus[] results = fs.listStatus(hdfsRes);
-            for (FileStatus s : results) {
-                Path dest = new Path(OUT + "/" + s.getPath().getName());
-                Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Copy: {0} to: {1}", new Object[]{s.getPath(), dest});
-                fs.copyToLocalFile(s.getPath(), dest);
-            }
-            fs.delete(hdfsRes, true);
-
-        } catch (Exception ex) {
-            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, null, ex);
+      File[] files = docs.listFiles(new FilenameFilter() {
+        @Override
+        public boolean accept(File dir, String name) {
+          return name.toLowerCase().endsWith(".txt");
         }
+      });
+      Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "docs:" + docs.getAbsolutePath());
+      int numberOfDocuments = files.length;
 
+      String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(numberOfDocuments)};
+      ToolRunner.run(new WordsInCorpusTFIDFDriver(), args3);
+
+      StringBuilder fileNames = new StringBuilder();
+      String prefix = "";
+      for (File name : files) {
+        if (name.isFile() && FilenameUtils.getExtension(name.getName()).endsWith("txt")) {
+          fileNames.append(prefix);
+          prefix = ",";
+          fileNames.append(FilenameUtils.removeExtension(name.getName()).replaceAll("_", ""));
+        }
+      }
+
+      String[] args4 = {INPUT_PATH4, OUTPUT_PATH4, COMPETENCES_PATH, fileNames.toString()};
+      Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "args4:{0}", Arrays.toString(args4));
+      ToolRunner.run(new CompetencesDistanceDriver(), args4);
+
+      Configuration conf = new Configuration();
+      FileSystem fs = FileSystem.get(conf);
+      Path hdfsRes = new Path(OUTPUT_PATH4);
+      FileStatus[] results = fs.listStatus(hdfsRes);
+      for (FileStatus s : results) {
+        Path dest = new Path(OUT + "/" + s.getPath().getName());
+        Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Copy: {0} to: {1}", new Object[]{s.getPath(), dest});
+        fs.copyToLocalFile(s.getPath(), dest);
+      }
+      fs.delete(hdfsRes, true);
+
+    } catch (Exception ex) {
+      Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, null, ex);
     }
+
+  }
 
 //    public void readDistancesOutputAndPrintCSV() {
 //        ReaderFile rf = new ReaderFile(OUTPUT_PATH4 + File.separator + "part-r-00000");
@@ -159,10 +162,11 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
 //        }
 //        fileWriter.writeFile(textToPrint);
 //    }
-    private static void text2Avro(String inputPath, String outputPath) {
-        File out = new File(outputPath);
-        out.getAbsoluteFile().delete();
-        out.getAbsoluteFile().mkdirs();
+  private static void text2Avro(String inputPath, String outputPath) {
+    Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Start");
+    File out = new File(outputPath);
+    out.getAbsoluteFile().delete();
+    out.getAbsoluteFile().mkdirs();
 
 //        CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(STOPWORDS_PATH), true);
 //        StopWord cleanStopWord = new StopWord(stopWordArraySet);
@@ -180,8 +184,8 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
 //                wf.writeFile(cleanCont);
 //            }
 //        }
-        IDataPrepare dp = new DataPrepare(inputPath, outputPath, STOPWORDS_PATH);
-        dp.execute();
+    IDataPrepare dp = new DataPrepare(inputPath, outputPath, STOPWORDS_PATH);
+    dp.execute();
 
-    }
+  }
 }
