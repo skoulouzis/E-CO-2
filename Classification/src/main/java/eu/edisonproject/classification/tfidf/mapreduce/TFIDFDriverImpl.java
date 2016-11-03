@@ -87,7 +87,7 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
         Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Starting text2Avro");
         text2Avro(inputPath, AVRO_FILE);
 
-        Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Starting WordFrequencyInDocDriver");
+        Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Starting WordFrequencyInDocDriver: {0},{1},{2},{3},{4}", new Object[]{AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES, STOPWORDS_PATH});
         String[] args1 = {AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES, STOPWORDS_PATH};
         ToolRunner.run(new WordFrequencyInDocDriver(), args1);
       } else {
