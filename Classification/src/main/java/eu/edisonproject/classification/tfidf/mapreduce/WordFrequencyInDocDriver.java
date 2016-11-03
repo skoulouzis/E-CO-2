@@ -144,6 +144,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
       while (m.find()) {
         String matchedKey = m.group().toLowerCase();
         StringBuilder valueBuilder = new StringBuilder();
+        Logger.getLogger(WordFrequencyInDocDriver.class.getName()).log(Level.INFO, "New matchedKey: {0}", matchedKey);
         valueBuilder.append(matchedKey);
         valueBuilder.append("@");
         valueBuilder.append(documentId);
