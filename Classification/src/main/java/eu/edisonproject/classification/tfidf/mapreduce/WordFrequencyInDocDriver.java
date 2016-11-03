@@ -57,120 +57,121 @@ import org.apache.lucene.analysis.util.CharArraySet;
 public class WordFrequencyInDocDriver extends Configured implements Tool {
 
 //    private static List<String> itemset;
-    public static class WordFrequencyInDocMapper extends Mapper<AvroKey<Document>, NullWritable, Text, IntWritable> {
+  public static class WordFrequencyInDocMapper extends Mapper<AvroKey<Document>, NullWritable, Text, IntWritable> {
 
-        private static final List<String> TERMS = new ArrayList<>();
-        private static StopWord cleanStopWord;
-        private StanfordLemmatizer cleanLemmatisation;
+    private static final List<String> TERMS = new ArrayList<>();
+    private static StopWord cleanStopWord;
+    private StanfordLemmatizer cleanLemmatisation;
 
-        @Override
-        protected void cleanup(Context context) throws IOException, InterruptedException {
-            super.cleanup(context);
+    @Override
+    protected void cleanup(Context context) throws IOException, InterruptedException {
+      super.cleanup(context);
+    }
+
+    @Override
+    protected void setup(Context context) throws IOException, InterruptedException {
+      if (context.getCacheFiles() != null && context.getCacheFiles().length > 0) {
+        URI[] uris = context.getCacheFiles();
+        Path dictionaryFilePath = new Path(uris[0]);
+        FileSystem fs = FileSystem.get(context.getConfiguration());
+        String s;
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(fs.open(dictionaryFilePath)))) {
+          while ((s = br.readLine()) != null) {
+            s = s.replaceAll("_", " ").trim();
+            TERMS.add(s);
+          }
         }
-
-        @Override
-        protected void setup(Context context) throws IOException, InterruptedException {
-            if (context.getCacheFiles() != null && context.getCacheFiles().length > 0) {
-                URI[] uris = context.getCacheFiles();
-                Path dictionaryFilePath = new Path(uris[0]);
-                FileSystem fs = FileSystem.get(context.getConfiguration());
-                String s;
-                try (BufferedReader br = new BufferedReader(
-                        new InputStreamReader(fs.open(dictionaryFilePath)))) {
-                    while ((s = br.readLine()) != null) {
-                        s = s.replaceAll("_", " ").trim();
-                        TERMS.add(s);
-                    }
-                }
-                URI stopwordFile = uris[1];
-                if (cleanStopWord == null) {
-                    CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(fs.open(new Path(stopwordFile)).getWrappedStream()), true);
-                    cleanStopWord = new StopWord(stopWordArraySet);
-                }
-                cleanLemmatisation = new StanfordLemmatizer();
-            }
-            
-            Logger.getLogger(WordFrequencyInDocDriver.class.getName()).log(Level.INFO, "terms array has :{0} elemnts", TERMS.size());
+        URI stopwordFile = uris[1];
+        if (cleanStopWord == null) {
+          CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(fs.open(new Path(stopwordFile)).getWrappedStream()), true);
+          cleanStopWord = new StopWord(stopWordArraySet);
         }
+        cleanLemmatisation = new StanfordLemmatizer();
+      }
 
-        private String trim(String s) {
-            while (s.endsWith(" ")) {
-                s = s.substring(0, s.lastIndexOf(" "));
-            }
-            while (s.startsWith(" ")) {
-                s = s.substring(s.indexOf(" ") + 1, s.length());
-            }
-            return s;
-        }
+      Logger.getLogger(WordFrequencyInDocDriver.class.getName()).log(Level.INFO, "terms array has :{0} elemnts", TERMS.size());
+    }
 
-        @Override
-        protected void map(AvroKey<Document> key, NullWritable value, Context context)
-                throws IOException, InterruptedException {
+    private String trim(String s) {
+      while (s.endsWith(" ")) {
+        s = s.substring(0, s.lastIndexOf(" "));
+      }
+      while (s.startsWith(" ")) {
+        s = s.substring(s.indexOf(" ") + 1, s.length());
+      }
+      return s;
+    }
 
-            String documentId = key.datum().getDocumentId().toString();
+    @Override
+    protected void map(AvroKey<Document> key, NullWritable value, Context context)
+            throws IOException, InterruptedException {
+
+      String documentId = key.datum().getDocumentId().toString();
 //            System.err.println("Processing :" + documentId);
 //            String title = key.datum().getTitle().toString();
-            String description = key.datum().getDescription().toString().toLowerCase();
+      String description = key.datum().getDescription().toString().toLowerCase();
 //            String date = key.datum().getDate().toString();
 
-            for (String s : TERMS) {
-                s = trim(s.replaceAll("_", " "));
-                cleanStopWord.setDescription(s);
+      for (String s : TERMS) {
+        s = trim(s.replaceAll("_", " "));
+        cleanStopWord.setDescription(s);
 
-                cleanLemmatisation.setDescription(cleanStopWord.execute());
-                s = trim(cleanLemmatisation.execute());
-                while (description.contains(" " + s + " ")) {
+        cleanLemmatisation.setDescription(cleanStopWord.execute());
+        s = trim(cleanLemmatisation.execute());
+        while (description.contains(" " + s + " ")) {
+          Logger.getLogger(WordFrequencyInDocDriver.class.getName()).log(Level.INFO, "New term: {0}", s);
 //                while (description.contains(s)) {
-                    StringBuilder valueBuilder = new StringBuilder();
-                    valueBuilder.append(s);
-                    valueBuilder.append("@");
-                    valueBuilder.append(documentId);
+          StringBuilder valueBuilder = new StringBuilder();
+          valueBuilder.append(s);
+          valueBuilder.append("@");
+          valueBuilder.append(documentId);
 //                        valueBuilder.append("@");
 //                        valueBuilder.append(title);
 //                        valueBuilder.append("@");
 //                        valueBuilder.append(date);
-                    context.write(new Text(valueBuilder.toString()), new IntWritable(1));
-                    description = description.replaceFirst(" " + s + " ", " ");
+          context.write(new Text(valueBuilder.toString()), new IntWritable(1));
+          description = description.replaceFirst(" " + s + " ", " ");
 //                    description = description.replaceFirst(s, "");
-                }
-            }
+        }
+      }
 
 //             Compile all the words using regex
-            Pattern p = Pattern.compile("\\w+");
-            Matcher m = p.matcher(description);
+      Pattern p = Pattern.compile("\\w+");
+      Matcher m = p.matcher(description);
 
-            // build the values and write <k,v> pairs through the context
-            while (m.find()) {
-                String matchedKey = m.group().toLowerCase();
-                StringBuilder valueBuilder = new StringBuilder();
-                valueBuilder.append(matchedKey);
-                valueBuilder.append("@");
-                valueBuilder.append(documentId);
-                valueBuilder.append("@");
+      // build the values and write <k,v> pairs through the context
+      while (m.find()) {
+        String matchedKey = m.group().toLowerCase();
+        StringBuilder valueBuilder = new StringBuilder();
+        valueBuilder.append(matchedKey);
+        valueBuilder.append("@");
+        valueBuilder.append(documentId);
+        valueBuilder.append("@");
 //                valueBuilder.append(title);
 //                valueBuilder.append("@");
 //                valueBuilder.append(date);
-                // emit the partial <k,v>
-                context.write(new Text(valueBuilder.toString()), new IntWritable(1));
-            }
-        }
+        // emit the partial <k,v>
+        context.write(new Text(valueBuilder.toString()), new IntWritable(1));
+      }
     }
+  }
 
-    public static class WordFrequencyInDocReducer extends Reducer<Text, IntWritable, Text, Integer> { //AvroKey<Text>, AvroValue<Integer>> {
-
-        @Override
-        protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
-
-            Integer sum = 0;
-            for (IntWritable val : values) {
-                sum += val.get();
-            }
-            context.write(key, sum);
-        }
-    } // end of reducer class
+  public static class WordFrequencyInDocReducer extends Reducer<Text, IntWritable, Text, Integer> { //AvroKey<Text>, AvroValue<Integer>> {
 
     @Override
-    public int run(String[] args) throws Exception {
+    protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
+
+      Integer sum = 0;
+      for (IntWritable val : values) {
+        sum += val.get();
+      }
+      context.write(key, sum);
+    }
+  } // end of reducer class
+
+  @Override
+  public int run(String[] args) throws Exception {
 //        itemset = new LinkedList<String>();
 //        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(args[2])));
 //        String line;
@@ -178,59 +179,59 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 //            String[] components = line.split("/");
 //            itemset.add(components[0]);
 //        }
-        Configuration conf = new Configuration();
-        Job job = new Job(conf, "");
-        job.setJarByClass(WordFrequencyInDocDriver.class);
-        job.setJobName("Word Frequency In Doc Driver");
+    Configuration conf = new Configuration();
+    Job job = new Job(conf, "");
+    job.setJarByClass(WordFrequencyInDocDriver.class);
+    job.setJobName("Word Frequency In Doc Driver");
 
-        FileSystem fs = FileSystem.get(conf);
-        fs.delete(new Path(args[1]), true);
-        Path in = new Path(args[0]);
-        Path inHdfs = in;
+    FileSystem fs = FileSystem.get(conf);
+    fs.delete(new Path(args[1]), true);
+    Path in = new Path(args[0]);
+    Path inHdfs = in;
 
-        Path dictionaryLocal = new Path(args[2]);
-        Path dictionaryHDFS = dictionaryLocal;
+    Path dictionaryLocal = new Path(args[2]);
+    Path dictionaryHDFS = dictionaryLocal;
 
-        Path stopwordsLocal = new Path(args[4]);
-        Path stopwordsHDFS = stopwordsLocal;
+    Path stopwordsLocal = new Path(args[4]);
+    Path stopwordsHDFS = stopwordsLocal;
 
-        if (!conf.get(FileSystem.FS_DEFAULT_NAME_KEY).startsWith("file")) {
-            inHdfs = new Path(in.getName());
-            fs.delete(inHdfs, true);
-            fs.copyFromLocalFile(in, inHdfs);
-            fs.deleteOnExit(inHdfs);
+    if (!conf.get(FileSystem.FS_DEFAULT_NAME_KEY).startsWith("file")) {
+      inHdfs = new Path(in.getName());
+      fs.delete(inHdfs, true);
+      fs.copyFromLocalFile(in, inHdfs);
+      fs.deleteOnExit(inHdfs);
 
-            dictionaryHDFS = new Path(dictionaryLocal.getName());
-            if (!fs.exists(dictionaryHDFS)) {
-                fs.copyFromLocalFile(dictionaryLocal, dictionaryHDFS);
-            }
-            stopwordsHDFS = new Path(stopwordsLocal.getName());
-            if (!fs.exists(stopwordsHDFS)) {
-                fs.copyFromLocalFile(stopwordsLocal, stopwordsHDFS);
-            }
-        }
-
-        FileStatus dictionaryStatus = fs.getFileStatus(dictionaryHDFS);
-        dictionaryHDFS = dictionaryStatus.getPath();
-        job.addCacheFile(dictionaryHDFS.toUri());
-
-        FileStatus stopwordsStatus = fs.getFileStatus(stopwordsHDFS);
-        stopwordsHDFS = stopwordsStatus.getPath();
-        job.addCacheFile(stopwordsHDFS.toUri());
-
-        FileInputFormat.setInputPaths(job, inHdfs);
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
-
-        job.setInputFormatClass(AvroKeyInputFormat.class);
-        job.setMapperClass(WordFrequencyInDocMapper.class);
-        AvroJob.setInputKeySchema(job, Document.getClassSchema());
-        job.setMapOutputKeyClass(Text.class);
-        job.setMapOutputValueClass(IntWritable.class);
-
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(Integer.class);
-        job.setReducerClass(WordFrequencyInDocReducer.class);
-        return (job.waitForCompletion(true) ? 0 : 1);
+      dictionaryHDFS = new Path(dictionaryLocal.getName());
+      if (!fs.exists(dictionaryHDFS)) {
+        fs.copyFromLocalFile(dictionaryLocal, dictionaryHDFS);
+      }
+      stopwordsHDFS = new Path(stopwordsLocal.getName());
+      if (!fs.exists(stopwordsHDFS)) {
+        fs.copyFromLocalFile(stopwordsLocal, stopwordsHDFS);
+      }
     }
+
+    FileStatus dictionaryStatus = fs.getFileStatus(dictionaryHDFS);
+    dictionaryHDFS = dictionaryStatus.getPath();
+    job.addCacheFile(dictionaryHDFS.toUri());
+
+    FileStatus stopwordsStatus = fs.getFileStatus(stopwordsHDFS);
+    stopwordsHDFS = stopwordsStatus.getPath();
+    job.addCacheFile(stopwordsHDFS.toUri());
+
+    FileInputFormat.setInputPaths(job, inHdfs);
+    FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+    job.setInputFormatClass(AvroKeyInputFormat.class);
+    job.setMapperClass(WordFrequencyInDocMapper.class);
+    AvroJob.setInputKeySchema(job, Document.getClassSchema());
+    job.setMapOutputKeyClass(Text.class);
+    job.setMapOutputValueClass(IntWritable.class);
+
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(Integer.class);
+    job.setReducerClass(WordFrequencyInDocReducer.class);
+    return (job.waitForCompletion(true) ? 0 : 1);
+  }
 
 }
