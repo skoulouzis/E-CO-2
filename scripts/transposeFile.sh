@@ -32,7 +32,5 @@ do
 done
 
 
-
-
 index=0
 for i in $(ls -d $1/*.trans)
