@@ -14,9 +14,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,8 +26,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
@@ -41,13 +38,39 @@ import org.json.simple.parser.ParseException;
 @Path("/e-co2/")
 public class ECO2Controller {
 
-  private final File baseCategoryFolder = new File(System.getProperty("user.home") + File.separator + "workspace" + File.separator + "E-CO-2" + File.separator + "Competences" + File.separator);
-  private final File baseClassisifcationFolder = new File(System.getProperty("user.home") + File.separator + "Downloads" + File.separator + "classificationFiles" + File.separator);
-  private final File propertiesFile = new File(System.getProperty("user.home") + File.separator + "workspace" + File.separator + "E-CO-2" + File.separator + "etc" + File.separator + "configure.properties");
-  private final File transposeFile = new File(System.getProperty("user.home") + File.separator + "workspace" + File.separator + "E-CO-2" + File.separator + "scripts" + File.separator + "transposeFile.sh");
-  private final File itemSetFile = new File(System.getProperty("user.home") + File.separator + "workspace" + File.separator + "E-CO-2" + File.separator + "etc" + File.separator + "dictionaryAll.csv");
+  private final File baseCategoryFolder;
+  private final File baseClassisifcationFolder;
+  private final File propertiesFile;
+  private final File itemSetFile;
+  private final File stopwordsFile;
 
-  private final File stopwordsFile = new File(System.getProperty("user.home") + File.separator + "workspace" + File.separator + "E-CO-2" + File.separator + "etc" + File.separator + "stopwords.csv");
+  public ECO2Controller(Properties props) {
+    String baseCategoryFolderPath = props.getProperty("categories.folder",
+            System.getProperty("user.home") + File.separator + "workspace"
+            + File.separator + "E-CO-2" + File.separator + "Competences" + File.separator);
+    baseCategoryFolder = new File(baseCategoryFolderPath);
+
+    String baseClassificationFolderPath = props.getProperty("categories.folder",
+            System.getProperty("user.home")
+            + File.separator + "Downloads" + File.separator + "classificationFiles"
+            + File.separator);
+    baseClassisifcationFolder = new File(baseClassificationFolderPath);
+
+    String propertiesPath = props.getProperty("properties.file", System.getProperty("user.home")
+            + File.separator + "workspace" + File.separator + "E-CO-2" + File.separator
+            + "etc" + File.separator + "configure.properties");
+    propertiesFile = new File(propertiesPath);
+
+    String itemSetPath = props.getProperty("items.set", System.getProperty("user.home")
+            + File.separator + "workspace" + File.separator + "E-CO-2" + File.separator
+            + "etc" + File.separator + "dictionaryAll.csv");
+    itemSetFile = new File(itemSetPath);
+
+    String stopwordsPath = props.getProperty("stop.words", System.getProperty("user.home")
+            + File.separator + "workspace" + File.separator + "E-CO-2" + File.separator
+            + "etc" + File.separator + "stopwords.csv");
+    stopwordsFile = new File(stopwordsPath);
+  }
 
 //  @GET
 //  @Path("/categories")
@@ -97,11 +120,8 @@ public class ECO2Controller {
       File classificationFolder = new File(baseClassisifcationFolder.getAbsoluteFile() + File.separator + now);
       classificationFolder.mkdir();
       for (Object obj : docs) {
-
         JSONObject doc = (JSONObject) obj;
-
         classify(doc.toJSONString());
-
         String text = (String) doc.get("text");
         String title = (String) doc.get("id");
         if (!title.endsWith(".txt")) {
@@ -146,9 +166,9 @@ public class ECO2Controller {
               + File.separator + title)) {
         out.println(text);
       }
-      
+
       File result = doIt(classificationFolder);
-      
+
       return String.valueOf(now);
     } catch (ParseException | FileNotFoundException ex) {
       Logger.getLogger(ECO2Controller.class.getName()).log(Level.SEVERE, null, ex);
