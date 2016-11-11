@@ -6,9 +6,9 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>Traning</module>
-        <module>Utility</module>
-        <module>Classification</module>
+        <module>training</module>
+        <module>utility</module>
+        <module>classification</module>
         <module>rest</module>
     </modules>
     <properties>

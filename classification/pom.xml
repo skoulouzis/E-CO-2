@@ -6,7 +6,7 @@
         <artifactId>E-COCO</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>Classification</artifactId>
+    <artifactId>classification</artifactId>
     <packaging>jar</packaging>
     <properties>
         <maven.compiler.source>1.7</maven.compiler.source>
@@ -16,8 +16,8 @@
   
     <dependencies>
         <dependency>
-            <artifactId>Utility</artifactId>
             <groupId>eu.edison-project</groupId>
+            <artifactId>utility</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         

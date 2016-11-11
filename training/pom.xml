@@ -6,7 +6,7 @@
         <artifactId>E-COCO</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>Traning</artifactId>
+    <artifactId>training</artifactId>
     <packaging>jar</packaging>
     <properties>
         <maven.compiler.source>1.7</maven.compiler.source>
@@ -30,7 +30,7 @@
         
         
         <dependency>
-            <artifactId>Utility</artifactId>
+            <artifactId>utility</artifactId>
             <groupId>eu.edison-project</groupId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
@@ -251,7 +251,5 @@
             </plugin>
         </plugins>
     </build>
-    
-    
-    
+    <description>Train a system to identify the similarity of a text file against on a set of pre-determined classes. The output will be a table with the categories as a header and the corresponding similarity measure</description>
 </project>
