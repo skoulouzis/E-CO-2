@@ -6,6 +6,7 @@
 
 package eu.edisonproject.rest;
 
+import com.sun.jersey.api.core.ResourceConfig;
 import eu.edisonproject.classification.main.BatchMain;
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,9 +15,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
@@ -26,6 +30,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.container.Suspended;
+import javax.ws.rs.core.Application;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
@@ -38,13 +47,19 @@ import org.json.simple.parser.ParseException;
 @Path("/e-co2/")
 public class ECO2Controller {
 
-  private final File baseCategoryFolder;
-  private final File baseClassisifcationFolder;
-  private final File propertiesFile;
-  private final File itemSetFile;
-  private final File stopwordsFile;
+  public static File baseCategoryFolder;
+  public static File baseClassisifcationFolder;
+  public static File propertiesFile;
+  public static File itemSetFile;
+  public static File stopwordsFile;
 
-  public ECO2Controller(Properties props) {
+  public ECO2Controller() throws IOException {
+
+  }
+
+  public static void initPaths() {
+    Properties props = new Properties();
+
     String baseCategoryFolderPath = props.getProperty("categories.folder",
             System.getProperty("user.home") + File.separator + "workspace"
             + File.separator + "E-CO-2" + File.separator + "Competences" + File.separator);
@@ -72,42 +87,43 @@ public class ECO2Controller {
     stopwordsFile = new File(stopwordsPath);
   }
 
-//  @GET
-//  @Path("/categories")
-//  @Produces(MediaType.APPLICATION_JSON)
-//  public String available() {
-//    JSONArray ja = new JSONArray();
-//    Iterator<File> iter = FileUtils.iterateFiles(baseCategoryFolder, new String[]{"csv", "desc"}, true);
-//    while (iter.hasNext()) {
-//      File f = iter.next();
-//      Map<String, String> map = new HashMap();
-//      if (f.getName().endsWith("csv")) {
-//        map.put("name", FilenameUtils.removeExtension(f.getName()));
-//      }
-//      if (f.getName().endsWith("desc")) {
-//        try (BufferedReader br = new BufferedReader(new FileReader(f))) {
-//          StringBuilder sb = new StringBuilder();
-//          String line = br.readLine();
-//
-//          while (line != null) {
-//            sb.append(line).append(" ");
-//            line = br.readLine();
-//          }
-//          String everything = sb.toString();
-//          map.put("description", everything);
-//        } catch (FileNotFoundException ex) {
-//          Logger.getLogger(ECO2Controller.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (IOException ex) {
-//          Logger.getLogger(ECO2Controller.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//      }
-//      if (map.size() > 0) {
-//        JSONObject jo = new JSONObject(map);
-//        ja.add(jo);
-//      }
-//    }
-//    return ja.toString();
-//  }
+  @GET
+  @Path("/categories")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String available() {
+    JSONArray ja = new JSONArray();
+    Iterator<File> iter = FileUtils.iterateFiles(baseCategoryFolder, new String[]{"csv", "desc"}, true);
+    while (iter.hasNext()) {
+      File f = iter.next();
+      Map<String, String> map = new HashMap();
+      if (f.getName().endsWith("csv")) {
+        map.put("name", FilenameUtils.removeExtension(f.getName()));
+      }
+      if (f.getName().endsWith("desc")) {
+        try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+          StringBuilder sb = new StringBuilder();
+          String line = br.readLine();
+
+          while (line != null) {
+            sb.append(line).append(" ");
+            line = br.readLine();
+          }
+          String everything = sb.toString();
+          map.put("description", everything);
+        } catch (FileNotFoundException ex) {
+          Logger.getLogger(ECO2Controller.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+          Logger.getLogger(ECO2Controller.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+      if (map.size() > 0) {
+        JSONObject jo = new JSONObject(map);
+        ja.add(jo);
+      }
+    }
+    return ja.toString();
+  }
+
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Path("/classify/bulk")
@@ -122,19 +138,20 @@ public class ECO2Controller {
       for (Object obj : docs) {
         JSONObject doc = (JSONObject) obj;
         classify(doc.toJSONString());
-        String text = (String) doc.get("text");
-        String title = (String) doc.get("id");
-        if (!title.endsWith(".txt")) {
-          title += ".txt";
+        String contents = (String) doc.get("contents");
+        String id = (String) doc.get("id");
+        String title = (String) doc.get("title");
+        String ext = id;
+        if (!ext.endsWith(".txt")) {
+          ext += ".txt";
         }
         try (PrintWriter out = new PrintWriter(classificationFolder.getAbsolutePath()
-                + File.separator + title)) {
-          out.println(text);
+                + File.separator + ext)) {
+          out.println(contents);
         }
       }
 
-      File result = doIt(classificationFolder);
-
+//      File result = doIt(classificationFolder);
       return String.valueOf(now);
     } catch (ParseException | FileNotFoundException ex) {
       Logger.getLogger(ECO2Controller.class.getName()).log(Level.SEVERE, null, ex);
@@ -151,28 +168,27 @@ public class ECO2Controller {
   @Path("/classify/doc")
   public final String classify(final String jsonString) {
     try {
+
       JSONObject ja = (JSONObject) JSONValue.parseWithException(jsonString);
       long now = System.currentTimeMillis();
       File classificationFolder = new File(baseClassisifcationFolder.getAbsoluteFile() + File.separator + now);
       classificationFolder.mkdir();
 
       JSONObject doc = (JSONObject) ja;
-      String text = (String) doc.get("text");
-      String title = (String) doc.get("id");
-      if (!title.endsWith(".txt")) {
-        title += ".txt";
+      String id = (String) doc.get("id");
+      String contents = (String) doc.get("contents");
+      String title = (String) doc.get("title");
+      if (!id.endsWith(".txt")) {
+        id += ".txt";
       }
       try (PrintWriter out = new PrintWriter(classificationFolder.getAbsolutePath()
-              + File.separator + title)) {
-        out.println(text);
+              + File.separator + id)) {
+        out.println(contents);
       }
 
-      File result = doIt(classificationFolder);
-
+//      File result = doIt(classificationFolder);
       return String.valueOf(now);
     } catch (ParseException | FileNotFoundException ex) {
-      Logger.getLogger(ECO2Controller.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (IOException ex) {
       Logger.getLogger(ECO2Controller.class.getName()).log(Level.SEVERE, null, ex);
     } catch (Exception ex) {
       Logger.getLogger(ECO2Controller.class.getName()).log(Level.SEVERE, null, ex);
@@ -237,52 +253,4 @@ public class ECO2Controller {
     }
   }
 
-  private File convertMRResultToJsonFile(String mrPartPath) throws IOException {
-    File parent = new File(mrPartPath).getParentFile();
-    Map<String, Map<String, Double>> map = new HashMap<>();
-    Map<String, Double> catSimMap;
-    try (BufferedReader br = new BufferedReader(new FileReader(mrPartPath))) {
-      String line;
-      while ((line = br.readLine()) != null) {
-        String[] kv = line.split("\t");
-        String fileName = kv[0];
-        String cat = kv[1];
-        String sim = kv[2];
-        catSimMap = map.get(fileName);
-        if (catSimMap == null) {
-          catSimMap = new HashMap<>();
-        }
-        catSimMap.put(cat, Double.valueOf(sim));
-        map.put(fileName, catSimMap);
-      }
-    }
-
-//    JSONArray ja = new JSONArray();
-//    for (String fname : map.keySet()) {
-//      Map<String, Double> catMap = map.get(fname);
-//      JSONObject jo = new JSONObject(catMap);
-//      ja.add(jo);
-//    }
-    File jsonFile = new File(parent.getAbsoluteFile() + File.separator + "result.json");
-    JSONObject jo = new JSONObject(map);
-    try (PrintWriter out = new PrintWriter(jsonFile)) {
-      out.print(jo.toJSONString());
-    }
-    return jsonFile;
-  }
-
-  private File doIt(File classificationFolder) throws Exception {
-    String[] args = new String[]{"-op", "c", "-i", classificationFolder.getAbsolutePath(),
-      "-o", classificationFolder.getAbsolutePath(), "-c", baseCategoryFolder.getAbsolutePath(),
-      "-p", propertiesFile.getAbsolutePath()};
-
-    System.setProperty("itemset.file", itemSetFile.getAbsolutePath());
-    System.setProperty("stop.words.file", stopwordsFile.getAbsolutePath());
-
-    BatchMain.main(args);
-
-//      convertMRResultToCSV(classificationFolder.getAbsolutePath() + File.separator + "part-r-00000");
-    return convertMRResultToJsonFile(classificationFolder.getAbsolutePath() + File.separator + "part-r-00000");
-
-  }
 }

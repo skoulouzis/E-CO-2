@@ -6,6 +6,15 @@
 
 package eu.edisonproject.rest;
 
+import eu.edisonproject.utility.file.ConfigHelper;
+import eu.edisonproject.utility.file.MyProperties;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.jetty.server.Server;
@@ -20,26 +29,59 @@ import org.glassfish.jersey.servlet.ServletContainer;
 public class ECO2Server {
 
   public static void main(String[] args) {
+    Thread t = null;
+    Server server = null;
+    try {
+      ECO2Controller.initPaths();
+      t = startTaskWatcher();
+      t.start();
+      server = startServer(args);
+      server.start();
+      t.join();
+      server.join();
+    } catch (IOException ex) {
+      Logger.getLogger(ECO2Server.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (InterruptedException ex) {
+      Logger.getLogger(ECO2Server.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (Exception ex) {
+      Logger.getLogger(ECO2Server.class.getName()).log(Level.SEVERE, null, ex);
+    } finally {
+      if (server != null) {
+        server.destroy();
+      }
+      if (t != null) {
+        try {
+          t.join(100);
+        } catch (InterruptedException ex) {
+          Logger.getLogger(ECO2Server.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+
+    }
+  }
+
+  private static Server startServer(String[] args) throws IOException {
     ServletContextHandler context = new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
     context.setContextPath("/");
+
+    MyProperties props = ConfigHelper.getProperties(args[0]);
 
     Server jettyServer = new Server(9999);
     jettyServer.setHandler(context);
 
     ServletHolder jerseyServlet = context.addServlet(ServletContainer.class, "/*");
     jerseyServlet.setInitOrder(0);
-    
 
-    // Tells the Jersey Servlet which REST service/class to load.
     jerseyServlet.setInitParameter("jersey.config.server.provider.packages", "eu.edisonproject.rest");
-
-    try {
-      jettyServer.start();
-      jettyServer.join();
-    } catch (Exception ex) {
-      Logger.getLogger(ECO2Server.class.getName()).log(Level.SEVERE, null, ex);
-    } finally {
-      jettyServer.destroy();
-    }
+    return jettyServer;
   }
+
+  private static Thread startTaskWatcher() throws IOException, InterruptedException {
+
+    Runnable folderWatcherRunnable = new FolderWatcherRunnable(ECO2Controller.baseClassisifcationFolder.getAbsolutePath());
+
+    return new Thread(folderWatcherRunnable);
+
+  }
+
 }

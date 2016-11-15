@@ -34,47 +34,63 @@ import org.apache.lucene.analysis.util.CharArraySet;
  */
 public class ConfigHelper {
 
-    public static CharArraySet loadStopWords(String stopWordsPath) {
-        ReaderFile fileReader = new ReaderFile(stopWordsPath);
-        String[] stopWord = fileReader.readFile().split(" ");
-        final List<String> stopWords = Arrays.asList(stopWord);
+  public static CharArraySet loadStopWords(String stopWordsPath) {
+    ReaderFile fileReader = new ReaderFile(stopWordsPath);
+    String[] stopWord = fileReader.readFile().split(" ");
+    final List<String> stopWords = Arrays.asList(stopWord);
 
-        return new CharArraySet(stopWords, false);
+    return new CharArraySet(stopWords, false);
+  }
+
+  public static CharArraySet loadStopWords(InputStream is) throws IOException {
+    String line;
+    List<String> stopWords = new ArrayList<>();
+    try (BufferedReader br = new BufferedReader(
+            new InputStreamReader(is))) {
+      while ((line = br.readLine()) != null) {
+        stopWords.add(line);
+      }
     }
 
-    public static CharArraySet loadStopWords(InputStream is) throws IOException {
-        String line;
-        List<String> stopWords = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(is))) {
-            while ((line = br.readLine()) != null) {
-                stopWords.add(line);
-            }
-        }
+    return new CharArraySet(stopWords, false);
+  }
 
-        return new CharArraySet(stopWords, false);
+  public static MyProperties getProperties(String propertiesPath) throws IOException {
+    Logger.getLogger(ConfigHelper.class.getName()).log(Level.INFO, "Reading properties from: {0}", propertiesPath);
+    InputStream in = null;
+    try {
+      if (new File(propertiesPath).exists() && new File(propertiesPath).isFile()) {
+        in = new FileInputStream(propertiesPath);
+      } else {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        in = classLoader.getResourceAsStream(propertiesPath);
+      }
+      MyProperties properties = new MyProperties();
+      properties.load(in);
+      return properties;
+    } catch (IOException ex) {
+      Logger.getLogger(ConfigHelper.class.getName()).log(Level.SEVERE, null, ex);
+    } finally {
+      if (in != null) {
+        in.close();
+      }
     }
+    return null;
+  }
 
-    public static MyProperties getProperties(String propertiesPath) throws IOException {
-        Logger.getLogger(ConfigHelper.class.getName()).log(Level.INFO, "Reading properties from: {0}", propertiesPath);
-        InputStream in = null;
-        try {
-            if (new File(propertiesPath).exists() && new File(propertiesPath).isFile()) {
-                in = new FileInputStream(propertiesPath);
-            } else {
-                ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-                in = classLoader.getResourceAsStream(propertiesPath);
-            }
-            MyProperties properties = new MyProperties();
-            properties.load(in);
-            return properties;
-        } catch (IOException ex) {
-            Logger.getLogger(ConfigHelper.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-        }
-        return null;
+  public static MyProperties getProperties(InputStream in) throws IOException {
+    try {
+      MyProperties properties = new MyProperties();
+      properties.load(in);
+      return properties;
+    } catch (IOException ex) {
+      Logger.getLogger(ConfigHelper.class.getName()).log(Level.SEVERE, null, ex);
+    } finally {
+      if (in != null) {
+        in.close();
+      }
     }
+    return null;
+  }
+
 }
