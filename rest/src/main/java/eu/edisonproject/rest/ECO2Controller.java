@@ -6,8 +6,7 @@
 
 package eu.edisonproject.rest;
 
-import com.sun.jersey.api.core.ResourceConfig;
-import eu.edisonproject.classification.main.BatchMain;
+import eu.edisonproject.utility.file.ReaderFile;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -19,8 +18,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
@@ -30,9 +28,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.container.Suspended;
-import javax.ws.rs.core.Application;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.json.simple.JSONObject;
@@ -52,6 +47,7 @@ public class ECO2Controller {
   public static File propertiesFile;
   public static File itemSetFile;
   public static File stopwordsFile;
+  private static final String jsonFileName = "result.json";
 
   public ECO2Controller() throws IOException {
 
@@ -126,14 +122,16 @@ public class ECO2Controller {
 
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
-  @Path("/classify/bulk")
+  @Path("/classification/bulk")
   public final String classifyBulk(final String jsonString) {
     try {
       JSONObject ja = (JSONObject) JSONValue.parseWithException(jsonString);
 //      JSONArray cats = (JSONArray) ja.get("categories");
       JSONArray docs = (JSONArray) ja.get("documents");
       long now = System.currentTimeMillis();
-      File classificationFolder = new File(baseClassisifcationFolder.getAbsoluteFile() + File.separator + now);
+      UUID uid = UUID.randomUUID();
+      String classificationId = String.valueOf(now) + "_" + uid.toString();
+      File classificationFolder = new File(baseClassisifcationFolder.getAbsoluteFile() + File.separator + classificationId);
       classificationFolder.mkdir();
       for (Object obj : docs) {
         JSONObject doc = (JSONObject) obj;
@@ -152,7 +150,7 @@ public class ECO2Controller {
       }
 
 //      File result = doIt(classificationFolder);
-      return String.valueOf(now);
+      return classificationId;
     } catch (ParseException | FileNotFoundException ex) {
       Logger.getLogger(ECO2Controller.class.getName()).log(Level.SEVERE, null, ex);
     } catch (IOException ex) {
@@ -165,13 +163,16 @@ public class ECO2Controller {
 
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
-  @Path("/classify/doc")
+  @Path("/classification/doc")
   public final String classify(final String jsonString) {
     try {
 
       JSONObject ja = (JSONObject) JSONValue.parseWithException(jsonString);
       long now = System.currentTimeMillis();
-      File classificationFolder = new File(baseClassisifcationFolder.getAbsoluteFile() + File.separator + now);
+      UUID uid = UUID.randomUUID();
+      String classificationId = String.valueOf(now) + "_" + uid.toString();
+
+      File classificationFolder = new File(baseClassisifcationFolder.getAbsoluteFile() + File.separator + classificationId);
       classificationFolder.mkdir();
 
       JSONObject doc = (JSONObject) ja;
@@ -187,7 +188,7 @@ public class ECO2Controller {
       }
 
 //      File result = doIt(classificationFolder);
-      return String.valueOf(now);
+      return classificationId;
     } catch (ParseException | FileNotFoundException ex) {
       Logger.getLogger(ECO2Controller.class.getName()).log(Level.SEVERE, null, ex);
     } catch (Exception ex) {
@@ -199,11 +200,11 @@ public class ECO2Controller {
   @GET
   @Path("/classification/{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public String available(@PathParam("id") final String id) {
-    JSONArray ja = new JSONArray();
-    File classificationFolder = new File(baseClassisifcationFolder.getAbsoluteFile() + File.separator + id);
-
-    return ja.toString();
+  public String available(@PathParam("id") final String classificationId) {
+    File classificationFolder = new File(baseClassisifcationFolder.getAbsoluteFile() + File.separator + classificationId);
+    File resultFile = new File(classificationFolder.getAbsolutePath() + File.separator + jsonFileName);
+    ReaderFile rf = new ReaderFile(resultFile.getAbsolutePath());
+    return rf.readFile();
   }
 
   private void convertMRResultToCSV(String mrPartPath) throws IOException {
