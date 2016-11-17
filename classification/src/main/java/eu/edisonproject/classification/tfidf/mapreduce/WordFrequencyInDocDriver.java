@@ -184,6 +184,9 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/core-site.xml"));
     conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/hdfs-site.xml"));
     conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/yarn-site.xml"));
+    conf.set("fs.default.name", "hdfs://master.ib.cluster:8020");
+    conf.set("fs.defaultFS", "hdfs://master.ib.cluster:8020");
+
     conf.set("mapreduce.framework.name", "yarn");
 
     Job job = Job.getInstance(conf);
