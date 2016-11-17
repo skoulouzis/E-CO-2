@@ -145,6 +145,7 @@ class FolderWatcherRunnable implements Runnable {
     TFIDFDriverImpl.text2Avro(inputPath, AVRO_FILE);
 
     String[] args = {AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES, STOPWORDS_PATH};
+    System.err.println(args);
 
     Configuration conf = new Configuration();
     Job job = new Job(conf, "");
