@@ -57,8 +57,9 @@ public class ECO2Server {
   private static Server startServer(String[] args) throws IOException {
     ServletContextHandler context = new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
     context.setContextPath("/");
-
-    MyProperties props = ConfigHelper.getProperties(args[0]);
+    if (args != null) {
+      MyProperties props = ConfigHelper.getProperties(args[0]);
+    }
 
     Server jettyServer = new Server(9999);
     jettyServer.setHandler(context);
