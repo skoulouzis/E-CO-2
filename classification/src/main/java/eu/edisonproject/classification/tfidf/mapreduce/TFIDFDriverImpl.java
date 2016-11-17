@@ -162,28 +162,12 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
 //        }
 //        fileWriter.writeFile(textToPrint);
 //    }
-  private static void text2Avro(String inputPath, String outputPath) {
+  public static void text2Avro(String inputPath, String outputPath) {
     Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Start");
     File out = new File(outputPath);
     out.getAbsoluteFile().delete();
     out.getAbsoluteFile().mkdirs();
 
-//        CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(STOPWORDS_PATH), true);
-//        StopWord cleanStopWord = new StopWord(stopWordArraySet);
-//        StanfordLemmatizer cleanLemmatisation = new StanfordLemmatizer();
-//        File filesInDir = new File(inputPath);
-//        for (File f : filesInDir.listFiles()) {
-//            if (f.isFile() && FilenameUtils.getExtension(f.getName()).endsWith("txt")) {
-//                ReaderFile rf = new ReaderFile(f.getAbsolutePath());
-//                String contents = rf.readFile();
-//                cleanStopWord.setDescription(contents);
-//                String cleanCont = cleanStopWord.execute().toLowerCase();
-//                cleanLemmatisation.setDescription(cleanCont);
-//                cleanCont = cleanLemmatisation.execute();
-//                WriterFile wf = new WriterFile(outputPath + File.separator + f.getName());
-//                wf.writeFile(cleanCont);
-//            }
-//        }
     IDataPrepare dp = new DataPrepare(inputPath, outputPath, STOPWORDS_PATH);
     dp.execute();
 

@@ -6,14 +6,21 @@
 
 package eu.edisonproject.rest;
 
+import static eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl.INPUT_ITEMSET;
+import static eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl.NUM_OF_LINES;
+import static eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl.OUTPUT_PATH1;
+import static eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl.STOPWORDS_PATH;
+import static eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl.text2Avro;
 import static eu.edisonproject.rest.ECO2Controller.baseCategoryFolder;
 import static eu.edisonproject.rest.ECO2Controller.itemSetFile;
 import static eu.edisonproject.rest.ECO2Controller.propertiesFile;
 import static eu.edisonproject.rest.ECO2Controller.stopwordsFile;
 
+import document.avro.Document;
 import eu.edisonproject.classification.main.BatchMain;
-import eu.edisonproject.utility.file.ConfigHelper;
-import eu.edisonproject.utility.file.MyProperties;
+import eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl;
+import eu.edisonproject.classification.tfidf.mapreduce.WordCountsForDocsDriver;
+import eu.edisonproject.classification.tfidf.mapreduce.WordFrequencyInDocDriver;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -29,7 +36,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.avro.mapreduce.AvroJob;
+import org.apache.avro.mapreduce.AvroKeyInputFormat;
 import org.json.simple.JSONObject;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.FileInputFormat;
+import org.apache.hadoop.mapred.FileOutputFormat;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.util.ToolRunner;
 
 /**
  *
@@ -72,23 +91,19 @@ class FolderWatcherRunnable implements Runnable {
     }
   }
 
-  private File executeClassification(File classificationFolder) throws Exception {
+//  private File executeClassification(File classificationFolder) throws Exception {
 //    String[] args = new String[]{"-op", "c", "-i", classificationFolder.getAbsolutePath(),
 //      "-o", classificationFolder.getAbsolutePath(), "-c", baseCategoryFolder.getAbsolutePath(),
 //      "-p", propertiesFile.getAbsolutePath()};
-
-    MyProperties prop = ConfigHelper.getProperties(propertiesFile.getAbsolutePath());
-    System.setProperty("itemset.file", itemSetFile.getAbsolutePath());
-    System.setProperty("stop.words.file", stopwordsFile.getAbsolutePath());
-
-    BatchMain.calculateTFIDF(classificationFolder.getAbsolutePath(), classificationFolder.getAbsolutePath(), baseCategoryFolder.getAbsolutePath(), prop);
+//
+//    System.setProperty("itemset.file", itemSetFile.getAbsolutePath());
+//    System.setProperty("stop.words.file", stopwordsFile.getAbsolutePath());
+//    
 //    BatchMain.main(args);
-
-//      convertMRResultToCSV(classificationFolder.getAbsolutePath() + File.separator + "part-r-00000");
-    return convertMRResultToJsonFile(classificationFolder.getAbsolutePath() + File.separator + "part-r-00000");
-
-  }
-
+//
+////      convertMRResultToCSV(classificationFolder.getAbsolutePath() + File.separator + "part-r-00000");
+//    return convertMRResultToJsonFile(classificationFolder.getAbsolutePath() + File.separator + "part-r-00000");
+//  }
   private File convertMRResultToJsonFile(String mrPartPath) throws IOException {
     File parent = new File(mrPartPath).getParentFile();
     Map<String, Map<String, Double>> map = new HashMap<>();
@@ -121,6 +136,72 @@ class FolderWatcherRunnable implements Runnable {
       out.print(jo.toJSONString());
     }
     return jsonFile;
+  }
+
+  private File executeClassification(File classificationFolder) throws IOException,
+          InterruptedException, ClassNotFoundException {
+    String inputPath = classificationFolder.getAbsolutePath();
+    String AVRO_FILE = System.currentTimeMillis() + "-TFIDFDriverImpl-avro";
+    TFIDFDriverImpl.text2Avro(inputPath, AVRO_FILE);
+
+    String[] args = {AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES, STOPWORDS_PATH};
+
+    Configuration conf = new Configuration();
+    Job job = new Job(conf, "");
+    job.setJarByClass(WordFrequencyInDocDriver.class);
+    job.setJobName("Word Frequency In Doc Driver");
+
+    FileSystem fs = FileSystem.get(conf);
+    fs.delete(new org.apache.hadoop.fs.Path(args[1]), true);
+    org.apache.hadoop.fs.Path in = new org.apache.hadoop.fs.Path(args[0]);
+    org.apache.hadoop.fs.Path inHdfs = in;
+
+    org.apache.hadoop.fs.Path dictionaryLocal = new org.apache.hadoop.fs.Path(args[2]);
+    org.apache.hadoop.fs.Path dictionaryHDFS = dictionaryLocal;
+
+    org.apache.hadoop.fs.Path stopwordsLocal = new org.apache.hadoop.fs.Path(args[4]);
+    org.apache.hadoop.fs.Path stopwordsHDFS = stopwordsLocal;
+
+    if (!conf.get(FileSystem.FS_DEFAULT_NAME_KEY).startsWith("file")) {
+      inHdfs = new org.apache.hadoop.fs.Path(in.getName());
+      fs.delete(inHdfs, true);
+      fs.copyFromLocalFile(in, inHdfs);
+      fs.deleteOnExit(inHdfs);
+
+      dictionaryHDFS = new org.apache.hadoop.fs.Path(dictionaryLocal.getName());
+      if (!fs.exists(dictionaryHDFS)) {
+        fs.copyFromLocalFile(dictionaryLocal, dictionaryHDFS);
+      }
+      stopwordsHDFS = new org.apache.hadoop.fs.Path(stopwordsLocal.getName());
+      if (!fs.exists(stopwordsHDFS)) {
+        fs.copyFromLocalFile(stopwordsLocal, stopwordsHDFS);
+      }
+    }
+
+    FileStatus dictionaryStatus = fs.getFileStatus(dictionaryHDFS);
+    dictionaryHDFS = dictionaryStatus.getPath();
+    job.addCacheFile(dictionaryHDFS.toUri());
+
+    FileStatus stopwordsStatus = fs.getFileStatus(stopwordsHDFS);
+    stopwordsHDFS = stopwordsStatus.getPath();
+    job.addCacheFile(stopwordsHDFS.toUri());
+
+    org.apache.hadoop.mapreduce.lib.input.FileInputFormat.setInputPaths(job, inHdfs);
+    org.apache.hadoop.mapreduce.lib.output.FileOutputFormat.setOutputPath(job, new org.apache.hadoop.fs.Path(args[1]));
+
+    job.setInputFormatClass(AvroKeyInputFormat.class);
+    job.setMapperClass(WordFrequencyInDocDriver.WordFrequencyInDocMapper.class);
+    AvroJob.setInputKeySchema(job, Document.getClassSchema());
+    job.setMapOutputKeyClass(Text.class);
+    job.setMapOutputValueClass(IntWritable.class);
+
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(Integer.class);
+    job.setReducerClass(WordFrequencyInDocDriver.WordFrequencyInDocReducer.class);
+
+    job.waitForCompletion(true);
+
+    return convertMRResultToJsonFile(classificationFolder.getAbsolutePath() + File.separator + "part-r-00000");
   }
 
 }

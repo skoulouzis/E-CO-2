@@ -32,7 +32,6 @@ import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
 import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
