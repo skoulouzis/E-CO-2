@@ -162,6 +162,10 @@ class FolderWatcherRunnable implements Runnable {
     System.out.println(Arrays.toString(args));
 
     Configuration conf = new Configuration();
+
+    conf.set("yarn.resourcemanager.address", "localhost:18088");
+    conf.set("mapreduce.framework.name", "yarn");
+
     Job job = new Job(conf, "");
     job.setJarByClass(WordFrequencyInDocDriver.class);
     job.setJobName("Word Frequency In Doc Driver");
