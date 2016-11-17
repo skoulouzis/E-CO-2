@@ -15,12 +15,12 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
-            <version>9.3.13.v20161014</version>
+            <version>9.2.19.v20160908</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-servlet</artifactId>
-            <version>9.3.13.v20161014</version>
+            <version>9.2.19.v20160908</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
