@@ -188,8 +188,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
     conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
 
-    conf.set("mapreduce.framework.name", "yarn");
-
+//    conf.set("mapreduce.framework.name", "yarn");
     Job job = Job.getInstance(conf);
     job.setJarByClass(WordFrequencyInDocDriver.class);
     job.setJobName("Word Frequency In Doc Driver");
