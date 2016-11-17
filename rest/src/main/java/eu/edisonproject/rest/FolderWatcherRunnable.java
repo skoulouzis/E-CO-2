@@ -32,6 +32,7 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -145,7 +146,7 @@ class FolderWatcherRunnable implements Runnable {
     TFIDFDriverImpl.text2Avro(inputPath, AVRO_FILE);
 
     String[] args = {AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES, STOPWORDS_PATH};
-    System.err.println(args);
+    System.out.println(Arrays.toString(args));
 
     Configuration conf = new Configuration();
     Job job = new Job(conf, "");
