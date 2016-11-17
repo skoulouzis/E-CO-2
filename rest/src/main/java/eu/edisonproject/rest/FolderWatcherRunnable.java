@@ -10,9 +10,13 @@ import static eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl.IN
 import static eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl.NUM_OF_LINES;
 import static eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl.OUTPUT_PATH1;
 import static eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl.STOPWORDS_PATH;
+import static eu.edisonproject.rest.ECO2Controller.baseCategoryFolder;
+import static eu.edisonproject.rest.ECO2Controller.itemSetFile;
 import static eu.edisonproject.rest.ECO2Controller.propertiesFile;
+import static eu.edisonproject.rest.ECO2Controller.stopwordsFile;
 
 import document.avro.Document;
+import eu.edisonproject.classification.main.BatchMain;
 import eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl;
 import eu.edisonproject.classification.tfidf.mapreduce.WordFrequencyInDocDriver;
 import eu.edisonproject.utility.file.ConfigHelper;
@@ -85,19 +89,20 @@ class FolderWatcherRunnable implements Runnable {
     }
   }
 
-//  private File executeClassification(File classificationFolder) throws Exception {
-//    String[] args = new String[]{"-op", "c", "-i", classificationFolder.getAbsolutePath(),
-//      "-o", classificationFolder.getAbsolutePath(), "-c", baseCategoryFolder.getAbsolutePath(),
-//      "-p", propertiesFile.getAbsolutePath()};
-//
-//    System.setProperty("itemset.file", itemSetFile.getAbsolutePath());
-//    System.setProperty("stop.words.file", stopwordsFile.getAbsolutePath());
-//    
-//    BatchMain.main(args);
-//
-////      convertMRResultToCSV(classificationFolder.getAbsolutePath() + File.separator + "part-r-00000");
-//    return convertMRResultToJsonFile(classificationFolder.getAbsolutePath() + File.separator + "part-r-00000");
-//  }
+  private File executeClassification(File classificationFolder) throws Exception {
+    String[] args = new String[]{"-op", "c", "-i", classificationFolder.getAbsolutePath(),
+      "-o", classificationFolder.getAbsolutePath(), "-c", baseCategoryFolder.getAbsolutePath(),
+      "-p", propertiesFile.getAbsolutePath()};
+
+    System.setProperty("itemset.file", itemSetFile.getAbsolutePath());
+    System.setProperty("stop.words.file", stopwordsFile.getAbsolutePath());
+
+    BatchMain.main(args);
+
+//      convertMRResultToCSV(classificationFolder.getAbsolutePath() + File.separator + "part-r-00000");
+    return convertMRResultToJsonFile(classificationFolder.getAbsolutePath() + File.separator + "part-r-00000");
+  }
+
   private File convertMRResultToJsonFile(String mrPartPath) throws IOException {
     File parent = new File(mrPartPath).getParentFile();
     Map<String, Map<String, Double>> map = new HashMap<>();
@@ -132,86 +137,85 @@ class FolderWatcherRunnable implements Runnable {
     return jsonFile;
   }
 
-  private File executeClassification(File classificationFolder) throws IOException,
-          InterruptedException, ClassNotFoundException {
-    String inputPath = classificationFolder.getAbsolutePath();
-    String AVRO_FILE = System.currentTimeMillis() + "-TFIDFDriverImpl-avro";
-    TFIDFDriverImpl.text2Avro(inputPath, AVRO_FILE);
-    MyProperties prop = ConfigHelper.getProperties(propertiesFile.getAbsolutePath());
-
-    STOPWORDS_PATH = System.getProperty("stop.words.file");
-
-    if (STOPWORDS_PATH == null) {
-      STOPWORDS_PATH = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
-    }
-    INPUT_ITEMSET = prop.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv");
-    if (NUM_OF_LINES == null) {
-      NUM_OF_LINES = prop.getProperty("map.reduce.num.of.lines", "200");
-    }
-
-    String[] args = {AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES, STOPWORDS_PATH};
-    System.out.println(Arrays.toString(args));
-
-    Configuration conf = new Configuration();
-
-    conf.set("yarn.resourcemanager.address", "fs0.das4.cs.vu.nl:8032");
-    conf.set("mapreduce.framework.name", "yarn");
-
-    Job job = Job.getInstance(conf);
-    job.setJarByClass(WordFrequencyInDocDriver.class);
-    job.setJobName("Word Frequency In Doc Driver");
-
-    FileSystem fs = FileSystem.get(conf);
-    fs.delete(new org.apache.hadoop.fs.Path(args[1]), true);
-    org.apache.hadoop.fs.Path in = new org.apache.hadoop.fs.Path(args[0]);
-    org.apache.hadoop.fs.Path inHdfs = in;
-
-    org.apache.hadoop.fs.Path dictionaryLocal = new org.apache.hadoop.fs.Path(args[2]);
-    org.apache.hadoop.fs.Path dictionaryHDFS = dictionaryLocal;
-
-    org.apache.hadoop.fs.Path stopwordsLocal = new org.apache.hadoop.fs.Path(args[4]);
-    org.apache.hadoop.fs.Path stopwordsHDFS = stopwordsLocal;
-
-    if (!conf.get(FileSystem.FS_DEFAULT_NAME_KEY).startsWith("file")) {
-      inHdfs = new org.apache.hadoop.fs.Path(in.getName());
-      fs.delete(inHdfs, true);
-      fs.copyFromLocalFile(in, inHdfs);
-      fs.deleteOnExit(inHdfs);
-
-      dictionaryHDFS = new org.apache.hadoop.fs.Path(dictionaryLocal.getName());
-      if (!fs.exists(dictionaryHDFS)) {
-        fs.copyFromLocalFile(dictionaryLocal, dictionaryHDFS);
-      }
-      stopwordsHDFS = new org.apache.hadoop.fs.Path(stopwordsLocal.getName());
-      if (!fs.exists(stopwordsHDFS)) {
-        fs.copyFromLocalFile(stopwordsLocal, stopwordsHDFS);
-      }
-    }
-
-    FileStatus dictionaryStatus = fs.getFileStatus(dictionaryHDFS);
-    dictionaryHDFS = dictionaryStatus.getPath();
-    job.addCacheFile(dictionaryHDFS.toUri());
-
-    FileStatus stopwordsStatus = fs.getFileStatus(stopwordsHDFS);
-    stopwordsHDFS = stopwordsStatus.getPath();
-    job.addCacheFile(stopwordsHDFS.toUri());
-
-    org.apache.hadoop.mapreduce.lib.input.FileInputFormat.setInputPaths(job, inHdfs);
-    org.apache.hadoop.mapreduce.lib.output.FileOutputFormat.setOutputPath(job, new org.apache.hadoop.fs.Path(args[1]));
-
-    job.setInputFormatClass(AvroKeyInputFormat.class);
-    job.setMapperClass(WordFrequencyInDocDriver.WordFrequencyInDocMapper.class);
-    AvroJob.setInputKeySchema(job, Document.getClassSchema());
-    job.setMapOutputKeyClass(Text.class);
-    job.setMapOutputValueClass(IntWritable.class);
-
-    job.setOutputKeyClass(Text.class);
-    job.setOutputValueClass(Integer.class);
-    job.setReducerClass(WordFrequencyInDocDriver.WordFrequencyInDocReducer.class);
-
-    job.waitForCompletion(true);
-
-    return convertMRResultToJsonFile(classificationFolder.getAbsolutePath() + File.separator + "part-r-00000");
-  }
-
+//  private File executeClassification(File classificationFolder) throws IOException,
+//          InterruptedException, ClassNotFoundException {
+//    String inputPath = classificationFolder.getAbsolutePath();
+//    String AVRO_FILE = System.currentTimeMillis() + "-TFIDFDriverImpl-avro";
+//    TFIDFDriverImpl.text2Avro(inputPath, AVRO_FILE);
+//    MyProperties prop = ConfigHelper.getProperties(propertiesFile.getAbsolutePath());
+//
+//    STOPWORDS_PATH = System.getProperty("stop.words.file");
+//
+//    if (STOPWORDS_PATH == null) {
+//      STOPWORDS_PATH = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
+//    }
+//    INPUT_ITEMSET = prop.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv");
+//    if (NUM_OF_LINES == null) {
+//      NUM_OF_LINES = prop.getProperty("map.reduce.num.of.lines", "200");
+//    }
+//
+//    String[] args = {AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES, STOPWORDS_PATH};
+//    System.out.println(Arrays.toString(args));
+//
+//    Configuration conf = new Configuration();
+//
+//    conf.set("yarn.resourcemanager.address", "fs0.das4.cs.vu.nl:8032");
+//    conf.set("mapreduce.framework.name", "yarn");
+//
+//    Job job = Job.getInstance(conf);
+//    job.setJarByClass(WordFrequencyInDocDriver.class);
+//    job.setJobName("Word Frequency In Doc Driver");
+//
+//    FileSystem fs = FileSystem.get(conf);
+//    fs.delete(new org.apache.hadoop.fs.Path(args[1]), true);
+//    org.apache.hadoop.fs.Path in = new org.apache.hadoop.fs.Path(args[0]);
+//    org.apache.hadoop.fs.Path inHdfs = in;
+//
+//    org.apache.hadoop.fs.Path dictionaryLocal = new org.apache.hadoop.fs.Path(args[2]);
+//    org.apache.hadoop.fs.Path dictionaryHDFS = dictionaryLocal;
+//
+//    org.apache.hadoop.fs.Path stopwordsLocal = new org.apache.hadoop.fs.Path(args[4]);
+//    org.apache.hadoop.fs.Path stopwordsHDFS = stopwordsLocal;
+//
+//    if (!conf.get(FileSystem.FS_DEFAULT_NAME_KEY).startsWith("file")) {
+//      inHdfs = new org.apache.hadoop.fs.Path(in.getName());
+//      fs.delete(inHdfs, true);
+//      fs.copyFromLocalFile(in, inHdfs);
+//      fs.deleteOnExit(inHdfs);
+//
+//      dictionaryHDFS = new org.apache.hadoop.fs.Path(dictionaryLocal.getName());
+//      if (!fs.exists(dictionaryHDFS)) {
+//        fs.copyFromLocalFile(dictionaryLocal, dictionaryHDFS);
+//      }
+//      stopwordsHDFS = new org.apache.hadoop.fs.Path(stopwordsLocal.getName());
+//      if (!fs.exists(stopwordsHDFS)) {
+//        fs.copyFromLocalFile(stopwordsLocal, stopwordsHDFS);
+//      }
+//    }
+//
+//    FileStatus dictionaryStatus = fs.getFileStatus(dictionaryHDFS);
+//    dictionaryHDFS = dictionaryStatus.getPath();
+//    job.addCacheFile(dictionaryHDFS.toUri());
+//
+//    FileStatus stopwordsStatus = fs.getFileStatus(stopwordsHDFS);
+//    stopwordsHDFS = stopwordsStatus.getPath();
+//    job.addCacheFile(stopwordsHDFS.toUri());
+//
+//    org.apache.hadoop.mapreduce.lib.input.FileInputFormat.setInputPaths(job, inHdfs);
+//    org.apache.hadoop.mapreduce.lib.output.FileOutputFormat.setOutputPath(job, new org.apache.hadoop.fs.Path(args[1]));
+//
+//    job.setInputFormatClass(AvroKeyInputFormat.class);
+//    job.setMapperClass(WordFrequencyInDocDriver.WordFrequencyInDocMapper.class);
+//    AvroJob.setInputKeySchema(job, Document.getClassSchema());
+//    job.setMapOutputKeyClass(Text.class);
+//    job.setMapOutputValueClass(IntWritable.class);
+//
+//    job.setOutputKeyClass(Text.class);
+//    job.setOutputValueClass(Integer.class);
+//    job.setReducerClass(WordFrequencyInDocDriver.WordFrequencyInDocReducer.class);
+//
+//    job.waitForCompletion(true);
+//
+//    return convertMRResultToJsonFile(classificationFolder.getAbsolutePath() + File.separator + "part-r-00000");
+//  }
 }
