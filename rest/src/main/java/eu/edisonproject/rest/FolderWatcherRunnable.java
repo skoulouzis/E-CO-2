@@ -10,16 +10,10 @@ import static eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl.IN
 import static eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl.NUM_OF_LINES;
 import static eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl.OUTPUT_PATH1;
 import static eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl.STOPWORDS_PATH;
-import static eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl.text2Avro;
-import static eu.edisonproject.rest.ECO2Controller.baseCategoryFolder;
-import static eu.edisonproject.rest.ECO2Controller.itemSetFile;
 import static eu.edisonproject.rest.ECO2Controller.propertiesFile;
-import static eu.edisonproject.rest.ECO2Controller.stopwordsFile;
 
 import document.avro.Document;
-import eu.edisonproject.classification.main.BatchMain;
 import eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl;
-import eu.edisonproject.classification.tfidf.mapreduce.WordCountsForDocsDriver;
 import eu.edisonproject.classification.tfidf.mapreduce.WordFrequencyInDocDriver;
 import eu.edisonproject.utility.file.ConfigHelper;
 import eu.edisonproject.utility.file.MyProperties;
@@ -48,10 +42,7 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.FileInputFormat;
-import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.util.ToolRunner;
 
 /**
  *
@@ -165,8 +156,8 @@ class FolderWatcherRunnable implements Runnable {
 
     conf.set("yarn.resourcemanager.address", "localhost:18088");
     conf.set("mapreduce.framework.name", "yarn");
-
-    Job job = new Job(conf, "");
+    
+    Job job = Job.getInstance(conf);
     job.setJarByClass(WordFrequencyInDocDriver.class);
     job.setJobName("Word Frequency In Doc Driver");
 

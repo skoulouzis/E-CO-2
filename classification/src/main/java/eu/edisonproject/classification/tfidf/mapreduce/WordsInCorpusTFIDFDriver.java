@@ -115,7 +115,7 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
     @Override
     public int run(String[] rawArgs) throws Exception {
         Configuration conf = new Configuration();
-        Job job = new Job(conf, "WordsInCorpusTFIDFDriver");
+         Job job  = Job.getInstance(conf);
 
         job.setJarByClass(WordsInCorpusTFIDFDriver.class);
         //This row must be changed

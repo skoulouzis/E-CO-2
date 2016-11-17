@@ -85,7 +85,7 @@ public class WordCountsForDocsDriver extends Configured implements Tool {
     @Override
     public int run(String[] args) throws Exception {
         Configuration conf = new Configuration();
-        Job job = new Job(conf, "WordsCountsForDocsDriver");
+        Job job  = Job.getInstance(conf);
 
         job.setJarByClass(WordCountsForDocsDriver.class);
         job.setJobName("Word Counts For Docs Driver");

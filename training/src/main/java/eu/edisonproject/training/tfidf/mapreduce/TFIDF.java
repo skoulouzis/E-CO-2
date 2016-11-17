@@ -121,7 +121,7 @@ public class TFIDF extends Configured implements Tool {
         }
 
         Configuration conf = new Configuration();
-        Job job = new Job(conf, "IDF");
+         Job job  = Job.getInstance(conf);
 
         job.setJarByClass(TFIDF.class);
         job.setJobName("IDF");

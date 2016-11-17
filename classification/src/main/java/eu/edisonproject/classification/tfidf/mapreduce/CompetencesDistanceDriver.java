@@ -247,9 +247,8 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
             Configuration conf = HBaseConfiguration.create();
             //additional output using TextOutputFormat.
             conf.set("file.names", args[3]);
-
-            //Configuration conf = new Configuration();
-            Job job = new Job(conf, "WordsGroupByTitleDriver");
+            
+            Job job  = Job.getInstance(conf);
             //TableMapReduceUtil.addDependencyJars(job); 
             job.setJarByClass(CompetencesDistanceDriver.class);
             //This row must be changed

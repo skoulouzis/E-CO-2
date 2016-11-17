@@ -86,7 +86,7 @@ public class WordsGroupByTitleDriver extends Configured implements Tool {
     public int run(String[] args) throws Exception {
         //Configuration config = HBaseConfiguration.create();
         Configuration conf = new Configuration();
-        Job job = new Job(conf, "WordsGroupByTitleDriver");
+        Job job = Job.getInstance(conf);
         //TableMapReduceUtil.addDependencyJars(job); 
         job.setJarByClass(WordsGroupByTitleDriver.class);
         //This row must be changed

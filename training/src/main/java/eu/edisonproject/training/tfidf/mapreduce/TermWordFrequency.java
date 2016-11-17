@@ -51,180 +51,179 @@ import org.apache.lucene.analysis.util.CharArraySet;
 
 public class TermWordFrequency extends Configured implements Tool {
 
-    // hashmap for the terms
-    private static StopWord cleanStopWord;
-    public static Map<String, String> docs;
-    private static Path stopwords;
+  // hashmap for the terms
+  private static StopWord cleanStopWord;
+  public static Map<String, String> docs;
+  private static Path stopwords;
 
-    public static class TermWordFrequencyMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
+  public static class TermWordFrequencyMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
 
-        @Override
-        protected void cleanup(Context context) throws IOException, InterruptedException {
-            super.cleanup(context);
-        }
+    @Override
+    protected void cleanup(Context context) throws IOException, InterruptedException {
+      super.cleanup(context);
+    }
 
-        @Override
-        protected void setup(Context context) throws IOException, InterruptedException {
+    @Override
+    protected void setup(Context context) throws IOException, InterruptedException {
 //            long start = System.currentTimeMillis();
-            if (context.getCacheFiles() != null && context.getCacheFiles().length > 0) {
-                URI[] uris = context.getCacheFiles();
-                URI stopwordFile = uris[0];
-                FileSystem fs = FileSystem.get(context.getConfiguration());
-                if (cleanStopWord == null) {
-                    CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(fs.open(new Path(stopwordFile)).getWrappedStream()), true);
-                    cleanStopWord = new StopWord(stopWordArraySet);
+      if (context.getCacheFiles() != null && context.getCacheFiles().length > 0) {
+        URI[] uris = context.getCacheFiles();
+        URI stopwordFile = uris[0];
+        FileSystem fs = FileSystem.get(context.getConfiguration());
+        if (cleanStopWord == null) {
+          CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(fs.open(new Path(stopwordFile)).getWrappedStream()), true);
+          cleanStopWord = new StopWord(stopWordArraySet);
+        }
+        if (docs == null || docs.isEmpty()) {
+          URI hdfsDocs = uris[1];
+          String line;
+          docs = new HashMap<>();
+          Path docPath = new Path(hdfsDocs);
+          FileStatus[] files = fs.listStatus(docPath);
+          for (FileStatus stat : files) {
+            Path filePath = stat.getPath();
+            if (FilenameUtils.getExtension(filePath.getName()).endsWith("txt")) {
+              StringBuilder contents = new StringBuilder();
+              try (BufferedReader br = new BufferedReader(
+                      new InputStreamReader(fs.open(filePath)))) {
+                while ((line = br.readLine()) != null) {
+                  contents.append(line).append(" ");
                 }
-                if (docs == null || docs.isEmpty()) {
-                    URI hdfsDocs = uris[1];
-                    String line;
-                    docs = new HashMap<>();
-                    Path docPath = new Path(hdfsDocs);
-                    FileStatus[] files = fs.listStatus(docPath);
-                    for (FileStatus stat : files) {
-                        Path filePath = stat.getPath();
-                        if (FilenameUtils.getExtension(filePath.getName()).endsWith("txt")) {
-                            StringBuilder contents = new StringBuilder();
-                            try (BufferedReader br = new BufferedReader(
-                                    new InputStreamReader(fs.open(filePath)))) {
-                                while ((line = br.readLine()) != null) {
-                                    contents.append(line).append(" ");
-                                }
-                            }
-                            cleanStopWord.setDescription(contents.toString());
-                            docs.put(filePath.getName(), cleanStopWord.execute());
-                        }
-                    }
-
-                }
+              }
+              cleanStopWord.setDescription(contents.toString());
+              docs.put(filePath.getName(), cleanStopWord.execute());
             }
+          }
+
+        }
+      }
 //            System.err.println("conf elapsed : " + (System.currentTimeMillis() - start));
+    }
+
+    @Override
+    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+
+      int totalWcount = 0;
+      String term = value.toString().split(",")[0];
+      if (term.length() > 1) {
+//                long start = System.currentTimeMillis();
+        cleanStopWord.setDescription(term.replaceAll("_", " ").trim());
+        String cTerm = cleanStopWord.execute();
+        while (cTerm.endsWith(" ")) {
+          cTerm = cTerm.substring(0, cTerm.lastIndexOf(" "));
+        }
+        while (cTerm.startsWith(" ")) {
+          cTerm = cTerm.substring(cTerm.indexOf(" ") + 1, cTerm.length());
         }
 
-        @Override
-        protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-
-            int totalWcount = 0;
-            String term = value.toString().split(",")[0];
-            if (term.length() > 1) {
-//                long start = System.currentTimeMillis();
-                cleanStopWord.setDescription(term.replaceAll("_", " ").trim());
-                String cTerm = cleanStopWord.execute();
-                while (cTerm.endsWith(" ")) {
-                    cTerm = cTerm.substring(0, cTerm.lastIndexOf(" "));
-                }
-                while (cTerm.startsWith(" ")) {
-                    cTerm = cTerm.substring(cTerm.indexOf(" ") + 1, cTerm.length());
-                }
-
-                for (String k : docs.keySet()) {
-                    String d = docs.get(k);
-                    cleanStopWord.setDescription(d.toLowerCase());
-                    String contents = cleanStopWord.execute();
-                    int count = StringUtils.countMatches(contents, cTerm);
-                    totalWcount += count;
+        for (String k : docs.keySet()) {
+          String d = docs.get(k);
+          cleanStopWord.setDescription(d.toLowerCase());
+          String contents = cleanStopWord.execute();
+          int count = StringUtils.countMatches(contents, cTerm);
+          totalWcount += count;
 //                    context.write(new Text(k + "@" + term), new IntWritable(count));                
-                    context.write(new Text(term + "@" + k), new IntWritable(count));
+          context.write(new Text(term + "@" + k), new IntWritable(count));
 //                    if (wcount > 0) {
 //                        System.err.println(term + ", " + wcount + ", " + d);
 //                    }
 
-                }
+        }
 //                System.err.println("line elapsed : " + (System.currentTimeMillis() - start));
 //                System.err.println(new Text(term) + " " + new IntWritable(wcount));
 //                context.write(new Text(term), new IntWritable(wcount));
-            }
+      }
 
-        }
+    }
+  }
+
+  public static class TermWordFrequencyReducer extends Reducer<Text, IntWritable, Text, Integer> {
+
+    @Override
+    protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
+
+      Integer sum = 0;
+      for (IntWritable val : values) {
+        sum += val.get();
+      }
+//            System.err.println(key + " " + sum);
+      context.write(key, sum);
+
+    }
+  } // end of reducer class
+
+  // runWordFrequencyInDocDriver --> run (args[])
+  @Override
+  public int run(String[] args) throws Exception {
+    Configuration jobconf = getConf();
+
+    FileSystem fs = FileSystem.get(jobconf);
+    fs.delete(new Path(args[1]), true);
+    Path in = new Path(args[0]);
+    Path inHdfs = in;
+    if (!jobconf.get(FileSystem.FS_DEFAULT_NAME_KEY).startsWith("file")) {
+      inHdfs = new Path(in.getName());
+      fs.delete(inHdfs, true);
+      fs.copyFromLocalFile(in, inHdfs);
+      fs.deleteOnExit(inHdfs);
+      FileStatus inHdfsStatus = fs.getFileStatus(inHdfs);
+//            Logger.getLogger(TermWordFrequency.class.getName()).log(Level.INFO, "Copied: {0} to: {1}", new Object[]{in.toUri(), inHdfsStatus.getPath().toUri()});
     }
 
-    public static class TermWordFrequencyReducer extends Reducer<Text, IntWritable, Text, Integer> {
+    Job job = Job.getInstance(jobconf);
+    Path stopwordsLocal = new Path(args[3]);
+    stopwords = new Path(stopwordsLocal.getName());
+    fs.delete(stopwords, true);
+    fs.copyFromLocalFile(stopwordsLocal, stopwords);
+    fs.deleteOnExit(stopwords);
 
-        @Override
-        protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
+    FileStatus stopwordsStatus = fs.getFileStatus(stopwords);
+    stopwords = stopwordsStatus.getPath();
+    job.addCacheFile(stopwords.toUri());
 
-            Integer sum = 0;
-            for (IntWritable val : values) {
-                sum += val.get();
-            }
-//            System.err.println(key + " " + sum);
-            context.write(key, sum);
-
-        }
-    } // end of reducer class
-
-    // runWordFrequencyInDocDriver --> run (args[])
-    @Override
-    public int run(String[] args) throws Exception {
-        Configuration jobconf = getConf();
-
-        FileSystem fs = FileSystem.get(jobconf);
-        fs.delete(new Path(args[1]), true);
-        Path in = new Path(args[0]);
-        Path inHdfs = in;
-        if (!jobconf.get(FileSystem.FS_DEFAULT_NAME_KEY).startsWith("file")) {
-            inHdfs = new Path(in.getName());
-            fs.delete(inHdfs, true);
-            fs.copyFromLocalFile(in, inHdfs);
-            fs.deleteOnExit(inHdfs);
-            FileStatus inHdfsStatus = fs.getFileStatus(inHdfs);
-//            Logger.getLogger(TermWordFrequency.class.getName()).log(Level.INFO, "Copied: {0} to: {1}", new Object[]{in.toUri(), inHdfsStatus.getPath().toUri()});
-        }
-
-        Job job = new Job(jobconf);
-
-        Path stopwordsLocal = new Path(args[3]);
-        stopwords = new Path(stopwordsLocal.getName());
-        fs.delete(stopwords, true);
-        fs.copyFromLocalFile(stopwordsLocal, stopwords);
-        fs.deleteOnExit(stopwords);
-
-        FileStatus stopwordsStatus = fs.getFileStatus(stopwords);
-        stopwords = stopwordsStatus.getPath();
-        job.addCacheFile(stopwords.toUri());
-
-        Path localDocs = new Path(args[2]);
-        Path hdfsDocs = new Path(localDocs.getName());
-        fs.mkdirs(hdfsDocs);
-        hdfsDocs = fs.getFileStatus(hdfsDocs).getPath();
-        fs.delete(hdfsDocs, true);
+    Path localDocs = new Path(args[2]);
+    Path hdfsDocs = new Path(localDocs.getName());
+    fs.mkdirs(hdfsDocs);
+    hdfsDocs = fs.getFileStatus(hdfsDocs).getPath();
+    fs.delete(hdfsDocs, true);
 //        FileStatus[] stats = fs.listStatus(localDocs);
-        File[] stats = new File(localDocs.toString()).listFiles();
+    File[] stats = new File(localDocs.toString()).listFiles();
 
-        for (File stat : stats) {
+    for (File stat : stats) {
 //        for (FileStatus stat : stats) {
-            Path filePath = new Path(stat.getAbsolutePath());
-            if (FilenameUtils.getExtension(filePath.getName()).endsWith("txt")) {
-                Path dest = new Path(hdfsDocs.toUri() + "/" + filePath.getName());
-                fs.copyFromLocalFile(filePath, dest);
-            }
-        }
+      Path filePath = new Path(stat.getAbsolutePath());
+      if (FilenameUtils.getExtension(filePath.getName()).endsWith("txt")) {
+        Path dest = new Path(hdfsDocs.toUri() + "/" + filePath.getName());
+        fs.copyFromLocalFile(filePath, dest);
+      }
+    }
 
-        job.addCacheFile(hdfsDocs.toUri());
+    job.addCacheFile(hdfsDocs.toUri());
 
-        job.setJarByClass(TermWordFrequency.class);
-        job.setJobName("Word Frequency Term Driver");
+    job.setJarByClass(TermWordFrequency.class);
+    job.setJobName("Word Frequency Term Driver");
 
-        FileInputFormat.setInputPaths(job, inHdfs);
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+    FileInputFormat.setInputPaths(job, inHdfs);
+    FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
 //         job.setInputFormatClass(TextInputFormat.class);
-        job.setInputFormatClass(NLineInputFormat.class);
-        NLineInputFormat.addInputPath(job, inHdfs);
-        NLineInputFormat.setNumLinesPerSplit(job, Integer.valueOf(args[4]));
-        NLineInputFormat.setMaxInputSplitSize(job, 500);
-        Logger.getLogger(TermWordFrequency.class.getName()).log(Level.INFO, "Num. of lines: {0}", NLineInputFormat.getNumLinesPerSplit(job));
+    job.setInputFormatClass(NLineInputFormat.class);
+    NLineInputFormat.addInputPath(job, inHdfs);
+    NLineInputFormat.setNumLinesPerSplit(job, Integer.valueOf(args[4]));
+    NLineInputFormat.setMaxInputSplitSize(job, 500);
+    Logger.getLogger(TermWordFrequency.class.getName()).log(Level.INFO, "Num. of lines: {0}", NLineInputFormat.getNumLinesPerSplit(job));
 
-        job.setMapperClass(TermWordFrequencyMapper.class);
+    job.setMapperClass(TermWordFrequencyMapper.class);
 
-        job.setMapOutputKeyClass(Text.class);
-        job.setMapOutputValueClass(IntWritable.class);
+    job.setMapOutputKeyClass(Text.class);
+    job.setMapOutputValueClass(IntWritable.class);
 
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(Integer.class);
-        job.setReducerClass(TermWordFrequencyReducer.class);
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(Integer.class);
+    job.setReducerClass(TermWordFrequencyReducer.class);
 
-        return (job.waitForCompletion(true) ? 0 : 1);
+    return (job.waitForCompletion(true) ? 0 : 1);
 
-    }
+  }
 
 }

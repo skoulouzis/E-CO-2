@@ -40,76 +40,75 @@ import org.apache.hadoop.util.Tool;
 
 public class WordCountsForDocsDriver extends Configured implements Tool {
 
-    public static class WordCountsForDocsMapper extends Mapper<LongWritable, Text, Text, Text> {
-
-        @Override
-        protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-            String[] input = value.toString().split("\t");
-
-            String[] keyValues = input[0].split("@");
-            String valueString = input[1];
-            
-            context.write(new Text(keyValues[1]), new Text(keyValues[0] + "=" + valueString));
-
-        }
-    } // end of mapper class
-
-    public static class WordCountsForDocsReducer extends Reducer<Text, Text, AvroKey<Text>, AvroValue<Text>> {
-
-        @Override
-        protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-            int sumOfWordsInDocument = 0;
-            Map<String, Integer> tempCounter = new HashMap<>();
-
-            for (Text val : values) {
-                String[] wordCounter = val.toString().split("=");
-                tempCounter.put(wordCounter[0], Integer.valueOf(wordCounter[1]));
-                sumOfWordsInDocument += Integer.parseInt(val.toString().split("=")[1]);
-            }
-            for (String wordKey : tempCounter.keySet()) {
-                Text newKey = new Text(wordKey + "@" + key.toString());
-                Text newValue = new Text(tempCounter.get(wordKey) + "/" + sumOfWordsInDocument);
-                context.write(new AvroKey<>(newKey), new AvroValue<>(newValue));
-            }
-
-        }
-    } // end of reducer class
-    //changed run(String[]) in runWordCountsForDocsDriver(String[])
+  public static class WordCountsForDocsMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     @Override
-    public int run(String[] args) throws Exception {
-        Configuration conf = new Configuration();
-        Job job = new Job(conf, "WordsCountsForDocsDriver");
+    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+      String[] input = value.toString().split("\t");
 
-        job.setJarByClass(WordCountsForDocsDriver.class);
-        job.setJobName("Word Counts For Docs Driver");
+      String[] keyValues = input[0].split("@");
+      String valueString = input[1];
 
-        Path inPath = new Path(args[0]);
-        Path outPath = new Path(args[1]);
-        FileSystem fs = FileSystem.get(conf);
-        fs.delete(outPath, true);
+      context.write(new Text(keyValues[1]), new Text(keyValues[0] + "=" + valueString));
 
-        FileInputFormat.setInputPaths(job, inPath);
-        FileOutputFormat.setOutputPath(job, outPath);
-        outPath.getFileSystem(conf).delete(outPath, true);
+    }
+  } // end of mapper class
 
-        job.setMapperClass(WordCountsForDocsMapper.class);
+  public static class WordCountsForDocsReducer extends Reducer<Text, Text, AvroKey<Text>, AvroValue<Text>> {
+
+    @Override
+    protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+      int sumOfWordsInDocument = 0;
+      Map<String, Integer> tempCounter = new HashMap<>();
+
+      for (Text val : values) {
+        String[] wordCounter = val.toString().split("=");
+        tempCounter.put(wordCounter[0], Integer.valueOf(wordCounter[1]));
+        sumOfWordsInDocument += Integer.parseInt(val.toString().split("=")[1]);
+      }
+      for (String wordKey : tempCounter.keySet()) {
+        Text newKey = new Text(wordKey + "@" + key.toString());
+        Text newValue = new Text(tempCounter.get(wordKey) + "/" + sumOfWordsInDocument);
+        context.write(new AvroKey<>(newKey), new AvroValue<>(newValue));
+      }
+
+    }
+  } // end of reducer class
+  //changed run(String[]) in runWordCountsForDocsDriver(String[])
+
+  @Override
+  public int run(String[] args) throws Exception {
+    Configuration conf = new Configuration();
+    Job job = Job.getInstance(conf);
+    job.setJarByClass(WordCountsForDocsDriver.class);
+    job.setJobName("Word Counts For Docs Driver");
+
+    Path inPath = new Path(args[0]);
+    Path outPath = new Path(args[1]);
+    FileSystem fs = FileSystem.get(conf);
+    fs.delete(outPath, true);
+
+    FileInputFormat.setInputPaths(job, inPath);
+    FileOutputFormat.setOutputPath(job, outPath);
+    outPath.getFileSystem(conf).delete(outPath, true);
+
+    job.setMapperClass(WordCountsForDocsMapper.class);
 //        job.setInputFormatClass(NLineInputFormat.class);
 //        NLineInputFormat.addInputPath(job, inPath);
 //        NLineInputFormat.setNumLinesPerSplit(job, Integer.valueOf(args[2]));
 //        NLineInputFormat.setMaxInputSplitSize(job, 2000);
-        /*Here it is possible put the combiner class
+    /*Here it is possible put the combiner class
 		job.setCombinerClass(AvroAverageCombiner.class);
-         */
+     */
 //        job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
 //        job.setReducerClass(WordCountsForDocsReducer.class);
 //        AvroJob.setOutputKeySchema(job, Schema.create(Schema.Type.STRING));
 //        AvroJob.setOutputValueSchema(job, Schema.create(Schema.Type.STRING));
 
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(Text.class);
-        job.setReducerClass(WordCountsForDocsReducer.class);
-        return (job.waitForCompletion(true) ? 0 : 1);
-    }
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(Text.class);
+    job.setReducerClass(WordCountsForDocsReducer.class);
+    return (job.waitForCompletion(true) ? 0 : 1);
+  }
 
 }

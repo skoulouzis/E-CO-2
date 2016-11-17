@@ -181,7 +181,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 //            itemset.add(components[0]);
 //        }
     Configuration conf = new Configuration();
-    Job job = new Job(conf, "");
+    Job job = Job.getInstance(conf);
     job.setJarByClass(WordFrequencyInDocDriver.class);
     job.setJobName("Word Frequency In Doc Driver");
 

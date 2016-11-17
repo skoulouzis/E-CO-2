@@ -178,7 +178,7 @@ public class TermWordFrequency extends Configured implements Tool {
     @Override
     public int run(String[] args) throws Exception {
         Configuration jobconf = getConf();
-        Job job = new Job(jobconf);
+        Job job  = Job.getInstance(jobconf);
         FileSystem fs = FileSystem.get(jobconf);
         fs.delete(new Path(args[1]), true);
         Path dictionary = new Path(args[0]);
