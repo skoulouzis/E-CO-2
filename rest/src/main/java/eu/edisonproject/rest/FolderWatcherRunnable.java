@@ -21,6 +21,8 @@ import eu.edisonproject.classification.main.BatchMain;
 import eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl;
 import eu.edisonproject.classification.tfidf.mapreduce.WordCountsForDocsDriver;
 import eu.edisonproject.classification.tfidf.mapreduce.WordFrequencyInDocDriver;
+import eu.edisonproject.utility.file.ConfigHelper;
+import eu.edisonproject.utility.file.MyProperties;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -144,6 +146,17 @@ class FolderWatcherRunnable implements Runnable {
     String inputPath = classificationFolder.getAbsolutePath();
     String AVRO_FILE = System.currentTimeMillis() + "-TFIDFDriverImpl-avro";
     TFIDFDriverImpl.text2Avro(inputPath, AVRO_FILE);
+    MyProperties prop = ConfigHelper.getProperties(propertiesFile.getAbsolutePath());
+
+    STOPWORDS_PATH = System.getProperty("stop.words.file");
+
+    if (STOPWORDS_PATH == null) {
+      STOPWORDS_PATH = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
+    }
+    INPUT_ITEMSET = prop.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv");
+    if (NUM_OF_LINES == null) {
+      NUM_OF_LINES = prop.getProperty("map.reduce.num.of.lines", "200");
+    }
 
     String[] args = {AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES, STOPWORDS_PATH};
     System.out.println(Arrays.toString(args));
