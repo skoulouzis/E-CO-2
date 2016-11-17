@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,8 +55,6 @@ import org.apache.lucene.analysis.util.CharArraySet;
  */
 public class BatchMain {
 
-  private static MyProperties prop;
-
   public static void main(String[] args) throws Exception {
     try {
 //            args = new String[1];
@@ -63,7 +62,6 @@ public class BatchMain {
 //            TestDataFlow.execute(args);
 //            System.exit(0);
 //            TestTFIDF.execute(args);
-
 
       Options options = new Options();
 
@@ -100,6 +98,7 @@ public class BatchMain {
       CommandLineParser parser = new BasicParser();
       CommandLine cmd = parser.parse(options, args);
       String propPath = cmd.getOptionValue("properties");
+      MyProperties prop;
       if (propPath == null) {
         prop = ConfigHelper.getProperties(".." + File.separator + "etc" + File.separator + "configure.properties");
       } else {
@@ -108,10 +107,10 @@ public class BatchMain {
 
       switch (cmd.getOptionValue("operation")) {
         case "a":
-          text2Avro(cmd.getOptionValue("input"), cmd.getOptionValue("output"));
+          text2Avro(cmd.getOptionValue("input"), cmd.getOptionValue("output"), prop);
           break;
         case "c":
-          calculateTFIDF(cmd.getOptionValue("input"), cmd.getOptionValue("output"), cmd.getOptionValue("competences-vector"));
+          calculateTFIDF(cmd.getOptionValue("input"), cmd.getOptionValue("output"), cmd.getOptionValue("competences-vector"), prop);
           break;
         case "p":
 //                    -op p -v2 $HOME/Downloads/msc.csv -v1 $HOME/Downloads/job.csv -p $HOME/workspace/E-CO-2/etc/classification.properties
@@ -125,7 +124,7 @@ public class BatchMain {
 
   }
 
-  private static void calculateTFIDF(String in, String out, String competencesVectorPath) throws IOException {
+  public static void calculateTFIDF(String in, String out, String competencesVectorPath, Properties prop) throws IOException {
 
     try {
       TFIDFDriverImpl tfidfDriver = new TFIDFDriverImpl();
@@ -152,7 +151,7 @@ public class BatchMain {
     }
   }
 
-  private static void text2Avro(String inputPath, String outputPath) {
+  private static void text2Avro(String inputPath, String outputPath, Properties prop) {
     String stopWordsPath = System.getProperty("stop.words.file");
 
     if (stopWordsPath == null) {

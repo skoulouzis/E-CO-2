@@ -12,6 +12,8 @@ import static eu.edisonproject.rest.ECO2Controller.propertiesFile;
 import static eu.edisonproject.rest.ECO2Controller.stopwordsFile;
 
 import eu.edisonproject.classification.main.BatchMain;
+import eu.edisonproject.utility.file.ConfigHelper;
+import eu.edisonproject.utility.file.MyProperties;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -71,14 +73,16 @@ class FolderWatcherRunnable implements Runnable {
   }
 
   private File executeClassification(File classificationFolder) throws Exception {
-    String[] args = new String[]{"-op", "c", "-i", classificationFolder.getAbsolutePath(),
-      "-o", classificationFolder.getAbsolutePath(), "-c", baseCategoryFolder.getAbsolutePath(),
-      "-p", propertiesFile.getAbsolutePath()};
+//    String[] args = new String[]{"-op", "c", "-i", classificationFolder.getAbsolutePath(),
+//      "-o", classificationFolder.getAbsolutePath(), "-c", baseCategoryFolder.getAbsolutePath(),
+//      "-p", propertiesFile.getAbsolutePath()};
 
+    MyProperties prop = ConfigHelper.getProperties(propertiesFile.getAbsolutePath());
     System.setProperty("itemset.file", itemSetFile.getAbsolutePath());
     System.setProperty("stop.words.file", stopwordsFile.getAbsolutePath());
-    
-    BatchMain.main(args);
+
+    BatchMain.calculateTFIDF(classificationFolder.getAbsolutePath(), classificationFolder.getAbsolutePath(), baseCategoryFolder.getAbsolutePath(), prop);
+//    BatchMain.main(args);
 
 //      convertMRResultToCSV(classificationFolder.getAbsolutePath() + File.separator + "part-r-00000");
     return convertMRResultToJsonFile(classificationFolder.getAbsolutePath() + File.separator + "part-r-00000");
