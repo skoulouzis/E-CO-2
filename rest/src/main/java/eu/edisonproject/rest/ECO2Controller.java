@@ -23,11 +23,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.json.simple.JSONObject;
@@ -153,8 +155,6 @@ public class ECO2Controller {
       return classificationId;
     } catch (ParseException | FileNotFoundException ex) {
       Logger.getLogger(ECO2Controller.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (IOException ex) {
-      Logger.getLogger(ECO2Controller.class.getName()).log(Level.SEVERE, null, ex);
     } catch (Exception ex) {
       Logger.getLogger(ECO2Controller.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -202,56 +202,15 @@ public class ECO2Controller {
   @Produces(MediaType.APPLICATION_JSON)
   public String available(@PathParam("id") final String classificationId) {
     File classificationFolder = new File(baseClassisifcationFolder.getAbsoluteFile() + File.separator + classificationId);
+    if (!classificationFolder.exists()) {
+      throw new NotFoundException(String.format("Classification %s not found", classificationId));
+    }
     File resultFile = new File(classificationFolder.getAbsolutePath() + File.separator + jsonFileName);
+    if (!resultFile.exists()) {
+      return Response.accepted().build().getStatus() + "";
+    }
     ReaderFile rf = new ReaderFile(resultFile.getAbsolutePath());
     return rf.readFile();
-  }
-
-  private void convertMRResultToCSV(String mrPartPath) throws IOException {
-    Map<String, Map<String, Double>> map = new HashMap<>();
-    Map<String, Double> catSimMap;
-    try (BufferedReader br = new BufferedReader(new FileReader(mrPartPath))) {
-      String line;
-      while ((line = br.readLine()) != null) {
-        String[] kv = line.split("\t");
-        String fileName = kv[0];
-        String cat = kv[1];
-        String sim = kv[2];
-        catSimMap = map.get(fileName);
-        if (catSimMap == null) {
-          catSimMap = new HashMap<>();
-        }
-        catSimMap.put(cat, Double.valueOf(sim));
-        map.put(fileName, catSimMap);
-      }
-    }
-
-    Set<String> fileNames = map.keySet();
-    StringBuilder header = new StringBuilder();
-    header.append(" ").append(",");
-    for (Map<String, Double> m : map.values()) {
-      for (String c : m.keySet()) {
-        header.append(c).append(",");
-      }
-      break;
-    }
-    header.deleteCharAt(header.length() - 1);
-    header.setLength(header.length());
-
-    for (String fName : fileNames) {
-      StringBuilder csvLine = new StringBuilder();
-
-      csvLine.append(fName).append(",");
-      catSimMap = map.get(fName);
-      for (String cat : catSimMap.keySet()) {
-        Double sim = catSimMap.get(cat);
-        csvLine.append(sim).append(",");
-      }
-      csvLine.deleteCharAt(csvLine.length() - 1);
-      csvLine.setLength(csvLine.length());
-
-//      System.err.println(csvLine.toString());
-    }
   }
 
 }
