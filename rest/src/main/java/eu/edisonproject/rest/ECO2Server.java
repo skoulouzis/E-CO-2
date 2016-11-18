@@ -8,6 +8,7 @@ package eu.edisonproject.rest;
 
 import eu.edisonproject.utility.file.ConfigHelper;
 import eu.edisonproject.utility.file.MyProperties;
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -58,11 +59,17 @@ public class ECO2Server {
     ServletContextHandler context = new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
     context.setContextPath("/");
     MyProperties props = null;
-    Integer port = 9999;
+    Integer port;
+    String path;
     if (args != null) {
-      props = ConfigHelper.getProperties(args[0]);
-      port = Integer.valueOf(props.getProperty("e-co-2.server.port", "9999"));
+      path = args[0];
+    } else {
+      path = System.getProperty("user.home") + File.separator + "workspace"
+              + File.separator + "E-CO-2" + File.separator + "etc" + File.separator + "configure.properties";
     }
+
+    props = ConfigHelper.getProperties(path);
+    port = Integer.valueOf(props.getProperty("e-co-2.server.port", "9999"));
 
     Server jettyServer = new Server(port);
     jettyServer.setHandler(context);
