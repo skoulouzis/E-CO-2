@@ -33,11 +33,17 @@
             <classifier>hadoop2</classifier>
         </dependency>
        
-        <dependency>
+<!--        <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-yarn-client</artifactId>
             <version>2.5.0</version>
-        </dependency>
+        </dependency>-->
+        
+<dependency>
+    <groupId>org.apache.hadoop</groupId>
+    <artifactId>hadoop-mapreduce-client-jobclient</artifactId>
+    <version>2.5.0</version>
+</dependency>
        
         <dependency>
             <groupId>org.apache.hadoop</groupId>
