@@ -58,7 +58,7 @@ import org.apache.lucene.analysis.util.CharArraySet;
 
 public class WordFrequencyInDocDriver extends Configured implements Tool {
 
-  private String HADOOP_CONF_BASE_DIR = "/usr/local/hadoop/etc/hadoop";
+  private final String HADOOP_CONF_BASE_DIR = "/usr/local/hadoop/etc/hadoop";
 
 //    private static List<String> itemset;
   public static class WordFrequencyInDocMapper extends Mapper<AvroKey<Document>, NullWritable, Text, IntWritable> {
@@ -184,7 +184,8 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 //            String[] components = line.split("/");
 //            itemset.add(components[0]);
 //        }
-    Configuration conf = new Configuration();
+//    Configuration conf = new Configuration();
+    Configuration conf = super.getConf();
     File etc = new File(HADOOP_CONF_BASE_DIR);
     File[] files = etc.listFiles(new FilenameFilter() {
       @Override
