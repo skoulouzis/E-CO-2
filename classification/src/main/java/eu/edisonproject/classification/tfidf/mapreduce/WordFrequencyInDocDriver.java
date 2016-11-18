@@ -181,21 +181,21 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 //            itemset.add(components[0]);
 //        }
     Configuration conf = new Configuration();
-    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/core-site.xml"));
-    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/hdfs-site.xml"));
-    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/yarn-site.xml"));
-    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/capacity-scheduler.xml"));
-    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/core-site-lzo.xml"));
-    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/hadoop-policy.xml"));
-    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/httpfs-site.xml"));
-    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/core-site-default.xml"));
-    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/mapred-site.xml"));
-
+//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/core-site.xml"));
+//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/hdfs-site.xml"));
+//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/yarn-site.xml"));
+//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/capacity-scheduler.xml"));
+//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/core-site-lzo.xml"));
+//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/hadoop-policy.xml"));
+//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/httpfs-site.xml"));
+//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/core-site-default.xml"));
+//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/mapred-site.xml"));
+//    conf.set("mapreduce.framework.name", "yarn");
     //Fix from https://stackoverflow.com/questions/17265002/hadoop-no-filesystem-for-scheme-file
     conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
     conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
 
-    conf.set("mapreduce.framework.name", "yarn");
+
 
     Job job = Job.getInstance(conf);
     job.setJarByClass(WordFrequencyInDocDriver.class);
