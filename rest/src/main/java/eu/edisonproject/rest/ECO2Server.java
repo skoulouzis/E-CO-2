@@ -57,11 +57,14 @@ public class ECO2Server {
   private static Server startServer(String[] args) throws IOException {
     ServletContextHandler context = new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
     context.setContextPath("/");
+    MyProperties props = null;
+    Integer port = 9999;
     if (args != null) {
-      MyProperties props = ConfigHelper.getProperties(args[0]);
+      props = ConfigHelper.getProperties(args[0]);
+      port = Integer.valueOf(props.getProperty("e-co-2.server.port", "9999"));
     }
 
-    Server jettyServer = new Server(9999);
+    Server jettyServer = new Server(port);
     jettyServer.setHandler(context);
 
     ServletHolder jerseyServlet = context.addServlet(ServletContainer.class, "/*");
