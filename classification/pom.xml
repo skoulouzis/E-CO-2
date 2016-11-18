@@ -11,6 +11,7 @@
     <properties>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
+        <hadoop.version>2.5.0</hadoop.version>
     </properties>
 
   
@@ -36,25 +37,25 @@
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-yarn-client</artifactId>
-            <version>2.5.0</version>
+            <version>${hadoop.version}</version>
         </dependency>
         
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-mapreduce-client-jobclient</artifactId>
-            <version>2.5.0</version>
+            <version>${hadoop.version}</version>
         </dependency>
        
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-hdfs</artifactId>
-            <version>2.5.0-cdh5.4.2.1</version>
+            <version>${hadoop.version}</version>
         </dependency>
         
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-common</artifactId>
-            <version>2.5.0-cdh5.4.2.1</version>
+            <version>${hadoop.version}</version>
         </dependency>
                 
         <dependency>
