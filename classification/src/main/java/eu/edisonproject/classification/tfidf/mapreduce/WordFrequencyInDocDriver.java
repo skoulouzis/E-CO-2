@@ -24,6 +24,8 @@ import eu.edisonproject.utility.file.ConfigHelper;
 import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
 import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -55,6 +57,8 @@ import org.apache.hadoop.util.Tool;
 import org.apache.lucene.analysis.util.CharArraySet;
 
 public class WordFrequencyInDocDriver extends Configured implements Tool {
+
+  private String HADOOP_CONF_BASE_DIR = "/usr/local/hadoop/etc/hadoop";
 
 //    private static List<String> itemset;
   public static class WordFrequencyInDocMapper extends Mapper<AvroKey<Document>, NullWritable, Text, IntWritable> {
@@ -181,21 +185,21 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 //            itemset.add(components[0]);
 //        }
     Configuration conf = new Configuration();
-//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/core-site.xml"));
-//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/hdfs-site.xml"));
-//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/yarn-site.xml"));
-//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/capacity-scheduler.xml"));
-//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/core-site-lzo.xml"));
-//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/hadoop-policy.xml"));
-//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/httpfs-site.xml"));
-//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/core-site-default.xml"));
-//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/mapred-site.xml"));
-//    conf.set("mapreduce.framework.name", "yarn");
+    File etc = new File(HADOOP_CONF_BASE_DIR);
+    File[] files = etc.listFiles(new FilenameFilter() {
+      @Override
+      public boolean accept(File dir, String name) {
+        return name.toLowerCase().endsWith(".xml");
+      }
+    });
+    for (File f : files) {
+      conf.addResource(new org.apache.hadoop.fs.Path(f.getAbsolutePath()));
+    }
+    conf.set("mapreduce.framework.name", "yarn");
+
     //Fix from https://stackoverflow.com/questions/17265002/hadoop-no-filesystem-for-scheme-file
     conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
     conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
-
-
 
     Job job = Job.getInstance(conf);
     job.setJarByClass(WordFrequencyInDocDriver.class);
