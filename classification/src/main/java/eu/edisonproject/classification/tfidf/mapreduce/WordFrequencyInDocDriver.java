@@ -58,8 +58,6 @@ import org.apache.lucene.analysis.util.CharArraySet;
 
 public class WordFrequencyInDocDriver extends Configured implements Tool {
 
-  private final String HADOOP_CONF_BASE_DIR = "/usr/local/hadoop/etc/hadoop";
-
 //    private static List<String> itemset;
   public static class WordFrequencyInDocMapper extends Mapper<AvroKey<Document>, NullWritable, Text, IntWritable> {
 
@@ -184,27 +182,16 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 //            String[] components = line.split("/");
 //            itemset.add(components[0]);
 //        }
-//    Configuration conf = new Configuration();
 
     Configuration conf = super.getConf();
-    File etc = new File(HADOOP_CONF_BASE_DIR);
-    File[] files = etc.listFiles(new FilenameFilter() {
-      @Override
-      public boolean accept(File dir, String name) {
-        return name.toLowerCase().endsWith(".xml");
-      }
-    });
-    for (File f : files) {
-      conf.addResource(new org.apache.hadoop.fs.Path(f.getAbsolutePath()));
-    }
 
 //    conf.set("mapreduce.framework.name", "yarn");
     //Fix from https://stackoverflow.com/questions/17265002/hadoop-no-filesystem-for-scheme-file
     conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
     conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
 
-//    conf.set("yarn.resourcemanager.address", "172.18.0.2:8032");
-//    conf.set("fs.default.name", "hdfs://172.18.0.2:9000");
+    conf.set("yarn.resourcemanager.address", "172.18.0.2:8032");
+    conf.set("fs.default.name", "hdfs://172.18.0.2:9000");
 
     Job job = Job.getInstance(conf);
     job.setJarByClass(WordFrequencyInDocDriver.class);
