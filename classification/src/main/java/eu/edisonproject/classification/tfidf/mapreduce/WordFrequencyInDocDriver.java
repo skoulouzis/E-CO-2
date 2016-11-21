@@ -184,15 +184,14 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 //        }
 
     Configuration conf = super.getConf();
-
-//    conf.set("mapreduce.framework.name", "yarn");
     //Fix from https://stackoverflow.com/questions/17265002/hadoop-no-filesystem-for-scheme-file
     conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
     conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
 
     conf.set("yarn.resourcemanager.address", "172.18.0.2:8032");
     conf.set("fs.default.name", "hdfs://172.18.0.2:9000");
-
+    conf.set("mapreduce.framework.name", "yarn");
+    
     Job job = Job.getInstance(conf);
     job.setJarByClass(WordFrequencyInDocDriver.class);
     job.setJobName("Word Frequency In Doc Driver");
