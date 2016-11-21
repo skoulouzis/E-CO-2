@@ -198,8 +198,8 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 //    }
 //    conf.set("mapreduce.framework.name", "yarn");
     //Fix from https://stackoverflow.com/questions/17265002/hadoop-no-filesystem-for-scheme-file
-//    conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
-//    conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+    conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+    conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
 
 // this should be like defined in your yarn-site.xml
     conf.set("yarn.resourcemanager.address", "172.18.0.2:8032");
