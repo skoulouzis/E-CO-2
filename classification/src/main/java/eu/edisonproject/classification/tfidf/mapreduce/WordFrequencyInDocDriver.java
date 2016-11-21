@@ -204,7 +204,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 // this should be like defined in your yarn-site.xml
     conf.set("yarn.resourcemanager.address", "172.18.0.2:8032");
 // framework is now "yarn", should be defined like this in mapred-site.xm
-    conf.set("mapreduce.framework.name", "yarn");
+//    conf.set("mapreduce.framework.name", "yarn");
 
 // like defined in hdfs-site.xml
     conf.set("fs.default.name", "hdfs://172.18.0.2:9000");
