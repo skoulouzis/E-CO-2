@@ -190,7 +190,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 
     conf.set("yarn.resourcemanager.address", "172.18.0.2:8032");
     conf.set("fs.default.name", "hdfs://172.18.0.2:9000");
-    conf.set("mapreduce.framework.name", "hadoop");
+    conf.set("mapreduce.framework.name", "classic");
     
     Job job = Job.getInstance(conf);
     job.setJarByClass(WordFrequencyInDocDriver.class);
