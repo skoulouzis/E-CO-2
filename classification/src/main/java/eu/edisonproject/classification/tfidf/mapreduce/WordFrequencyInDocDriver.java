@@ -185,31 +185,27 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 //            itemset.add(components[0]);
 //        }
 //    Configuration conf = new Configuration();
+
     Configuration conf = super.getConf();
-//    File etc = new File(HADOOP_CONF_BASE_DIR);
-//    File[] files = etc.listFiles(new FilenameFilter() {
-//      @Override
-//      public boolean accept(File dir, String name) {
-//        return name.toLowerCase().endsWith(".xml");
-//      }
-//    });
-//    for (File f : files) {
-//      conf.addResource(new org.apache.hadoop.fs.Path(f.getAbsolutePath()));
-//    }
+    File etc = new File(HADOOP_CONF_BASE_DIR);
+    File[] files = etc.listFiles(new FilenameFilter() {
+      @Override
+      public boolean accept(File dir, String name) {
+        return name.toLowerCase().endsWith(".xml");
+      }
+    });
+    for (File f : files) {
+      conf.addResource(new org.apache.hadoop.fs.Path(f.getAbsolutePath()));
+    }
+
 //    conf.set("mapreduce.framework.name", "yarn");
     //Fix from https://stackoverflow.com/questions/17265002/hadoop-no-filesystem-for-scheme-file
     conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
     conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
 
-// this should be like defined in your yarn-site.xml
-    conf.set("yarn.resourcemanager.address", "172.18.0.2:8032");
-// framework is now "yarn", should be defined like this in mapred-site.xm
-//    conf.set("mapreduce.framework.name", "yarn");
+//    conf.set("yarn.resourcemanager.address", "172.18.0.2:8032");
+//    conf.set("fs.default.name", "hdfs://172.18.0.2:9000");
 
-// like defined in hdfs-site.xml
-    conf.set("fs.default.name", "hdfs://172.18.0.2:9000");
-
-//0.0.0.0:8032
     Job job = Job.getInstance(conf);
     job.setJarByClass(WordFrequencyInDocDriver.class);
     job.setJobName("Word Frequency In Doc Driver");
