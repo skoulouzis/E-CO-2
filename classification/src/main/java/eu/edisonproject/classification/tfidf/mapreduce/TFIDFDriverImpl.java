@@ -143,7 +143,7 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
         Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Copy: {0} to: {1}", new Object[]{s.getPath(), dest});
         fs.copyToLocalFile(s.getPath(), dest);
       }
-      fs.delete(hdfsRes, true);
+//      fs.delete(hdfsRes, true);
 
     } catch (Exception ex) {
       Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, null, ex);
