@@ -122,7 +122,6 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
         cleanLemmatisation.setDescription(cleanStopWord.execute());
         s = trim(cleanLemmatisation.execute());
         while (description.contains(" " + s + " ")) {
-          Logger.getLogger(WordFrequencyInDocDriver.class.getName()).log(Level.INFO, "New term: {0}", s);
 //                while (description.contains(s)) {
           StringBuilder valueBuilder = new StringBuilder();
           valueBuilder.append(s);
@@ -146,7 +145,6 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
       while (m.find()) {
         String matchedKey = m.group().toLowerCase();
         StringBuilder valueBuilder = new StringBuilder();
-        Logger.getLogger(WordFrequencyInDocDriver.class.getName()).log(Level.INFO, "New matchedKey: {0}", matchedKey);
         valueBuilder.append(matchedKey);
         valueBuilder.append("@");
         valueBuilder.append(documentId);
