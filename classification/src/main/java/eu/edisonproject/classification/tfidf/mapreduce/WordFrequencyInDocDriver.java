@@ -205,7 +205,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 
     String confprop = "";
     for (Map.Entry<String, String> entry : conf) {
-      confprop += entry.getKey() + " : " + entry.getValue();
+      confprop += entry.getKey() + " : " + entry.getValue() + "\n";
     }
 
     WriterFile wf = new WriterFile(System.getProperty("user.home") + "/" + this.getClass().getName() + ".log");
