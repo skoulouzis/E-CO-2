@@ -190,8 +190,9 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
 
     conf.set("yarn.resourcemanager.address", "172.18.0.2:8032");
+    
     conf.set("fs.defaultFS", "hdfs://172.18.0.2:9000");
-//    conf.set("mapreduce.framework.name", "local");
+    conf.set("mapreduce.framework.name", "yarn");
     Set<String> params = conf.getFinalParameters();
     String finalParameters = "";
     for (String p : params) {
@@ -267,6 +268,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(Integer.class);
     job.setReducerClass(WordFrequencyInDocReducer.class);
+    
     return (job.waitForCompletion(true) ? 0 : 1);
   }
 
