@@ -21,6 +21,7 @@ package eu.edisonproject.classification.tfidf.mapreduce;
  */
 import document.avro.Document;
 import eu.edisonproject.utility.file.ConfigHelper;
+import eu.edisonproject.utility.file.WriterFile;
 import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
 import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.BufferedReader;
@@ -190,8 +191,11 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     conf.set("fs.default.name", "hdfs://172.18.0.2:9000");
 //    conf.set("mapreduce.framework.name", "local");
     String frameworkName = conf.get("mapreduce.framework.name");
-    
-    
+    String strClassPath = System.getProperty("java.class.path");
+
+    WriterFile wf = new WriterFile(System.getProperty("user.home") + "/" + this.getClass().getName() + ".log");
+    wf.writeFile(frameworkName + "\n" + strClassPath);
+
     Job job = Job.getInstance(conf);
     job.setJarByClass(WordFrequencyInDocDriver.class);
     job.setJobName("Word Frequency In Doc Driver");

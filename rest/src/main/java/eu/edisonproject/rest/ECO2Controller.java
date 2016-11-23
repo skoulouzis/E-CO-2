@@ -85,7 +85,7 @@ public class ECO2Controller {
   }
 
   @GET
-  @Path("/categories")
+  @Path("/taxonomy")
   @Produces(MediaType.APPLICATION_JSON)
   public String available() {
     JSONArray ja = new JSONArray();
