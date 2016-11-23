@@ -32,6 +32,8 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -188,13 +190,31 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
 
     conf.set("yarn.resourcemanager.address", "172.18.0.2:8032");
-    conf.set("fs.default.name", "hdfs://172.18.0.2:9000");
+    conf.set("fs.defaultFS", "hdfs://172.18.0.2:9000");
 //    conf.set("mapreduce.framework.name", "local");
+    Set<String> params = conf.getFinalParameters();
+    String finalParameters = "";
+    for (String p : params) {
+      finalParameters += p + " ";
+    }
     String frameworkName = conf.get("mapreduce.framework.name");
     String strClassPath = System.getProperty("java.class.path");
 
+    String jobTracker = conf.get("mapred.job.tracker");
+    String defaultFS = conf.get("fs.defaultFS");
+
+    String confprop = "";
+    for (Map.Entry<String, String> entry : conf) {
+      confprop += entry.getKey() + " : " + entry.getValue();
+    }
+
     WriterFile wf = new WriterFile(System.getProperty("user.home") + "/" + this.getClass().getName() + ".log");
-    wf.writeFile("frameworkName: "+frameworkName + "\n" + "classpath: "+strClassPath);
+    wf.writeFile("frameworkName: " + frameworkName + "\n"
+            + "classpath: " + strClassPath + "\n"
+            + "finalParameters: " + finalParameters + "\n"
+            + "jobTracker: " + jobTracker + "\n"
+            + "defaultFS: " + defaultFS + "\n"
+            + "confprop: " + confprop);
 
     Job job = Job.getInstance(conf);
     job.setJarByClass(WordFrequencyInDocDriver.class);
