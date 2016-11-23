@@ -194,7 +194,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     String strClassPath = System.getProperty("java.class.path");
 
     WriterFile wf = new WriterFile(System.getProperty("user.home") + "/" + this.getClass().getName() + ".log");
-    wf.writeFile(frameworkName + "\n" + strClassPath);
+    wf.writeFile("frameworkName: "+frameworkName + "\n" + "classpath: "+strClassPath);
 
     Job job = Job.getInstance(conf);
     job.setJarByClass(WordFrequencyInDocDriver.class);
