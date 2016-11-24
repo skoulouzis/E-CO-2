@@ -61,6 +61,8 @@ import org.apache.lucene.analysis.util.CharArraySet;
 
 public class WordFrequencyInDocDriver extends Configured implements Tool {
 
+  private final String HADOOP_CONF_BASE_DIR = "/usr/local/hadoop/etc/hadoop";
+
 //    private static List<String> itemset;
   public static class WordFrequencyInDocMapper extends Mapper<AvroKey<Document>, NullWritable, Text, IntWritable> {
 
@@ -189,32 +191,38 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
     conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
 
-    conf.set("yarn.resourcemanager.address", "localhost:8032");
-    
-    conf.set("fs.defaultFS", "hdfs://master.ib.cluster:8020");
-    conf.set("mapreduce.framework.name", "yarn");
+//    conf.set("yarn.resourcemanager.address", "localhost:8032");
+//    conf.set("fs.defaultFS", "hdfs://master.ib.cluster:8020");
+//    conf.set("mapreduce.framework.name", "yarn");
+    File etc = new File(HADOOP_CONF_BASE_DIR);
+    File[] files = etc.listFiles(new FilenameFilter() {
+      @Override
+      public boolean accept(File dir, String name) {
+        return name.toLowerCase().endsWith(".xml");
+      }
+    });
+    for (File f : files) {
+      conf.addResource(new org.apache.hadoop.fs.Path(f.getAbsolutePath()));
+    }
+
     Set<String> params = conf.getFinalParameters();
     String finalParameters = "";
     for (String p : params) {
       finalParameters += p + " ";
     }
-    String frameworkName = conf.get("mapreduce.framework.name");
+//    String frameworkName = conf.get("mapreduce.framework.name");
     String strClassPath = System.getProperty("java.class.path");
 
-    String jobTracker = conf.get("mapred.job.tracker");
-    String defaultFS = conf.get("fs.defaultFS");
-
+//    String jobTracker = conf.get("mapred.job.tracker");
+//    String defaultFS = conf.get("fs.defaultFS");
     String confprop = "";
     for (Map.Entry<String, String> entry : conf) {
       confprop += entry.getKey() + " : " + entry.getValue() + "\n";
     }
 
     WriterFile wf = new WriterFile(System.getProperty("user.home") + "/" + this.getClass().getName() + ".log");
-    wf.writeFile("frameworkName: " + frameworkName + "\n"
-            + "classpath: " + strClassPath + "\n"
+    wf.writeFile("classpath: " + strClassPath + "\n"
             + "finalParameters: " + finalParameters + "\n"
-            + "jobTracker: " + jobTracker + "\n"
-            + "defaultFS: " + defaultFS + "\n"
             + "confprop: " + confprop);
 
     Job job = Job.getInstance(conf);
@@ -268,7 +276,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(Integer.class);
     job.setReducerClass(WordFrequencyInDocReducer.class);
-    
+
     return (job.waitForCompletion(true) ? 0 : 1);
   }
 
