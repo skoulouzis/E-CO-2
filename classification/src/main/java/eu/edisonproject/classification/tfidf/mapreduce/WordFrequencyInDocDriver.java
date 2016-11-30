@@ -79,10 +79,10 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
       confprop += entry.getKey() + " : " + entry.getValue() + "\n";
     }
 
-//    WriterFile wf = new WriterFile(System.getProperty("user.home") + "/" + this.getClass().getName() + ".log");
-//    wf.writeFile("classpath: " + strClassPath + "\n"
-//            + "finalParameters: " + finalParameters + "\n"
-//            + "confprop: " + confprop);
+    WriterFile wf = new WriterFile(System.getProperty("user.home") + "/" + this.getClass().getName() + ".log");
+    wf.writeFile("classpath: " + strClassPath + "\n"
+            + "finalParameters: " + finalParameters + "\n"
+            + "confprop: " + confprop);
   }
 
 //    private static List<String> itemset;
@@ -232,7 +232,6 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
       }
     }
 
-//    String frameworkName = conf.get("mapreduce.framework.name");
     printClasspath(conf);
 
     Job job = Job.getInstance(conf);
