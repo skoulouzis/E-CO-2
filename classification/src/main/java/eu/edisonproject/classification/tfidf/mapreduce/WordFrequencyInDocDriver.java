@@ -63,6 +63,28 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 
   private final String HADOOP_CONF_BASE_DIR = "/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop";//"/usr/local/hadoop/etc/hadoop";
 
+  private void printClasspath(Configuration conf) {
+    Set<String> params = conf.getFinalParameters();
+    String finalParameters = "";
+    for (String p : params) {
+      finalParameters += p + " ";
+    }
+
+    String strClassPath = System.getProperty("java.class.path");
+
+//    String jobTracker = conf.get("mapred.job.tracker");
+//    String defaultFS = conf.get("fs.defaultFS");
+    String confprop = "";
+    for (Map.Entry<String, String> entry : conf) {
+      confprop += entry.getKey() + " : " + entry.getValue() + "\n";
+    }
+
+//    WriterFile wf = new WriterFile(System.getProperty("user.home") + "/" + this.getClass().getName() + ".log");
+//    wf.writeFile("classpath: " + strClassPath + "\n"
+//            + "finalParameters: " + finalParameters + "\n"
+//            + "confprop: " + confprop);
+  }
+
 //    private static List<String> itemset;
   public static class WordFrequencyInDocMapper extends Mapper<AvroKey<Document>, NullWritable, Text, IntWritable> {
 
@@ -79,16 +101,19 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     protected void setup(Context context) throws IOException, InterruptedException {
       if (context.getCacheFiles() != null && context.getCacheFiles().length > 0) {
         URI[] uris = context.getCacheFiles();
-        Path dictionaryFilePath = new Path(uris[0]);
         FileSystem fs = FileSystem.get(context.getConfiguration());
-        String s;
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(fs.open(dictionaryFilePath)))) {
-          while ((s = br.readLine()) != null) {
-            s = s.replaceAll("_", " ").trim();
-            TERMS.add(s);
+        if (TERMS == null || TERMS.size() < 1) {
+          Path dictionaryFilePath = new Path(uris[0]);
+          String s;
+          try (BufferedReader br = new BufferedReader(
+                  new InputStreamReader(fs.open(dictionaryFilePath)))) {
+            while ((s = br.readLine()) != null) {
+              s = s.replaceAll("_", " ").trim();
+              TERMS.add(s);
+            }
           }
         }
+
         URI stopwordFile = uris[1];
         if (cleanStopWord == null) {
           CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(fs.open(new Path(stopwordFile)).getWrappedStream()), true);
@@ -201,29 +226,14 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
         return name.toLowerCase().endsWith(".xml");
       }
     });
-    for (File f : files) {
-      conf.addResource(new org.apache.hadoop.fs.Path(f.getAbsolutePath()));
+    if (files != null) {
+      for (File f : files) {
+        conf.addResource(new org.apache.hadoop.fs.Path(f.getAbsolutePath()));
+      }
     }
 
-    Set<String> params = conf.getFinalParameters();
-    String finalParameters = "";
-    for (String p : params) {
-      finalParameters += p + " ";
-    }
 //    String frameworkName = conf.get("mapreduce.framework.name");
-    String strClassPath = System.getProperty("java.class.path");
-
-//    String jobTracker = conf.get("mapred.job.tracker");
-//    String defaultFS = conf.get("fs.defaultFS");
-    String confprop = "";
-    for (Map.Entry<String, String> entry : conf) {
-      confprop += entry.getKey() + " : " + entry.getValue() + "\n";
-    }
-
-    WriterFile wf = new WriterFile(System.getProperty("user.home") + "/" + this.getClass().getName() + ".log");
-    wf.writeFile("classpath: " + strClassPath + "\n"
-            + "finalParameters: " + finalParameters + "\n"
-            + "confprop: " + confprop);
+    printClasspath(conf);
 
     Job job = Job.getInstance(conf);
     job.setJarByClass(WordFrequencyInDocDriver.class);

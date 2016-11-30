@@ -123,7 +123,7 @@ public class BatchMain {
 
   }
 
-  public static void calculateTFIDF(String in, String out, String competencesVectorPath, Properties prop) throws IOException {
+  private static void calculateTFIDF(String in, String out, String competencesVectorPath, Properties prop) throws IOException {
 
     try {
       TFIDFDriverImpl tfidfDriver = new TFIDFDriverImpl();

@@ -49,6 +49,7 @@ import java.nio.file.attribute.FileTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -231,6 +232,11 @@ public class DataPrepare implements IDataPrepare {
     LocalDate lDate;
     try {
       lDate = LocalDate.parse(ct.toString(), formatter);
+      
+      DateTimeFormatter f = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+      DateTime dateTime = f.parseDateTime("2012-01-10 23:13:26");
+      dateTime.getHourOfDay();
+      
     } catch (java.lang.IllegalArgumentException ex) {
       formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");
       lDate = LocalDate.parse(ct.toString(), formatter);

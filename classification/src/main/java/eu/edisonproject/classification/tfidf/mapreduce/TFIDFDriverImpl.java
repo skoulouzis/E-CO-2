@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
@@ -38,21 +39,7 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
 
   //where to read the frequent itemset
   public static String INPUT_ITEMSET;
-  //where to put the data in hdfs when MapReduce#1 will finish
-  public static String OUTPUT_PATH1 = System.currentTimeMillis() + "-TFIDFDriverImpl-1-word-freq";
-  // where to read the data for the MapReduce#2
-  public static String INPUT_PATH2 = OUTPUT_PATH1;
-  // where to put the data in hdfs when the MapReduce#2 will finish
-  public static String OUTPUT_PATH2 = System.currentTimeMillis() + "-TFIDFDriverImpl-2-word-counts";
-  // where to read the data for the MapReduce#3
-  public static String INPUT_PATH3 = OUTPUT_PATH2;
-// where to put the data in hdfs when the MapReduce#3 will finish
-  public static String OUTPUT_PATH3 = System.currentTimeMillis() + "-TFIDFDriverImpl-3-tf-idf";
 
-  // where to read the data for the MapReduce#4.
-  public static String INPUT_PATH4 = OUTPUT_PATH3;
-  // where to put the data in hdfs when the MapReduce# will finish
-  public static String OUTPUT_PATH4 = System.currentTimeMillis() + "-TFIDFDriverImpl-4-distances";
   // where to put the csv with the tfidf
   public static String COMPETENCES_PATH;
 
@@ -60,10 +47,6 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
   public static String NUM_OF_LINES;
   public static String STOPWORDS_PATH = ".." + File.separator + "etc" + File.separator + "stopwords.csv";
   public String OUT;
-  public String AVRO_FILE = System.currentTimeMillis() + "-TFIDFDriverImpl-avro";
-
-  public TFIDFDriverImpl() {
-  }
 
   /**
    *
@@ -72,30 +55,29 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
   @Override
   public void executeTFIDF(String inputPath) {
 
-//        try {
-//            createTable(TableName.valueOf("job post distance"), families);
-//        } catch (IOException ex) {
-//            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, null, ex);
-//        }
     try {
       File items = new File(INPUT_ITEMSET);
+
       if (!items.exists()) {
         throw new IOException(items.getAbsoluteFile() + " not found");
       }
+      String outputPath1 = System.currentTimeMillis() + "_" + UUID.randomUUID().toString() + "-TFIDFDriverImpl-1-word-freq";
       if (items.length() < 200000000) {
         Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Starting text2Avro");
-        text2Avro(inputPath, AVRO_FILE);
+        String avroFile = System.currentTimeMillis() + "_" + UUID.randomUUID().toString() + "-TFIDFDriverImpl-avro";
+        text2Avro(inputPath, avroFile);
 
-        Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Starting WordFrequencyInDocDriver: {0},{1},{2},{3},{4}", new Object[]{AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES, STOPWORDS_PATH});
-        String[] args1 = {AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES, STOPWORDS_PATH};
+        Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Starting WordFrequencyInDocDriver: {0},{1},{2},{3},{4}", new Object[]{avroFile, outputPath1, INPUT_ITEMSET, NUM_OF_LINES, STOPWORDS_PATH});
+        String[] args1 = {avroFile, outputPath1, INPUT_ITEMSET, NUM_OF_LINES, STOPWORDS_PATH};
         ToolRunner.run(new WordFrequencyInDocDriver(), args1);
       } else {
         Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Starting TermWordFrequency");
-        String[] args1 = {INPUT_ITEMSET, OUTPUT_PATH1, inputPath, STOPWORDS_PATH, NUM_OF_LINES};
+        String[] args1 = {INPUT_ITEMSET, outputPath1, inputPath, STOPWORDS_PATH, NUM_OF_LINES};
         ToolRunner.run(new TermWordFrequency(), args1);
       }
 
-      String[] args2 = {INPUT_PATH2, OUTPUT_PATH2};
+      String outputPath2 = System.currentTimeMillis() + "_" + UUID.randomUUID().toString() + "-TFIDFDriverImpl-2-word-counts";
+      String[] args2 = {outputPath1, outputPath2};
       ToolRunner.run(new WordCountsForDocsDriver(), args2);
 
       File docs = new File(inputPath);
@@ -106,10 +88,11 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
           return name.toLowerCase().endsWith(".txt");
         }
       });
-      Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "docs:" + docs.getAbsolutePath());
+      Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "docs:{0}", docs.getAbsolutePath());
       int numberOfDocuments = files.length;
-
-      String[] args3 = {INPUT_PATH3, OUTPUT_PATH3, String.valueOf(numberOfDocuments)};
+      // where to read the data for the MapReduce#3
+      String outputPath3 = System.currentTimeMillis() + "_" + UUID.randomUUID().toString() + "-TFIDFDriverImpl-3-tf-idf";
+      String[] args3 = {outputPath2, outputPath3, String.valueOf(numberOfDocuments)};
       ToolRunner.run(new WordsInCorpusTFIDFDriver(), args3);
 
       StringBuilder fileNames = new StringBuilder();
@@ -121,20 +104,21 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
           fileNames.append(FilenameUtils.removeExtension(name.getName()).replaceAll("_", ""));
         }
       }
-
-      String[] args4 = {INPUT_PATH4, OUTPUT_PATH4, COMPETENCES_PATH, fileNames.toString()};
+      String outputPath4 = System.currentTimeMillis() + "_" + UUID.randomUUID().toString() + "-TFIDFDriverImpl-4-distances";
+      String[] args4 = {outputPath3, outputPath4, COMPETENCES_PATH, fileNames.toString()};
       Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "args4:{0}", Arrays.toString(args4));
       ToolRunner.run(new CompetencesDistanceDriver(), args4);
 
       Configuration conf = new Configuration();
       conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
       conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
-      conf.set("yarn.resourcemanager.address", "localhost:8032");
-      conf.set("fs.default.name", "hdfs://localhost:9000");
+//      conf.set("yarn.resourcemanager.address", "localhost:8032");
+//      conf.set("fs.default.name", "hdfs://localhost:9000");
 
       FileSystem fs = FileSystem.get(conf);
-      Path hdfsRes = new Path(OUTPUT_PATH4);
-      Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Output result", hdfsRes.toUri());
+      Path hdfsRes = new Path(outputPath4);
+      Path res = fs.resolvePath(hdfsRes);
+      Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Output result", res.toUri());
       System.err.println("----------------" + conf.get(FileSystem.FS_DEFAULT_NAME_KEY));
 
       FileStatus[] results = fs.listStatus(hdfsRes);
@@ -152,7 +136,7 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
   }
 
 //    public void readDistancesOutputAndPrintCSV() {
-//        ReaderFile rf = new ReaderFile(OUTPUT_PATH4 + File.separator + "part-r-00000");
+//        ReaderFile rf = new ReaderFile(outputPath4 + File.separator + "part-r-00000");
 //        String text = rf.readFileWithN();
 //        String[] textLine = text.split("\n");
 //        WriterFile fileWriter = new WriterFile(finalOutputPath);
