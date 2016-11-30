@@ -24,15 +24,26 @@ import org.glassfish.jersey.servlet.ServletContainer;
 public class ECO2Server {
 
   public static void main(String[] args) {
-    Thread t = null;
+    Thread jobWatcher;
+    Thread cvWatcher;
+    Thread courseWatcher;
     Server server = null;
     try {
       ECO2Controller.initPaths();
-      t = startTaskWatcher();
-      t.start();
+      jobWatcher = startTaskWatcher(ECO2Controller.jobClassisifcationFolder.getAbsolutePath());
+      jobWatcher.start();
+
+      cvWatcher = startTaskWatcher(ECO2Controller.cvClassisifcationFolder.getAbsolutePath());
+      cvWatcher.start();
+
+      courseWatcher = startTaskWatcher(ECO2Controller.courseClassisifcationFolder.getAbsolutePath());
+      courseWatcher.start();
+
       server = startServer(args);
       server.start();
-      t.join();
+      jobWatcher.join();
+      cvWatcher.join();
+      courseWatcher.join();
       server.join();
     } catch (IOException ex) {
       Logger.getLogger(ECO2Server.class.getName()).log(Level.SEVERE, null, ex);
@@ -43,13 +54,6 @@ public class ECO2Server {
     } finally {
       if (server != null) {
         server.destroy();
-      }
-      if (t != null) {
-        try {
-          t.join(100);
-        } catch (InterruptedException ex) {
-          Logger.getLogger(ECO2Server.class.getName()).log(Level.SEVERE, null, ex);
-        }
       }
 
     }
@@ -81,9 +85,9 @@ public class ECO2Server {
     return jettyServer;
   }
 
-  private static Thread startTaskWatcher() throws IOException, InterruptedException {
+  private static Thread startTaskWatcher(String dir) throws IOException, InterruptedException {
 
-    Runnable folderWatcherRunnable = new FolderWatcherRunnable(ECO2Controller.baseClassisifcationFolder.getAbsolutePath());
+    Runnable folderWatcherRunnable = new FolderWatcherRunnable(dir);
 
     return new Thread(folderWatcherRunnable);
 

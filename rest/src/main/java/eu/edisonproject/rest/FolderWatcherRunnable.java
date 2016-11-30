@@ -12,6 +12,9 @@ import static eu.edisonproject.rest.ECO2Controller.propertiesFile;
 import static eu.edisonproject.rest.ECO2Controller.stopwordsFile;
 
 import eu.edisonproject.classification.main.BatchMain;
+import eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl;
+import eu.edisonproject.utility.file.ConfigHelper;
+import eu.edisonproject.utility.file.MyProperties;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -25,6 +28,7 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,7 +49,6 @@ class FolderWatcherRunnable implements Runnable {
   @Override
   public void run() {
     final Path path = FileSystems.getDefault().getPath(dir);
-    System.out.println(path);
 
     try (final WatchService watchService = FileSystems.getDefault().newWatchService()) {
       final WatchKey watchKey = path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);
@@ -76,10 +79,9 @@ class FolderWatcherRunnable implements Runnable {
       "-o", classificationFolder.getAbsolutePath(), "-c", baseCategoryFolder.getAbsolutePath(),
       "-p", propertiesFile.getAbsolutePath()};
 
-    System.setProperty("itemset.file", itemSetFile.getAbsolutePath());
-    System.setProperty("stop.words.file", stopwordsFile.getAbsolutePath());
-
-    BatchMain.main(args);
+//    System.setProperty("itemset.file", itemSetFile.getAbsolutePath());
+//    System.setProperty("stop.words.file", stopwordsFile.getAbsolutePath());
+    doIt(classificationFolder.getAbsolutePath(), classificationFolder.getAbsolutePath(), baseCategoryFolder.getAbsolutePath(), propertiesFile.getAbsolutePath());
 
     convertMRResultToCSV(classificationFolder.getAbsolutePath() + File.separator + "part-r-00000");
     return convertMRResultToJsonFile(classificationFolder.getAbsolutePath() + File.separator + "part-r-00000");
@@ -164,5 +166,30 @@ class FolderWatcherRunnable implements Runnable {
 
 //      System.err.println(csvLine.toString());
     }
+  }
+
+  private void doIt(String in, String out, String competencesVectorPath, String propPath) throws IOException {
+    MyProperties prop = ConfigHelper.getProperties(propPath);
+
+    TFIDFDriverImpl tfidfDriver = new TFIDFDriverImpl();
+
+    if (TFIDFDriverImpl.NUM_OF_LINES == null) {
+      TFIDFDriverImpl.NUM_OF_LINES = prop.getProperty("map.reduce.num.of.lines", "500");
+    }
+
+    TFIDFDriverImpl.STOPWORDS_PATH = System.getProperty("stop.words.file");
+
+    if (TFIDFDriverImpl.STOPWORDS_PATH == null) {
+      TFIDFDriverImpl.STOPWORDS_PATH = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
+    }
+    TFIDFDriverImpl.INPUT_ITEMSET = System.getProperty("itemset.file");
+    if (TFIDFDriverImpl.INPUT_ITEMSET == null) {
+      TFIDFDriverImpl.INPUT_ITEMSET = prop.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv");
+    }
+
+    TFIDFDriverImpl.COMPETENCES_PATH = competencesVectorPath;
+    tfidfDriver.OUT = out;
+    tfidfDriver.executeTFIDF(in);
+
   }
 }
