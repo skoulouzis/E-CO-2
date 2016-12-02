@@ -7,11 +7,8 @@
 package eu.edisonproject.rest;
 
 import static eu.edisonproject.rest.ECO2Controller.baseCategoryFolder;
-import static eu.edisonproject.rest.ECO2Controller.itemSetFile;
 import static eu.edisonproject.rest.ECO2Controller.propertiesFile;
-import static eu.edisonproject.rest.ECO2Controller.stopwordsFile;
 
-import eu.edisonproject.classification.main.BatchMain;
 import eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl;
 import eu.edisonproject.utility.file.ConfigHelper;
 import eu.edisonproject.utility.file.MyProperties;
@@ -28,7 +25,6 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -75,12 +71,6 @@ class FolderWatcherRunnable implements Runnable {
   }
 
   private File executeClassification(File classificationFolder) throws Exception {
-    String[] args = new String[]{"-op", "c", "-i", classificationFolder.getAbsolutePath(),
-      "-o", classificationFolder.getAbsolutePath(), "-c", baseCategoryFolder.getAbsolutePath(),
-      "-p", propertiesFile.getAbsolutePath()};
-
-//    System.setProperty("itemset.file", itemSetFile.getAbsolutePath());
-//    System.setProperty("stop.words.file", stopwordsFile.getAbsolutePath());
     doIt(classificationFolder.getAbsolutePath(), classificationFolder.getAbsolutePath(), baseCategoryFolder.getAbsolutePath(), propertiesFile.getAbsolutePath());
 
     convertMRResultToCSV(classificationFolder.getAbsolutePath() + File.separator + "part-r-00000");
@@ -189,7 +179,7 @@ class FolderWatcherRunnable implements Runnable {
 
     TFIDFDriverImpl.COMPETENCES_PATH = competencesVectorPath;
     tfidfDriver.OUT = out;
-    tfidfDriver.executeTFIDF(in);
+    tfidfDriver.executeTFIDF(in, false);
 
   }
 }

@@ -21,5 +21,5 @@ package eu.edisonproject.classification.tfidf.mapreduce;
  */
 public interface ITFIDFDriver {
     
-    public void executeTFIDF(String inputPath) ;
+    public void executeTFIDF(String inputPath,Boolean useToolRunner) ;
 }

@@ -21,18 +21,19 @@ package eu.edisonproject.classification.tfidf.mapreduce;
  */
 import document.avro.Document;
 import eu.edisonproject.utility.file.ConfigHelper;
-import eu.edisonproject.utility.file.WriterFile;
 import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
 import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -60,32 +61,7 @@ import org.apache.hadoop.util.Tool;
 import org.apache.lucene.analysis.util.CharArraySet;
 
 public class WordFrequencyInDocDriver extends Configured implements Tool {
-
-  private final String HADOOP_CONF_BASE_DIR = "/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop";//"/usr/local/hadoop/etc/hadoop";
-
-  private void printClasspath(Configuration conf) {
-    Set<String> params = conf.getFinalParameters();
-    String finalParameters = "";
-    for (String p : params) {
-      finalParameters += p + " ";
-    }
-
-    String strClassPath = System.getProperty("java.class.path");
-
-//    String jobTracker = conf.get("mapred.job.tracker");
-//    String defaultFS = conf.get("fs.defaultFS");
-    String confprop = "";
-    for (Map.Entry<String, String> entry : conf) {
-      confprop += entry.getKey() + " : " + entry.getValue() + "\n";
-    }
-
-    WriterFile wf = new WriterFile(System.getProperty("user.home") + "/" + this.getClass().getName() + ".log");
-    wf.writeFile("classpath: " + strClassPath + "\n"
-            + "finalParameters: " + finalParameters + "\n"
-            + "confprop: " + confprop);
-  }
-
-//    private static List<String> itemset;
+  
   public static class WordFrequencyInDocMapper extends Mapper<AvroKey<Document>, NullWritable, Text, IntWritable> {
 
     private static final List<String> TERMS = new ArrayList<>();
@@ -140,10 +116,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
             throws IOException, InterruptedException {
 
       String documentId = key.datum().getDocumentId().toString();
-//            System.err.println("Processing :" + documentId);
-//            String title = key.datum().getTitle().toString();
       String description = key.datum().getDescription().toString().toLowerCase();
-//            String date = key.datum().getDate().toString();
 
       for (String s : TERMS) {
         s = trim(s.replaceAll("_", " "));
@@ -152,18 +125,12 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
         cleanLemmatisation.setDescription(cleanStopWord.execute());
         s = trim(cleanLemmatisation.execute());
         while (description.contains(" " + s + " ")) {
-//                while (description.contains(s)) {
           StringBuilder valueBuilder = new StringBuilder();
           valueBuilder.append(s);
           valueBuilder.append("@");
           valueBuilder.append(documentId);
-//                        valueBuilder.append("@");
-//                        valueBuilder.append(title);
-//                        valueBuilder.append("@");
-//                        valueBuilder.append(date);
           context.write(new Text(valueBuilder.toString()), new IntWritable(1));
           description = description.replaceFirst(" " + s + " ", " ");
-//                    description = description.replaceFirst(s, "");
         }
       }
 
@@ -179,10 +146,6 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
         valueBuilder.append("@");
         valueBuilder.append(documentId);
         valueBuilder.append("@");
-//                valueBuilder.append(title);
-//                valueBuilder.append("@");
-//                valueBuilder.append(date);
-        // emit the partial <k,v>
         context.write(new Text(valueBuilder.toString()), new IntWritable(1));
       }
     }
@@ -199,44 +162,20 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
       }
       context.write(key, sum);
     }
-  } // end of reducer class
+  } 
 
   @Override
   public int run(String[] args) throws Exception {
-//        itemset = new LinkedList<String>();
-//        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(args[2])));
-//        String line;
-//        while ((line = br.readLine()) != null) {
-//            String[] components = line.split("/");
-//            itemset.add(components[0]);
-//        }
+    Job job = getJob(args);
+    return (job.waitForCompletion(true) ? 0 : 1);
+  }
 
+  public Job getJob(String[] args) throws IOException {
     Configuration conf = getConf();
-    //Fix from https://stackoverflow.com/questions/17265002/hadoop-no-filesystem-for-scheme-file
-    conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
-    conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
-
-//    conf.set("yarn.resourcemanager.address", "localhost:8032");
-//    conf.set("fs.defaultFS", "hdfs://master.ib.cluster:8020");
-//    conf.set("mapreduce.framework.name", "yarn");
-    File etc = new File(HADOOP_CONF_BASE_DIR);
-    File[] files = etc.listFiles(new FilenameFilter() {
-      @Override
-      public boolean accept(File dir, String name) {
-        return name.toLowerCase().endsWith(".xml");
-      }
-    });
-    if (files != null) {
-      for (File f : files) {
-        conf.addResource(new org.apache.hadoop.fs.Path(f.getAbsolutePath()));
-      }
-    }
-
-    printClasspath(conf);
-
+    conf = addPropertiesToConf(conf, args[args.length - 1]);
     Job job = Job.getInstance(conf);
-    job.setJarByClass(WordFrequencyInDocDriver.class);
-    job.setJobName("Word Frequency In Doc Driver");
+    job.setJarByClass(this.getClass());
+    job.setJobName(this.getClass().getName());
 
     FileSystem fs = FileSystem.get(conf);
     fs.delete(new Path(args[1]), true);
@@ -278,7 +217,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 
     job.setInputFormatClass(AvroKeyInputFormat.class);
     job.setMapperClass(WordFrequencyInDocMapper.class);
-    
+
     AvroJob.setInputKeySchema(job, Document.getClassSchema());
     job.setMapOutputKeyClass(Text.class);
     job.setMapOutputValueClass(IntWritable.class);
@@ -286,8 +225,46 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(Integer.class);
     job.setReducerClass(WordFrequencyInDocReducer.class);
+    return job;
+  }
 
-    return (job.waitForCompletion(true) ? 0 : 1);
+  private Configuration addPropertiesToConf(Configuration conf, String arg) throws FileNotFoundException, IOException {
+    try (FileInputStream input = new FileInputStream(arg)) {
+      Properties prop = new Properties();
+      prop.load(input);
+      Set<Object> keys = prop.keySet();
+      for (Object key : keys) {
+        String val = prop.getProperty((String) key);
+        conf.set((String) key, val);
+      }
+
+      File etc = new File(prop.getProperty("hadoop.conf.base.dir"));
+      File[] files = etc.listFiles(new FilenameFilter() {
+        @Override
+        public boolean accept(File dir, String name) {
+          return name.toLowerCase().endsWith(".xml");
+        }
+      });
+      if (files != null) {
+        for (File f : files) {
+          conf.addResource(new org.apache.hadoop.fs.Path(f.getAbsolutePath()));
+        }
+      }
+
+    }
+    conf.set("mapreduce.map.class", WordFrequencyInDocMapper.class.getName());
+    conf.set("mapreduce.reduce.class", WordFrequencyInDocReducer.class.getName());
+//    conf.set("mapred.jar", jar_Output_Folder+ java.io.File.separator + className+".jar");
+    return conf;
+  }
+
+  @Override
+  public Configuration getConf() {
+    Configuration conf = super.getConf();
+    if (conf == null) {
+      conf = new Configuration();
+    }
+    return conf;
   }
 
 }

@@ -128,8 +128,8 @@ public class BatchMain {
     try {
       TFIDFDriverImpl tfidfDriver = new TFIDFDriverImpl();
 
-      if (tfidfDriver.NUM_OF_LINES == null) {
-        tfidfDriver.NUM_OF_LINES = prop.getProperty("map.reduce.num.of.lines", "200");
+      if (TFIDFDriverImpl.NUM_OF_LINES == null) {
+        TFIDFDriverImpl.NUM_OF_LINES = prop.getProperty("map.reduce.num.of.lines", "200");
       }
 
       TFIDFDriverImpl.STOPWORDS_PATH = System.getProperty("stop.words.file");
@@ -137,14 +137,14 @@ public class BatchMain {
       if (TFIDFDriverImpl.STOPWORDS_PATH == null) {
         TFIDFDriverImpl.STOPWORDS_PATH = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
       }
-      tfidfDriver.INPUT_ITEMSET = System.getProperty("itemset.file");
-      if (tfidfDriver.INPUT_ITEMSET == null) {
-        tfidfDriver.INPUT_ITEMSET = prop.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv");
+      TFIDFDriverImpl.INPUT_ITEMSET = System.getProperty("itemset.file");
+      if (TFIDFDriverImpl.INPUT_ITEMSET == null) {
+        TFIDFDriverImpl.INPUT_ITEMSET = prop.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv");
       }
 
-      tfidfDriver.COMPETENCES_PATH = competencesVectorPath;
+      TFIDFDriverImpl.COMPETENCES_PATH = competencesVectorPath;
       tfidfDriver.OUT = out;
-      tfidfDriver.executeTFIDF(in);
+      tfidfDriver.executeTFIDF(in, true);
 
     } finally {
     }

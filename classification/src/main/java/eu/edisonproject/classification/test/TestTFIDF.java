@@ -24,12 +24,12 @@ import java.io.File;
  */
 public class TestTFIDF {
 
-    public static void execute(String[] args) {
-        String inputPath = args[0] + File.separator + "etc" + File.separator
-                + "Classification" + File.separator + "Avro Document" + File.separator;
-        TFIDFDriverImpl tfidfDriver = new TFIDFDriverImpl();
-        tfidfDriver.executeTFIDF(inputPath);
+  public static void execute(String[] args) {
+    String inputPath = args[0] + File.separator + "etc" + File.separator
+            + "Classification" + File.separator + "Avro Document" + File.separator;
+    TFIDFDriverImpl tfidfDriver = new TFIDFDriverImpl();
+    tfidfDriver.executeTFIDF(inputPath, true);
 //        tfidfDriver.readDistancesOutputAndPrintCSV();
-    }
+  }
 
 }

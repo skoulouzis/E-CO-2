@@ -53,7 +53,7 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
    * @param inputPath
    */
   @Override
-  public void executeTFIDF(String inputPath) {
+  public void executeTFIDF(String inputPath, Boolean useToolRunner) {
 
     try {
       File items = new File(INPUT_ITEMSET);
@@ -69,7 +69,13 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
 
         Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Starting WordFrequencyInDocDriver: {0},{1},{2},{3},{4}", new Object[]{avroFile, outputPath1, INPUT_ITEMSET, NUM_OF_LINES, STOPWORDS_PATH});
         String[] args1 = {avroFile, outputPath1, INPUT_ITEMSET, NUM_OF_LINES, STOPWORDS_PATH};
-        ToolRunner.run(new WordFrequencyInDocDriver(), args1);
+        WordFrequencyInDocDriver wfInDoc = new WordFrequencyInDocDriver();
+        if (useToolRunner) {
+          ToolRunner.run(wfInDoc, args1);
+        } else {
+          wfInDoc.run(args1);
+        }
+
       } else {
         Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Starting TermWordFrequency");
         String[] args1 = {INPUT_ITEMSET, outputPath1, inputPath, STOPWORDS_PATH, NUM_OF_LINES};
