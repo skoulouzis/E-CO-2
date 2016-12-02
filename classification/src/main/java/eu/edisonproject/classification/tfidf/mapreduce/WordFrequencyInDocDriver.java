@@ -21,6 +21,7 @@ package eu.edisonproject.classification.tfidf.mapreduce;
  */
 import document.avro.Document;
 import eu.edisonproject.utility.file.ConfigHelper;
+import eu.edisonproject.utility.file.MyProperties;
 import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
 import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.BufferedReader;
@@ -61,7 +62,7 @@ import org.apache.hadoop.util.Tool;
 import org.apache.lucene.analysis.util.CharArraySet;
 
 public class WordFrequencyInDocDriver extends Configured implements Tool {
-  
+
   public static class WordFrequencyInDocMapper extends Mapper<AvroKey<Document>, NullWritable, Text, IntWritable> {
 
     private static final List<String> TERMS = new ArrayList<>();
@@ -162,7 +163,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
       }
       context.write(key, sum);
     }
-  } 
+  }
 
   @Override
   public int run(String[] args) throws Exception {
@@ -172,7 +173,8 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 
   public Job getJob(String[] args) throws IOException {
     Configuration conf = getConf();
-    conf = addPropertiesToConf(conf, args[args.length - 1]);
+    conf = addPropertiesToConf(conf, args[4]);
+
     Job job = Job.getInstance(conf);
     job.setJarByClass(this.getClass());
     job.setJobName(this.getClass().getName());
@@ -185,7 +187,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     Path dictionaryLocal = new Path(args[2]);
     Path dictionaryHDFS = dictionaryLocal;
 
-    Path stopwordsLocal = new Path(args[4]);
+    Path stopwordsLocal = new Path(args[3]);
     Path stopwordsHDFS = stopwordsLocal;
 
     if (!conf.get(FileSystem.FS_DEFAULT_NAME_KEY).startsWith("file")) {
@@ -229,16 +231,17 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
   }
 
   private Configuration addPropertiesToConf(Configuration conf, String arg) throws FileNotFoundException, IOException {
-    try (FileInputStream input = new FileInputStream(arg)) {
-      Properties prop = new Properties();
-      prop.load(input);
-      Set<Object> keys = prop.keySet();
-      for (Object key : keys) {
-        String val = prop.getProperty((String) key);
-        conf.set((String) key, val);
-      }
+    MyProperties prop = ConfigHelper.getProperties(arg);
+    Set<Object> keys = prop.keySet();
+    for (Object key : keys) {
+      String val = prop.getProperty((String) key);
+      conf.set((String) key, val);
+    }
 
-      File etc = new File(prop.getProperty("hadoop.conf.base.dir"));
+    String baseEtc = prop.getProperty("hadoop.conf.base.dir");
+    if (baseEtc != null) {
+      File etc = new File(baseEtc);
+
       File[] files = etc.listFiles(new FilenameFilter() {
         @Override
         public boolean accept(File dir, String name) {
@@ -250,8 +253,8 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
           conf.addResource(new org.apache.hadoop.fs.Path(f.getAbsolutePath()));
         }
       }
-
     }
+
     conf.set("mapreduce.map.class", WordFrequencyInDocMapper.class.getName());
     conf.set("mapreduce.reduce.class", WordFrequencyInDocReducer.class.getName());
 //    conf.set("mapred.jar", jar_Output_Folder+ java.io.File.separator + className+".jar");

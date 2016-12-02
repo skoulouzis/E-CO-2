@@ -109,7 +109,7 @@ public class BatchMain {
           text2Avro(cmd.getOptionValue("input"), cmd.getOptionValue("output"), prop);
           break;
         case "c":
-          calculateTFIDF(cmd.getOptionValue("input"), cmd.getOptionValue("output"), cmd.getOptionValue("competences-vector"), prop);
+          calculateTFIDF(cmd.getOptionValue("input"), cmd.getOptionValue("output"), cmd.getOptionValue("competences-vector"), propPath);
           break;
         case "p":
 //                    -op p -v2 $HOME/Downloads/msc.csv -v1 $HOME/Downloads/job.csv -p $HOME/workspace/E-CO-2/etc/classification.properties
@@ -120,31 +120,16 @@ public class BatchMain {
     } catch (IllegalArgumentException | ParseException | IOException ex) {
       Logger.getLogger(BatchMain.class.getName()).log(Level.SEVERE, null, ex);
     }
-
   }
 
-  private static void calculateTFIDF(String in, String out, String competencesVectorPath, Properties prop) throws IOException {
-
+  private static void calculateTFIDF(String in, String out, String competencesVectorPath, String prop) throws IOException {
+    if (!new File(competencesVectorPath).exists()) {
+      throw new IOException("competences vector path : " + competencesVectorPath + " not found");
+    }
     try {
       TFIDFDriverImpl tfidfDriver = new TFIDFDriverImpl();
 
-      if (TFIDFDriverImpl.NUM_OF_LINES == null) {
-        TFIDFDriverImpl.NUM_OF_LINES = prop.getProperty("map.reduce.num.of.lines", "200");
-      }
-
-      TFIDFDriverImpl.STOPWORDS_PATH = System.getProperty("stop.words.file");
-
-      if (TFIDFDriverImpl.STOPWORDS_PATH == null) {
-        TFIDFDriverImpl.STOPWORDS_PATH = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
-      }
-      TFIDFDriverImpl.INPUT_ITEMSET = System.getProperty("itemset.file");
-      if (TFIDFDriverImpl.INPUT_ITEMSET == null) {
-        TFIDFDriverImpl.INPUT_ITEMSET = prop.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv");
-      }
-
-      TFIDFDriverImpl.COMPETENCES_PATH = competencesVectorPath;
-      tfidfDriver.OUT = out;
-      tfidfDriver.executeTFIDF(in, true);
+      tfidfDriver.executeTFIDF(in, out, competencesVectorPath, prop, false);
 
     } finally {
     }
@@ -189,7 +174,6 @@ public class BatchMain {
       if (!Double.isNaN(d)) {
         winners.put(k, d);
       }
-
     }
 
     System.err.println(k1 + "," + cv.get(k1));

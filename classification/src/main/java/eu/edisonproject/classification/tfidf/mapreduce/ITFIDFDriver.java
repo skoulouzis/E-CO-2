@@ -15,11 +15,14 @@
  */
 package eu.edisonproject.classification.tfidf.mapreduce;
 
+import java.io.IOException;
+import java.util.Properties;
+
 /**
  *
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
  */
 public interface ITFIDFDriver {
-    
-    public void executeTFIDF(String inputPath,Boolean useToolRunner) ;
+
+  public void executeTFIDF(String inputPath, String outputPath, String competencesVectorPath, String propFilePath, Boolean useToolRunner) throws IOException;
 }
