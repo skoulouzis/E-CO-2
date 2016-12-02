@@ -11,7 +11,8 @@
     <properties>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
-        <hadoop.version>2.7.2</hadoop.version>
+        <hadoop.version>2.5.2</hadoop.version>
+        <lzo-hadoop.version>0.4.17</lzo-hadoop.version>
     </properties>
 
   
@@ -39,8 +40,59 @@
             <version>1.8.1</version>
             <type>jar</type>
         </dependency>
+        
+        <!--  ###############Hadoop dependencies ###############-->
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-mapreduce-client-jobclient</artifactId>
+            <version>${hadoop.version}</version>
+            <optional>true</optional>
+        </dependency>
+                
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-mapreduce-client-common</artifactId>
+            <version>${hadoop.version}</version>
+            <optional>true</optional>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-mapreduce-client-shuffle</artifactId>
+            <version>${hadoop.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-common</artifactId>
+            <version>${hadoop.version}</version>
+            <optional>true</optional>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-hdfs</artifactId>
+            <version>${hadoop.version}</version>
+            <optional>true</optional>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.hadoop.gplcompression</groupId>
+            <artifactId>hadoop-lzo</artifactId>
+            <version>${lzo-hadoop.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <!--  #############################-->
+        
     </dependencies>
   
+    <repositories>
+        <repository>
+            <id>twitter-twttr</id>
+            <url>http://maven.twttr.com/</url>
+        </repository>
+    </repositories>
+    
          
     <build>
         <plugins>
