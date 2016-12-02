@@ -71,7 +71,7 @@ class FolderWatcherRunnable implements Runnable {
   }
 
   private File executeClassification(File classificationFolder) throws Exception {
-    doIt(classificationFolder.getAbsolutePath(), classificationFolder.getAbsolutePath(), baseCategoryFolder.getAbsolutePath(), propertiesFile.getAbsolutePath());
+    calculateTFIDF(classificationFolder.getAbsolutePath(), classificationFolder.getAbsolutePath(), baseCategoryFolder.getAbsolutePath(), propertiesFile.getAbsolutePath());
 
     convertMRResultToCSV(classificationFolder.getAbsolutePath() + File.separator + "part-r-00000");
     return convertMRResultToJsonFile(classificationFolder.getAbsolutePath() + File.separator + "part-r-00000");
@@ -158,28 +158,16 @@ class FolderWatcherRunnable implements Runnable {
     }
   }
 
-  private void doIt(String in, String out, String competencesVectorPath, String propPath) throws IOException {
-    MyProperties prop = ConfigHelper.getProperties(propPath);
-
-    TFIDFDriverImpl tfidfDriver = new TFIDFDriverImpl();
-
-    if (TFIDFDriverImpl.NUM_OF_LINES == null) {
-      TFIDFDriverImpl.NUM_OF_LINES = prop.getProperty("map.reduce.num.of.lines", "500");
+  private static void calculateTFIDF(String in, String out, String competencesVectorPath, String prop) throws IOException {
+    if (!new File(competencesVectorPath).exists()) {
+      throw new IOException("competences vector path : " + competencesVectorPath + " not found");
     }
+    try {
+      TFIDFDriverImpl tfidfDriver = new TFIDFDriverImpl();
 
-    TFIDFDriverImpl.STOPWORDS_PATH = System.getProperty("stop.words.file");
+      tfidfDriver.executeTFIDF(in, out, competencesVectorPath, prop, false);
 
-    if (TFIDFDriverImpl.STOPWORDS_PATH == null) {
-      TFIDFDriverImpl.STOPWORDS_PATH = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
+    } finally {
     }
-    TFIDFDriverImpl.INPUT_ITEMSET = System.getProperty("itemset.file");
-    if (TFIDFDriverImpl.INPUT_ITEMSET == null) {
-      TFIDFDriverImpl.INPUT_ITEMSET = prop.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv");
-    }
-
-    TFIDFDriverImpl.COMPETENCES_PATH = competencesVectorPath;
-    tfidfDriver.OUT = out;
-    tfidfDriver.executeTFIDF(in, false);
-
   }
 }
