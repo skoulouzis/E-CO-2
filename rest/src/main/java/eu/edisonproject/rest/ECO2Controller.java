@@ -76,7 +76,7 @@ public class ECO2Controller {
 
     String itemSetPath = props.getProperty("items.set", System.getProperty("user.home")
             + File.separator + "workspace" + File.separator + "E-CO-2" + File.separator
-            + "etc" + File.separator + "dictionaryAll.csv");
+            + "etc" + File.separator + "allTerms.csv");
     itemSetFile = new File(itemSetPath);
 
     String stopwordsPath = props.getProperty("stop.words", System.getProperty("user.home")

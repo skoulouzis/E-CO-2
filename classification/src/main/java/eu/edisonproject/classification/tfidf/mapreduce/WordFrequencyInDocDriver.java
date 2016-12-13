@@ -75,11 +75,13 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
         Path dictionaryFilePath = new Path(uris[0]);
         FileSystem fs = FileSystem.get(context.getConfiguration());
         String s;
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(fs.open(dictionaryFilePath)))) {
-          while ((s = br.readLine()) != null) {
-            s = s.replaceAll("_", " ").trim();
-            TERMS.add(s);
+        if (TERMS == null || TERMS.size() < 1) {
+          try (BufferedReader br = new BufferedReader(
+                  new InputStreamReader(fs.open(dictionaryFilePath)))) {
+            while ((s = br.readLine()) != null) {
+              s = s.replaceAll("_", " ").trim();
+              TERMS.add(s);
+            }
           }
         }
         URI stopwordFile = uris[1];
@@ -87,7 +89,9 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
           CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(fs.open(new Path(stopwordFile)).getWrappedStream()), true);
           cleanStopWord = new StopWord(stopWordArraySet);
         }
-        cleanLemmatisation = new StanfordLemmatizer();
+        if (cleanLemmatisation == null) {
+          cleanLemmatisation = new StanfordLemmatizer();
+        }
       }
 
       Logger.getLogger(WordFrequencyInDocDriver.class.getName()).log(Level.INFO, "terms array has :{0} elemnts", TERMS.size());
@@ -192,8 +196,6 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     //Fix from https://stackoverflow.com/questions/17265002/hadoop-no-filesystem-for-scheme-file
     conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
     conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
-
-
 
     Job job = Job.getInstance(conf);
     job.setJarByClass(WordFrequencyInDocDriver.class);
