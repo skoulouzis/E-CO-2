@@ -78,11 +78,14 @@ class FolderWatcherRunnable implements Runnable {
 
     System.setProperty("itemset.file", itemSetFile.getAbsolutePath());
     System.setProperty("stop.words.file", stopwordsFile.getAbsolutePath());
+    String outputPath = classificationFolder.getAbsolutePath() + File.separator + "part-r-00000";
+    File outputFile = new File(outputPath);
+    if (outputFile.length() < 5) {
+      BatchMain.main(args);
+    }
 
-    BatchMain.main(args);
-
-    convertMRResultToCSV(classificationFolder.getAbsolutePath() + File.separator + "part-r-00000");
-    return convertMRResultToJsonFile(classificationFolder.getAbsolutePath() + File.separator + "part-r-00000");
+    convertMRResultToCSV(outputPath);
+    return convertMRResultToJsonFile(outputPath);
   }
 
   private File convertMRResultToJsonFile(String mrPartPath) throws IOException {

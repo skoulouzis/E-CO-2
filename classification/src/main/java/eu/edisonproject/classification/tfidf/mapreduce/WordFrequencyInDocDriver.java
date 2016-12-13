@@ -43,6 +43,7 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hdfs.tools.GetConf;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
@@ -176,23 +177,14 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 
   @Override
   public int run(String[] args) throws Exception {
-//        itemset = new LinkedList<String>();
-//        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(args[2])));
-//        String line;
-//        while ((line = br.readLine()) != null) {
-//            String[] components = line.split("/");
-//            itemset.add(components[0]);
-//        }
-    Configuration conf = new Configuration();
-//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/core-site.xml"));
-//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/hdfs-site.xml"));
-//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/yarn-site.xml"));
-//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/capacity-scheduler.xml"));
-//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/core-site-lzo.xml"));
-//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/hadoop-policy.xml"));
-//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/httpfs-site.xml"));
-//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/core-site-default.xml"));
-//    conf.addResource(new org.apache.hadoop.fs.Path("/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/mapred-site.xml"));
+
+    Job job = getJob(args);
+
+    return (job.waitForCompletion(true) ? 0 : 1);
+  }
+
+  private Job getJob(String[] args) throws IOException {
+    Configuration conf = getConf();
 //    conf.set("mapreduce.framework.name", "yarn");
     //Fix from https://stackoverflow.com/questions/17265002/hadoop-no-filesystem-for-scheme-file
     conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
@@ -249,7 +241,16 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(Integer.class);
     job.setReducerClass(WordFrequencyInDocReducer.class);
-    return (job.waitForCompletion(true) ? 0 : 1);
+    return job;
+  }
+
+  @Override
+  public Configuration getConf() {
+    Configuration configuration = super.getConf();
+    if (configuration == null) {
+      configuration = new Configuration();
+    }
+    return configuration;
   }
 
 }
