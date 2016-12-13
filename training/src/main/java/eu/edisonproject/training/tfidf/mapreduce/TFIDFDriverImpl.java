@@ -230,7 +230,7 @@ public class TFIDFDriverImpl implements ITFIDFDriver {
         for (int i = 0; i < values.get(0).length; i++) {
             double wordIValue = 0.0;
             for (int j = 0; j < values.size(); j++) {
-                if (!values.get(j)[i].equals("0") || !values.get(j)[i].contains("-∞")) {
+                if (!values.get(j)[i].equals("0") ) {
                     wordIValue += Double.parseDouble(values.get(j)[i].replace(",", "."));
                 }
             }
