@@ -139,7 +139,7 @@ public class BatchMain {
       }
       tfidfDriver.INPUT_ITEMSET = System.getProperty("itemset.file");
       if (tfidfDriver.INPUT_ITEMSET == null) {
-        tfidfDriver.INPUT_ITEMSET = prop.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv");
+        tfidfDriver.INPUT_ITEMSET = prop.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "allTerms.csv");
       }
 
       tfidfDriver.COMPETENCES_PATH = competencesVectorPath;

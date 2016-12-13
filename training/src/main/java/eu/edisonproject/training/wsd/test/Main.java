@@ -48,7 +48,7 @@ public class Main {
 //            prop.setProperty("minimum.similarity", "-10");
 //            prop.setProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
 //            prop.setProperty("max.ngrams", "4");
-//            String itemsFilePath = ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv";
+//            String itemsFilePath = ".." + File.separator + "etc" + File.separator + "allTerms.csv";
 ////            String itemsFilePath = ".." + File.separator + "documentation" + File.separator + "results" + File.separator + "itemset.csv";
 //            prop.setProperty("itemset.file", itemsFilePath);
 //            prop.setProperty("disambiguators", "eu.edisonproject.training.wsd.BabelNet,eu.edisonproject.training.wsd.WikipediaOnline,eu.edisonproject.training.wsd.Wikidata");
