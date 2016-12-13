@@ -72,10 +72,11 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     protected void setup(Context context) throws IOException, InterruptedException {
       if (context.getCacheFiles() != null && context.getCacheFiles().length > 0) {
         URI[] uris = context.getCacheFiles();
-        Path dictionaryFilePath = new Path(uris[0]);
+
         FileSystem fs = FileSystem.get(context.getConfiguration());
         String s;
         if (TERMS == null || TERMS.size() < 1) {
+          Path dictionaryFilePath = new Path(uris[0]);
           try (BufferedReader br = new BufferedReader(
                   new InputStreamReader(fs.open(dictionaryFilePath)))) {
             while ((s = br.readLine()) != null) {
