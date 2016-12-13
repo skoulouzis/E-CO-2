@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,7 +44,6 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hdfs.tools.GetConf;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
@@ -185,10 +185,9 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 
   private Job getJob(String[] args) throws IOException {
     Configuration conf = getConf();
-//    conf.set("mapreduce.framework.name", "yarn");
-    //Fix from https://stackoverflow.com/questions/17265002/hadoop-no-filesystem-for-scheme-file
-    conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
-    conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+
+    String[] subset = Arrays.copyOfRange(args, 5, args.length);
+    conf = addPropertiesToConf(conf, subset);
 
     Job job = Job.getInstance(conf);
     job.setJarByClass(WordFrequencyInDocDriver.class);
@@ -251,6 +250,27 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
       configuration = new Configuration();
     }
     return configuration;
+  }
+
+  private Configuration addPropertiesToConf(Configuration conf, String[] args) {
+    if (!args[0].equals("NULL")) {
+      conf.set(FileSystem.FS_DEFAULT_NAME_KEY, args[0]);
+    }
+    if (!args[1].equals("NULL")) {
+      conf.set("mapreduce.framework.name", args[1]);
+    }
+    if (!args[2].equals("NULL")) {
+      conf.set("yarn.resourcemanager.address", args[2]);
+    }
+
+//    conf.set("mapreduce.framework.name", "yarn");
+    //Fix from https://stackoverflow.com/questions/17265002/hadoop-no-filesystem-for-scheme-file
+    conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+    conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+    conf.set("mapreduce.map.class", WordFrequencyInDocMapper.class.getName());
+    conf.set("mapreduce.reduce.class", WordFrequencyInDocReducer.class.getName());
+
+    return conf;
   }
 
 }

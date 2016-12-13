@@ -80,7 +80,7 @@ class FolderWatcherRunnable implements Runnable {
     System.setProperty("stop.words.file", stopwordsFile.getAbsolutePath());
     String outputPath = classificationFolder.getAbsolutePath() + File.separator + "part-r-00000";
     File outputFile = new File(outputPath);
-    if (outputFile.length() < 5) {
+    if (!outputFile.exists() || outputFile.length() < 5) {
       BatchMain.main(args);
     }
 
