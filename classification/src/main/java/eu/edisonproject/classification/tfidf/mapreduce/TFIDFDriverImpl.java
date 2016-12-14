@@ -97,8 +97,6 @@ public class TFIDFDriverImpl {
       } else {
         Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Starting TermWordFrequency");
         String[] args1 = {INPUT_ITEMSET, OUTPUT_PATH1, inputPath, STOPWORDS_PATH, NUM_OF_LINES};
-        System.err.println("-------------------------------");
-        new TermWordFrequency().run(args1);
         ToolRunner.run(new TermWordFrequency(), args1);
       }
 //      String OUTPUT_PATH2 = System.currentTimeMillis() + "_" + UUID.randomUUID() + "-TFIDFDriverImpl-2-word-counts";;

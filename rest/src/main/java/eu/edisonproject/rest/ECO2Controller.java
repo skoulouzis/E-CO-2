@@ -6,7 +6,6 @@
 
 package eu.edisonproject.rest;
 
-
 import eu.edisonproject.utility.file.FolderSearch;
 import eu.edisonproject.utility.file.ReaderFile;
 import java.io.File;
@@ -26,7 +25,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
@@ -203,7 +201,7 @@ public class ECO2Controller {
     }
     File resultFile = new File(targetFolder + File.separator + JSON_FILE_NAME);
     if (!resultFile.exists()) {
-      return Response.accepted().build().getStatus() + "";
+      return "202";
     }
     ReaderFile rf = new ReaderFile(resultFile.getAbsolutePath());
     return rf.readFile();
