@@ -15,7 +15,6 @@
  */
 package eu.edisonproject.utility.execute;
 
-import eu.edisonproject.utility.file.DBTools;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.cli.BasicParser;
@@ -30,38 +29,38 @@ import org.apache.commons.cli.Options;
  */
 public class Main {
 
-    public static void main(String args[]) {
-        Options options = new Options();
-        Option operation = new Option("op", "operation", true, "type of operation to perform. "
-                + "To move cached terms from org.mapdb.DB 'm'");
-        operation.setRequired(true);
-        options.addOption(operation);
+  public static void main(String args[]) {
+    Options options = new Options();
+    Option operation = new Option("op", "operation", true, "type of operation to perform. "
+            + "To move cached terms from org.mapdb.DB 'm'");
+    operation.setRequired(true);
+    options.addOption(operation);
 
-        Option input = new Option("i", "input", true, "input file path");
-        input.setRequired(true);
-        options.addOption(input);
+    Option input = new Option("i", "input", true, "input file path");
+    input.setRequired(true);
+    options.addOption(input);
 
-        String helpmasg = "Usage: \n";
-        for (Object obj : options.getOptions()) {
-            Option op = (Option) obj;
-            helpmasg += op.getOpt() + ", " + op.getLongOpt() + "\t Required: " + op.isRequired() + "\t\t" + op.getDescription() + "\n";
-        }
-
-        try {
-            CommandLineParser parser = new BasicParser();
-            CommandLine cmd = parser.parse(options, args);
-
-            switch (cmd.getOptionValue("operation")) {
-                case "m":
-                    DBTools.portTermCache2Hbase(cmd.getOptionValue("input"));
-                    DBTools.portBabelNetCache2Hbase(cmd.getOptionValue("input"));
-                    break;
-                default:
-                    System.out.println(helpmasg);
-            }
-
-        } catch (Exception ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, helpmasg, ex);
-        }
+    String helpmasg = "Usage: \n";
+    for (Object obj : options.getOptions()) {
+      Option op = (Option) obj;
+      helpmasg += op.getOpt() + ", " + op.getLongOpt() + "\t Required: " + op.isRequired() + "\t\t" + op.getDescription() + "\n";
     }
+
+    try {
+      CommandLineParser parser = new BasicParser();
+      CommandLine cmd = parser.parse(options, args);
+
+      switch (cmd.getOptionValue("operation")) {
+        case "m":
+//                    DBTools.portTermCache2Hbase(cmd.getOptionValue("input"));
+//                    DBTools.portBabelNetCache2Hbase(cmd.getOptionValue("input"));
+          break;
+        default:
+          System.out.println(helpmasg);
+      }
+
+    } catch (Exception ex) {
+      Logger.getLogger(Main.class.getName()).log(Level.SEVERE, helpmasg, ex);
+    }
+  }
 }

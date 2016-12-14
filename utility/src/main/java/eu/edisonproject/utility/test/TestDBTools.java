@@ -15,7 +15,6 @@
  */
 package eu.edisonproject.utility.test;
 
-import eu.edisonproject.utility.file.DBTools;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -28,19 +27,19 @@ import org.json.simple.parser.ParseException;
  */
 public class TestDBTools {
 
-    public static void main(String args[]) {
-        try {
-            testPortTerms();
-        } catch (IOException | InterruptedException | ParseException ex) {
-            Logger.getLogger(TestDBTools.class.getName()).log(Level.SEVERE, null, ex);
-        }
+  public static void main(String args[]) {
+    try {
+      testPortTerms();
+    } catch (IOException | InterruptedException | ParseException ex) {
+      Logger.getLogger(TestDBTools.class.getName()).log(Level.SEVERE, null, ex);
     }
+  }
 
-    private static void testPortTerms() throws IOException, InterruptedException, ParseException {
-        String path = System.getProperty("user.home") + File.separator + "Documents" 
-                + File.separator + "scripts" + File.separator + "crawl_linkedin" 
-                + File.separator + "cache" + File.separator + "en.wikipedia.org.cacheDB";
-        DBTools.portTermCache2Hbase(path);
-    }
+  private static void testPortTerms() throws IOException, InterruptedException, ParseException {
+    String path = System.getProperty("user.home") + File.separator + "Documents"
+            + File.separator + "scripts" + File.separator + "crawl_linkedin"
+            + File.separator + "cache" + File.separator + "en.wikipedia.org.cacheDB";
+//        DBTools.portTermCache2Hbase(path);
+  }
 
 }
