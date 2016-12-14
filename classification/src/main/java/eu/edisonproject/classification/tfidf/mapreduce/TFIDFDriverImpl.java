@@ -92,10 +92,8 @@ public class TFIDFDriverImpl {
         text2Avro(inputPath, AVRO_FILE);
 
         Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Starting WordFrequencyInDocDriver: {0},{1},{2},{3},{4}", new Object[]{AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES, STOPWORDS_PATH});
-        String[] args1 = {AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES,
-          STOPWORDS_PATH, "hdfs://localhost:9000", "yarn", "localhost:8032"};
-        new WordFrequencyInDocDriver().run(args1);
-//        ToolRunner.run(new WordFrequencyInDocDriver(), args1);
+        String[] args1 = {AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET, STOPWORDS_PATH, "/cm/shared/package/hadoop/hadoop-2.5.0/etc/hadoop/"};
+        ToolRunner.run(new WordFrequencyInDocDriver(), args1);
       } else {
         Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Starting TermWordFrequency");
         String[] args1 = {INPUT_ITEMSET, OUTPUT_PATH1, inputPath, STOPWORDS_PATH, NUM_OF_LINES};
