@@ -195,9 +195,22 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 //                context.write(new Text(docIdAndDate[0] + "\t" + family), new Text(d.toString()));
         context.write(new Text(fileName + "\t" + family), new Text(d.toString()));
 //                mos.write(FilenameUtils.removeExtension(docIdAndDate[0]), family, new Text(d.toString()));
+
+        writeToLog(fileName + "\t" + family + ", " + d.toString());
+
         mos.write(fileName, family, new Text(d.toString()));
       }
 //            System.err.println(sb.toString());
+    }
+
+    private void writeToLog(String data) {
+      try (FileWriter fstream = new FileWriter(System.getProperty("user.home") + "/" + this.getClass().toString(), true)) {
+        try (BufferedWriter out = new BufferedWriter(fstream)) {
+          out.write(data);
+        }
+      } catch (IOException ex) {
+        Logger.getLogger(CompetencesDistanceDriver.class.getName()).log(Level.SEVERE, null, ex);
+      }
     }
 
     @Override
