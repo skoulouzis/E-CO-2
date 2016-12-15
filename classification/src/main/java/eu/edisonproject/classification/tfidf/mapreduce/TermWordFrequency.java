@@ -24,6 +24,7 @@ import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
 import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -49,199 +50,234 @@ import org.apache.lucene.analysis.util.CharArraySet;
 
 public class TermWordFrequency extends Configured implements Tool {
 
-    // hashmap for the terms
-    private static StopWord cleanStopWord;
+  // hashmap for the terms
+  private static StopWord cleanStopWord;
 
-    public static class TermWordFrequencyMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
+  public static class TermWordFrequencyMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
 
-        private FileStatus[] files;
-        private StanfordLemmatizer cleanLemmatisation;
+    private FileStatus[] files;
+    private StanfordLemmatizer cleanLemmatisation;
 
-        @Override
-        protected void cleanup(Context context) throws IOException, InterruptedException {
-            super.cleanup(context);
-        }
+    @Override
+    protected void cleanup(Context context) throws IOException, InterruptedException {
+      super.cleanup(context);
+    }
 
-        @Override
-        protected void setup(Context context) throws IOException, InterruptedException {
+    @Override
+    protected void setup(Context context) throws IOException, InterruptedException {
 //            long start = System.currentTimeMillis();
-            if (context.getCacheFiles() != null && context.getCacheFiles().length > 0) {
-                URI[] uris = context.getCacheFiles();
-                URI stopwordFile = uris[0];
-                FileSystem fs = FileSystem.get(context.getConfiguration());
-                if (cleanStopWord == null) {
-                    CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(fs.open(new Path(stopwordFile)).getWrappedStream()), true);
-                    cleanStopWord = new StopWord(stopWordArraySet);
-                }
-
-                URI hdfsDocs = uris[1];
-
-                Path docPath = new Path(hdfsDocs);
-                files = fs.listStatus(docPath);
-
-            }
-            cleanLemmatisation = new StanfordLemmatizer();
+      if (context.getCacheFiles() != null && context.getCacheFiles().length > 0) {
+        URI[] uris = context.getCacheFiles();
+        URI stopwordFile = uris[0];
+        FileSystem fs = FileSystem.get(context.getConfiguration());
+        if (cleanStopWord == null) {
+          CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(fs.open(new Path(stopwordFile)).getWrappedStream()), true);
+          cleanStopWord = new StopWord(stopWordArraySet);
         }
 
-        @Override
-        protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-            FileSystem fs = FileSystem.get(context.getConfiguration());
+        URI hdfsDocs = uris[1];
 
-            String s = value.toString();
+        Path docPath = new Path(hdfsDocs);
+        files = fs.listStatus(docPath);
 
-            s = s.replaceAll("_", " ").trim();
-            cleanStopWord.setDescription(s);
-            cleanLemmatisation.setDescription(cleanStopWord.execute().trim());
-            s = cleanLemmatisation.execute().trim();
+      }
+      cleanLemmatisation = new StanfordLemmatizer();
+    }
 
-            s = trim(s);
+    @Override
+    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+      FileSystem fs = FileSystem.get(context.getConfiguration());
 
-            for (FileStatus stat : files) {
-                Path filePath = stat.getPath();
-                if (FilenameUtils.getExtension(filePath.getName()).endsWith("txt")) {
-                    String line;
-                    StringBuilder sb = new StringBuilder();
-                    try (BufferedReader br = new BufferedReader(
-                            new InputStreamReader(fs.open(filePath)))) {
-                        while ((line = br.readLine()) != null) {
-                            sb.append(line);
-                        }
-                    }
-                    String description = sb.toString();
-                    cleanStopWord.setDescription(description);
-                    cleanLemmatisation.setDescription(cleanStopWord.execute().trim());
-                    description = trim(cleanLemmatisation.execute().trim());
+      String s = value.toString();
 
-                    while (description.contains(" " + s + " ")) {
-                        StringBuilder valueBuilder = new StringBuilder();
-                        valueBuilder.append(s);
-                        valueBuilder.append("@");
-                        valueBuilder.append(stat.getPath().getName());
+      s = s.replaceAll("_", " ").trim();
+      cleanStopWord.setDescription(s);
+      cleanLemmatisation.setDescription(cleanStopWord.execute().trim());
+      s = cleanLemmatisation.execute().trim();
+
+      s = trim(s);
+
+      for (FileStatus stat : files) {
+        Path filePath = stat.getPath();
+        if (FilenameUtils.getExtension(filePath.getName()).endsWith("txt")) {
+          String line;
+          StringBuilder sb = new StringBuilder();
+          try (BufferedReader br = new BufferedReader(
+                  new InputStreamReader(fs.open(filePath)))) {
+            while ((line = br.readLine()) != null) {
+              sb.append(line);
+            }
+          }
+          String description = sb.toString();
+          cleanStopWord.setDescription(description);
+          cleanLemmatisation.setDescription(cleanStopWord.execute().trim());
+          description = trim(cleanLemmatisation.execute().trim());
+
+          while (description.contains(" " + s + " ")) {
+            StringBuilder valueBuilder = new StringBuilder();
+            valueBuilder.append(s);
+            valueBuilder.append("@");
+            valueBuilder.append(stat.getPath().getName());
 //                        valueBuilder.append("@");
 //                        valueBuilder.append(stat.getPath().getName());
 //                        valueBuilder.append("@");
 //                        valueBuilder.append(date);
-                        context.write(new Text(valueBuilder.toString()), new IntWritable(1));
+            context.write(new Text(valueBuilder.toString()), new IntWritable(1));
 //                        System.err.println(valueBuilder.toString());
-                        description = description.replaceFirst(" " + s + " ", "");
-                    }
+            description = description.replaceFirst(" " + s + " ", "");
+          }
 
-                    Pattern p = Pattern.compile("\\w+");
-                    Matcher m = p.matcher(description);
-                    // build the values and write <k,v> pairs through the context
-                    while (m.find()) {
-                        String matchedKey = m.group().toLowerCase();
-                        StringBuilder valueBuilder = new StringBuilder();
-                        valueBuilder.append(matchedKey);
-                        valueBuilder.append("@");
-                        valueBuilder.append(stat.getPath().getName());
-                        valueBuilder.append("@");
-                        valueBuilder.append(stat.getPath().getName());
+          Pattern p = Pattern.compile("\\w+");
+          Matcher m = p.matcher(description);
+          // build the values and write <k,v> pairs through the context
+          while (m.find()) {
+            String matchedKey = m.group().toLowerCase();
+            StringBuilder valueBuilder = new StringBuilder();
+            valueBuilder.append(matchedKey);
+            valueBuilder.append("@");
+            valueBuilder.append(stat.getPath().getName());
+            valueBuilder.append("@");
+            valueBuilder.append(stat.getPath().getName());
 //                valueBuilder.append("@");
 //                valueBuilder.append(date);
-                        // emit the partial <k,v>
-                        context.write(new Text(valueBuilder.toString()), new IntWritable(1));
-                        System.err.println(valueBuilder.toString());
-                    }
-                }
-            }
-
+            // emit the partial <k,v>
+            context.write(new Text(valueBuilder.toString()), new IntWritable(1));
+            System.err.println(valueBuilder.toString());
+          }
         }
+      }
 
-        private String trim(String s) {
-            while (s.endsWith(" ")) {
-                s = s.substring(0, s.lastIndexOf(" "));
-            }
-            while (s.startsWith(" ")) {
-                s = s.substring(s.indexOf(" ") + 1, s.length());
-            }
-            return s;
-        }
     }
 
-    public static class TermWordFrequencyReducer extends Reducer<Text, IntWritable, Text, Integer> {
+    private String trim(String s) {
+      while (s.endsWith(" ")) {
+        s = s.substring(0, s.lastIndexOf(" "));
+      }
+      while (s.startsWith(" ")) {
+        s = s.substring(s.indexOf(" ") + 1, s.length());
+      }
+      return s;
+    }
+  }
 
-        @Override
-        protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
+  public static class TermWordFrequencyReducer extends Reducer<Text, IntWritable, Text, Integer> {
 
-            Integer sum = 0;
-            for (IntWritable val : values) {
-                sum += val.get();
-            }
-//            System.err.println(key + " " + sum);
-            context.write(key, sum);
-
-        }
-    } // end of reducer class
-
-    // runWordFrequencyInDocDriver --> run (args[])
     @Override
-    public int run(String[] args) throws Exception {
-        Configuration jobconf = getConf();
-        Job job  = Job.getInstance(jobconf);
-        FileSystem fs = FileSystem.get(jobconf);
-        fs.delete(new Path(args[1]), true);
-        Path dictionary = new Path(args[0]);
-        Path dictionaryHdfs = dictionary;
+    protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
 
-        Path localDocs = new Path(args[2]);
-        Path hdfsDocs = localDocs;
+      Integer sum = 0;
+      for (IntWritable val : values) {
+        sum += val.get();
+      }
+//            System.err.println(key + " " + sum);
+      context.write(key, sum);
 
-        Path stopwordsLocal = new Path(args[3]);
-        Path stopwordsHDFS = stopwordsLocal;
-        if (!jobconf.get(FileSystem.FS_DEFAULT_NAME_KEY).startsWith("file")) {
-            dictionaryHdfs = new Path(dictionary.getName());
-            if (!fs.exists(dictionaryHdfs)) {
-                fs.copyFromLocalFile(dictionary, dictionaryHdfs);
-            }
-            hdfsDocs = new Path(localDocs.getName());
-            fs.mkdirs(hdfsDocs);
-            fs.deleteOnExit(hdfsDocs);
+    }
+  } // end of reducer class
 
-            File[] stats = new File(localDocs.toString()).listFiles();
+  // runWordFrequencyInDocDriver --> run (args[])
+  @Override
+  public int run(String[] args) throws Exception {
+    Job job = getJob(args);
 
-            for (File stat : stats) {
-                Path filePath = new Path(stat.getAbsolutePath());
-                if (FilenameUtils.getExtension(filePath.getName()).endsWith("txt")) {
-                    Path dest = new Path(hdfsDocs.toUri() + "/" + filePath.getName());
-                    fs.copyFromLocalFile(filePath, dest);
-                }
-            }
-            stopwordsHDFS = new Path(stopwordsLocal.getName());
-            if (!fs.exists(stopwordsHDFS)) {
-                fs.copyFromLocalFile(stopwordsLocal, stopwordsHDFS);
-            }
+    return (job.waitForCompletion(true) ? 0 : 1);
+
+  }
+
+  private Job getJob(String[] args) throws IOException {
+    Configuration conf = getConf();
+    conf = addPropertiesToConf(conf, args[4]);
+    Job job = Job.getInstance(conf);
+
+    Configuration jobconf = getConf();
+    FileSystem fs = FileSystem.get(jobconf);
+    fs.delete(new Path(args[1]), true);
+    Path dictionary = new Path(args[0]);
+    Path dictionaryHdfs = dictionary;
+
+    Path localDocs = new Path(args[2]);
+    Path hdfsDocs = localDocs;
+
+    Path stopwordsLocal = new Path(args[3]);
+    Path stopwordsHDFS = stopwordsLocal;
+    if (!jobconf.get(FileSystem.FS_DEFAULT_NAME_KEY).startsWith("file")) {
+      dictionaryHdfs = new Path(dictionary.getName());
+      if (!fs.exists(dictionaryHdfs)) {
+        fs.copyFromLocalFile(dictionary, dictionaryHdfs);
+      }
+      hdfsDocs = new Path(localDocs.getName());
+      fs.mkdirs(hdfsDocs);
+      fs.deleteOnExit(hdfsDocs);
+
+      File[] stats = new File(localDocs.toString()).listFiles();
+
+      for (File stat : stats) {
+        Path filePath = new Path(stat.getAbsolutePath());
+        if (FilenameUtils.getExtension(filePath.getName()).endsWith("txt")) {
+          Path dest = new Path(hdfsDocs.toUri() + "/" + filePath.getName());
+          fs.copyFromLocalFile(filePath, dest);
         }
+      }
+      stopwordsHDFS = new Path(stopwordsLocal.getName());
+      if (!fs.exists(stopwordsHDFS)) {
+        fs.copyFromLocalFile(stopwordsLocal, stopwordsHDFS);
+      }
+    }
 
-        FileStatus stopwordsStatus = fs.getFileStatus(stopwordsHDFS);
-        stopwordsHDFS = stopwordsStatus.getPath();
-        job.addCacheFile(stopwordsHDFS.toUri());
+    FileStatus stopwordsStatus = fs.getFileStatus(stopwordsHDFS);
+    stopwordsHDFS = stopwordsStatus.getPath();
+    job.addCacheFile(stopwordsHDFS.toUri());
 
-        job.addCacheFile(hdfsDocs.toUri());
+    job.addCacheFile(hdfsDocs.toUri());
 
-        job.setJarByClass(TermWordFrequency.class);
-        job.setJobName("Word Frequency Term Driver");
+    job.setJarByClass(TermWordFrequency.class);
+    job.setJobName("Word Frequency Term Driver");
 
-        FileInputFormat.setInputPaths(job, dictionaryHdfs);
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+    FileInputFormat.setInputPaths(job, dictionaryHdfs);
+    FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
 //        job.setInputFormatClass(TextInputFormat.class);
-        job.setInputFormatClass(NLineInputFormat.class);
-        NLineInputFormat.addInputPath(job, dictionaryHdfs);
-        NLineInputFormat.setNumLinesPerSplit(job, Integer.valueOf(args[4]));
-        NLineInputFormat.setMaxInputSplitSize(job, 500);
+    job.setInputFormatClass(NLineInputFormat.class);
+    NLineInputFormat.addInputPath(job, dictionaryHdfs);
+    NLineInputFormat.setNumLinesPerSplit(job, Integer.valueOf(args[4]));
+    NLineInputFormat.setMaxInputSplitSize(job, 500);
 
-        job.setMapperClass(TermWordFrequencyMapper.class);
+    job.setMapperClass(TermWordFrequencyMapper.class);
 
-        job.setMapOutputKeyClass(Text.class);
-        job.setMapOutputValueClass(IntWritable.class);
+    job.setMapOutputKeyClass(Text.class);
+    job.setMapOutputValueClass(IntWritable.class);
 
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(Integer.class);
-        job.setReducerClass(TermWordFrequencyReducer.class);
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(Integer.class);
+    job.setReducerClass(TermWordFrequencyReducer.class);
 
-        return (job.waitForCompletion(true) ? 0 : 1);
+    return job;
+  }
 
+  private Configuration addPropertiesToConf(Configuration conf, String etcPath) {
+    File etc = new File(etcPath);
+    File[] files = etc.listFiles(new FilenameFilter() {
+      @Override
+      public boolean accept(File dir, String name) {
+        return name.toLowerCase().endsWith(".xml");
+      }
+    });
+    if (files != null) {
+      for (File f : files) {
+        conf.addResource(new org.apache.hadoop.fs.Path(f.getAbsolutePath()));
+      }
+      conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
     }
+    return conf;
+  }
+
+  @Override
+  public Configuration getConf() {
+    Configuration configuration = super.getConf();
+    if (configuration == null) {
+      configuration = new Configuration();
+    }
+    return configuration;
+  }
 
 }

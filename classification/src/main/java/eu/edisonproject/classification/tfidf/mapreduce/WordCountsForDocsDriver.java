@@ -19,6 +19,8 @@ package eu.edisonproject.classification.tfidf.mapreduce;
  *
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
  */
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,70 +41,102 @@ import org.apache.hadoop.util.Tool;
 
 public class WordCountsForDocsDriver extends Configured implements Tool {
 
-    public static class WordCountsForDocsMapper extends Mapper<LongWritable, Text, Text, Text> {
+  public static class WordCountsForDocsMapper extends Mapper<LongWritable, Text, Text, Text> {
 
-        private static final Logger LOGGER = Logger.getLogger(WordCountsForDocsMapper.class.getName());
-
-        @Override
-        protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-            String[] keyValues = value.toString().split("\t");
-            LOGGER.log(Level.FINE, value.toString());
-            String[] wordsKey = keyValues[0].split("@");
-            String documentId = wordsKey[1];
-//            String title = wordsKey[2];
-//            String date = wordsKey[3];
-            String word = wordsKey[0];
-            String sum = keyValues[1];
-
-//            String newKey = documentId + "@" + title + "@" + date;
-            String newKey = documentId;
-            String newValue = word + "=" + sum;
-            LOGGER.log(Level.FINE, "{0}new value {1}", new Object[]{newKey, newValue});
-            context.write(new Text(newKey), new Text(newValue));
-        }
-    } // end of mapper class
-
-    public static class WordCountsForDocsReducer extends Reducer<Text, Text, Text, Text> {
-
-        @Override
-        protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-            int sumOfWordsInDocument = 0;
-            Map<String, Integer> tempCounter = new HashMap<>();
-            for (Text val : values) {
-                String[] wordCounter = val.toString().split("=");
-                tempCounter.put(wordCounter[0], Integer.valueOf(wordCounter[1]));
-                sumOfWordsInDocument += Integer.parseInt(val.toString().split("=")[1]);
-            }
-            for (String wordKey : tempCounter.keySet()) {
-                Text newKey = new Text(wordKey + "@" + key.toString());
-                Text newValue = new Text(tempCounter.get(wordKey) + "/" + sumOfWordsInDocument);
-                context.write(new Text(newKey), new Text(newValue));
-            }
-
-        }
-    } // end of reducer class
+    private static final Logger LOGGER = Logger.getLogger(WordCountsForDocsMapper.class.getName());
 
     @Override
-    public int run(String[] args) throws Exception {
-        Configuration conf = new Configuration();
-        Job job  = Job.getInstance(conf);
+    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+      String[] keyValues = value.toString().split("\t");
+      LOGGER.log(Level.FINE, value.toString());
+      String[] wordsKey = keyValues[0].split("@");
+      String documentId = wordsKey[1];
+//            String title = wordsKey[2];
+//            String date = wordsKey[3];
+      String word = wordsKey[0];
+      String sum = keyValues[1];
 
-        job.setJarByClass(WordCountsForDocsDriver.class);
-        job.setJobName("Word Counts For Docs Driver");
-
-        Path inPath = new Path(args[0]);
-        Path outPath = new Path(args[1]);
-
-        FileInputFormat.setInputPaths(job, inPath);
-        FileOutputFormat.setOutputPath(job, outPath);
-        outPath.getFileSystem(conf).delete(outPath, true);
-
-        job.setMapperClass(WordCountsForDocsMapper.class);
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(Text.class);
-        job.setReducerClass(WordCountsForDocsReducer.class);
-
-        return (job.waitForCompletion(true) ? 0 : 1);
+//            String newKey = documentId + "@" + title + "@" + date;
+      String newKey = documentId;
+      String newValue = word + "=" + sum;
+      LOGGER.log(Level.FINE, "{0}new value {1}", new Object[]{newKey, newValue});
+      context.write(new Text(newKey), new Text(newValue));
     }
+  } // end of mapper class
+
+  public static class WordCountsForDocsReducer extends Reducer<Text, Text, Text, Text> {
+
+    @Override
+    protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+      int sumOfWordsInDocument = 0;
+      Map<String, Integer> tempCounter = new HashMap<>();
+      for (Text val : values) {
+        String[] wordCounter = val.toString().split("=");
+        tempCounter.put(wordCounter[0], Integer.valueOf(wordCounter[1]));
+        sumOfWordsInDocument += Integer.parseInt(val.toString().split("=")[1]);
+      }
+      for (String wordKey : tempCounter.keySet()) {
+        Text newKey = new Text(wordKey + "@" + key.toString());
+        Text newValue = new Text(tempCounter.get(wordKey) + "/" + sumOfWordsInDocument);
+        context.write(new Text(newKey), new Text(newValue));
+      }
+
+    }
+  } // end of reducer class
+
+  @Override
+  public int run(String[] args) throws Exception {
+    Job job = getJob(args);
+
+    return (job.waitForCompletion(true) ? 0 : 1);
+  }
+
+  private Job getJob(String[] args) throws IOException {
+    Configuration conf = getConf();
+    conf = addPropertiesToConf(conf, args[4]);
+    Job job = Job.getInstance(conf);
+
+    job.setJarByClass(WordCountsForDocsDriver.class);
+    job.setJobName("Word Counts For Docs Driver");
+
+    Path inPath = new Path(args[0]);
+    Path outPath = new Path(args[1]);
+
+    FileInputFormat.setInputPaths(job, inPath);
+    FileOutputFormat.setOutputPath(job, outPath);
+    outPath.getFileSystem(conf).delete(outPath, true);
+
+    job.setMapperClass(WordCountsForDocsMapper.class);
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(Text.class);
+    job.setReducerClass(WordCountsForDocsReducer.class);
+    return job;
+  }
+
+  private Configuration addPropertiesToConf(Configuration conf, String etcPath) {
+    File etc = new File(etcPath);
+    File[] files = etc.listFiles(new FilenameFilter() {
+      @Override
+      public boolean accept(File dir, String name) {
+        return name.toLowerCase().endsWith(".xml");
+      }
+    });
+    if (files != null) {
+      for (File f : files) {
+        conf.addResource(new org.apache.hadoop.fs.Path(f.getAbsolutePath()));
+      }
+      conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+    }
+    return conf;
+  }
+
+  @Override
+  public Configuration getConf() {
+    Configuration configuration = super.getConf();
+    if (configuration == null) {
+      configuration = new Configuration();
+    }
+    return configuration;
+  }
 
 }
