@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,20 +45,12 @@ public class TFIDFDriverImpl {
   public static String STOPWORDS_PATH = ".." + File.separator + "etc" + File.separator + "stopwords.csv";
   public String OUT;
 
-  public TFIDFDriverImpl() {
-  }
-
   /**
    *
    * @param inputPath
    */
   public void executeTFIDF(String inputPath) {
-
-//        try {
-//            createTable(TableName.valueOf("job post distance"), families);
-//        } catch (IOException ex) {
-//            Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+    long start = System.currentTimeMillis();
     try {
       File items = new File(INPUT_ITEMSET);
       if (!items.exists()) {
@@ -127,7 +118,7 @@ public class TFIDFDriverImpl {
     } catch (Exception ex) {
       Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, null, ex);
     }
-
+    Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Elapsed: {0} ms", (System.currentTimeMillis() - start));
   }
 
 //    public void readDistancesOutputAndPrintCSV() {
