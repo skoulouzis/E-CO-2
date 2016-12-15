@@ -124,30 +124,8 @@ public class BatchMain {
   }
 
   public static void calculateTFIDF(String in, String out, String competencesVectorPath, Properties prop) throws IOException {
-
-    try {
-      TFIDFDriverImpl tfidfDriver = new TFIDFDriverImpl();
-
-      if (tfidfDriver.NUM_OF_LINES == null) {
-        tfidfDriver.NUM_OF_LINES = prop.getProperty("map.reduce.num.of.lines", "200");
-      }
-
-      TFIDFDriverImpl.STOPWORDS_PATH = System.getProperty("stop.words.file");
-
-      if (TFIDFDriverImpl.STOPWORDS_PATH == null) {
-        TFIDFDriverImpl.STOPWORDS_PATH = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
-      }
-      tfidfDriver.INPUT_ITEMSET = System.getProperty("itemset.file");
-      if (tfidfDriver.INPUT_ITEMSET == null) {
-        tfidfDriver.INPUT_ITEMSET = prop.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "allTerms.csv");
-      }
-
-      tfidfDriver.COMPETENCES_PATH = competencesVectorPath;
-      tfidfDriver.OUT = out;
-      tfidfDriver.executeTFIDF(in);
-
-    } finally {
-    }
+    TFIDFDriverImpl tfidfDriver = new TFIDFDriverImpl();
+    tfidfDriver.executeTFIDF(in, out, competencesVectorPath, prop);
   }
 
   private static void text2Avro(String inputPath, String outputPath, Properties prop) {

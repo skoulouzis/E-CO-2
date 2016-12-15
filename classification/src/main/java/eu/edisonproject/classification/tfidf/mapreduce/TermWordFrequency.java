@@ -186,7 +186,7 @@ public class TermWordFrequency extends Configured implements Tool {
 
   private Job getJob(String[] args) throws IOException {
     Configuration conf = getConf();
-    conf = addPropertiesToConf(conf, args[4]);
+    conf = addPropertiesToConf(conf, args[5]);
     Job job = Job.getInstance(conf);
 
     Configuration jobconf = getConf();

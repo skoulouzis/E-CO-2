@@ -66,11 +66,6 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
 
     private static final DecimalFormat DF = new DecimalFormat("###.########");
 
-    /*
-		 * Reducer Input
-		 * key --> word
-		 * values --> document = n/N = date
-     */
     @Override
     protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
       // get the number of documents indirectly from the file-system (stored in the job name on purpose)
@@ -124,7 +119,7 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
 
   private Job getJob(String[] args) throws IOException {
     Configuration conf = getConf();
-    conf = addPropertiesToConf(conf, args[4]);
+    conf = addPropertiesToConf(conf, args[3]);
     Job job = Job.getInstance(conf);
 
     job.setJarByClass(WordsInCorpusTFIDFDriver.class);
