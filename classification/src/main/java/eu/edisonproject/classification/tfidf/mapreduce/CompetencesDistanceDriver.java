@@ -67,18 +67,15 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 
     @Override
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-//      Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "key: {0} value: {1}", new Object[]{key, value});
+      Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "key: {0} value: {1}", new Object[]{key, value});
       String[] keyValues = value.toString().split("\t");
       String documentID = keyValues[0];
       String word = keyValues[1].split("/")[0];
       String tfidf = keyValues[1].split("/")[1];
-//            WriterFile rf = new WriterFile(System.getProperty("user.home") + "/" + this.getClass().getName() + ".dbg");
-//            rf.writeFile(documentID + " , " + word + "@" + tfidf);
-//            Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "{0} , {1}@{2}", new Object[]{documentID, word, tfidf});
+//      Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "{0} , {1}@{2}", new Object[]{documentID, word, tfidf});
       context.write(new Text(documentID), new Text(word + "@" + tfidf));
 
-      writeToLog(documentID + "," + word + "@" + tfidf);
-
+//      writeToLog(documentID + "," + word + "@" + tfidf);
     }
 
     private void writeToLog(String data) {
@@ -109,7 +106,10 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 //            List<CharSequence> valuesToWrite = new LinkedList<>();
 
       for (Text value : values) {
-//                Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "key: " + text + " value: " + value);
+        String msg = "key: " + text + " value: " + value;
+        Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, msg);
+        System.err.println(msg);
+
         String[] line = value.toString().split("@");
         documentWords.put(line[0], Double.parseDouble(line[1].replace(",", ".")));
       }
@@ -146,11 +146,10 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 
           competenceValue.add(competence.get(originalWord));
         }
-//                if (key.equals("DSDA02")) {
-//                    System.err.println(words);
-//                    System.err.println(competenceValue);
-//                    System.err.println(documentValue);
-//                }
+
+        System.err.println(words);
+        System.err.println(competenceValue);
+        System.err.println(documentValue);
 
         if (!competenceValue.isEmpty()) {
           try {
@@ -164,9 +163,8 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
         }
 
       }
-//            String[] docIdAndDate = text.toString().split("@");
+
       List<String> families = new ArrayList<>();
-//            families.add("info");
 
       for (String family : distancesNameAndValue.keySet()) {
         String columnFamily = family.split("-")[0];
@@ -182,25 +180,17 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
       }
 
       StringBuilder sb = new StringBuilder();
-//            sb.append(docIdAndDate[0]).append("\n");
-
       sb.append(fileName);
       for (String family : distancesNameAndValue.keySet()) {
-        //String key = family; //iterColumn.next();
+
         Double d = distancesNameAndValue.get(family);
-//                        String columnFamily = family.split("-")[0];
-//                        String columnQualifier = family.split("-")[1];
-//                put.addColumn(Bytes.toBytes(family), Bytes.toBytes(family), Bytes.toBytes(d));
         sb.append(family).append(",").append(d).append("\n");
-//                context.write(new Text(docIdAndDate[0] + "\t" + family), new Text(d.toString()));
         context.write(new Text(fileName + "\t" + family), new Text(d.toString()));
-//                mos.write(FilenameUtils.removeExtension(docIdAndDate[0]), family, new Text(d.toString()));
-
-        writeToLog(fileName + "\t" + family + ", " + d.toString());
-
-        mos.write(fileName, family, new Text(d.toString()));
+        Logger.getLogger(CompetencesDistanceReducer.class.getName()).log(Level.INFO, "{0}\t{1},{2}", new Object[]{fileName, family, d.toString()});
+//        writeToLog(fileName + "\t" + family + ", " + d.toString());
+//        mos.write(fileName, family, new Text(d.toString()));
       }
-//            System.err.println(sb.toString());
+      System.err.println(sb.toString());
     }
 
     private void writeToLog(String data) {

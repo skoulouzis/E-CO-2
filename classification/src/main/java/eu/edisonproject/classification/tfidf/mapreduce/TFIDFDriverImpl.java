@@ -101,11 +101,13 @@ public class TFIDFDriverImpl {
       String prefix = "";
       for (File name : files) {
         if (name.isFile() && FilenameUtils.getExtension(name.getName()).endsWith("txt")) {
+          Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "fileNames:{0}", name);
           fileNames.append(prefix);
           prefix = ",";
           fileNames.append(FilenameUtils.removeExtension(name.getName()).replaceAll("_", ""));
         }
       }
+
       String cosineSimOutputPath = System.currentTimeMillis() + "_" + UUID.randomUUID() + "-TFIDFDriverImpl-4-distances";
       String[] args4 = {tfIdfOutputPath, cosineSimOutputPath, categotiesPath, fileNames.toString(), etcHadoop};
       Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "args4:{0}", Arrays.toString(args4));
