@@ -67,7 +67,7 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 
     @Override
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-      Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "key: {0} value: {1}", new Object[]{key, value});
+//      Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "key: {0} value: {1}", new Object[]{key, value});
       String[] keyValues = value.toString().split("\t");
       String documentID = keyValues[0];
       String word = keyValues[1].split("/")[0];
@@ -82,34 +82,16 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
     }
 
     private void writeToLog(String data) {
-
-      FileWriter fw = null;
-      try {
-        File file = new File(System.getProperty("user.home") + this.getClass().getName());
-        // if file doesnt exists, then create it
-        if (!file.exists()) {
-          try {
-            file.createNewFile();
-          } catch (IOException ex) {
-            Logger.getLogger(CompetencesDistanceDriver.class.getName()).log(Level.SEVERE, null, ex);
-          }
-        } // true = append file
-        fw = new FileWriter(file.getAbsoluteFile(), true);
-        BufferedWriter bw = new BufferedWriter(fw);
-        bw.write(data);
-
+      try (FileWriter fstream = new FileWriter(System.getProperty("user.home") + "/" + this.getClass().toString(), true)) {
+        try (BufferedWriter out = new BufferedWriter(fstream)) {
+          out.write(data);
+        }
       } catch (IOException ex) {
         Logger.getLogger(CompetencesDistanceDriver.class.getName()).log(Level.SEVERE, null, ex);
-      } finally {
-        try {
-          fw.close();
-        } catch (IOException ex) {
-          Logger.getLogger(CompetencesDistanceDriver.class.getName()).log(Level.SEVERE, null, ex);
-        }
       }
-
     }
-  } // end of mapper class
+
+  }
 
 //    public static class CompetencesDistanceReducer extends TableReducer<Text, Text, ImmutableBytesWritable> {
 //    public static class CompetencesDistanceReducer extends Reducer<Text, Text, ImmutableBytesWritable, Put> {
