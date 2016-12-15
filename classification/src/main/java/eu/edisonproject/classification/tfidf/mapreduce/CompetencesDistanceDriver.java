@@ -21,11 +21,16 @@ package eu.edisonproject.classification.tfidf.mapreduce;
  */
 import eu.edisonproject.classification.distance.CosineSimilarityMatrix;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -62,7 +67,7 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 
     @Override
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-//            Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "key: {0} value: {1}", new Object[]{key, value});
+      Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "key: {0} value: {1}", new Object[]{key, value});
       String[] keyValues = value.toString().split("\t");
       String documentID = keyValues[0];
       String word = keyValues[1].split("/")[0];
@@ -71,6 +76,37 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 //            rf.writeFile(documentID + " , " + word + "@" + tfidf);
 //            Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "{0} , {1}@{2}", new Object[]{documentID, word, tfidf});
       context.write(new Text(documentID), new Text(word + "@" + tfidf));
+
+      writeToLog(documentID + "," + word + "@" + tfidf);
+
+    }
+
+    private void writeToLog(String data) {
+
+      FileWriter fw = null;
+      try {
+        File file = new File(System.getProperty("user.home") + this.getClass().getName());
+        // if file doesnt exists, then create it
+        if (!file.exists()) {
+          try {
+            file.createNewFile();
+          } catch (IOException ex) {
+            Logger.getLogger(CompetencesDistanceDriver.class.getName()).log(Level.SEVERE, null, ex);
+          }
+        } // true = append file
+        fw = new FileWriter(file.getAbsoluteFile(), true);
+        BufferedWriter bw = new BufferedWriter(fw);
+        bw.write(data);
+
+      } catch (IOException ex) {
+        Logger.getLogger(CompetencesDistanceDriver.class.getName()).log(Level.SEVERE, null, ex);
+      } finally {
+        try {
+          fw.close();
+        } catch (IOException ex) {
+          Logger.getLogger(CompetencesDistanceDriver.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
 
     }
   } // end of mapper class

@@ -56,7 +56,7 @@ public class TFIDFDriverImpl {
 
     String stopwordsPath = props.getProperty("stop.words.file", System.getProperty("user.home") + "workspace" + File.separator + "E-CO-2" + File.separator + "etc" + File.separator + "stopwords.csv");
     String numOfLines = props.getProperty("num.of.terms", "2000");
-    
+
     String etcHadoop = props.getProperty("hadoop.conf.base.dir", "/usr/local/hadoop/etc/hadoop/");
     try {
       File items = new File(itemsetFilePath);
@@ -71,16 +71,15 @@ public class TFIDFDriverImpl {
         Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Starting text2Avro");
         text2Avro(inputPath, avroFilePath, stopwordsPath);
 
-        Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Starting WordFrequencyInDocDriver: {0},{1},{2},{3},{4}", new Object[]{avroFilePath, wordFreqOutPath, itemsetFilePath, numOfLines, stopwordsPath});
         String[] args1 = {avroFilePath, wordFreqOutPath, itemsetFilePath, stopwordsPath, etcHadoop};
         ToolRunner.run(new WordFrequencyInDocDriver(), args1);
       } else {
         Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Starting TermWordFrequency");
-        String[] args1 = {itemsetFilePath, wordFreqOutPath, inputPath, stopwordsPath, numOfLines,etcHadoop};
+        String[] args1 = {itemsetFilePath, wordFreqOutPath, inputPath, stopwordsPath, numOfLines, etcHadoop};
         ToolRunner.run(new TermWordFrequency(), args1);
       }
       String docFreqOutputPath = System.currentTimeMillis() + "_" + UUID.randomUUID() + "-TFIDFDriverImpl-2-word-counts";
-      String[] args2 = {wordFreqOutPath, docFreqOutputPath,etcHadoop};
+      String[] args2 = {wordFreqOutPath, docFreqOutputPath, etcHadoop};
       ToolRunner.run(new WordCountsForDocsDriver(), args2);
 
       File docs = new File(inputPath);
@@ -94,7 +93,8 @@ public class TFIDFDriverImpl {
       Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "docs:{0}", docs.getAbsolutePath());
       int numberOfDocuments = files.length;
       String tfIdfOutputPath = System.currentTimeMillis() + "_" + UUID.randomUUID() + "-TFIDFDriverImpl-3-tf-idf";
-      String[] args3 = {docFreqOutputPath, tfIdfOutputPath, String.valueOf(numberOfDocuments),etcHadoop};
+      String[] args3 = {docFreqOutputPath, tfIdfOutputPath, String.valueOf(numberOfDocuments), etcHadoop};
+      Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "args3:{0}", Arrays.toString(args3));
       ToolRunner.run(new WordsInCorpusTFIDFDriver(), args3);
 
       StringBuilder fileNames = new StringBuilder();
@@ -107,7 +107,7 @@ public class TFIDFDriverImpl {
         }
       }
       String cosineSimOutputPath = System.currentTimeMillis() + "_" + UUID.randomUUID() + "-TFIDFDriverImpl-4-distances";
-      String[] args4 = {tfIdfOutputPath, cosineSimOutputPath, categotiesPath, fileNames.toString(),etcHadoop};
+      String[] args4 = {tfIdfOutputPath, cosineSimOutputPath, categotiesPath, fileNames.toString(), etcHadoop};
       Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "args4:{0}", Arrays.toString(args4));
       ToolRunner.run(new CompetencesDistanceDriver(), args4);
 
