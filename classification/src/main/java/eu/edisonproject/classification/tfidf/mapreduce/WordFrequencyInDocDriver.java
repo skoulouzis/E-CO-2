@@ -188,10 +188,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
   private Job getJob(String[] args) throws IOException {
     Configuration conf = getConf();
     conf = addPropertiesToConf(conf, args[4]);
-
-//    for (Map.Entry<String, String> entry : conf) {
-//      System.out.println(entry.getKey() + " = " + entry.getValue());
-//    }
+    
     Job job = Job.getInstance(conf);
 
     job.setJarByClass(WordFrequencyInDocDriver.class);
@@ -249,10 +246,10 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 
   @Override
   public Configuration getConf() {
-//    Configuration configuration = super.getConf();
-//    if (configuration == null) {
-    Configuration configuration = new Configuration();
-//    }
+    Configuration configuration = super.getConf();
+    if (configuration == null) {
+      configuration = new Configuration();
+    }
     return configuration;
   }
 
@@ -269,6 +266,13 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
         conf.addResource(new org.apache.hadoop.fs.Path(f.getAbsolutePath()));
       }
       conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+      conf.set("mapreduce.map.class", WordFrequencyInDocMapper.class.getName());
+      conf.set("mapreduce.reduce.class", WordFrequencyInDocReducer.class.getName());
+      
+      for (Map.Entry<String, String> entry : conf) {
+        System.out.println(entry.getKey() + " = " + entry.getValue());
+      }
+
     } else {
 //      conf.set("mapreduce.framework.name", "local");
 //      conf.set("mapred.job.tracker", "local");
