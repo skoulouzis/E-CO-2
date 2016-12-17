@@ -35,7 +35,6 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
@@ -146,19 +145,18 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 //      }
 //    }
 //  }
-  public static class WordFrequencyInDocReducer extends Reducer<Text, IntWritable, Text, Integer> { //AvroKey<Text>, AvroValue<Integer>> {
-
-    @Override
-    protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
-
-      Integer sum = 0;
-      for (IntWritable val : values) {
-        sum += val.get();
-      }
-      context.write(key, sum);
-    }
-  } // end of reducer class
-
+//  public static class WordFrequencyInDocReducer extends Reducer<Text, IntWritable, Text, Integer> { //AvroKey<Text>, AvroValue<Integer>> {
+//
+//    @Override
+//    protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
+//
+//      Integer sum = 0;
+//      for (IntWritable val : values) {
+//        sum += val.get();
+//      }
+//      context.write(key, sum);
+//    }
+//  }
   @Override
   public int run(String[] args) throws Exception {
 
@@ -222,7 +220,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(Integer.class);
-    job.setReducerClass(WordFrequencyInDocReducer.class);
+    job.setReducerClass(SumReducer.class);
     return job;
   }
 
@@ -249,7 +247,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
       }
       conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
       conf.set("mapreduce.map.class", TermFrequencyMapper.class.getName());
-      conf.set("mapreduce.reduce.class", WordFrequencyInDocReducer.class.getName());
+      conf.set("mapreduce.reduce.class", SumReducer.class.getName());
     } else {
       conf.set("mapreduce.framework.name", "local");
       conf.set("mapred.job.tracker", "local");
