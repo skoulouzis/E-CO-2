@@ -242,14 +242,14 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     return job;
   }
 
-  @Override
-  public Configuration getConf() {
-    Configuration configuration = super.getConf();
-    if (configuration == null) {
-      configuration = new Configuration();
-    }
-    return configuration;
-  }
+//  @Override
+//  public Configuration getConf() {
+//    Configuration configuration = super.getConf();
+//    if (configuration == null) {
+//      configuration = new Configuration();
+//    }
+//    return configuration;
+//  }
 
   private Configuration addPropertiesToConf(Configuration conf, String etcPath) {
     File etc = new File(etcPath);
