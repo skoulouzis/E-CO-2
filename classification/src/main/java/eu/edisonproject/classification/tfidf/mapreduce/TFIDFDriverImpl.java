@@ -73,7 +73,6 @@ public class TFIDFDriverImpl {
 
         String[] args1 = {avroFilePath, wordFreqOutPath, itemsetFilePath, stopwordsPath, etcHadoop};
         Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "args1: {0}", Arrays.toString(args1));
-        new WordFrequencyInDocDriver().run(args1);
         ToolRunner.run(new WordFrequencyInDocDriver(), args1);
       } else {
         Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Starting TermWordFrequency");
