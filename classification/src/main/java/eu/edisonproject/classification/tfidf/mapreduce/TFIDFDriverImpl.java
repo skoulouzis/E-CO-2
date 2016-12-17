@@ -57,7 +57,7 @@ public class TFIDFDriverImpl {
     String stopwordsPath = props.getProperty("stop.words.file", System.getProperty("user.home") + "workspace" + File.separator + "E-CO-2" + File.separator + "etc" + File.separator + "stopwords.csv");
     String numOfLines = props.getProperty("num.of.terms", "2000");
 
-    String etcHadoop = props.getProperty("hadoop.conf.base.dir", "");
+    String etcHadoop = props.getProperty("hadoop.conf.base.dir","");
     try {
       File items = new File(itemsetFilePath);
       if (!items.exists()) {
