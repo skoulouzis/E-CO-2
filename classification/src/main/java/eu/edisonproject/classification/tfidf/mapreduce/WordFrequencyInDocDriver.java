@@ -270,6 +270,9 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
         conf.addResource(new org.apache.hadoop.fs.Path(f.getAbsolutePath()));
       }
       conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+    } else {
+      conf.set("mapreduce.framework.name", "local");
+
     }
     return conf;
   }
