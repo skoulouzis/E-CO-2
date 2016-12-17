@@ -48,88 +48,85 @@ import org.apache.hadoop.util.Tool;
 
 public class WordFrequencyInDocDriver extends Configured implements Tool {
 
-    // hashmap for the itemset
-    private static List<String> itemset;
+  // hashmap for the itemset
+  private static List<String> itemset;
 
-    public static class WordFrequencyInDocMapper extends Mapper<AvroKey<Term>, NullWritable, Text, IntWritable> {
+  public static class WordFrequencyInDocMapper extends Mapper<AvroKey<Term>, NullWritable, Text, IntWritable> {
 
-        public WordFrequencyInDocMapper() {
-        }
-
-        @Override
-        protected void map(AvroKey<Term> key, NullWritable value, Context context)
-                throws IOException, InterruptedException {
-            String uid = key.datum().getUid().toString();
-            List<CharSequence> descriptionList = key.datum().getGlosses();
-
-            String description = "";
-            for (CharSequence text : descriptionList) {
-                description += text + " ";
-            }
-
-            description = description.toLowerCase().trim();
-
-            for (String s : itemset) {
-                s = s.replaceAll("_", " ").trim();
-
-                if (description.contains(" " + s + " ") && s.length() > 1) {
-                    while (description.contains(" " + s + " ")) {
-                        StringBuilder valueBuilder = new StringBuilder();
-                        valueBuilder.append(s);
-                        valueBuilder.append("@");
-                        valueBuilder.append(uid);
-                        context.write(new Text(valueBuilder.toString()), new IntWritable(1));
-                        description = description.replaceFirst(" " + s + " ", " ");
-                    }
-                }
-            }
-
-            // Compile all the words using regex
-            Pattern p = Pattern.compile("\\w+");
-            Matcher m = p.matcher(description);
-
-            // build the values and write <k,v> pairs through the context
-            while (m.find()) {
-                String matchedKey = m.group().toLowerCase();
-                StringBuilder valueBuilder = new StringBuilder();
-                valueBuilder.append(matchedKey);
-                valueBuilder.append("@");
-                valueBuilder.append(uid);
-                // emit the partial <k,v>
-                context.write(new Text(valueBuilder.toString()), new IntWritable(1));
-            }
-
-        }
+    public WordFrequencyInDocMapper() {
     }
 
-    public static class WordFrequencyInDocReducer extends Reducer<Text, IntWritable, AvroKey<Text>, AvroValue<Integer>> {
-
-        public WordFrequencyInDocReducer() {
-        }
-
-        @Override
-        protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
-
-            Integer sum = 0;
-            for (IntWritable val : values) {
-                sum += val.get();
-            }
-            context.write(new AvroKey<Text>(key), new AvroValue<Integer>(sum));
-
-        }
-    } // end of reducer class
-
-    // runWordFrequencyInDocDriver --> run (args[])
     @Override
-    public int run(String[] args) throws Exception {
-        Configuration jobconf = getConf();
+    protected void map(AvroKey<Term> key, NullWritable value, Context context)
+            throws IOException, InterruptedException {
+      String uid = key.datum().getUid().toString();
+      List<CharSequence> descriptionList = key.datum().getGlosses();
+
+      String description = "";
+      for (CharSequence text : descriptionList) {
+        description += text + " ";
+      }
+
+      description = description.toLowerCase().trim();
+
+      for (String s : itemset) {
+        s = s.replaceAll("_", " ").trim();
+
+        if (description.contains(" " + s + " ") && s.length() > 1) {
+          while (description.contains(" " + s + " ")) {
+            StringBuilder valueBuilder = new StringBuilder();
+            valueBuilder.append(s);
+            valueBuilder.append("@");
+            valueBuilder.append(uid);
+            context.write(new Text(valueBuilder.toString()), new IntWritable(1));
+            description = description.replaceFirst(" " + s + " ", " ");
+          }
+        }
+      }
+
+      // Compile all the words using regex
+      Pattern p = Pattern.compile("\\w+");
+      Matcher m = p.matcher(description);
+
+      // build the values and write <k,v> pairs through the context
+      while (m.find()) {
+        String matchedKey = m.group().toLowerCase();
+        StringBuilder valueBuilder = new StringBuilder();
+        valueBuilder.append(matchedKey);
+        valueBuilder.append("@");
+        valueBuilder.append(uid);
+        // emit the partial <k,v>
+        context.write(new Text(valueBuilder.toString()), new IntWritable(1));
+      }
+
+    }
+  }
+
+  public static class WordFrequencyInDocReducer extends Reducer<Text, IntWritable, AvroKey<Text>, AvroValue<Integer>> {
+
+    @Override
+    protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
+
+      Integer sum = 0;
+      for (IntWritable val : values) {
+        sum += val.get();
+      }
+      context.write(new AvroKey<>(key), new AvroValue<>(sum));
+
+    }
+  }
+
+  // runWordFrequencyInDocDriver --> run (args[])
+  @Override
+  public int run(String[] args) throws Exception {
+    Configuration jobconf = getConf();
 
 //        if (isHaddopOn()) {
 //            jobconf.set("fs.defaultFS", "hdfs://master.ib.cluster:8020");
 //            jobconf.set("mapred.job.tracker", "localhost:9001");
 //        }
 //        try {
-        new Path(args[1]).getFileSystem(jobconf).delete(new Path(args[1]), true);
+    new Path(args[1]).getFileSystem(jobconf).delete(new Path(args[1]), true);
 //        } catch (java.net.ConnectException ex) {
 //
 //            jobconf.set("fs.defaultFS", "file:///");
@@ -137,33 +134,33 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 //            new Path(args[1]).getFileSystem(jobconf).delete(new Path(args[1]), true);
 //        }
 
-        itemset = new LinkedList<>();
-        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(args[2])));
-        String line;
-        while ((line = br.readLine()) != null) {
-            String[] components = line.split("/");
-            itemset.add(components[0]);
-        }
-        Job job = Job.getInstance(jobconf);
-        job.setJarByClass(WordFrequencyInDocDriver.class);
-        job.setJobName(this.getClass().getName());
-
-        FileInputFormat.setInputPaths(job, new Path(args[0]));
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
-
-        job.setInputFormatClass(AvroKeyInputFormat.class);
-        job.setMapperClass(WordFrequencyInDocMapper.class);
-        AvroJob.setInputKeySchema(job, Term.getClassSchema());
-
-        job.setMapOutputKeyClass(Text.class);
-        job.setMapOutputValueClass(IntWritable.class);
-
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(Integer.class);
-        job.setReducerClass(WordFrequencyInDocReducer.class);
-
-        return (job.waitForCompletion(true) ? 0 : 1);
-
+    itemset = new LinkedList<>();
+    BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(args[2])));
+    String line;
+    while ((line = br.readLine()) != null) {
+      String[] components = line.split("/");
+      itemset.add(components[0]);
     }
+    Job job = Job.getInstance(jobconf);
+    job.setJarByClass(WordFrequencyInDocDriver.class);
+    job.setJobName(this.getClass().getName());
+
+    FileInputFormat.setInputPaths(job, new Path(args[0]));
+    FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+    job.setInputFormatClass(AvroKeyInputFormat.class);
+    job.setMapperClass(WordFrequencyInDocMapper.class);
+    AvroJob.setInputKeySchema(job, Term.getClassSchema());
+
+    job.setMapOutputKeyClass(Text.class);
+    job.setMapOutputValueClass(IntWritable.class);
+
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(Integer.class);
+    job.setReducerClass(WordFrequencyInDocReducer.class);
+
+    return (job.waitForCompletion(true) ? 0 : 1);
+
+  }
 
 }
