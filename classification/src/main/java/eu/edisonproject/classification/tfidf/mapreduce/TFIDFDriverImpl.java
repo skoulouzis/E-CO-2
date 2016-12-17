@@ -57,7 +57,7 @@ public class TFIDFDriverImpl {
     String stopwordsPath = props.getProperty("stop.words.file", System.getProperty("user.home") + "workspace" + File.separator + "E-CO-2" + File.separator + "etc" + File.separator + "stopwords.csv");
     String numOfLines = props.getProperty("num.of.terms", "2000");
 
-    String etcHadoop = props.getProperty("hadoop.conf.base.dir","");
+    String etcHadoop = props.getProperty("hadoop.conf.base.dir", "");
     try {
       File items = new File(itemsetFilePath);
       if (!items.exists()) {
@@ -72,7 +72,8 @@ public class TFIDFDriverImpl {
         text2Avro(inputPath, avroFilePath, stopwordsPath);
 
         String[] args1 = {avroFilePath, wordFreqOutPath, itemsetFilePath, stopwordsPath, etcHadoop};
-         Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "args1: {0}", Arrays.toString(args1));
+        Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "args1: {0}", Arrays.toString(args1));
+        new WordFrequencyInDocDriver().run(args1);
         ToolRunner.run(new WordFrequencyInDocDriver(), args1);
       } else {
         Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Starting TermWordFrequency");
