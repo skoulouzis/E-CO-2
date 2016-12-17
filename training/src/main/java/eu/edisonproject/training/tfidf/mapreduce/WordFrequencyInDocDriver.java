@@ -137,7 +137,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 //            new Path(args[1]).getFileSystem(jobconf).delete(new Path(args[1]), true);
 //        }
 
-        itemset = new LinkedList<String>();
+        itemset = new LinkedList<>();
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(args[2])));
         String line;
         while ((line = br.readLine()) != null) {
@@ -146,7 +146,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
         }
         Job job = Job.getInstance(jobconf);
         job.setJarByClass(WordFrequencyInDocDriver.class);
-        job.setJobName("Word Frequency In Doc Driver");
+        job.setJobName(this.getClass().getName());
 
         FileInputFormat.setInputPaths(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));

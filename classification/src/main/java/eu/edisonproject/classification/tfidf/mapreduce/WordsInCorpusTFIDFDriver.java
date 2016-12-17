@@ -124,7 +124,7 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
 
     job.setJarByClass(WordsInCorpusTFIDFDriver.class);
     //This row must be changed
-    job.setJobName(args[2]);
+    job.setJobName(this.getClass().getName());
 
     Path inPath = new Path(args[0]);
     Path outPath = new Path(args[1]);

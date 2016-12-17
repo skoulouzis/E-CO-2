@@ -28,9 +28,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -188,7 +185,7 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
         context.write(new Text(fileName + "\t" + family), new Text(d.toString()));
         Logger.getLogger(CompetencesDistanceReducer.class.getName()).log(Level.INFO, "{0}\t{1},{2}", new Object[]{fileName, family, d.toString()});
 //        writeToLog(fileName + "\t" + family + ", " + d.toString());
-//        mos.write(fileName, family, new Text(d.toString()));
+        mos.write(fileName, family, new Text(d.toString()));
       }
       System.err.println(sb.toString());
     }

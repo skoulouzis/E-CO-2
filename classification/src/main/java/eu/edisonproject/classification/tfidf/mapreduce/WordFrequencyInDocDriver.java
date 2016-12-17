@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -191,7 +190,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     Job job = Job.getInstance(conf);
 
     job.setJarByClass(WordFrequencyInDocDriver.class);
-    job.setJobName("Word Frequency In Doc Driver");
+    job.setJobName(this.getClass().getName());
 
     FileSystem fs = FileSystem.get(conf);
     fs.delete(new Path(args[1]), true);

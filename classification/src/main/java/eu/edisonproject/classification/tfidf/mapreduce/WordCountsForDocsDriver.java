@@ -97,7 +97,7 @@ public class WordCountsForDocsDriver extends Configured implements Tool {
     Job job = Job.getInstance(conf);
 
     job.setJarByClass(WordCountsForDocsDriver.class);
-    job.setJobName("Word Counts For Docs Driver");
+    job.setJobName(this.getClass().getName());
 
     Path inPath = new Path(args[0]);
     Path outPath = new Path(args[1]);

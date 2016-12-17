@@ -123,7 +123,7 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
     Job job = Job.getInstance(conf);
     job.setJarByClass(WordsInCorpusTFIDFDriver.class);
     //This row must be changed
-    job.setJobName(rawArgs[2]);
+    job.setJobName(this.getClass().getName());
 
     FileSystem fs = FileSystem.get(conf);
     Path inPath = new Path(rawArgs[0]);

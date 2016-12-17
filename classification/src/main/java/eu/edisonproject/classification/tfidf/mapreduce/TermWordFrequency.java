@@ -231,7 +231,7 @@ public class TermWordFrequency extends Configured implements Tool {
     job.addCacheFile(hdfsDocs.toUri());
 
     job.setJarByClass(TermWordFrequency.class);
-    job.setJobName("Word Frequency Term Driver");
+    job.setJobName(this.getClass().getName());
 
     FileInputFormat.setInputPaths(job, dictionaryHdfs);
     FileOutputFormat.setOutputPath(job, new Path(args[1]));
