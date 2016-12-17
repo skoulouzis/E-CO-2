@@ -31,6 +31,7 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -187,6 +188,11 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
   private Job getJob(String[] args) throws IOException {
     Configuration conf = getConf();
     conf = addPropertiesToConf(conf, args[4]);
+
+    for (Map.Entry<String, String> entry : conf) {
+      System.out.println(entry.getKey() + " = " + entry.getValue());
+    }
+
     Job job = Job.getInstance(conf);
 
     job.setJarByClass(WordFrequencyInDocDriver.class);
