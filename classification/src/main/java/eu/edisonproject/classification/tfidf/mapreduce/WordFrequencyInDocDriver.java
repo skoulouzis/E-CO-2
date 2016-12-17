@@ -188,10 +188,10 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
   private Job getJob(String[] args) throws IOException {
     Configuration conf = getConf();
     conf = addPropertiesToConf(conf, args[4]);
-    
+
     Job job = Job.getInstance(conf);
 
-    job.setJarByClass(WordFrequencyInDocDriver.class);
+    job.setJarByClass(this.getClass());
     job.setJobName(this.getClass().getName());
 
     FileSystem fs = FileSystem.get(conf);
@@ -268,7 +268,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
       conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
       conf.set("mapreduce.map.class", WordFrequencyInDocMapper.class.getName());
       conf.set("mapreduce.reduce.class", WordFrequencyInDocReducer.class.getName());
-      
+
       for (Map.Entry<String, String> entry : conf) {
         System.out.println(entry.getKey() + " = " + entry.getValue());
       }
