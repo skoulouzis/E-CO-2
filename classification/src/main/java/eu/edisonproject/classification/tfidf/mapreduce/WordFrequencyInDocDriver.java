@@ -249,10 +249,10 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 
   @Override
   public Configuration getConf() {
-    Configuration configuration = super.getConf();
-    if (configuration == null) {
-      configuration = new Configuration();
-    }
+//    Configuration configuration = super.getConf();
+//    if (configuration == null) {
+    Configuration configuration = new Configuration();
+//    }
     return configuration;
   }
 
