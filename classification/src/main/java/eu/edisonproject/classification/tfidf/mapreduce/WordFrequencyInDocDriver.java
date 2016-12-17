@@ -186,7 +186,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 
   private Job getJob(String[] args) throws IOException {
     Configuration conf = getConf();
-//    conf = addPropertiesToConf(conf, args[4]);
+    conf = addPropertiesToConf(conf, args[4]);
     Job job = Job.getInstance(conf);
 
     job.setJarByClass(WordFrequencyInDocDriver.class);
@@ -242,14 +242,14 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     return job;
   }
 
-//  @Override
-//  public Configuration getConf() {
-//    Configuration configuration = super.getConf();
-//    if (configuration == null) {
-//      configuration = new Configuration();
-//    }
-//    return configuration;
-//  }
+  @Override
+  public Configuration getConf() {
+    Configuration configuration = super.getConf();
+    if (configuration == null) {
+      configuration = new Configuration();
+    }
+    return configuration;
+  }
 
   private Configuration addPropertiesToConf(Configuration conf, String etcPath) {
     File etc = new File(etcPath);
