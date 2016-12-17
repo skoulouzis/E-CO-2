@@ -271,8 +271,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
       }
       conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
     } else {
-      conf.set("mapreduce.framework.name", "local");
-
+//      conf.set("mapreduce.framework.name", "local");
     }
     return conf;
   }
