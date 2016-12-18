@@ -137,6 +137,11 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 //      conf.set("mapred.job.tracker", "local");
 //      conf.set("fs.defaultFS", "file:///");
     }
+    conf.set("fmapreduce.job.ubertask.enable", "true");
+    conf.set("mapreduce.job.ubertask.maxmaps", "9");
+    conf.set("mapreduce.job.ubertask.maxreduces", "1");
+    conf.set("mapreduce.job.ubertask.maxbytes", "4096");
+
     return conf;
   }
 
