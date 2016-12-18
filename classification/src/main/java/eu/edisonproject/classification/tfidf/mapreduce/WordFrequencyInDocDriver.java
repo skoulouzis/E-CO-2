@@ -246,8 +246,8 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
         conf.addResource(new org.apache.hadoop.fs.Path(f.getAbsolutePath()));
       }
       conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
-//      conf.set("mapreduce.map.class", TermFrequencyMapper.class.getName());
-//      conf.set("mapreduce.reduce.class", SumReducer.class.getName());
+      conf.set("mapreduce.map.class", TermFrequencyMapper.class.getName());
+      conf.set("mapreduce.reduce.class", SumReducer.class.getName());
     } else {
       conf.set("mapreduce.framework.name", "local");
       conf.set("mapred.job.tracker", "local");
