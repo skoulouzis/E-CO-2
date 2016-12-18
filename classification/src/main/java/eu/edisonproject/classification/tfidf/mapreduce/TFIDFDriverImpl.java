@@ -84,14 +84,13 @@ public class TFIDFDriverImpl {
       ToolRunner.run(new WordCountsForDocsDriver(), args2);
 
       File docs = new File(inputPath);
-
       File[] files = docs.listFiles(new FilenameFilter() {
         @Override
         public boolean accept(File dir, String name) {
           return name.toLowerCase().endsWith(".txt");
         }
       });
-      Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "docs:{0}", docs.getAbsolutePath());
+
       int numberOfDocuments = files.length;
       String tfIdfOutputPath = System.currentTimeMillis() + "_" + UUID.randomUUID() + "-TFIDFDriverImpl-3-tf-idf";
       String[] args3 = {docFreqOutputPath, tfIdfOutputPath, String.valueOf(numberOfDocuments), etcHadoop};
@@ -100,12 +99,14 @@ public class TFIDFDriverImpl {
 
       StringBuilder fileNames = new StringBuilder();
       String prefix = "";
+      Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "docs:{0}", docs.getAbsolutePath());
       for (File name : files) {
         if (name.isFile() && FilenameUtils.getExtension(name.getName()).endsWith("txt")) {
-          Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "fileNames:{0}", name);
+          Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "name:{0}", name);
           fileNames.append(prefix);
           prefix = ",";
           fileNames.append(FilenameUtils.removeExtension(name.getName()).replaceAll("_", ""));
+          Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "fileNames:{0}", fileNames);
         }
       }
 

@@ -69,10 +69,8 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
       String documentID = keyValues[0];
       String word = keyValues[1].split("/")[0];
       String tfidf = keyValues[1].split("/")[1];
-//      Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "{0} , {1}@{2}", new Object[]{documentID, word, tfidf});
+      Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "{0} , {1}@{2}", new Object[]{documentID, word, tfidf});
       context.write(new Text(documentID), new Text(word + "@" + tfidf));
-
-//      writeToLog(documentID + "," + word + "@" + tfidf);
     }
 
     private void writeToLog(String data) {
