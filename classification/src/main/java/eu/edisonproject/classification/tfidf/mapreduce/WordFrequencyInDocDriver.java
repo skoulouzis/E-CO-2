@@ -133,9 +133,9 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
       conf.set("mapreduce.job.map.class", TermFrequencyMapper.class.getName());
       conf.set("mapreduce.job.reduce.class", SumReducer.class.getName());
     } else {
-      conf.set("mapreduce.framework.name", "local");
-      conf.set("mapred.job.tracker", "local");
-      conf.set("fs.defaultFS", "file:///");
+//      conf.set("mapreduce.framework.name", "local");
+//      conf.set("mapred.job.tracker", "local");
+//      conf.set("fs.defaultFS", "file:///");
     }
     return conf;
   }
