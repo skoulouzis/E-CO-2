@@ -44,10 +44,6 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
 
     @Override
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-      /*
-            *   key word@documentId@title@date
-            *   value n/N
-       */
       String[] pairKeyValue = value.toString().split("\t");
       String[] keyValues = pairKeyValue[0].split("@");
       String outKey = "";
@@ -55,9 +51,7 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
         outKey += keyValues[i] + "@";
       }
       String valueString = pairKeyValue[1];
-
       context.write(new Text(keyValues[0]), new Text(outKey + valueString));
-
     }
   } // end of mapper class
 
@@ -65,13 +59,17 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
   public static class WordsInCorpusTFIDFReducer extends Reducer<Text, Text, Text, Text> {
 
     private static final DecimalFormat DF = new DecimalFormat("###.########");
+    private Double numberOfDocumentsInCorpus;
+
+    @Override
+    protected void setup(Reducer.Context context) throws IOException, InterruptedException {
+      Configuration conf = context.getConfiguration();
+      String numberOfDocs = conf.get("number.of.documents");
+      numberOfDocumentsInCorpus = Double.valueOf(numberOfDocs);
+    }
 
     @Override
     protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-      // get the number of documents indirectly from the file-system (stored in the job name on purpose)
-      int count = 0;
-
-      int numberOfDocumentsInCorpus = Integer.parseInt(context.getJobName());
       // total frequency of this word
       int numberOfDocumentsInCorpusWhereKeyAppears = 0;
       Map<String, String> tempFrequencies = new HashMap<>();
@@ -101,7 +99,7 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
 //                String newKey = documentFields[0] + "@" + documentFields[1] + "@" + documentFields[2];
         String newKey = document;
         String newValue = key.toString() + "/" + DF.format(tfIdf);
-//                System.err.println(newKey + "," + newValue);
+        System.err.println(newKey + "," + newValue);
         context.write(new Text(newKey), new Text(newValue));
 
       }
@@ -120,6 +118,7 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
   private Job getJob(String[] args) throws IOException {
     Configuration conf = getConf();
     conf = addPropertiesToConf(conf, args[3]);
+    conf.set("number.of.documents", args[2]);
     Job job = Job.getInstance(conf);
 
     job.setJarByClass(WordsInCorpusTFIDFDriver.class);

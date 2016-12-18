@@ -75,8 +75,6 @@ public class Text2Avro implements IDataPrepare {
 //                    DateTimeFormatter formatter
 //                            = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 //                    DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-
-//                    System.err.println(LocalDate.parse(date.toString(), formatter));
                     documentObject = new DocumentObject();
                     extract(this.getDocumentObject(), f.getPath());
                     documentObject.setDescription(documentObject.getDescription().toLowerCase());

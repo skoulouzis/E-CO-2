@@ -68,11 +68,8 @@ public class TermFrequencyMapper extends Mapper<AvroKey<Document>, NullWritable,
   @Override
   public void map(AvroKey<Document> key, NullWritable value, Context context) throws IOException, InterruptedException {
     String documentId = key.datum().getDocumentId().toString();
-//            System.err.println("Processing :" + documentId);
-//            String title = key.datum().getTitle().toString();
     String description = key.datum().getDescription().toString().toLowerCase();
-//            String date = key.datum().getDate().toString();
-
+    
     for (String s : TERMS) {
       s = trim(s.replaceAll("_", " "));
       cleanStopWord.setDescription(s);

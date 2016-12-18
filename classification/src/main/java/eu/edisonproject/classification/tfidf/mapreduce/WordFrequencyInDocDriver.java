@@ -135,7 +135,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     } else {
       conf.set("mapreduce.framework.name", "local");
       conf.set("mapred.job.tracker", "local");
-      conf.set("ffs.defaultFS", "file:///");
+      conf.set("fs.defaultFS", "file:///");
     }
 
 //    for (Map.Entry<String, String> entry : conf) {

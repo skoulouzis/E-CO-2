@@ -123,7 +123,6 @@ public class TermWordFrequency extends Configured implements Tool {
 //                        valueBuilder.append("@");
 //                        valueBuilder.append(date);
             context.write(new Text(valueBuilder.toString()), new IntWritable(1));
-//                        System.err.println(valueBuilder.toString());
             description = description.replaceFirst(" " + s + " ", "");
           }
 
@@ -159,23 +158,7 @@ public class TermWordFrequency extends Configured implements Tool {
       return s;
     }
   }
-
-  public static class TermWordFrequencyReducer extends Reducer<Text, IntWritable, Text, Integer> {
-
-    @Override
-    protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
-
-      Integer sum = 0;
-      for (IntWritable val : values) {
-        sum += val.get();
-      }
-//            System.err.println(key + " " + sum);
-      context.write(key, sum);
-
-    }
-  } // end of reducer class
-
-  // runWordFrequencyInDocDriver --> run (args[])
+  
   @Override
   public int run(String[] args) throws Exception {
     Job job = getJob(args);
@@ -249,7 +232,7 @@ public class TermWordFrequency extends Configured implements Tool {
 
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(Integer.class);
-    job.setReducerClass(TermWordFrequencyReducer.class);
+    job.setReducerClass(SumReducer.class);
 
     return job;
   }
