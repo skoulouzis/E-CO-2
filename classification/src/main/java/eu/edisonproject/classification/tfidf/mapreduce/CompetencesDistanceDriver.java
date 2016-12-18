@@ -64,6 +64,7 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 
     @Override
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+      System.err.println("---------- key: " + key + "," + value);
       Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "key: {0} value: {1}", new Object[]{key, value});
       String[] keyValues = value.toString().split("\t");
       String documentID = keyValues[0];
