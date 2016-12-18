@@ -31,8 +31,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.lucene.analysis.util.CharArraySet;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 /**
  *
@@ -40,103 +38,101 @@ import org.joda.time.format.DateTimeFormatter;
  */
 public class Text2Avro implements IDataPrepare {
 
-    private final String inputFolder;
-    private final String outputFolder;
-    private static CharArraySet stopwordsCharArray;
-    private DocumentObject documentObject;
-    private LinkedList<DocumentObject> documentObjectList;
+  private final String inputFolder;
+  private final String outputFolder;
+  private static CharArraySet stopwordsCharArray;
+  private DocumentObject documentObject;
+  private LinkedList<DocumentObject> documentObjectList;
 
-    public Text2Avro(String inputFolder, String outputFolder, String stopWordsPath) {
-        this.inputFolder = inputFolder;
-        this.outputFolder = outputFolder;
-        stopwordsCharArray = new CharArraySet(ConfigHelper.loadStopWords(stopWordsPath), true);
-        documentObjectList = new LinkedList<>();
-    }
+  public Text2Avro(String inputFolder, String outputFolder, String stopWordsPath) {
+    this.inputFolder = inputFolder;
+    this.outputFolder = outputFolder;
+    stopwordsCharArray = new CharArraySet(ConfigHelper.loadStopWords(stopWordsPath), true);
+    documentObjectList = new LinkedList<>();
+  }
 
-    @Override
-    public void execute() {
-        File file = new File(inputFolder);
-        Document davro;
-        DocumentAvroSerializer dAvroSerializer = null;
-        if (file.isDirectory()) {
-            File[] filesInDir = file.listFiles();
-            Arrays.sort(filesInDir);
-            for (File f : filesInDir) {
-                if (FilenameUtils.getExtension(f.getName()).endsWith("txt")) {
-                    Path p = Paths.get(f.getAbsolutePath());
-                    BasicFileAttributes attr = null;
-                    try {
-                        attr = Files.readAttributes(p, BasicFileAttributes.class);
-                    } catch (IOException ex) {
-                        Logger.getLogger(Text2Avro.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    FileTime date = attr.creationTime();
+  @Override
+  public void execute() {
+    File file = new File(inputFolder);
+    Document davro;
+    DocumentAvroSerializer dAvroSerializer = null;
+    if (file.isDirectory()) {
+      File[] filesInDir = file.listFiles();
+      Arrays.sort(filesInDir);
+      for (File f : filesInDir) {
+        if (FilenameUtils.getExtension(f.getName()).endsWith("txt")) {
+          Path p = Paths.get(f.getAbsolutePath());
+          BasicFileAttributes attr = null;
+          try {
+            attr = Files.readAttributes(p, BasicFileAttributes.class);
+          } catch (IOException ex) {
+            Logger.getLogger(Text2Avro.class.getName()).log(Level.SEVERE, null, ex);
+          }
+          FileTime date = attr.creationTime();
 
 //                    DateTimeFormatter formatter
 //                            = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 //                    DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-                    documentObject = new DocumentObject();
-                    extract(this.getDocumentObject(), f.getPath());
-                    documentObject.setDescription(documentObject.getDescription().toLowerCase());
-                    clean(this.getDocumentObject().getDescription());
-                    if (documentObject.getDescription().equals("")) {
-                        continue;
-                    }
+          documentObject = new DocumentObject();
+          extract(this.getDocumentObject(), f.getPath());
+          documentObject.setDescription(documentObject.getDescription().toLowerCase());
+          clean(this.getDocumentObject().getDescription());
+          if (documentObject.getDescription().equals("")) {
+            continue;
+          }
 //                    documentObject.setDate(LocalDate.parse(date.toString(), formatter));
-                    documentObjectList.add(this.getDocumentObject());
+          documentObjectList.add(this.getDocumentObject());
 
-                    davro = new Document();
-                    davro.setDocumentId(documentObject.getDocumentId());
-                    davro.setTitle(documentObject.getTitle());
-                    davro.setDate(documentObject.getDate().toString());
-                    davro.setDescription(documentObject.getDescription());
+          davro = new Document();
+          davro.setDocumentId(documentObject.getDocumentId());
+          davro.setTitle(documentObject.getTitle());
+          davro.setDate(documentObject.getDate().toString());
+          davro.setDescription(documentObject.getDescription());
 
-                    if (dAvroSerializer == null) {
-                        dAvroSerializer = new DocumentAvroSerializer(outputFolder + File.separator + documentObject.getTitle() + date + ".avro", davro.getSchema());
-                    }
-                    dAvroSerializer.serialize(davro);
-                }
-            }
-            if (dAvroSerializer != null) {
-                dAvroSerializer.close();
-                dAvroSerializer = null;
-            }
-
-        } else {
-            System.out.println("NOT A DIRECTORY");
+          if (dAvroSerializer == null) {
+            dAvroSerializer = new DocumentAvroSerializer(outputFolder + File.separator + documentObject.getTitle() + date + ".avro", davro.getSchema());
+          }
+          dAvroSerializer.serialize(davro);
         }
-    }
-
-    @Override
-    public void extract(DocumentObject jp, String filePath) {
-        Extractor extractorTitle = new Title();
-        extractorTitle.setJp(jp);
-        extractorTitle.setFilePath(filePath);
-        extractorTitle.readFromFile();
-        extractorTitle.extract();
-
-        Extractor extractorDate = new Date();
-        extractorDate.setJp(extractorTitle.getJp());
-        extractorDate.extract();
-
-        Extractor extractorText = new Text();
-        extractorText.setJp(extractorDate.getJp());
-        extractorText.extract();
-    }
-
-    @Override
-    public void clean(String description) {
-        Cleaner cleanStopWord = new StopWord(stopwordsCharArray);
-        cleanStopWord.setDescription(description);
-        documentObject.setDescription(cleanStopWord.execute());
-        Cleaner cleanStanfordLemmatizer = new StanfordLemmatizer();
-        cleanStanfordLemmatizer.setDescription(documentObject.getDescription());
-        documentObject.setDescription(cleanStanfordLemmatizer.execute());
+      }
+      if (dAvroSerializer != null) {
+        dAvroSerializer.close();
+        dAvroSerializer = null;
+      }
 
     }
+  }
 
-    private DocumentObject getDocumentObject() {
-        return documentObject;
-    }
+  @Override
+  public void extract(DocumentObject jp, String filePath) {
+    Extractor extractorTitle = new Title();
+    extractorTitle.setJp(jp);
+    extractorTitle.setFilePath(filePath);
+    extractorTitle.readFromFile();
+    extractorTitle.extract();
+
+    Extractor extractorDate = new Date();
+    extractorDate.setJp(extractorTitle.getJp());
+    extractorDate.extract();
+
+    Extractor extractorText = new Text();
+    extractorText.setJp(extractorDate.getJp());
+    extractorText.extract();
+  }
+
+  @Override
+  public void clean(String description) {
+    Cleaner cleanStopWord = new StopWord(stopwordsCharArray);
+    cleanStopWord.setDescription(description);
+    documentObject.setDescription(cleanStopWord.execute());
+    Cleaner cleanStanfordLemmatizer = new StanfordLemmatizer();
+    cleanStanfordLemmatizer.setDescription(documentObject.getDescription());
+    documentObject.setDescription(cleanStanfordLemmatizer.execute());
+
+  }
+
+  private DocumentObject getDocumentObject() {
+    return documentObject;
+  }
 
 }

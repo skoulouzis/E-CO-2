@@ -137,10 +137,6 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
       conf.set("mapred.job.tracker", "local");
       conf.set("fs.defaultFS", "file:///");
     }
-
-//    for (Map.Entry<String, String> entry : conf) {
-//      System.out.println(entry.getKey() + " = " + entry.getValue());
-//    }
     return conf;
   }
 

@@ -16,8 +16,6 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.avro.mapred.AvroKey;
@@ -61,15 +59,13 @@ public class TermFrequencyMapper extends Mapper<AvroKey<Document>, NullWritable,
         cleanLemmatisation = new StanfordLemmatizer();
       }
     }
-
-    Logger.getLogger(WordFrequencyInDocDriver.class.getName()).log(Level.INFO, "terms array has :{0} elemnts", TERMS.size());
   }
 
   @Override
   public void map(AvroKey<Document> key, NullWritable value, Context context) throws IOException, InterruptedException {
     String documentId = key.datum().getDocumentId().toString();
     String description = key.datum().getDescription().toString().toLowerCase();
-    
+
     for (String s : TERMS) {
       s = trim(s.replaceAll("_", " "));
       cleanStopWord.setDescription(s);

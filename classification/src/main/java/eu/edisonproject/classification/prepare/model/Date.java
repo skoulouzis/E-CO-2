@@ -16,7 +16,6 @@
 package eu.edisonproject.classification.prepare.model;
 
 //import java.time.LocalDate;
-
 import org.joda.time.LocalDate;
 
 //import java.time.format.DateTimeParseException;
@@ -26,29 +25,20 @@ import org.joda.time.LocalDate;
  */
 public class Date extends Extractor {
 
-    LocalDate date;
+  LocalDate date;
 
-    public Date() {
-        date = LocalDate.now();
+  public Date() {
+    date = LocalDate.now();
+  }
+
+  @Override
+  public void extract() {
+    if (this.getJp().getDescription().contains(" date") == true) {
+      int start = this.getJp().getDescription().indexOf(" date");
+      date = LocalDate.parse(this.getJp().getDescription().substring(start, start + 50));
     }
 
-    public void extract() {
-        /*Document doc = Jsoup.parse(this.getJp().getDescription());
-		Element link = doc.select("date").first();
-		String text = doc.body().text(); 
-		System.out.println(text);
-         */
-        if (this.getJp().getDescription().contains(" date") == true) {
-            int start = this.getJp().getDescription().indexOf(" date");
-            try {
-                date = LocalDate.parse(this.getJp().getDescription().substring(start, start + 50));
-                //System.out.println("F"+ date);
-            } catch (Exception e) {
-                //System.out.println("Exception date can't be parsed in LocalDate");
-            }
-        }
-
-        this.getJp().setDate(date);
-    }
+    this.getJp().setDate(date);
+  }
 
 }

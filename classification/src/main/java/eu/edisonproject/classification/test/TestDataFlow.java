@@ -18,20 +18,19 @@ package eu.edisonproject.classification.test;
 import eu.edisonproject.classification.flow.model.DataFlow;
 import eu.edisonproject.classification.flow.model.IDataFlow;
 import java.io.File;
+
 /**
- * 
+ *
  * @author Michele Sparamonti (michele.sparamonti@eng.it)
  */
 public class TestDataFlow {
 
-	public static void execute(String[] args){
-		IDataFlow idf = new DataFlow();
-                String inputFolder = args[0]+File.separator+"etc"+File.separator+"Classification"+File.separator+"Job Post"+File.separator;
-		String outputFolder = args[0]+File.separator+"etc"+File.separator+"Classification"+File.separator+"Avro Document"+File.separator;
-                //String stopWordPath = ".."+File.separator+"etc"+File.separator+"stopwords.csv";
-                System.out.println("TEST DATA FLOW");
-                System.out.println(inputFolder);
-                idf.dataPreProcessing(inputFolder,outputFolder, args[0]);
-	}
-	
+  public static void execute(String[] args) {
+    IDataFlow idf = new DataFlow();
+    String inputFolder = args[0] + File.separator + "etc" + File.separator + "Classification" + File.separator + "Job Post" + File.separator;
+    String outputFolder = args[0] + File.separator + "etc" + File.separator + "Classification" + File.separator + "Avro Document" + File.separator;
+    //String stopWordPath = ".."+File.separator+"etc"+File.separator+"stopwords.csv";
+    idf.dataPreProcessing(inputFolder, outputFolder, args[0]);
+  }
+
 }

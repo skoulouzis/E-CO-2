@@ -53,7 +53,7 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
       String valueString = pairKeyValue[1];
       context.write(new Text(keyValues[0]), new Text(outKey + valueString));
     }
-  } // end of mapper class
+  }
 
 //	public static class WordsInCorpusTFIDFReducer extends Reducer<Text, Text, AvroKey<Text>, AvroValue<Tfidf>> {
   public static class WordsInCorpusTFIDFReducer extends Reducer<Text, Text, Text, Text> {
@@ -77,10 +77,8 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
         String[] documentAndFrequencies = val.toString().split("@");
         numberOfDocumentsInCorpusWhereKeyAppears++;
         tempFrequencies.put(documentAndFrequencies[0], documentAndFrequencies[1]);
-//                tempFrequencies.put(documentAndFrequencies[0] + "@" + documentAndFrequencies[1] + "@" + documentAndFrequencies[2], documentAndFrequencies[3]);
       }
 
-//            String lineValue = "";
       for (String document : tempFrequencies.keySet()) {
         String[] wordFrequenceAndTotalWords = tempFrequencies.get(document).split("/");
 
@@ -94,12 +92,8 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
         double tfIdf = numberOfDocumentsInCorpus == numberOfDocumentsInCorpusWhereKeyAppears
                 ? tf : tf * Math.log10(idf);
 
-//                String[] documentFields = document.split("@");
-//                lineValue += documentFields[0] + ";" + key.toString() + ";" + DF.format(tfIdf) + "\n";
-//                String newKey = documentFields[0] + "@" + documentFields[1] + "@" + documentFields[2];
         String newKey = document;
         String newValue = key.toString() + "/" + DF.format(tfIdf);
-        System.err.println(newKey + "," + newValue);
         context.write(new Text(newKey), new Text(newValue));
 
       }
