@@ -59,6 +59,19 @@
             <version>${lzo-hadoop.version}</version>
             <optional>true</optional>
         </dependency>
+        
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+            <version>1.7.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro-mapred</artifactId>
+            <version>1.7.7</version>
+            <classifier>hadoop2</classifier>
+        </dependency>
+        
         <!--  #############################-->
         
         <dependency>
@@ -144,11 +157,14 @@
                         </goals>
                     </execution>
                 </executions>
+
+
                 <configuration>
                     <executable>java</executable>
+                    <mainClass>eu.edisonproject.rest.ECO2Server</mainClass>
                     <arguments>
                         <argument>-classpath</argument>
-                        <argument>target/rest-1.0-SNAPSHOT-jar-with-dependencies.jar</argument>
+                        <classpath/>
                     </arguments>
                 </configuration>
             </plugin>
