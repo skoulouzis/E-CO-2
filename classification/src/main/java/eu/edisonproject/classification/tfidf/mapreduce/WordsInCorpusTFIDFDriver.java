@@ -111,7 +111,7 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
 
   private Job getJob(String[] args) throws IOException {
     Configuration conf = getConf();
-    conf = addPropertiesToConf(conf, args[3]);
+//    conf = addPropertiesToConf(conf, args[3]);
     conf.set("number.of.documents", args[2]);
     Job job = Job.getInstance(conf);
 

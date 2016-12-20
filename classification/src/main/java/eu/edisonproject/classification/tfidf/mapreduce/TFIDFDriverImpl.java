@@ -38,11 +38,6 @@ import org.apache.hadoop.util.ToolRunner;
  */
 public class TFIDFDriverImpl {
 
-//  public static String INPUT_ITEMSET;
-//  public static String categotiesPath;
-//  public static String numOfLines;
-//  public static String stopwordsPath = ".." + File.separator + "etc" + File.separator + "stopwords.csv";
-//  public String OUT;
   /**
    *
    * @param inputPath
@@ -77,7 +72,7 @@ public class TFIDFDriverImpl {
       } else {
         Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Starting TermWordFrequency");
         String[] args1 = {itemsetFilePath, wordFreqOutPath, inputPath, stopwordsPath, numOfLines, etcHadoop};
-        ToolRunner.run(new TermWordFrequency(), args1);
+        ToolRunner.run(new TermFrequency(), args1);
       }
       String docFreqOutputPath = System.currentTimeMillis() + "_" + UUID.randomUUID() + "-TFIDFDriverImpl-2-word-counts";
       String[] args2 = {wordFreqOutPath, docFreqOutputPath, etcHadoop};

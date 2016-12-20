@@ -61,7 +61,7 @@ public class ECO2Server {
   private static Server startServer(String[] args) throws IOException {
     MyProperties props = null;
     Integer port = 9999;
-    if (args != null) {
+    if (args != null && args.length > 0) {
       props = ConfigHelper.getProperties(args[0]);
       port = Integer.valueOf(props.getProperty("e-co-2.server.port", "9999"));
     }

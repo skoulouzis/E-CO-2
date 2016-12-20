@@ -23,7 +23,6 @@ import document.avro.Document;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.Map;
 import org.apache.avro.mapreduce.AvroJob;
 import org.apache.avro.mapreduce.AvroKeyInputFormat;
 import org.apache.hadoop.conf.Configuration;
@@ -51,7 +50,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 
   private Job getJob(String[] args) throws IOException {
     Configuration conf = getConf();
-    conf = addPropertiesToConf(conf, args[4]);
+//    conf = addPropertiesToConf(conf, args[4]);
 
     Job job = Job.getInstance(conf);
 
@@ -137,11 +136,6 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 //      conf.set("mapred.job.tracker", "local");
 //      conf.set("fs.defaultFS", "file:///");
     }
-    conf.set("fmapreduce.job.ubertask.enable", "true");
-    conf.set("mapreduce.job.ubertask.maxmaps", "9");
-    conf.set("mapreduce.job.ubertask.maxreduces", "1");
-    conf.set("mapreduce.job.ubertask.maxbytes", "4096");
-
     return conf;
   }
 

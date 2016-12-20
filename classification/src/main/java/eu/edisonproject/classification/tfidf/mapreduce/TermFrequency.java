@@ -48,7 +48,7 @@ import org.apache.hadoop.mapreduce.lib.input.NLineInputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.lucene.analysis.util.CharArraySet;
 
-public class TermWordFrequency extends Configured implements Tool {
+public class TermFrequency extends Configured implements Tool {
 
   // hashmap for the terms
   private static StopWord cleanStopWord;
@@ -169,7 +169,7 @@ public class TermWordFrequency extends Configured implements Tool {
 
   private Job getJob(String[] args) throws IOException {
     Configuration conf = getConf();
-    conf = addPropertiesToConf(conf, args[5]);
+//    conf = addPropertiesToConf(conf, args[5]);
     Job job = Job.getInstance(conf);
 
     Configuration jobconf = getConf();
@@ -213,7 +213,7 @@ public class TermWordFrequency extends Configured implements Tool {
 
     job.addCacheFile(hdfsDocs.toUri());
 
-    job.setJarByClass(TermWordFrequency.class);
+    job.setJarByClass(TermFrequency.class);
     job.setJobName(this.getClass().getName());
 
     FileInputFormat.setInputPaths(job, dictionaryHdfs);

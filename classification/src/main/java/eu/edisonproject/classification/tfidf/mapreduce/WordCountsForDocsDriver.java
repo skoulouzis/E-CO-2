@@ -93,7 +93,7 @@ public class WordCountsForDocsDriver extends Configured implements Tool {
 
   private Job getJob(String[] args) throws IOException {
     Configuration conf = getConf();
-    conf = addPropertiesToConf(conf, args[2]);
+//    conf = addPropertiesToConf(conf, args[2]);
     Job job = Job.getInstance(conf);
 
     job.setJarByClass(WordCountsForDocsDriver.class);
