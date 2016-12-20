@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package eu.edisonproject.rest;
 
@@ -25,7 +20,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
@@ -202,7 +196,7 @@ public class ECO2Controller {
     }
     File resultFile = new File(targetFolder + File.separator + JSON_FILE_NAME);
     if (!resultFile.exists()) {
-      return Response.accepted().build().getStatus() + "";
+      return "202";
     }
     ReaderFile rf = new ReaderFile(resultFile.getAbsolutePath());
     return rf.readFile();
