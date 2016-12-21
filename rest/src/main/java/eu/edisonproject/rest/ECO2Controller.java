@@ -40,6 +40,7 @@ public class ECO2Controller {
   public static File cvClassisifcationFolder;
   public static File jobClassisifcationFolder;
   public static File courseClassisifcationFolder;
+  public static File jobAverageFolder;
 
   public ECO2Controller() throws IOException {
 
@@ -60,6 +61,7 @@ public class ECO2Controller {
     baseClassisifcationFolder = new File(baseClassificationFolderPath);
     cvClassisifcationFolder = new File(baseClassisifcationFolder.getAbsolutePath() + File.separator + "cv");
     jobClassisifcationFolder = new File(baseClassisifcationFolder.getAbsolutePath() + File.separator + "job");
+    jobAverageFolder = new File(baseClassisifcationFolder.getAbsolutePath() + File.separator + "jobAvg");
     courseClassisifcationFolder = new File(baseClassisifcationFolder.getAbsolutePath() + File.separator + "course");
 
     String propertiesPath = props.getProperty("properties.file", System.getProperty("user.home")
@@ -244,6 +246,14 @@ public class ECO2Controller {
       Logger.getLogger(ECO2Controller.class.getName()).log(Level.SEVERE, null, ex);
     }
     return null;
+  }
+
+  @GET
+  @Path("/classification/jobs/{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String getJobsList(@PathParam("id") final String classificationId) {
+
+    return "";
   }
 
 }

@@ -77,7 +77,6 @@ public class TFIDFDriverImpl {
       ToolRunner.run(new WordCountsForDocsDriver(), args2);
 
       File docs = new File(inputPath);
-
       File[] files = docs.listFiles(new FilenameFilter() {
         @Override
         public boolean accept(File dir, String name) {
