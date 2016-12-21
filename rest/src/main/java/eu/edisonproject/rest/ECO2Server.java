@@ -6,16 +6,16 @@
 
 package eu.edisonproject.rest;
 
-import com.sun.jersey.spi.container.servlet.ServletContainer;
 import eu.edisonproject.utility.file.ConfigHelper;
 import eu.edisonproject.utility.file.MyProperties;
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.servlet.ServletContainer;
 
 /**
  *
@@ -52,39 +52,37 @@ public class ECO2Server {
     } catch (Exception ex) {
       Logger.getLogger(ECO2Server.class.getName()).log(Level.SEVERE, null, ex);
     } finally {
-      if (server != null && !server.isStopped()) {
+      if (server != null) {
         server.destroy();
       }
+
     }
   }
 
   private static Server startServer(String[] args) throws IOException {
+    ServletContextHandler context = new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
+    context.setContextPath("/");
     MyProperties props = null;
-    Integer port = 9999;
-    if (args != null && args.length > 0) {
-      props = ConfigHelper.getProperties(args[0]);
-      port = Integer.valueOf(props.getProperty("e-co-2.server.port", "9999"));
+    Integer port;
+    String path;
+    if (args != null) {
+      path = args[0];
+    } else {
+      path = System.getProperty("user.home") + File.separator + "workspace"
+              + File.separator + "E-CO-2" + File.separator + "etc" + File.separator + "configure.properties";
     }
-    ResourceConfig config = new ResourceConfig();
-    config.packages("eu.edisonproject.rest");
-    ServletHolder servlet = new ServletHolder(new ServletContainer(config));
 
-    Server server = new Server(port);
-    ServletContextHandler context = new ServletContextHandler(server, "/*");
-    context.addServlet(servlet, "/*");
+    props = ConfigHelper.getProperties(path);
+    port = Integer.valueOf(props.getProperty("e-co-2.server.port", "9999"));
 
-//    ServletContextHandler context = new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
-//    context.setContextPath("/");
-//
-//    Server jettyServer = new Server(port);
-//    jettyServer.setHandler(context);
-//
-//    ServletHolder jerseyServlet = context.addServlet(ServletContainer.class, "/*");
-//    jerseyServlet.setInitOrder(0);
-//
-//    jerseyServlet.setInitParameter("jersey.config.server.provider.packages", "eu.edisonproject.rest");
-//    return jettyServer;
-    return server;
+    Server jettyServer = new Server(port);
+    jettyServer.setHandler(context);
+
+    ServletHolder jerseyServlet = context.addServlet(ServletContainer.class, "/*");
+    jerseyServlet.setInitOrder(0);
+
+    jerseyServlet.setInitParameter("jersey.config.server.provider.packages", "eu.edisonproject.rest");
+    return jettyServer;
   }
 
   private static Thread startTaskWatcher(String dir) throws IOException, InterruptedException {
