@@ -24,7 +24,7 @@ import org.glassfish.jersey.servlet.ServletContainer;
 public class ECO2Server {
 
   public static void main(String[] args) {
-    Thread jobWatcher, jobAvgWatcher, cvWatcher, courseWatcher;
+    Thread jobWatcher, jobAvgWatcher, cvWatcher, courseWatcher, jobProfileWatcher;
     Server server = null;
     try {
       ECO2Controller.initPaths();
@@ -40,12 +40,16 @@ public class ECO2Server {
       jobAvgWatcher = startTaskWatcher(ECO2Controller.jobAverageFolder.getAbsolutePath());
       jobAvgWatcher.start();
 
+      jobProfileWatcher = startTaskWatcher(ECO2Controller.jobProfileFolder.getAbsolutePath());
+      jobProfileWatcher.start();
+      
       server = startServer(args);
       server.start();
       jobWatcher.join();
       cvWatcher.join();
       courseWatcher.join();
       jobAvgWatcher.join();
+      jobProfileWatcher.join();
       server.join();
     } catch (IOException ex) {
       Logger.getLogger(ECO2Server.class.getName()).log(Level.SEVERE, null, ex);

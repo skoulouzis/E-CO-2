@@ -20,6 +20,9 @@
  */
 package eu.edisonproject.classification.main;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import eu.edisonproject.utility.file.MyProperties;
 import eu.edisonproject.classification.distance.CosineSimilarityMatrix;
 import eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl;
@@ -47,6 +50,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.lucene.analysis.util.CharArraySet;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -113,7 +117,7 @@ public class BatchMain {
           break;
         case "p":
 //                    -op p -v2 $HOME/Downloads/msc.csv -v1 $HOME/Downloads/job.csv -p $HOME/workspace/E-CO-2/etc/classification.properties
-          profile(cmd.getOptionValue("v1"), cmd.getOptionValue("v2"));
+          profile(cmd.getOptionValue("v1"), cmd.getOptionValue("v2"), cmd.getOptionValue("output"));
           break;
       }
 
@@ -177,28 +181,63 @@ public class BatchMain {
 
   }
 
-  private static void profile(String csvFile1, String csvFile2) throws IOException, Exception {
+  private static void profile(String csvFile1, String csvFile2, String output) throws IOException, Exception {
     Map<String, Collection<Double>> cv = CSVFileReader.csvCompetanceToMap(csvFile1, ",", Boolean.TRUE);
     Map<String, Collection<Double>> jobVec = CSVFileReader.csvCompetanceToMap(csvFile2, ",", Boolean.TRUE);
     CosineSimilarityMatrix cosineFunction = new CosineSimilarityMatrix();
+
     String k1 = cv.keySet().iterator().next();
     Map<String, Double> winners = new HashMap<>();
     for (String k : jobVec.keySet()) {
       Collection<Double> j = jobVec.get(k);
       double d = cosineFunction.computeDistance(cv.get(k1), j);
-      if (!Double.isNaN(d)) {
-        winners.put(k, d);
-      }
-
+//      if (!Double.isNaN(d)) {
+      winners.put(k, d);
+//      }
     }
+    StringBuilder lines = new StringBuilder();
+    ReaderFile rf = new ReaderFile(csvFile1);
+    lines.append("id").append(",").append("rank").append(",").append(rf.readFileWithN().split("\n")[0]);
+
+    lines.deleteCharAt(lines.length() - 1);
+    lines.setLength(lines.length());
+    lines.append("\n");
 
     System.err.println(k1 + "," + cv.get(k1));
+    int rank = 0;
+
+    JSONObject cvJson = new JSONObject();
+    String val = cv.get(k1).toString().replaceAll("\\[", "").replaceAll("\\]", "");
+    cvJson.put(k1, val);
+    cvJson.put("renk", rank);
+    lines.append(k1).append(",").append(val).append("\n");
     ValueComparator bvc = new ValueComparator(winners);
     Map<String, Double> sorted_map = new TreeMap(bvc);
     sorted_map.putAll(winners);
+    JSONObject sortedJson = new JSONObject();
+
     for (String k : sorted_map.keySet()) {
       System.err.println(k + "," + jobVec.get(k));
+      rank++;
+      val = jobVec.get(k).toString().replaceAll("\\[", "").replaceAll("\\]", "");
+      lines.append(k).append(",").append(rank).append(",").append(val).append("\n");
+      sortedJson.put(k, val);
+      sortedJson.put(rank, rank);
     }
+    WriterFile wf = new WriterFile(output + File.separator + "profile.csv");
+    wf.writeFile(lines.toString());
 
+
+    JsonElement jsonProfile = new JsonObject
+     
+    
+    
+    
+    
+    
+
+    
+    wf = new WriterFile(output + File.separator + "profile.json");
+    wf.writeFile("{" + cvJson.toJSONString() + "}{" + sortedJson.toJSONString() + "}");
   }
 }

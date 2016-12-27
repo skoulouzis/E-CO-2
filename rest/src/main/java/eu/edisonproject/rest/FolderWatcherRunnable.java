@@ -6,8 +6,11 @@
 
 package eu.edisonproject.rest;
 
+import static eu.edisonproject.rest.ECO2Controller.CSV_FILE_NAME;
+import static eu.edisonproject.rest.ECO2Controller.JSON_FILE_NAME;
 import static eu.edisonproject.rest.ECO2Controller.baseCategoryFolder;
 import static eu.edisonproject.rest.ECO2Controller.itemSetFile;
+import static eu.edisonproject.rest.ECO2Controller.jobProfileFolder;
 import static eu.edisonproject.rest.ECO2Controller.propertiesFile;
 import static eu.edisonproject.rest.ECO2Controller.stopwordsFile;
 
@@ -41,6 +44,7 @@ import org.json.simple.JSONObject;
 class FolderWatcherRunnable implements Runnable {
 
   private final String dir;
+  private static final String CSV_AVG_FILENAME = "result_avg.csv";
 
   public FolderWatcherRunnable(String dir) {
     this.dir = dir;
@@ -49,8 +53,6 @@ class FolderWatcherRunnable implements Runnable {
   @Override
   public void run() {
     final Path path = FileSystems.getDefault().getPath(dir);
-    System.out.println(path);
-
     try (final WatchService watchService = FileSystems.getDefault().newWatchService()) {
       final WatchKey watchKey = path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);
       while (true) {
@@ -80,27 +82,36 @@ class FolderWatcherRunnable implements Runnable {
     if (inputFolder.isFile()) {
       txtFile = inputFolder;
       inputFolder = inputFolder.getParentFile();
-      Thread.sleep(500);
+      Thread.sleep(100);
     }
-    String[] args = new String[]{"-op", "c", "-i", inputFolder.getAbsolutePath(),
-      "-o", inputFolder.getAbsolutePath(), "-c", baseCategoryFolder.getAbsolutePath(),
-      "-p", propertiesFile.getAbsolutePath()};
-    if (txtFile == null || txtFile.getName().endsWith(".txt")) {
-      BatchMain.main(args);
 
-      if (inputFolder.getAbsolutePath().equals(ECO2Controller.jobAverageFolder.getAbsolutePath())) {
-        convertMRResultToCSV(new File(inputFolder.getAbsolutePath() + File.separator + "part-r-00000"));
-      }
+    if (!inputFolder.getParent().equals(jobProfileFolder.getAbsolutePath())) {
+      if (txtFile == null || txtFile.getName().endsWith(".txt")) {
+        String[] args = new String[]{"-op", "c", "-i", inputFolder.getAbsolutePath(),
+          "-o", inputFolder.getAbsolutePath(), "-c", baseCategoryFolder.getAbsolutePath(),
+          "-p", propertiesFile.getAbsolutePath()};
 
-      if (inputFolder.getParentFile().getAbsolutePath().equals(ECO2Controller.jobClassisifcationFolder.getAbsolutePath())) {
-        for (File add : inputFolder.listFiles()) {
-          if (add.getName().endsWith(".txt")) {
-            FileUtils.copyFileToDirectory(add, ECO2Controller.jobAverageFolder);
+        BatchMain.main(args);
+        boolean calcAvg = false;
+        if (inputFolder.getAbsolutePath().equals(ECO2Controller.jobAverageFolder.getAbsolutePath())) {
+          calcAvg = true;
+        }
+        convertMRResultToCSV(new File(inputFolder.getAbsolutePath() + File.separator + "part-r-00000"), inputFolder.getAbsolutePath() + File.separator + ECO2Controller.CSV_FILE_NAME, calcAvg);
+
+        if (inputFolder.getParentFile().getAbsolutePath().equals(ECO2Controller.jobClassisifcationFolder.getAbsolutePath())) {
+          for (File add : inputFolder.listFiles()) {
+            if (add.getName().endsWith(".txt")) {
+              FileUtils.copyFileToDirectory(add, ECO2Controller.jobAverageFolder);
+            }
           }
         }
-      }
-      return convertMRResultToJsonFile(inputFolder.getAbsolutePath() + File.separator + "part-r-00000");
+        return convertMRResultToJsonFile(inputFolder.getAbsolutePath() + File.separator + "part-r-00000");
 
+      }
+    } else {
+      String[] args = new String[]{"-op", "p", "-v1", inputFolder.getAbsolutePath() + File.separator + CSV_FILE_NAME,
+        "-v2", inputFolder.getAbsolutePath() + File.separator + "list.csv", "-o", inputFolder.getAbsolutePath(), "-p", propertiesFile.getAbsolutePath()};
+      BatchMain.main(args);
     }
     return null;
   }
@@ -131,7 +142,7 @@ class FolderWatcherRunnable implements Runnable {
 //      JSONObject jo = new JSONObject(catMap);
 //      ja.add(jo);
 //    }
-    File jsonFile = new File(parent.getAbsoluteFile() + File.separator + "result.json");
+    File jsonFile = new File(parent.getAbsoluteFile() + File.separator + JSON_FILE_NAME);
     JSONObject jo = new JSONObject(map);
     try (PrintWriter out = new PrintWriter(jsonFile)) {
       out.print(jo.toJSONString());
@@ -139,7 +150,7 @@ class FolderWatcherRunnable implements Runnable {
     return jsonFile;
   }
 
-  private void convertMRResultToCSV(File mrPartPath) throws IOException {
+  private void convertMRResultToCSV(File mrPartPath, String outputPath, boolean calculateAvg) throws IOException {
     Map<String, Map<String, Double>> map = new HashMap<>();
     Map<String, Double> catSimMap;
     Map<String, List<Double>> avgMap = new HashMap<>();
@@ -178,7 +189,7 @@ class FolderWatcherRunnable implements Runnable {
     header.deleteCharAt(header.length() - 1);
     header.setLength(header.length());
 
-    File csvFile = new File(mrPartPath.getParent() + File.separator + "jobs.csv");
+    File csvFile = new File(outputPath);
     try (PrintWriter out = new PrintWriter(csvFile)) {
       out.println(header);
       for (String fName : fileNames) {
@@ -195,21 +206,23 @@ class FolderWatcherRunnable implements Runnable {
         out.println(csvLine.toString());
       }
     }
-
-    csvFile = new File(mrPartPath.getParent() + File.separator + "jobsAvg.csv");
-    try (PrintWriter out = new PrintWriter(csvFile)) {
-      Set<String> keys = avgMap.keySet();
-      for (String k : keys) {
-        List<Double> list = avgMap.get(k);
-        Double sum = 0d;
-        for (Double val : list) {
-          if (!val.isNaN()) {
-            sum += val;
+    if (calculateAvg) {
+      csvFile = new File(mrPartPath.getParent() + File.separator + CSV_AVG_FILENAME);
+      try (PrintWriter out = new PrintWriter(csvFile)) {
+        Set<String> keys = avgMap.keySet();
+        for (String k : keys) {
+          List<Double> list = avgMap.get(k);
+          Double sum = 0d;
+          for (Double val : list) {
+            if (!val.isNaN()) {
+              sum += val;
+            }
           }
+          Double avg = sum / (list.size());
+          out.println(k + "," + String.valueOf(avg));
         }
-        Double avg = sum / (list.size());
-        out.println(k + "," + String.valueOf(avg));
       }
     }
+
   }
 }

@@ -7,6 +7,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
@@ -20,6 +24,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
@@ -32,15 +38,17 @@ import org.json.simple.parser.ParseException;
 public class ECO2Controller {
 
   public static File baseCategoryFolder;
-  public static File baseClassisifcationFolder;
+  public static File baseFolder;
   public static File propertiesFile;
   public static File itemSetFile;
   public static File stopwordsFile;
-  private static final String JSON_FILE_NAME = "result.json";
+  public static final String JSON_FILE_NAME = "result.json";
+  public static final String CSV_FILE_NAME = "result.csv";
   public static File cvClassisifcationFolder;
   public static File jobClassisifcationFolder;
   public static File courseClassisifcationFolder;
   public static File jobAverageFolder;
+  public static File jobProfileFolder;
 
   public ECO2Controller() throws IOException {
 
@@ -58,11 +66,13 @@ public class ECO2Controller {
             System.getProperty("user.home")
             + File.separator + "Downloads" + File.separator + "classificationFiles"
             + File.separator);
-    baseClassisifcationFolder = new File(baseClassificationFolderPath);
-    cvClassisifcationFolder = new File(baseClassisifcationFolder.getAbsolutePath() + File.separator + "cv");
-    jobClassisifcationFolder = new File(baseClassisifcationFolder.getAbsolutePath() + File.separator + "job");
-    jobAverageFolder = new File(baseClassisifcationFolder.getAbsolutePath() + File.separator + "jobAvg");
-    courseClassisifcationFolder = new File(baseClassisifcationFolder.getAbsolutePath() + File.separator + "course");
+    baseFolder = new File(baseClassificationFolderPath);
+    cvClassisifcationFolder = new File(baseFolder.getAbsolutePath() + File.separator + "cv");
+
+    jobClassisifcationFolder = new File(baseFolder.getAbsolutePath() + File.separator + "job");
+    jobAverageFolder = new File(baseFolder.getAbsolutePath() + File.separator + "jobAvg");
+    jobProfileFolder = new File(baseFolder.getAbsolutePath() + File.separator + "jobProfile");
+    courseClassisifcationFolder = new File(baseFolder.getAbsolutePath() + File.separator + "course");
 
     String propertiesPath = props.getProperty("properties.file", System.getProperty("user.home")
             + File.separator + "workspace" + File.separator + "E-CO-2" + File.separator
@@ -128,7 +138,7 @@ public class ECO2Controller {
 //      long now = System.currentTimeMillis();
 //      UUID uid = UUID.randomUUID();
 //      String classificationId = String.valueOf(now) + "_" + uid.toString();
-//      File classificationFolder = new File(baseClassisifcationFolder.getAbsoluteFile() + File.separator + classificationId);
+//      File classificationFolder = new File(baseFolder.getAbsoluteFile() + File.separator + classificationId);
 //      classificationFolder.mkdir();
 //      for (Object obj : docs) {
 //        JSONObject doc = (JSONObject) obj;
@@ -183,20 +193,9 @@ public class ECO2Controller {
   @Path("/classification/{id}")
   @Produces(MediaType.APPLICATION_JSON)
   public String get(@PathParam("id") final String classificationId) {
-    FolderSearch fs = new FolderSearch(baseClassisifcationFolder, classificationId, true);
-    File targetFolder;
-    try {
-      Set<String> res = fs.search();
-      targetFolder = new File(res.iterator().next());
-    } catch (IOException ex) {
-      Logger.getLogger(ECO2Controller.class.getName()).log(Level.SEVERE, null, ex);
-      throw new NotFoundException(String.format("Classification %s not found", classificationId));
-    }
 
-    if (!targetFolder.exists()) {
-      throw new NotFoundException(String.format("Classification %s not found", classificationId));
-    }
-    File resultFile = new File(targetFolder + File.separator + JSON_FILE_NAME);
+    File resultFile = getFile(classificationId, "json");
+
     if (!resultFile.exists()) {
       return "202";
     }
@@ -205,25 +204,61 @@ public class ECO2Controller {
 
   }
 
+  private String profile(String id, String docType) throws IOException {
+    File avgFolder = null;
+    File trgFolder = null;
+    switch (docType) {
+      case "cv":
+        break;
+      case "job":
+        avgFolder = jobAverageFolder;
+        trgFolder = jobProfileFolder;
+        break;
+      case "course":
+        break;
+    }
+
+    long now = System.currentTimeMillis();
+    UUID uid = UUID.randomUUID();
+    String prpfileId = String.valueOf(now) + "_" + uid.toString();
+
+    File targetCsvFile = getFile(id, "csv");
+    File listFile = new File(avgFolder + File.separator + CSV_FILE_NAME);
+    if (!listFile.exists()) {
+      throw new NotFoundException("Analisis not found");
+    }
+
+    FileUtils.copyFileToDirectory(listFile, new File(System.getProperty("java.io.tmpdir")));
+    File renamedListFile = new File(System.getProperty("java.io.tmpdir") + File.separator + "list.csv");
+    FileUtils.moveFile(new File(System.getProperty("java.io.tmpdir") + File.separator + CSV_FILE_NAME), renamedListFile);
+    File profileFolder = new File(trgFolder + File.separator + prpfileId);
+    FileUtils.moveFileToDirectory(renamedListFile, profileFolder, true);
+    FileUtils.copyFileToDirectory(targetCsvFile, profileFolder, true);
+
+    return prpfileId;
+  }
+
   private String classify(String jsonString, String docType) {
     try {
-      File classisifcationFolder = null;
+      File folder = null;
       switch (docType) {
         case "cv":
-          classisifcationFolder = cvClassisifcationFolder;
+          folder = cvClassisifcationFolder;
           break;
         case "job":
-          classisifcationFolder = jobClassisifcationFolder;
+          folder = jobClassisifcationFolder;
           break;
         case "course":
-          classisifcationFolder = courseClassisifcationFolder;
+          folder = courseClassisifcationFolder;
+          break;
       }
+
       JSONObject ja = (JSONObject) JSONValue.parseWithException(jsonString);
       long now = System.currentTimeMillis();
       UUID uid = UUID.randomUUID();
       String classificationId = String.valueOf(now) + "_" + uid.toString();
 
-      File classificationFolder = new File(classisifcationFolder.getAbsoluteFile() + File.separator + classificationId);
+      File classificationFolder = new File(folder.getAbsoluteFile() + File.separator + classificationId);
       classificationFolder.mkdir();
 
       JSONObject doc = (JSONObject) ja;
@@ -242,6 +277,7 @@ public class ECO2Controller {
       return classificationId;
     } catch (ParseException | FileNotFoundException ex) {
       Logger.getLogger(ECO2Controller.class.getName()).log(Level.SEVERE, null, ex);
+      throw new javax.ws.rs.ServerErrorException("Malformed JSON message", Response.serverError().build());
     } catch (Exception ex) {
       Logger.getLogger(ECO2Controller.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -249,11 +285,38 @@ public class ECO2Controller {
   }
 
   @GET
-  @Path("/classification/jobs/{id}")
+  @Path("/profile/jobs/{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public String getJobsList(@PathParam("id") final String classificationId) {
+  public String getJobsList(@PathParam("id") final String classificationId) throws ParseException, IOException {
+    return profile(classificationId, "job");
+  }
 
-    return "";
+  private File getFile(String classificationId, String type) {
+    FolderSearch fs = new FolderSearch(baseFolder, classificationId, true);
+    File targetFolder;
+    try {
+      Set<String> res = fs.search();
+      if (!res.isEmpty()) {
+        targetFolder = new File(res.iterator().next());
+      } else {
+        throw new NotFoundException(String.format("Classification %s not found", classificationId));
+      }
+    } catch (IOException ex) {
+      Logger.getLogger(ECO2Controller.class.getName()).log(Level.SEVERE, null, ex);
+      throw new NotFoundException(String.format("Classification %s not found", classificationId));
+    }
+
+    if (!targetFolder.exists()) {
+      throw new NotFoundException(String.format("Classification %s not found", classificationId));
+    }
+    switch (type) {
+      case "json":
+        return new File(targetFolder + File.separator + JSON_FILE_NAME);
+      case "csv":
+        return new File(targetFolder + File.separator + CSV_FILE_NAME);
+    }
+
+    return null;
   }
 
 }
