@@ -7,10 +7,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
@@ -192,7 +188,7 @@ public class ECO2Controller {
   @GET
   @Path("/classification/{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public String get(@PathParam("id") final String classificationId) {
+  public String getClassification(@PathParam("id") final String classificationId) {
 
     File resultFile = getFile(classificationId, "json");
 
@@ -202,6 +198,20 @@ public class ECO2Controller {
     ReaderFile rf = new ReaderFile(resultFile.getAbsolutePath());
     return rf.readFile();
 
+  }
+
+  @GET
+  @Path("/profile/{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String getProfile(@PathParam("id") final String classificationId) {
+
+    File resultFile = getFile(classificationId, "json");
+
+    if (!resultFile.exists()) {
+      return "202";
+    }
+    ReaderFile rf = new ReaderFile(resultFile.getAbsolutePath());
+    return rf.readFile();
   }
 
   private String profile(String id, String docType) throws IOException {
