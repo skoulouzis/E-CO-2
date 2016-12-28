@@ -20,9 +20,6 @@
  */
 package eu.edisonproject.classification.main;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import eu.edisonproject.utility.file.MyProperties;
 import eu.edisonproject.classification.distance.CosineSimilarityMatrix;
 import eu.edisonproject.classification.tfidf.mapreduce.TFIDFDriverImpl;
@@ -37,8 +34,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,6 +49,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.lucene.analysis.util.CharArraySet;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
@@ -197,47 +197,59 @@ public class BatchMain {
     }
     StringBuilder lines = new StringBuilder();
     ReaderFile rf = new ReaderFile(csvFile1);
-    lines.append("id").append(",").append("rank").append(",").append(rf.readFileWithN().split("\n")[0]);
-
-    lines.deleteCharAt(lines.length() - 1);
-    lines.setLength(lines.length());
+    String fileHeader = rf.readFileWithN().split("\n")[0];
+    String[] header = fileHeader.split(",");
+    lines.append("rank").append(",");
+    lines.append(fileHeader);
     lines.append("\n");
 
-    System.err.println(k1 + "," + cv.get(k1));
     int rank = 0;
 
     JSONObject cvJson = new JSONObject();
-    String val = cv.get(k1).toString().replaceAll("\\[", "").replaceAll("\\]", "");
-    cvJson.put(k1, val);
-    cvJson.put("renk", rank);
-    lines.append(k1).append(",").append(val).append("\n");
+    Collection<Double> vector = cv.get(k1);
+    String val = vector.toString().replaceAll("\\[", "").replaceAll("\\]", "");
+    lines.append(rank).append(",").append(k1).append(",").append(val).append("\n");
+    Iterator<Double> iter = vector.iterator();
+    int i = 0;
+    cvJson.put(header[i++], k1);
+    while (iter.hasNext()) {
+      String key = header[i++];
+      Double value = iter.next();
+      cvJson.put(key, value);
+//      System.err.println(key + "," + value);
+    }
+    cvJson.put("rank", rank);
+    System.err.println(cvJson.toJSONString());
+    JSONArray profileJson = new JSONArray();
+    profileJson.add(cvJson);
     ValueComparator bvc = new ValueComparator(winners);
     Map<String, Double> sorted_map = new TreeMap(bvc);
     sorted_map.putAll(winners);
-    JSONObject sortedJson = new JSONObject();
 
     for (String k : sorted_map.keySet()) {
-      System.err.println(k + "," + jobVec.get(k));
+      JSONObject jobJason = new JSONObject();
       rank++;
-      val = jobVec.get(k).toString().replaceAll("\\[", "").replaceAll("\\]", "");
-      lines.append(k).append(",").append(rank).append(",").append(val).append("\n");
-      sortedJson.put(k, val);
-      sortedJson.put(rank, rank);
+      vector = jobVec.get(k);
+      val = vector.toString().replaceAll("\\[", "").replaceAll("\\]", "");
+      lines.append(rank).append(",").append(k).append(",").append(val).append("\n");
+
+      i = 0;
+      jobJason.put(header[i++], k);
+      iter = vector.iterator();
+      while (iter.hasNext()) {
+        String key = header[i++];
+        Double value = iter.next();
+        jobJason.put(key, value);
+//        System.err.println(key + "," + value);
+      }
+      jobJason.put("rank", rank);
+      System.err.println(jobJason.toJSONString());
+      profileJson.add(jobJason);
     }
-    WriterFile wf = new WriterFile(output + File.separator + "profile.csv");
+    WriterFile wf = new WriterFile(output + File.separator + "result.csv");
     wf.writeFile(lines.toString());
 
-
-    JsonElement jsonProfile = new JsonObject
-     
-    
-    
-    
-    
-    
-
-    
-    wf = new WriterFile(output + File.separator + "profile.json");
-    wf.writeFile("{" + cvJson.toJSONString() + "}{" + sortedJson.toJSONString() + "}");
+    wf = new WriterFile(output + File.separator + "result.json");
+    wf.writeFile(profileJson.toJSONString());
   }
 }
