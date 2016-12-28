@@ -69,7 +69,12 @@
             <version>4.2.6.RELEASE</version>
             <type>jar</type>
         </dependency>
-
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>1.5.0</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
             
     <build>

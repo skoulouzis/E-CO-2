@@ -3,6 +3,8 @@ package eu.edisonproject.rest;
 
 import eu.edisonproject.utility.file.FolderSearch;
 import eu.edisonproject.utility.file.ReaderFile;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.Authorization;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -45,6 +47,10 @@ public class ECO2Controller {
   public static File courseClassisifcationFolder;
   public static File jobAverageFolder;
   public static File jobProfileFolder;
+  public static File cvAverageFolder;
+  public static File cvProfileFolder;
+  public static File courseAverageFolder;
+  public static File courseProfileFolder;
 
   public ECO2Controller() throws IOException {
 
@@ -64,11 +70,16 @@ public class ECO2Controller {
             + File.separator);
     baseFolder = new File(baseClassificationFolderPath);
     cvClassisifcationFolder = new File(baseFolder.getAbsolutePath() + File.separator + "cv");
+    cvAverageFolder = new File(baseFolder.getAbsolutePath() + File.separator + "cvAvg");
+    cvProfileFolder = new File(baseFolder.getAbsolutePath() + File.separator + "cvProfile");
 
     jobClassisifcationFolder = new File(baseFolder.getAbsolutePath() + File.separator + "job");
     jobAverageFolder = new File(baseFolder.getAbsolutePath() + File.separator + "jobAvg");
     jobProfileFolder = new File(baseFolder.getAbsolutePath() + File.separator + "jobProfile");
+
     courseClassisifcationFolder = new File(baseFolder.getAbsolutePath() + File.separator + "course");
+    courseAverageFolder = new File(baseFolder.getAbsolutePath() + File.separator + "courseAvg");
+    courseProfileFolder = new File(baseFolder.getAbsolutePath() + File.separator + "courseProfile");
 
     String propertiesPath = props.getProperty("properties.file", System.getProperty("user.home")
             + File.separator + "workspace" + File.separator + "E-CO-2" + File.separator
@@ -86,84 +97,10 @@ public class ECO2Controller {
     stopwordsFile = new File(stopwordsPath);
   }
 
-  //  @GET
-//  @Path("/taxonomy")
-//  @Produces(MediaType.APPLICATION_JSON)
-//  public String available() {
-//    JSONArray ja = new JSONArray();
-//    Iterator<File> iter = FileUtils.iterateFiles(baseCategoryFolder, new String[]{"csv", "desc"}, true);
-//    while (iter.hasNext()) {
-//      File f = iter.next();
-//      Map<String, String> map = new HashMap();
-//      if (f.getName().endsWith("csv")) {
-//        map.put("name", FilenameUtils.removeExtension(f.getName()));
-//      }
-//      if (f.getName().endsWith("desc")) {
-//        try (BufferedReader br = new BufferedReader(new FileReader(f))) {
-//          StringBuilder sb = new StringBuilder();
-//          String line = br.readLine();
-//
-//          while (line != null) {
-//            sb.append(line).append(" ");
-//            line = br.readLine();
-//          }
-//          String everything = sb.toString();
-//          map.put("description", everything);
-//        } catch (FileNotFoundException ex) {
-//          Logger.getLogger(ECO2Controller.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (IOException ex) {
-//          Logger.getLogger(ECO2Controller.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//      }
-//      if (map.size() > 0) {
-//        JSONObject jo = new JSONObject(map);
-//        ja.add(jo);
-//      }
-//    }
-//    return ja.toString();
-//  }
-//
-//  @POST
-//  @Consumes(MediaType.APPLICATION_JSON)
-//  @Path("/classification/bulk")
-//  public final String classifyBulk(final String jsonString) {
-//    try {
-//      JSONObject ja = (JSONObject) JSONValue.parseWithException(jsonString);
-////      JSONArray cats = (JSONArray) ja.get("categories");
-//      JSONArray docs = (JSONArray) ja.get("documents");
-//      long now = System.currentTimeMillis();
-//      UUID uid = UUID.randomUUID();
-//      String classificationId = String.valueOf(now) + "_" + uid.toString();
-//      File classificationFolder = new File(baseFolder.getAbsoluteFile() + File.separator + classificationId);
-//      classificationFolder.mkdir();
-//      for (Object obj : docs) {
-//        JSONObject doc = (JSONObject) obj;
-//        classify(doc.toJSONString());
-//        String contents = (String) doc.get("contents");
-//        String id = (String) doc.get("id");
-//        String title = (String) doc.get("title");
-//        String ext = id;
-//        if (!ext.endsWith(".txt")) {
-//          ext += ".txt";
-//        }
-//        try (PrintWriter out = new PrintWriter(classificationFolder.getAbsolutePath()
-//                + File.separator + ext)) {
-//          out.println(contents);
-//        }
-//      }
-//
-////      File result = doIt(classificationFolder);
-//      return classificationId;
-//    } catch (ParseException | FileNotFoundException ex) {
-//      Logger.getLogger(ECO2Controller.class.getName()).log(Level.SEVERE, null, ex);
-//    } catch (Exception ex) {
-//      Logger.getLogger(ECO2Controller.class.getName()).log(Level.SEVERE, null, ex);
-//    }
-//    return null;
-//  }
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Path("/classification/cv")
+//  @Api
   public final String classifyCV(final String jsonString) {
     String classificationId = classify(jsonString, "cv");
     return classificationId;
@@ -219,12 +156,16 @@ public class ECO2Controller {
     File trgFolder = null;
     switch (docType) {
       case "cv":
+        avgFolder = cvAverageFolder;
+        trgFolder = cvProfileFolder;
         break;
       case "job":
         avgFolder = jobAverageFolder;
         trgFolder = jobProfileFolder;
         break;
       case "course":
+        avgFolder = courseAverageFolder;
+        trgFolder = courseProfileFolder;
         break;
     }
 
@@ -299,6 +240,13 @@ public class ECO2Controller {
   @Produces(MediaType.APPLICATION_JSON)
   public String getJobsList(@PathParam("id") final String classificationId) throws ParseException, IOException {
     return profile(classificationId, "job");
+  }
+
+  @GET
+  @Path("/profile/courses/{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String getCourseList(@PathParam("id") final String classificationId) throws ParseException, IOException {
+    return profile(classificationId, "course");
   }
 
   private File getFile(String classificationId, String type) {

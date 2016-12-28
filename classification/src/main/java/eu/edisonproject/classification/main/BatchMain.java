@@ -37,7 +37,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -216,10 +215,8 @@ public class BatchMain {
       String key = header[i++];
       Double value = iter.next();
       cvJson.put(key, value);
-//      System.err.println(key + "," + value);
     }
     cvJson.put("rank", rank);
-    System.err.println(cvJson.toJSONString());
     JSONArray profileJson = new JSONArray();
     profileJson.add(cvJson);
     ValueComparator bvc = new ValueComparator(winners);
@@ -240,10 +237,8 @@ public class BatchMain {
         String key = header[i++];
         Double value = iter.next();
         jobJason.put(key, value);
-//        System.err.println(key + "," + value);
       }
       jobJason.put("rank", rank);
-      System.err.println(jobJason.toJSONString());
       profileJson.add(jobJason);
     }
     WriterFile wf = new WriterFile(output + File.separator + "result.csv");
