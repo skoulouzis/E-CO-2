@@ -3,8 +3,6 @@ package eu.edisonproject.rest;
 
 import eu.edisonproject.utility.file.FolderSearch;
 import eu.edisonproject.utility.file.ReaderFile;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.Authorization;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -134,7 +132,27 @@ public class ECO2Controller {
     }
     ReaderFile rf = new ReaderFile(resultFile.getAbsolutePath());
     return rf.readFile();
+  }
 
+  @GET
+  @Path("/profile/jobs/{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String getJobsList(@PathParam("id") final String classificationId) throws ParseException, IOException {
+    return profile(classificationId, "job");
+  }
+
+  @GET
+  @Path("/profile/courses/{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String getCourseList(@PathParam("id") final String classificationId) throws ParseException, IOException {
+    return profile(classificationId, "course");
+  }
+
+  @GET
+  @Path("/profile/cv/{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String getCVList(@PathParam("id") final String classificationId) throws ParseException, IOException {
+    return profile(classificationId, "cv");
   }
 
   @GET
@@ -185,7 +203,7 @@ public class ECO2Controller {
     File profileFolder = new File(trgFolder + File.separator + prpfileId);
     FileUtils.moveFileToDirectory(renamedListFile, profileFolder, true);
     FileUtils.copyFileToDirectory(targetCsvFile, profileFolder, true);
-
+    
     return prpfileId;
   }
 
@@ -233,20 +251,6 @@ public class ECO2Controller {
       Logger.getLogger(ECO2Controller.class.getName()).log(Level.SEVERE, null, ex);
     }
     return null;
-  }
-
-  @GET
-  @Path("/profile/jobs/{id}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public String getJobsList(@PathParam("id") final String classificationId) throws ParseException, IOException {
-    return profile(classificationId, "job");
-  }
-
-  @GET
-  @Path("/profile/courses/{id}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public String getCourseList(@PathParam("id") final String classificationId) throws ParseException, IOException {
-    return profile(classificationId, "course");
   }
 
   private File getFile(String classificationId, String type) {
