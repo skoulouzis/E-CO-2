@@ -65,7 +65,7 @@ public class TFIDFDriverImpl {
         text2Avro(inputPath, AVRO_FILE);
 
         Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Starting WordFrequencyInDocDriver: {0},{1},{2},{3},{4}", new Object[]{AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET, NUM_OF_LINES, STOPWORDS_PATH});
-        String[] args1 = {AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET,  STOPWORDS_PATH};
+        String[] args1 = {AVRO_FILE, OUTPUT_PATH1, INPUT_ITEMSET, STOPWORDS_PATH};
         ToolRunner.run(new WordFrequencyInDocDriver(), args1);
       } else {
         Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Starting TermWordFrequency");
@@ -140,12 +140,15 @@ public class TFIDFDriverImpl {
 //    }
   public static void text2Avro(String inputPath, String outputPath) {
     Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.INFO, "Start");
-    File out = new File(outputPath);
-    out.getAbsoluteFile().delete();
-    out.getAbsoluteFile().mkdirs();
+    try {
+      File out = new File(outputPath);
+      out.getAbsoluteFile().delete();
+      out.getAbsoluteFile().mkdirs();
 
-    IDataPrepare dp = new DataPrepare(inputPath, outputPath, STOPWORDS_PATH);
-    dp.execute();
-
+      IDataPrepare dp = new DataPrepare(inputPath, outputPath, STOPWORDS_PATH);
+      dp.execute();
+    } catch (Exception ex) {
+      Logger.getLogger(TFIDFDriverImpl.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }
 }
