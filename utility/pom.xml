@@ -68,11 +68,11 @@
             <type>jar</type>
         </dependency>
         
-        <dependency>
+<!--        <dependency>
             <groupId>org.unix4j</groupId>
             <artifactId>unix4j-command</artifactId>
             <version>0.3</version>
-        </dependency>
+        </dependency>-->
         
     </dependencies>
     
