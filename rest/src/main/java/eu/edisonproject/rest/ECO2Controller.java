@@ -27,6 +27,13 @@ import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
 
 /**
+ * The EDISON COmpetencies ClassificatiOn (E-CO-2) service is an automated tool
+ * designed to support gap analysis. It can identify the similarity of a
+ * document against a set of predefined categories. It can therefore be used to
+ * perform a gap analysis based on the EDISON DS-taxonomy to identify mismatches
+ * between education and industry. Moreover, students, practitioners educators
+ * and other stake holders can use these tools to identify the gaps in their
+ * skills and competences.
  *
  * @author S. Koulouzis
  */
@@ -95,31 +102,63 @@ public class ECO2Controller {
     stopwordsFile = new File(stopwordsPath);
   }
 
+  /**
+   * Performs classification of a cv based on the EDISON DS-taxonomy. The method
+   * is asynchronous. After the call is made an id is immediately returned.
+   *
+   * @param jsonDoc The document to classify.
+   * @return a unique id to retrieve the results
+   */
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.TEXT_PLAIN)
   @Path("/classification/cv")
-//  @Api
-  public final String classifyCV(final String jsonString) {
-    String classificationId = classify(jsonString, "cv");
+  public final String classifyCV(final String jsonDoc) {
+    String classificationId = classify(jsonDoc, "cv");
     return classificationId;
   }
 
+  /**
+   * Performs classification of a job posting based on the EDISON DS-taxonomy.
+   * The method is asynchronous. After the call is made an id is immediately
+   * returned.
+   *
+   * @param jsonDoc
+   * @return a unique id to retrieve the results
+   */
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Path("/classification/job")
-  public final String classifyJob(final String jsonString) {
-    String classificationId = classify(jsonString, "job");
+  public final String classifyJob(final String jsonDoc) {
+    String classificationId = classify(jsonDoc, "job");
     return classificationId;
   }
 
+  /**
+   * Performs classification of course description based on the EDISON
+   * DS-taxonomy.
+   *
+   * The method is asynchronous. After the call is made an id is immediately
+   * returned.
+   *
+   * @param jsonDoc
+   * @return a unique id to retrieve the results
+   */
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Path("/classification/course")
-  public final String classifyCourse(final String jsonString) {
-    String classificationId = classify(jsonString, "course");
+  public final String classifyCourse(final String jsonDoc) {
+    String classificationId = classify(jsonDoc, "course");
     return classificationId;
   }
 
+  /**
+   * Providing the unique classification id this method returns the
+   * classification results.
+   *
+   * @param classificationId unique classification id
+   * @return the classification results
+   */
   @GET
   @Path("/classification/{id}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -141,6 +180,20 @@ public class ECO2Controller {
     return profile(classificationId, "job");
   }
 
+  /**
+   * Providing the unique classification id this method profiles the classified
+   * document (represented by the unique classification id) against the all
+   * courses available to this service.
+   *
+   * The method is asynchronous. After the call is made an id is immediately
+   * returned.
+   *
+   * @param classificationId the unique classification id (obtained from the
+   * classification methods)
+   * @return unique profile id
+   * @throws ParseException
+   * @throws IOException
+   */
   @GET
   @Path("/profile/courses/{id}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -148,6 +201,20 @@ public class ECO2Controller {
     return profile(classificationId, "course");
   }
 
+  /**
+   * Providing the unique classification id this method profiles the classified
+   * document (represented by the unique classification id) against the all CVs
+   * available to this service.
+   *
+   * The method is asynchronous. After the call is made an id is immediately
+   * returned.
+   *
+   * @param classificationId the unique classification id (obtained from the
+   * classification methods)
+   * @return unique profile id
+   * @throws ParseException
+   * @throws IOException
+   */
   @GET
   @Path("/profile/cv/{id}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -155,12 +222,18 @@ public class ECO2Controller {
     return profile(classificationId, "cv");
   }
 
+  /**
+   * Providing the unique profile id this method returns the profiling results.
+   *
+   * @param profileId unique classification id
+   * @return the profiling results
+   */
   @GET
   @Path("/profile/{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public String getProfile(@PathParam("id") final String classificationId) {
+  public String getProfile(@PathParam("id") final String profileId) {
 
-    File resultFile = getFile(classificationId, "json");
+    File resultFile = getFile(profileId, "json");
 
     if (!resultFile.exists()) {
       return "202";
@@ -203,7 +276,7 @@ public class ECO2Controller {
     File profileFolder = new File(trgFolder + File.separator + prpfileId);
     FileUtils.moveFileToDirectory(renamedListFile, profileFolder, true);
     FileUtils.copyFileToDirectory(targetCsvFile, profileFolder, true);
-    
+
     return prpfileId;
   }
 

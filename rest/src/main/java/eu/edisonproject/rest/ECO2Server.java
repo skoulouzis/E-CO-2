@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -42,7 +43,7 @@ public class ECO2Server {
 
       jobProfileWatcher = startTaskWatcher(ECO2Controller.jobProfileFolder.getAbsolutePath());
       jobProfileWatcher.start();
-      
+
       server = startServer(args);
       server.start();
       jobWatcher.join();
@@ -85,8 +86,31 @@ public class ECO2Server {
 
     ServletHolder jerseyServlet = context.addServlet(ServletContainer.class, "/*");
     jerseyServlet.setInitOrder(0);
-
     jerseyServlet.setInitParameter("jersey.config.server.provider.packages", "eu.edisonproject.rest");
+
+    // The filesystem paths we will map
+    String docPath = System.getProperty("user.home") + File.separator + "workspace"
+            + File.separator + "E-CO-2" + File.separator + "rest" + File.separator + "target" + File.separator + "docs" + File.separator + "apidocs";
+//    String pwdPath = System.getProperty("user.dir");
+
+//    // Setup the basic application "context" for this application at "/"
+//    // This is also known as the handler tree (in jetty speak)
+    context.setResourceBase(docPath);
+    context.setContextPath("/");
+    jettyServer.setHandler(context);
+    // add special pathspec of "/home/" content mapped to the homePath
+    ServletHolder holderHome = new ServletHolder("static-home", DefaultServlet.class);
+    jerseyServlet.setInitParameter("resourceBase", docPath);
+    holderHome.setInitParameter("dirAllowed", "true");
+    holderHome.setInitParameter("pathInfoOnly", "true");
+    context.addServlet(holderHome, "/doc/*");
+
+    // Lastly, the default servlet for root content (always needed, to satisfy servlet spec)
+    // It is important that this is last.
+    ServletHolder holderPwd = new ServletHolder("default", DefaultServlet.class);
+    holderPwd.setInitParameter("dirAllowed", "true");
+    context.addServlet(holderPwd, "/");
+
     return jettyServer;
   }
 
