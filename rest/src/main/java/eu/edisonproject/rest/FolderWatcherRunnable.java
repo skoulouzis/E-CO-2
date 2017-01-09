@@ -17,18 +17,15 @@ import static eu.edisonproject.rest.ECO2Controller.courseProfileFolder;
 import static eu.edisonproject.rest.ECO2Controller.cvAverageFolder;
 import static eu.edisonproject.rest.ECO2Controller.cvClassisifcationFolder;
 import static eu.edisonproject.rest.ECO2Controller.cvProfileFolder;
-import static eu.edisonproject.rest.ECO2Controller.itemSetFile;
 import static eu.edisonproject.rest.ECO2Controller.jobAverageFolder;
 import static eu.edisonproject.rest.ECO2Controller.jobClassisifcationFolder;
 import static eu.edisonproject.rest.ECO2Controller.jobProfileFolder;
 import static eu.edisonproject.rest.ECO2Controller.propertiesFile;
-import static eu.edisonproject.rest.ECO2Controller.stopwordsFile;
 
 import eu.edisonproject.classification.main.BatchMain;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.FileSystems;
@@ -94,9 +91,15 @@ class FolderWatcherRunnable implements Runnable {
       Thread.sleep(100);
     }
 
-    if (!inputFolder.getParent().equals(jobProfileFolder.getAbsolutePath())
-            || !inputFolder.getParent().equals(courseProfileFolder.getAbsolutePath())
-            || !inputFolder.getParent().equals(cvProfileFolder.getAbsolutePath())) {
+    boolean isProfile = false;
+    String partent = inputFolder.getParentFile().getAbsolutePath();
+    if (partent.equals(jobProfileFolder.getAbsolutePath())
+            || partent.equals(courseProfileFolder.getAbsolutePath())
+            || partent.equals(cvProfileFolder.getAbsolutePath())) {
+      isProfile = true;
+    }
+
+    if (!isProfile) {
 
       if (txtFile == null || txtFile.getName().endsWith(".txt")) {
         String[] args = new String[]{"-op", "c", "-i", inputFolder.getAbsolutePath(),
@@ -113,7 +116,7 @@ class FolderWatcherRunnable implements Runnable {
         convertMRResultToCSV(new File(inputFolder.getAbsolutePath() + File.separator + "part-r-00000"),
                 inputFolder.getAbsolutePath() + File.separator + ECO2Controller.CSV_FILE_NAME, calcAvg);
 
-        convertCSVJsonFile(inputFolder.getAbsolutePath() + File.separator + CSV_AVG_FILENAME, 
+        convertCSVJsonFile(inputFolder.getAbsolutePath() + File.separator + CSV_AVG_FILENAME,
                 inputFolder.getAbsolutePath() + File.separator + JSON_AVG_FILENAME);
 
         if (inputFolder.getParentFile().getAbsolutePath().equals(jobClassisifcationFolder.getAbsolutePath())) {
