@@ -6,10 +6,20 @@
 
 package eu.edisonproject.rest;
 
+import static eu.edisonproject.rest.ECO2Controller.CSV_AVG_FILENAME;
 import static eu.edisonproject.rest.ECO2Controller.CSV_FILE_NAME;
+import static eu.edisonproject.rest.ECO2Controller.JSON_AVG_FILENAME;
 import static eu.edisonproject.rest.ECO2Controller.JSON_FILE_NAME;
 import static eu.edisonproject.rest.ECO2Controller.baseCategoryFolder;
+import static eu.edisonproject.rest.ECO2Controller.courseAverageFolder;
+import static eu.edisonproject.rest.ECO2Controller.courseClassisifcationFolder;
+import static eu.edisonproject.rest.ECO2Controller.courseProfileFolder;
+import static eu.edisonproject.rest.ECO2Controller.cvAverageFolder;
+import static eu.edisonproject.rest.ECO2Controller.cvClassisifcationFolder;
+import static eu.edisonproject.rest.ECO2Controller.cvProfileFolder;
 import static eu.edisonproject.rest.ECO2Controller.itemSetFile;
+import static eu.edisonproject.rest.ECO2Controller.jobAverageFolder;
+import static eu.edisonproject.rest.ECO2Controller.jobClassisifcationFolder;
 import static eu.edisonproject.rest.ECO2Controller.jobProfileFolder;
 import static eu.edisonproject.rest.ECO2Controller.propertiesFile;
 import static eu.edisonproject.rest.ECO2Controller.stopwordsFile;
@@ -44,7 +54,6 @@ import org.json.simple.JSONObject;
 class FolderWatcherRunnable implements Runnable {
 
   private final String dir;
-  private static final String CSV_AVG_FILENAME = "result_avg.csv";
 
   public FolderWatcherRunnable(String dir) {
     this.dir = dir;
@@ -85,7 +94,10 @@ class FolderWatcherRunnable implements Runnable {
       Thread.sleep(100);
     }
 
-    if (!inputFolder.getParent().equals(jobProfileFolder.getAbsolutePath())) {
+    if (!inputFolder.getParent().equals(jobProfileFolder.getAbsolutePath())
+            || !inputFolder.getParent().equals(courseProfileFolder.getAbsolutePath())
+            || !inputFolder.getParent().equals(cvProfileFolder.getAbsolutePath())) {
+
       if (txtFile == null || txtFile.getName().endsWith(".txt")) {
         String[] args = new String[]{"-op", "c", "-i", inputFolder.getAbsolutePath(),
           "-o", inputFolder.getAbsolutePath(), "-c", baseCategoryFolder.getAbsolutePath(),
@@ -93,18 +105,41 @@ class FolderWatcherRunnable implements Runnable {
 
         BatchMain.main(args);
         boolean calcAvg = false;
-        if (inputFolder.getAbsolutePath().equals(ECO2Controller.jobAverageFolder.getAbsolutePath())) {
+        if (inputFolder.getAbsolutePath().equals(jobAverageFolder.getAbsolutePath())
+                || inputFolder.getAbsolutePath().equals(courseAverageFolder.getAbsolutePath())
+                || inputFolder.getAbsolutePath().equals(cvAverageFolder.getAbsolutePath())) {
           calcAvg = true;
         }
-        convertMRResultToCSV(new File(inputFolder.getAbsolutePath() + File.separator + "part-r-00000"), inputFolder.getAbsolutePath() + File.separator + ECO2Controller.CSV_FILE_NAME, calcAvg);
+        convertMRResultToCSV(new File(inputFolder.getAbsolutePath() + File.separator + "part-r-00000"),
+                inputFolder.getAbsolutePath() + File.separator + ECO2Controller.CSV_FILE_NAME, calcAvg);
 
-        if (inputFolder.getParentFile().getAbsolutePath().equals(ECO2Controller.jobClassisifcationFolder.getAbsolutePath())) {
+        convertCSVJsonFile(inputFolder.getAbsolutePath() + File.separator + CSV_AVG_FILENAME, 
+                inputFolder.getAbsolutePath() + File.separator + JSON_AVG_FILENAME);
+
+        if (inputFolder.getParentFile().getAbsolutePath().equals(jobClassisifcationFolder.getAbsolutePath())) {
           for (File add : inputFolder.listFiles()) {
             if (add.getName().endsWith(".txt")) {
-              FileUtils.copyFileToDirectory(add, ECO2Controller.jobAverageFolder);
+              FileUtils.copyFileToDirectory(add, jobAverageFolder);
             }
           }
         }
+
+        if (inputFolder.getParentFile().getAbsolutePath().equals(courseClassisifcationFolder.getAbsolutePath())) {
+          for (File add : inputFolder.listFiles()) {
+            if (add.getName().endsWith(".txt")) {
+              FileUtils.copyFileToDirectory(add, ECO2Controller.courseAverageFolder);
+            }
+          }
+        }
+
+        if (inputFolder.getParentFile().getAbsolutePath().equals(cvClassisifcationFolder.getAbsolutePath())) {
+          for (File add : inputFolder.listFiles()) {
+            if (add.getName().endsWith(".txt")) {
+              FileUtils.copyFileToDirectory(add, cvAverageFolder);
+            }
+          }
+        }
+
         return convertMRResultToJsonFile(inputFolder.getAbsolutePath() + File.separator + "part-r-00000");
 
       }
@@ -112,6 +147,28 @@ class FolderWatcherRunnable implements Runnable {
       String[] args = new String[]{"-op", "p", "-v1", inputFolder.getAbsolutePath() + File.separator + CSV_FILE_NAME,
         "-v2", inputFolder.getAbsolutePath() + File.separator + "list.csv", "-o", inputFolder.getAbsolutePath(), "-p", propertiesFile.getAbsolutePath()};
       BatchMain.main(args);
+    }
+    return null;
+  }
+
+  private File convertCSVJsonFile(String csvFile, String outputJsonFile) throws IOException {
+    File f = new File(csvFile);
+    if (f.exists()) {
+      Map<String, Double> map = new HashMap<>();
+      try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+        String line;
+        while ((line = br.readLine()) != null) {
+          String[] kv = line.split(",");
+          map.put(kv[0], Double.valueOf(kv[1]));
+        }
+      }
+
+      File jsonFile = new File(outputJsonFile);
+      JSONObject jo = new JSONObject(map);
+      try (PrintWriter out = new PrintWriter(jsonFile)) {
+        out.print(jo.toJSONString());
+      }
+      return jsonFile;
     }
     return null;
   }

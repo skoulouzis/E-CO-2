@@ -6,6 +6,16 @@
 
 package eu.edisonproject.rest;
 
+import static eu.edisonproject.rest.ECO2Controller.courseAverageFolder;
+import static eu.edisonproject.rest.ECO2Controller.courseClassisifcationFolder;
+import static eu.edisonproject.rest.ECO2Controller.courseProfileFolder;
+import static eu.edisonproject.rest.ECO2Controller.cvAverageFolder;
+import static eu.edisonproject.rest.ECO2Controller.cvClassisifcationFolder;
+import static eu.edisonproject.rest.ECO2Controller.cvProfileFolder;
+import static eu.edisonproject.rest.ECO2Controller.jobAverageFolder;
+import static eu.edisonproject.rest.ECO2Controller.jobClassisifcationFolder;
+import static eu.edisonproject.rest.ECO2Controller.jobProfileFolder;
+
 import eu.edisonproject.utility.file.ConfigHelper;
 import eu.edisonproject.utility.file.MyProperties;
 import java.io.File;
@@ -25,24 +35,36 @@ import org.glassfish.jersey.servlet.ServletContainer;
 public class ECO2Server {
 
   public static void main(String[] args) {
-    Thread jobWatcher, jobAvgWatcher, cvWatcher, courseWatcher, jobProfileWatcher;
+    Thread jobWatcher, jobAvgWatcher, cvWatcher, courseWatcher, jobProfileWatcher, cvAvgWatcher, cvProfileWatcher, courseAvgWatcher, courseProfileWatcher;
     Server server = null;
     try {
       ECO2Controller.initPaths();
-      jobWatcher = startTaskWatcher(ECO2Controller.jobClassisifcationFolder.getAbsolutePath());
+      jobWatcher = startTaskWatcher(jobClassisifcationFolder.getAbsolutePath());
       jobWatcher.start();
 
-      cvWatcher = startTaskWatcher(ECO2Controller.cvClassisifcationFolder.getAbsolutePath());
-      cvWatcher.start();
-
-      courseWatcher = startTaskWatcher(ECO2Controller.courseClassisifcationFolder.getAbsolutePath());
-      courseWatcher.start();
-
-      jobAvgWatcher = startTaskWatcher(ECO2Controller.jobAverageFolder.getAbsolutePath());
+      jobAvgWatcher = startTaskWatcher(jobAverageFolder.getAbsolutePath());
       jobAvgWatcher.start();
 
-      jobProfileWatcher = startTaskWatcher(ECO2Controller.jobProfileFolder.getAbsolutePath());
+      jobProfileWatcher = startTaskWatcher(jobProfileFolder.getAbsolutePath());
       jobProfileWatcher.start();
+
+      cvWatcher = startTaskWatcher(cvClassisifcationFolder.getAbsolutePath());
+      cvWatcher.start();
+
+      cvAvgWatcher = startTaskWatcher(cvAverageFolder.getAbsolutePath());
+      cvAvgWatcher.start();
+
+      cvProfileWatcher = startTaskWatcher(cvProfileFolder.getAbsolutePath());
+      cvProfileWatcher.start();
+
+      courseWatcher = startTaskWatcher(courseClassisifcationFolder.getAbsolutePath());
+      courseWatcher.start();
+
+      courseAvgWatcher = startTaskWatcher(courseAverageFolder.getAbsolutePath());
+      courseAvgWatcher.start();
+
+      courseProfileWatcher = startTaskWatcher(courseProfileFolder.getAbsolutePath());
+      courseProfileWatcher.start();
 
       server = startServer(args);
       server.start();

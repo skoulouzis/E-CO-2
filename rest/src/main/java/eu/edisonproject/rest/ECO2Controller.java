@@ -47,6 +47,8 @@ public class ECO2Controller {
   public static File stopwordsFile;
   public static final String JSON_FILE_NAME = "result.json";
   public static final String CSV_FILE_NAME = "result.csv";
+  public static final String CSV_AVG_FILENAME = "result_avg.csv";
+  public static final String JSON_AVG_FILENAME = "result_avg.json";
   public static File cvClassisifcationFolder;
   public static File jobClassisifcationFolder;
   public static File courseClassisifcationFolder;
@@ -164,7 +166,7 @@ public class ECO2Controller {
   @Produces(MediaType.APPLICATION_JSON)
   public String getClassification(@PathParam("id") final String classificationId) {
 
-    File resultFile = getFile(classificationId, "json");
+    File resultFile = getFile(classificationId, "json", "full");
 
     if (!resultFile.exists()) {
       return "202";
@@ -233,7 +235,7 @@ public class ECO2Controller {
   @Produces(MediaType.APPLICATION_JSON)
   public String getProfile(@PathParam("id") final String profileId) {
 
-    File resultFile = getFile(profileId, "json");
+    File resultFile = getFile(profileId, "json", "full");
 
     if (!resultFile.exists()) {
       return "202";
@@ -264,7 +266,7 @@ public class ECO2Controller {
     UUID uid = UUID.randomUUID();
     String prpfileId = String.valueOf(now) + "_" + uid.toString();
 
-    File targetCsvFile = getFile(id, "csv");
+    File targetCsvFile = getFile(id, "csv", "full");
     File listFile = new File(avgFolder + File.separator + CSV_FILE_NAME);
     if (!listFile.exists()) {
       throw new NotFoundException("Analisis not found");
@@ -278,6 +280,63 @@ public class ECO2Controller {
     FileUtils.copyFileToDirectory(targetCsvFile, profileFolder, true);
 
     return prpfileId;
+  }
+
+  /**
+   * Returns the average profile of all the classified job
+   *
+   * @return
+   */
+  @GET
+  @Path("/average/job")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String getAverageJob() {
+
+    File resultFile = getFile(jobAverageFolder.getName(), "json", "avg");
+
+    if (!resultFile.exists()) {
+      return "202";
+    }
+    ReaderFile rf = new ReaderFile(resultFile.getAbsolutePath());
+    return rf.readFile();
+  }
+
+  /**
+   * Returns the average profile of all the classified course
+   *
+   * @return
+   */
+  @GET
+  @Path("/average/course")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String getAverageCourse() {
+
+    File resultFile = getFile(courseAverageFolder.getName(), "json", "avg");
+
+    if (!resultFile.exists()) {
+      return "202";
+    }
+    ReaderFile rf = new ReaderFile(resultFile.getAbsolutePath());
+    return rf.readFile();
+  }
+
+  /**
+   * Returns the average profile of all the classified CV
+   *
+   * @return
+   */
+  @GET
+  @Path("/average/cv")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String getAverageCV() {
+
+    File resultFile = getFile(cvAverageFolder.getName(), "json", "avg");
+
+    if (!resultFile.exists()) {
+      return "202";
+    }
+    ReaderFile rf = new ReaderFile(resultFile.getAbsolutePath());
+    return rf.readFile();
   }
 
   private String classify(String jsonString, String docType) {
@@ -326,7 +385,7 @@ public class ECO2Controller {
     return null;
   }
 
-  private File getFile(String classificationId, String type) {
+  private File getFile(String classificationId, String format, String type) {
     FolderSearch fs = new FolderSearch(baseFolder, classificationId, true);
     File targetFolder;
     try {
@@ -344,11 +403,21 @@ public class ECO2Controller {
     if (!targetFolder.exists()) {
       throw new NotFoundException(String.format("Classification %s not found", classificationId));
     }
-    switch (type) {
+    switch (format) {
       case "json":
-        return new File(targetFolder + File.separator + JSON_FILE_NAME);
+        switch (type) {
+          case "avg":
+            return new File(targetFolder + File.separator + JSON_AVG_FILENAME);
+          case "full":
+            return new File(targetFolder + File.separator + JSON_FILE_NAME);
+        }
       case "csv":
-        return new File(targetFolder + File.separator + CSV_FILE_NAME);
+        switch (type) {
+          case "avg":
+            return new File(targetFolder + File.separator + CSV_AVG_FILENAME);
+          case "full":
+            return new File(targetFolder + File.separator + CSV_FILE_NAME);
+        }
     }
 
     return null;
