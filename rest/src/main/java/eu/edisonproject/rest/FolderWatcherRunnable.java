@@ -147,6 +147,12 @@ class FolderWatcherRunnable implements Runnable {
 
       }
     } else {
+      File v1 = new File(inputFolder.getAbsolutePath() + File.separator + CSV_FILE_NAME);
+      int count = 0;
+      while (!v1.exists() || count < 10) {
+        Thread.sleep(100);
+        count++;
+      }
       String[] args = new String[]{"-op", "p", "-v1", inputFolder.getAbsolutePath() + File.separator + CSV_FILE_NAME,
         "-v2", inputFolder.getAbsolutePath() + File.separator + "list.csv", "-o", inputFolder.getAbsolutePath(), "-p", propertiesFile.getAbsolutePath()};
       BatchMain.main(args);

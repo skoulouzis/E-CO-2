@@ -175,6 +175,20 @@ public class ECO2Controller {
     return rf.readFile();
   }
 
+  /**
+   * Providing the unique classification id this method profiles the classified
+   * document (represented by the unique classification id) against the all jobs
+   * available to this service.
+   *
+   * The method is asynchronous. After the call is made an id is immediately
+   * returned.
+   *
+   * @param classificationId the unique classification id (obtained from the
+   * classification methods)
+   * @return unique profile id
+   * @throws ParseException
+   * @throws IOException
+   */
   @GET
   @Path("/profile/jobs/{id}")
   @Produces(MediaType.APPLICATION_JSON)
