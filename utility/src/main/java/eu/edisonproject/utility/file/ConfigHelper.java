@@ -65,6 +65,7 @@ public class ConfigHelper {
                 ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
                 in = classLoader.getResourceAsStream(propertiesPath);
             }
+            
             MyProperties properties = new MyProperties();
             properties.load(in);
             return properties;
