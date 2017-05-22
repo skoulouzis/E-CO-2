@@ -49,206 +49,199 @@ import org.apache.lucene.analysis.util.CharArraySet;
 
 public class TermWordFrequency extends Configured implements Tool {
 
-  // hashmap for the terms
-  private static StopWord cleanStopWord;
+    // hashmap for the terms
+    private static StopWord cleanStopWord;
 
-  public static class TermWordFrequencyMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
+    public static class TermWordFrequencyMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
 
-    private FileStatus[] files;
-    private StanfordLemmatizer cleanLemmatisation;
+        private FileStatus[] files;
+        private StanfordLemmatizer cleanLemmatisation;
 
-    @Override
-    protected void cleanup(Context context) throws IOException, InterruptedException {
-      super.cleanup(context);
-    }
-
-    @Override
-    protected void setup(Context context) throws IOException, InterruptedException {
-//            long start = System.currentTimeMillis();
-      if (context.getCacheFiles() != null && context.getCacheFiles().length > 0) {
-        URI[] uris = context.getCacheFiles();
-        URI stopwordFile = uris[0];
-        FileSystem fs = FileSystem.get(context.getConfiguration());
-        if (cleanStopWord == null) {
-          CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(fs.open(new Path(stopwordFile)).getWrappedStream()), true);
-          cleanStopWord = new StopWord(stopWordArraySet);
+        @Override
+        protected void cleanup(Context context) throws IOException, InterruptedException {
+            super.cleanup(context);
         }
 
-        URI hdfsDocs = uris[1];
+        @Override
+        protected void setup(Context context) throws IOException, InterruptedException {
+//            long start = System.currentTimeMillis();
+            if (context.getCacheFiles() != null && context.getCacheFiles().length > 0) {
+                URI[] uris = context.getCacheFiles();
+                URI stopwordFile = uris[0];
+                FileSystem fs = FileSystem.get(context.getConfiguration());
+                if (cleanStopWord == null) {
+                    CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(fs.open(new Path(stopwordFile)).getWrappedStream()), true);
+                    cleanStopWord = new StopWord(stopWordArraySet);
+                }
 
-        Path docPath = new Path(hdfsDocs);
-        files = fs.listStatus(docPath);
+                URI hdfsDocs = uris[1];
 
-      }
-      cleanLemmatisation = new StanfordLemmatizer();
-    }
+                Path docPath = new Path(hdfsDocs);
+                files = fs.listStatus(docPath);
 
-    @Override
-    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-      FileSystem fs = FileSystem.get(context.getConfiguration());
-
-      String s = value.toString();
-
-      s = s.replaceAll("_", " ").trim();
-      cleanStopWord.setDescription(s);
-      cleanLemmatisation.setDescription(cleanStopWord.execute().trim());
-      s = cleanLemmatisation.execute().trim();
-
-      s = trim(s);
-
-      for (FileStatus stat : files) {
-        Path filePath = stat.getPath();
-        if (FilenameUtils.getExtension(filePath.getName()).endsWith("txt")) {
-          String line;
-          StringBuilder sb = new StringBuilder();
-          try (BufferedReader br = new BufferedReader(
-                  new InputStreamReader(fs.open(filePath)))) {
-            while ((line = br.readLine()) != null) {
-              sb.append(line);
             }
-          }
-          String description = sb.toString();
-          cleanStopWord.setDescription(description);
-          cleanLemmatisation.setDescription(cleanStopWord.execute().trim());
-          description = trim(cleanLemmatisation.execute().trim());
+            cleanLemmatisation = new StanfordLemmatizer();
+        }
 
-          while (description.contains(" " + s + " ")) {
-            StringBuilder valueBuilder = new StringBuilder();
-            valueBuilder.append(s);
-            valueBuilder.append("@");
-            valueBuilder.append(stat.getPath().getName());
+        @Override
+        protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+            FileSystem fs = FileSystem.get(context.getConfiguration());
+
+            String s = value.toString();
+
+            s = s.replaceAll("_", " ").trim();
+            cleanStopWord.setDescription(s);
+            cleanLemmatisation.setDescription(cleanStopWord.execute().trim());
+            s = cleanLemmatisation.execute().trim();
+
+            s = trim(s);
+
+            for (FileStatus stat : files) {
+                Path filePath = stat.getPath();
+                if (FilenameUtils.getExtension(filePath.getName()).endsWith("txt")) {
+                    String line;
+                    StringBuilder sb = new StringBuilder();
+                    try (BufferedReader br = new BufferedReader(
+                            new InputStreamReader(fs.open(filePath)))) {
+                        while ((line = br.readLine()) != null) {
+                            sb.append(line);
+                        }
+                    }
+                    String description = sb.toString();
+                    cleanStopWord.setDescription(description);
+                    cleanLemmatisation.setDescription(cleanStopWord.execute().trim());
+                    description = trim(cleanLemmatisation.execute().trim());
+
+                    while (description.contains(" " + s + " ")) {
+                        StringBuilder valueBuilder = new StringBuilder();
+                        valueBuilder.append(s);
+                        valueBuilder.append("@");
+                        valueBuilder.append(stat.getPath().getName());
 //                        valueBuilder.append("@");
 //                        valueBuilder.append(stat.getPath().getName());
 //                        valueBuilder.append("@");
 //                        valueBuilder.append(date);
-            context.write(new Text(valueBuilder.toString()), new IntWritable(1));
+                        context.write(new Text(valueBuilder.toString()), new IntWritable(1));
 //                        System.err.println(valueBuilder.toString());
-            description = description.replaceFirst(" " + s + " ", "");
-          }
+                        description = description.replaceFirst(" " + s + " ", "");
+                    }
 
-          Pattern p = Pattern.compile("\\w+");
-          Matcher m = p.matcher(description);
-          // build the values and write <k,v> pairs through the context
-          while (m.find()) {
-            String matchedKey = m.group().toLowerCase();
-            StringBuilder valueBuilder = new StringBuilder();
-            valueBuilder.append(matchedKey);
-            valueBuilder.append("@");
-            valueBuilder.append(stat.getPath().getName());
-            valueBuilder.append("@");
-            valueBuilder.append(stat.getPath().getName());
+                    Pattern p = Pattern.compile("\\w+");
+                    Matcher m = p.matcher(description);
+                    // build the values and write <k,v> pairs through the context
+                    while (m.find()) {
+                        String matchedKey = m.group().toLowerCase();
+                        StringBuilder valueBuilder = new StringBuilder();
+                        valueBuilder.append(matchedKey);
+                        valueBuilder.append("@");
+                        valueBuilder.append(stat.getPath().getName());
+                        valueBuilder.append("@");
+                        valueBuilder.append(stat.getPath().getName());
 //                valueBuilder.append("@");
 //                valueBuilder.append(date);
-            // emit the partial <k,v>
-            context.write(new Text(valueBuilder.toString()), new IntWritable(1));
-            System.err.println(valueBuilder.toString());
-          }
+                        // emit the partial <k,v>
+                        context.write(new Text(valueBuilder.toString()), new IntWritable(1));
+                        System.err.println(valueBuilder.toString());
+                    }
+                }
+            }
+
         }
-      }
 
+        private String trim(String s) {
+            while (s.endsWith(" ")) {
+                s = s.substring(0, s.lastIndexOf(" "));
+            }
+            while (s.startsWith(" ")) {
+                s = s.substring(s.indexOf(" ") + 1, s.length());
+            }
+            return s;
+        }
     }
 
-    private String trim(String s) {
-      while (s.endsWith(" ")) {
-        s = s.substring(0, s.lastIndexOf(" "));
-      }
-      while (s.startsWith(" ")) {
-        s = s.substring(s.indexOf(" ") + 1, s.length());
-      }
-      return s;
-    }
-  }
+    public static class TermWordFrequencyReducer extends Reducer<Text, IntWritable, Text, Integer> {
 
-  public static class TermWordFrequencyReducer extends Reducer<Text, IntWritable, Text, Integer> {
+        @Override
+        protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
 
-    @Override
-    protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
-
-      Integer sum = 0;
-      for (IntWritable val : values) {
-        sum += val.get();
-      }
+            Integer sum = 0;
+            for (IntWritable val : values) {
+                sum += val.get();
+            }
 //            System.err.println(key + " " + sum);
-      context.write(key, sum);
+            context.write(key, sum);
 
-    }
-  } // end of reducer class
-
-  // runWordFrequencyInDocDriver --> run (args[])
-  @Override
-  public int run(String[] args) throws Exception {
-    Configuration conf = getConf();
-
-    conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
-    conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
-
-//    conf.set("yarn.resourcemanager.address", "localhost:8032");
-//    conf.set("fs.default.name", "hdfs://localhost:9000");
-
-    Job job = Job.getInstance(conf);
-    FileSystem fs = FileSystem.get(conf);
-    fs.delete(new Path(args[1]), true);
-    Path dictionary = new Path(args[0]);
-    Path dictionaryHdfs = dictionary;
-
-    Path localDocs = new Path(args[2]);
-    Path hdfsDocs = localDocs;
-
-    Path stopwordsLocal = new Path(args[3]);
-    Path stopwordsHDFS = stopwordsLocal;
-    if (!conf.get(FileSystem.FS_DEFAULT_NAME_KEY).startsWith("file")) {
-      dictionaryHdfs = new Path(dictionary.getName());
-      if (!fs.exists(dictionaryHdfs)) {
-        fs.copyFromLocalFile(dictionary, dictionaryHdfs);
-      }
-      hdfsDocs = new Path(localDocs.getName());
-      fs.mkdirs(hdfsDocs);
-      fs.deleteOnExit(hdfsDocs);
-
-      File[] stats = new File(localDocs.toString()).listFiles();
-
-      for (File stat : stats) {
-        Path filePath = new Path(stat.getAbsolutePath());
-        if (FilenameUtils.getExtension(filePath.getName()).endsWith("txt")) {
-          Path dest = new Path(hdfsDocs.toUri() + "/" + filePath.getName());
-          fs.copyFromLocalFile(filePath, dest);
         }
-      }
-      stopwordsHDFS = new Path(stopwordsLocal.getName());
-      if (!fs.exists(stopwordsHDFS)) {
-        fs.copyFromLocalFile(stopwordsLocal, stopwordsHDFS);
-      }
-    }
+    } // end of reducer class
 
-    FileStatus stopwordsStatus = fs.getFileStatus(stopwordsHDFS);
-    stopwordsHDFS = stopwordsStatus.getPath();
-    job.addCacheFile(stopwordsHDFS.toUri());
+    // runWordFrequencyInDocDriver --> run (args[])
+    @Override
+    public int run(String[] args) throws Exception {
+        Configuration jobconf = getConf();
+        Job job  = Job.getInstance(jobconf);
+        FileSystem fs = FileSystem.get(jobconf);
+        fs.delete(new Path(args[1]), true);
+        Path dictionary = new Path(args[0]);
+        Path dictionaryHdfs = dictionary;
 
-    job.addCacheFile(hdfsDocs.toUri());
+        Path localDocs = new Path(args[2]);
+        Path hdfsDocs = localDocs;
 
-    job.setJarByClass(TermWordFrequency.class);
-    job.setJobName("Word Frequency Term Driver");
+        Path stopwordsLocal = new Path(args[3]);
+        Path stopwordsHDFS = stopwordsLocal;
+        if (!jobconf.get(FileSystem.FS_DEFAULT_NAME_KEY).startsWith("file")) {
+            dictionaryHdfs = new Path(dictionary.getName());
+            if (!fs.exists(dictionaryHdfs)) {
+                fs.copyFromLocalFile(dictionary, dictionaryHdfs);
+            }
+            hdfsDocs = new Path(localDocs.getName());
+            fs.mkdirs(hdfsDocs);
+            fs.deleteOnExit(hdfsDocs);
 
-    FileInputFormat.setInputPaths(job, dictionaryHdfs);
-    FileOutputFormat.setOutputPath(job, new Path(args[1]));
+            File[] stats = new File(localDocs.toString()).listFiles();
+
+            for (File stat : stats) {
+                Path filePath = new Path(stat.getAbsolutePath());
+                if (FilenameUtils.getExtension(filePath.getName()).endsWith("txt")) {
+                    Path dest = new Path(hdfsDocs.toUri() + "/" + filePath.getName());
+                    fs.copyFromLocalFile(filePath, dest);
+                }
+            }
+            stopwordsHDFS = new Path(stopwordsLocal.getName());
+            if (!fs.exists(stopwordsHDFS)) {
+                fs.copyFromLocalFile(stopwordsLocal, stopwordsHDFS);
+            }
+        }
+
+        FileStatus stopwordsStatus = fs.getFileStatus(stopwordsHDFS);
+        stopwordsHDFS = stopwordsStatus.getPath();
+        job.addCacheFile(stopwordsHDFS.toUri());
+
+        job.addCacheFile(hdfsDocs.toUri());
+
+        job.setJarByClass(TermWordFrequency.class);
+        job.setJobName("Word Frequency Term Driver");
+
+        FileInputFormat.setInputPaths(job, dictionaryHdfs);
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
 //        job.setInputFormatClass(TextInputFormat.class);
-    job.setInputFormatClass(NLineInputFormat.class);
-    NLineInputFormat.addInputPath(job, dictionaryHdfs);
-    NLineInputFormat.setNumLinesPerSplit(job, Integer.valueOf(args[4]));
-    NLineInputFormat.setMaxInputSplitSize(job, 500);
+        job.setInputFormatClass(NLineInputFormat.class);
+        NLineInputFormat.addInputPath(job, dictionaryHdfs);
+        NLineInputFormat.setNumLinesPerSplit(job, Integer.valueOf(args[4]));
+        NLineInputFormat.setMaxInputSplitSize(job, 500);
 
-    job.setMapperClass(TermWordFrequencyMapper.class);
+        job.setMapperClass(TermWordFrequencyMapper.class);
 
-    job.setMapOutputKeyClass(Text.class);
-    job.setMapOutputValueClass(IntWritable.class);
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(IntWritable.class);
 
-    job.setOutputKeyClass(Text.class);
-    job.setOutputValueClass(Integer.class);
-    job.setReducerClass(TermWordFrequencyReducer.class);
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(Integer.class);
+        job.setReducerClass(TermWordFrequencyReducer.class);
 
-    return (job.waitForCompletion(true) ? 0 : 1);
+        return (job.waitForCompletion(true) ? 0 : 1);
 
-  }
+    }
 
 }

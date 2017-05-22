@@ -63,18 +63,18 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
   public static class WordsInCorpusTFIDFReducer extends Reducer<Text, Text, Text, Text> {
 
     private static final DecimalFormat DF = new DecimalFormat("###.########");
+    private Double numberOfDocumentsInCorpus;
 
-    /*
-		 * Reducer Input
-		 * key --> word
-		 * values --> document = n/N = date
-     */
+    @Override
+    protected void setup(Reducer.Context context) throws IOException, InterruptedException {
+      Configuration conf = context.getConfiguration();
+      String numberOfDocs = conf.get("number.of.documents");
+      numberOfDocumentsInCorpus = Double.valueOf(numberOfDocs);
+    }
+
     @Override
     protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
       // get the number of documents indirectly from the file-system (stored in the job name on purpose)
-      int count = 0;
-
-      int numberOfDocumentsInCorpus = Integer.parseInt(context.getJobName());
       // total frequency of this word
       int numberOfDocumentsInCorpusWhereKeyAppears = 0;
       Map<String, String> tempFrequencies = new HashMap<>();
@@ -82,10 +82,8 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
         String[] documentAndFrequencies = val.toString().split("@");
         numberOfDocumentsInCorpusWhereKeyAppears++;
         tempFrequencies.put(documentAndFrequencies[0], documentAndFrequencies[1]);
-//                tempFrequencies.put(documentAndFrequencies[0] + "@" + documentAndFrequencies[1] + "@" + documentAndFrequencies[2], documentAndFrequencies[3]);
       }
 
-//            String lineValue = "";
       for (String document : tempFrequencies.keySet()) {
         String[] wordFrequenceAndTotalWords = tempFrequencies.get(document).split("/");
 
@@ -113,22 +111,15 @@ public class WordsInCorpusTFIDFDriver extends Configured implements Tool {
   //changed run(String[]) in runWordsInCorpusTFIDFDriver(String[])
 
   @Override
-  public int run(String[] rawArgs) throws Exception {
-    Configuration conf = getConf();
-    conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
-    conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
-
-//    conf.set("yarn.resourcemanager.address", "localhost:8032");
-//    conf.set("fs.default.name", "hdfs://localhost:9000");
-
+  public int run(String[] args) throws Exception {
+    Configuration conf = new Configuration();
+    conf.set("number.of.documents", args[2]);
     Job job = Job.getInstance(conf);
 
     job.setJarByClass(WordsInCorpusTFIDFDriver.class);
-    //This row must be changed
-    job.setJobName(rawArgs[2]);
 
-    Path inPath = new Path(rawArgs[0]);
-    Path outPath = new Path(rawArgs[1]);
+    Path inPath = new Path(args[0]);
+    Path outPath = new Path(args[1]);
 
     FileInputFormat.setInputPaths(job, inPath);
     FileOutputFormat.setOutputPath(job, outPath);

@@ -21,6 +21,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -113,6 +114,9 @@ public class CSVFileReader {
         return featureVectors;
     }
 
+    
+
+    
     public static Set<String> getNGramsForTerm(String term, String itemsFilePath, String delimeter, String wordSeperator) throws IOException {
         if (nGramsMap == null) {
             nGramsMap = new HashMap<>();

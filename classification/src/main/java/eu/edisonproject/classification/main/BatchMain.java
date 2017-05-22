@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -47,6 +48,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.lucene.analysis.util.CharArraySet;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -109,27 +112,42 @@ public class BatchMain {
           text2Avro(cmd.getOptionValue("input"), cmd.getOptionValue("output"), prop);
           break;
         case "c":
-          calculateTFIDF(cmd.getOptionValue("input"), cmd.getOptionValue("output"), cmd.getOptionValue("competences-vector"), propPath);
+          calculateTFIDF(cmd.getOptionValue("input"), cmd.getOptionValue("output"), cmd.getOptionValue("competences-vector"), prop);
           break;
         case "p":
 //                    -op p -v2 $HOME/Downloads/msc.csv -v1 $HOME/Downloads/job.csv -p $HOME/workspace/E-CO-2/etc/classification.properties
-          profile(cmd.getOptionValue("v1"), cmd.getOptionValue("v2"));
+          profile(cmd.getOptionValue("v1"), cmd.getOptionValue("v2"), cmd.getOptionValue("output"));
           break;
       }
 
     } catch (IllegalArgumentException | ParseException | IOException ex) {
       Logger.getLogger(BatchMain.class.getName()).log(Level.SEVERE, null, ex);
     }
+
   }
 
-  private static void calculateTFIDF(String in, String out, String competencesVectorPath, String prop) throws IOException {
-    if (!new File(competencesVectorPath).exists()) {
-      throw new IOException("competences vector path : " + competencesVectorPath + " not found");
-    }
+  public static void calculateTFIDF(String in, String out, String competencesVectorPath, Properties prop) throws IOException {
+
     try {
       TFIDFDriverImpl tfidfDriver = new TFIDFDriverImpl();
 
-      tfidfDriver.executeTFIDF(in, out, competencesVectorPath, prop, false);
+      if (TFIDFDriverImpl.NUM_OF_LINES == null) {
+        TFIDFDriverImpl.NUM_OF_LINES = prop.getProperty("map.reduce.num.of.lines", "200");
+      }
+
+      TFIDFDriverImpl.STOPWORDS_PATH = System.getProperty("stop.words.file");
+
+      if (TFIDFDriverImpl.STOPWORDS_PATH == null) {
+        TFIDFDriverImpl.STOPWORDS_PATH = prop.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
+      }
+      TFIDFDriverImpl.INPUT_ITEMSET = System.getProperty("itemset.file");
+      if (TFIDFDriverImpl.INPUT_ITEMSET == null) {
+        TFIDFDriverImpl.INPUT_ITEMSET = prop.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "allTerms.csv");
+      }
+
+      TFIDFDriverImpl.COMPETENCES_PATH = competencesVectorPath;
+      tfidfDriver.OUT = out;
+      tfidfDriver.executeTFIDF(in);
 
     } finally {
     }
@@ -162,27 +180,71 @@ public class BatchMain {
 
   }
 
-  private static void profile(String csvFile1, String csvFile2) throws IOException, Exception {
+  private static void profile(String csvFile1, String csvFile2, String output) throws IOException, Exception {
     Map<String, Collection<Double>> cv = CSVFileReader.csvCompetanceToMap(csvFile1, ",", Boolean.TRUE);
     Map<String, Collection<Double>> jobVec = CSVFileReader.csvCompetanceToMap(csvFile2, ",", Boolean.TRUE);
     CosineSimilarityMatrix cosineFunction = new CosineSimilarityMatrix();
+
     String k1 = cv.keySet().iterator().next();
     Map<String, Double> winners = new HashMap<>();
     for (String k : jobVec.keySet()) {
       Collection<Double> j = jobVec.get(k);
       double d = cosineFunction.computeDistance(cv.get(k1), j);
-      if (!Double.isNaN(d)) {
-        winners.put(k, d);
-      }
+//      if (!Double.isNaN(d)) {
+      winners.put(k, d);
+//      }
     }
+    StringBuilder lines = new StringBuilder();
+    ReaderFile rf = new ReaderFile(csvFile1);
+    String fileHeader = rf.readFileWithN().split("\n")[0];
+    String[] header = fileHeader.split(",");
+    lines.append("rank").append(",");
+    lines.append(fileHeader);
+    lines.append("\n");
 
-    System.err.println(k1 + "," + cv.get(k1));
+    int rank = 0;
+
+    JSONObject cvJson = new JSONObject();
+    Collection<Double> vector = cv.get(k1);
+    String val = vector.toString().replaceAll("\\[", "").replaceAll("\\]", "");
+    lines.append(rank).append(",").append(k1).append(",").append(val).append("\n");
+    Iterator<Double> iter = vector.iterator();
+    int i = 0;
+    cvJson.put(header[i++], k1);
+    while (iter.hasNext()) {
+      String key = header[i++];
+      Double value = iter.next();
+      cvJson.put(key, value);
+    }
+    cvJson.put("rank", rank);
+    JSONArray profileJson = new JSONArray();
+    profileJson.add(cvJson);
     ValueComparator bvc = new ValueComparator(winners);
     Map<String, Double> sorted_map = new TreeMap(bvc);
     sorted_map.putAll(winners);
-    for (String k : sorted_map.keySet()) {
-      System.err.println(k + "," + jobVec.get(k));
-    }
 
+    for (String k : sorted_map.keySet()) {
+      JSONObject jobJason = new JSONObject();
+      rank++;
+      vector = jobVec.get(k);
+      val = vector.toString().replaceAll("\\[", "").replaceAll("\\]", "");
+      lines.append(rank).append(",").append(k).append(",").append(val).append("\n");
+
+      i = 0;
+      jobJason.put(header[i++], k);
+      iter = vector.iterator();
+      while (iter.hasNext()) {
+        String key = header[i++];
+        Double value = iter.next();
+        jobJason.put(key, value);
+      }
+      jobJason.put("rank", rank);
+      profileJson.add(jobJason);
+    }
+    WriterFile wf = new WriterFile(output + File.separator + "result.csv");
+    wf.writeFile(lines.toString());
+
+    wf = new WriterFile(output + File.separator + "result.json");
+    wf.writeFile(profileJson.toJSONString());
   }
 }

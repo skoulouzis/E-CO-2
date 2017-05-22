@@ -49,7 +49,6 @@ import java.nio.file.attribute.FileTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -123,7 +122,7 @@ public class DataPrepare implements IDataPrepare {
                     + File.separator + documentObject.getTitle().replaceAll(" ", "_")
                     + date + ".avro", davro.getSchema());
           }
-//                    Logger.getLogger(Text2Avro.class.getName()).log(Level.INFO, "Adding :{0} to: {1}{2}{3}{4}.avro", new Object[]{documentObject.getDocumentId(), outputFolder, File.separator, documentObject.getTitle().replaceAll(" ", "_"), date});
+          Logger.getLogger(Text2Avro.class.getName()).log(Level.INFO, "Adding :{0} to: {1}{2}{3}{4}.avro", new Object[]{documentObject.getDocumentId(), outputFolder, File.separator, documentObject.getTitle().replaceAll(" ", "_"), date});
           dAvroSerializer.serialize(davro);
         }
 
@@ -188,7 +187,7 @@ public class DataPrepare implements IDataPrepare {
   }
 
   public void setDocumentObjectList(LinkedList<DocumentObject> jdocumentObjectList) {
-    this.documentObjectList = documentObjectList;
+    this.documentObjectList = jdocumentObjectList;
   }
 
   public DocumentObject getDocumentObject() {
@@ -225,23 +224,12 @@ public class DataPrepare implements IDataPrepare {
     FileTime ct = attr.creationTime();
     DateTimeFormatter formatter;
 
-//       
+//        formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");
 //        LocalDate.parse("2016-09-18T11:40:03.750522Z", formatter);
-//2016-11-18T13:29:55.965903Z
     formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    LocalDate lDate;
-    try {
-      lDate = LocalDate.parse(ct.toString(), formatter);
-      
-      DateTimeFormatter f = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
-      DateTime dateTime = f.parseDateTime("2012-01-10 23:13:26");
-      dateTime.getHourOfDay();
-      
-    } catch (java.lang.IllegalArgumentException ex) {
-      formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");
-      lDate = LocalDate.parse(ct.toString(), formatter);
-    }
-    return lDate;
+    LocalDate date = LocalDate.parse(ct.toString(), formatter);
+    Logger.getLogger(Text2Avro.class.getName()).log(Level.INFO, "CreationDate: {0}", date);
+    return date;
   }
 
 }

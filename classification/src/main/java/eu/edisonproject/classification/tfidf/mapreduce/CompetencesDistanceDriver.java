@@ -56,7 +56,6 @@ import org.apache.hadoop.util.Tool;
 public class CompetencesDistanceDriver extends Configured implements Tool {
 
   private static Map<String, Map<String, Double>> CATEGORIES_LIST;
-//    public static final TableName JOB_POST_COMETENCE_TBL_NAME = TableName.valueOf("categories");
 
   public static class CompetencesDistanceMapper extends Mapper<LongWritable, Text, Text, Text> {
 
@@ -67,6 +66,9 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
       String documentID = keyValues[0];
       String word = keyValues[1].split("/")[0];
       String tfidf = keyValues[1].split("/")[1];
+//            WriterFile rf = new WriterFile(System.getProperty("user.home") + "/" + this.getClass().getName() + ".dbg");
+//            rf.writeFile(documentID + " , " + word + "@" + tfidf);
+//            Logger.getLogger(CompetencesDistanceMapper.class.getName()).log(Level.INFO, "{0} , {1}@{2}", new Object[]{documentID, word, tfidf});
       context.write(new Text(documentID), new Text(word + "@" + tfidf));
 
     }
@@ -125,6 +127,11 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 
           competenceValue.add(competence.get(originalWord));
         }
+//                if (key.equals("DSDA02")) {
+//                    System.err.println(words);
+//                    System.err.println(competenceValue);
+//                    System.err.println(documentValue);
+//                }
 
         if (!competenceValue.isEmpty()) {
           try {
@@ -193,9 +200,6 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
 
       }
       mos = new MultipleOutputs(context);
-//            Configuration config = context.getConfiguration();
-//            String names = config.get("file.names");
-//            Set<String> fileName = new HashSet<>();
 
     }
 
@@ -208,7 +212,8 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
         String[] value = line.split(delimeter);
         categoriesFile.put(value[0], Double.parseDouble(value[1]));
       }
-      CATEGORIES_LIST.put(stat.getPath().getName().replace(".csv", ""), categoriesFile);
+      String key = stat.getPath().getName().replace(".csv", "");
+      CATEGORIES_LIST.put(key, categoriesFile);
     }
 
     private void readFolder(Path p, FileSystem fs) throws IOException {
@@ -229,12 +234,6 @@ public class CompetencesDistanceDriver extends Configured implements Tool {
   public int run(String[] args) {
     try {
       Configuration conf = HBaseConfiguration.create();
-
-      conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
-      conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
-
-//      conf.set("yarn.resourcemanager.address", "localhost:8032");
-//      conf.set("fs.default.name", "hdfs://localhost:9000");
       //additional output using TextOutputFormat.
       conf.set("file.names", args[3]);
 

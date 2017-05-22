@@ -1,0 +1,23 @@
+#----Submit job to yarn via rest API
+#1: Get an application id:
+curl  -X POST http://localhost:8088/ws/v1/cluster/apps/new-application 
+
+#2 Use id on json to submit :
+curl -i -H "Content-Type: application/json" -H "Accept: application/json" -X POST -d @yarnJob.json http://localhost:8088/ws/v1/cluster/apps
+
+#The response is in the header : 
+HTTP/1.1 202 Accepted
+Cache-Control: no-cache
+Expires: Sun, 01 Jan 2017 14:59:11 GMT
+Date: Sun, 01 Jan 2017 14:59:11 GMT
+Pragma: no-cache
+Expires: Sun, 01 Jan 2017 14:59:11 GMT
+Date: Sun, 01 Jan 2017 14:59:11 GMT
+Pragma: no-cache
+Content-Type: application/json
+Location: http://localhost:8088/ws/v1/cluster/apps/application_1483281848384_0003
+Content-Length: 0
+Server: Jetty(6.1.26)
+
+
+

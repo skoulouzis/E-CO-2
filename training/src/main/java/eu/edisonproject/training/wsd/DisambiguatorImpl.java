@@ -131,7 +131,7 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         } else {
             limit = Integer.valueOf(numOfTerms);
         }
-        LOGGER.log(Level.FINE, "num.of.terms: " + limit);
+        LOGGER.log(Level.FINE, "num.of.terms: {0}", limit);
 
         String offset = System.getProperty("offset.terms");
 
@@ -140,24 +140,24 @@ public class DisambiguatorImpl implements Disambiguator, Callable {
         } else {
             lineOffset = Integer.valueOf(offset);
         }
-        LOGGER.log(Level.FINE, "offset.terms: " + lineOffset);
+        LOGGER.log(Level.FINE, "offset.terms: {0}", lineOffset);
         String minimumSimilarityStr = System.getProperty("minimum.similarity");
         if (minimumSimilarityStr == null) {
             minimumSimilarityStr = properties.getProperty("minimum.similarity", "0,3");
         }
         minimumSimilarity = Double.valueOf(minimumSimilarityStr);
-        LOGGER.log(Level.FINE, "minimum.similarity: " + lineOffset);
+        LOGGER.log(Level.FINE, "minimum.similarity: {0}", lineOffset);
         stopWordsPath = System.getProperty("stop.words.file");
 
         if (stopWordsPath == null) {
             stopWordsPath = properties.getProperty("stop.words.file", ".." + File.separator + "etc" + File.separator + "stopwords.csv");
         }
-        LOGGER.log(Level.FINE, "stop.words.file: " + stopWordsPath);
+        LOGGER.log(Level.FINE, "stop.words.file: {0}", stopWordsPath);
         itemsFilePath = System.getProperty("itemset.file");
         if (itemsFilePath == null) {
-            itemsFilePath = properties.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "dictionaryAll.csv");
+            itemsFilePath = properties.getProperty("itemset.file", ".." + File.separator + "etc" + File.separator + "allTerms.csv");
         }
-        LOGGER.log(Level.FINE, "itemset.file: " + itemsFilePath);
+        LOGGER.log(Level.FINE, "itemset.file: {0}", itemsFilePath);
 //        Configuration config = HBaseConfiguration.create();
 //        try {
 //            conn = ConnectionFactory.createConnection(config);

@@ -17,13 +17,11 @@ public class WriterFile extends FileIO {
   }
 
   public void writeFile(String text) {
-    try {
-      try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-              new FileOutputStream(this.getFilePath()), "UTF-8"))) {
-        writer.write(text);
+    try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+            new FileOutputStream(this.getFilePath()), "UTF-8"))) {
+      writer.write(text);
 
-        writer.flush();
-      }
+      writer.flush();
     } catch (IOException e) {
       System.out.println("Can't write the following file: " + this.getFilePath());
     }

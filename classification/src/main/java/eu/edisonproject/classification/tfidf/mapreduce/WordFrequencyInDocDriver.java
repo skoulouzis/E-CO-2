@@ -21,21 +21,14 @@ package eu.edisonproject.classification.tfidf.mapreduce;
  */
 import document.avro.Document;
 import eu.edisonproject.utility.file.ConfigHelper;
-import eu.edisonproject.utility.file.MyProperties;
 import eu.edisonproject.utility.text.processing.StanfordLemmatizer;
 import eu.edisonproject.utility.text.processing.StopWord;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -63,6 +56,7 @@ import org.apache.lucene.analysis.util.CharArraySet;
 
 public class WordFrequencyInDocDriver extends Configured implements Tool {
 
+//    private static List<String> itemset;
   public static class WordFrequencyInDocMapper extends Mapper<AvroKey<Document>, NullWritable, Text, IntWritable> {
 
     private static final List<String> TERMS = new ArrayList<>();
@@ -78,10 +72,11 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     protected void setup(Context context) throws IOException, InterruptedException {
       if (context.getCacheFiles() != null && context.getCacheFiles().length > 0) {
         URI[] uris = context.getCacheFiles();
+
         FileSystem fs = FileSystem.get(context.getConfiguration());
+        String s;
         if (TERMS == null || TERMS.size() < 1) {
           Path dictionaryFilePath = new Path(uris[0]);
-          String s;
           try (BufferedReader br = new BufferedReader(
                   new InputStreamReader(fs.open(dictionaryFilePath)))) {
             while ((s = br.readLine()) != null) {
@@ -90,13 +85,14 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
             }
           }
         }
-
         URI stopwordFile = uris[1];
         if (cleanStopWord == null) {
           CharArraySet stopWordArraySet = new CharArraySet(ConfigHelper.loadStopWords(fs.open(new Path(stopwordFile)).getWrappedStream()), true);
           cleanStopWord = new StopWord(stopWordArraySet);
         }
-        cleanLemmatisation = new StanfordLemmatizer();
+        if (cleanLemmatisation == null) {
+          cleanLemmatisation = new StanfordLemmatizer();
+        }
       }
 
       Logger.getLogger(WordFrequencyInDocDriver.class.getName()).log(Level.INFO, "terms array has :{0} elemnts", TERMS.size());
@@ -117,7 +113,10 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
             throws IOException, InterruptedException {
 
       String documentId = key.datum().getDocumentId().toString();
+//            System.err.println("Processing :" + documentId);
+//            String title = key.datum().getTitle().toString();
       String description = key.datum().getDescription().toString().toLowerCase();
+//            String date = key.datum().getDate().toString();
 
       for (String s : TERMS) {
         s = trim(s.replaceAll("_", " "));
@@ -126,12 +125,18 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
         cleanLemmatisation.setDescription(cleanStopWord.execute());
         s = trim(cleanLemmatisation.execute());
         while (description.contains(" " + s + " ")) {
+//                while (description.contains(s)) {
           StringBuilder valueBuilder = new StringBuilder();
           valueBuilder.append(s);
           valueBuilder.append("@");
           valueBuilder.append(documentId);
+//                        valueBuilder.append("@");
+//                        valueBuilder.append(title);
+//                        valueBuilder.append("@");
+//                        valueBuilder.append(date);
           context.write(new Text(valueBuilder.toString()), new IntWritable(1));
           description = description.replaceFirst(" " + s + " ", " ");
+//                    description = description.replaceFirst(s, "");
         }
       }
 
@@ -147,6 +152,10 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
         valueBuilder.append("@");
         valueBuilder.append(documentId);
         valueBuilder.append("@");
+//                valueBuilder.append(title);
+//                valueBuilder.append("@");
+//                valueBuilder.append(date);
+        // emit the partial <k,v>
         context.write(new Text(valueBuilder.toString()), new IntWritable(1));
       }
     }
@@ -161,24 +170,24 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
       for (IntWritable val : values) {
         sum += val.get();
       }
-      System.err.println(key + "," + sum);
       context.write(key, sum);
     }
-  }
+  } // end of reducer class
 
   @Override
   public int run(String[] args) throws Exception {
-    Job job = getJob(args);
-    return (job.waitForCompletion(true) ? 0 : 1);
-  }
-
-  public Job getJob(String[] args) throws IOException {
+//        itemset = new LinkedList<String>();
+//        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(args[2])));
+//        String line;
+//        while ((line = br.readLine()) != null) {
+//            String[] components = line.split("/");
+//            itemset.add(components[0]);
+//        }
     Configuration conf = getConf();
-    conf = addPropertiesToConf(conf, args[4]);
 
     Job job = Job.getInstance(conf);
-    job.setJarByClass(this.getClass());
-    job.setJobName(this.getClass().getName());
+    job.setJarByClass(WordFrequencyInDocDriver.class);
+    job.setJobName("Word Frequency In Doc Driver");
 
     FileSystem fs = FileSystem.get(conf);
     fs.delete(new Path(args[1]), true);
@@ -220,7 +229,6 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
 
     job.setInputFormatClass(AvroKeyInputFormat.class);
     job.setMapperClass(WordFrequencyInDocMapper.class);
-
     AvroJob.setInputKeySchema(job, Document.getClassSchema());
     job.setMapOutputKeyClass(Text.class);
     job.setMapOutputValueClass(IntWritable.class);
@@ -228,47 +236,7 @@ public class WordFrequencyInDocDriver extends Configured implements Tool {
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(Integer.class);
     job.setReducerClass(WordFrequencyInDocReducer.class);
-    return job;
-  }
-
-  private Configuration addPropertiesToConf(Configuration conf, String arg) throws FileNotFoundException, IOException {
-    MyProperties prop = ConfigHelper.getProperties(arg);
-    Set<Object> keys = prop.keySet();
-    for (Object key : keys) {
-      String val = prop.getProperty((String) key);
-      conf.set((String) key, val);
-    }
-
-    String baseEtc = prop.getProperty("hadoop.conf.base.dir");
-    if (baseEtc != null) {
-      File etc = new File(baseEtc);
-
-      File[] files = etc.listFiles(new FilenameFilter() {
-        @Override
-        public boolean accept(File dir, String name) {
-          return name.toLowerCase().endsWith(".xml");
-        }
-      });
-      if (files != null) {
-        for (File f : files) {
-          conf.addResource(new org.apache.hadoop.fs.Path(f.getAbsolutePath()));
-        }
-      }
-    }
-
-    conf.set("mapreduce.map.class", WordFrequencyInDocMapper.class.getName());
-    conf.set("mapreduce.reduce.class", WordFrequencyInDocReducer.class.getName());
-//    conf.set("mapred.jar", jar_Output_Folder+ java.io.File.separator + className+".jar");
-    return conf;
-  }
-
-  @Override
-  public Configuration getConf() {
-    Configuration conf = super.getConf();
-    if (conf == null) {
-      conf = new Configuration();
-    }
-    return conf;
+    return (job.waitForCompletion(true) ? 0 : 1);
   }
 
 }
