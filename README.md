@@ -4,7 +4,7 @@ The EDISON COmpetencies ClassificatiOn (E-CO-2) service is a distributed automat
 that allow an API consumer (in this case the EDISON community portal) to analyze documents and retrieve results. The Local Catalog Manager plugs in into multiple data sources giving the opportunity to have a unified view of various data sources. Connecting to a larger overlay network it is possible to discover and request multiple datasets that can be used to perform more analytics. The focused crawler is used to collect documents from the web related with the job market and education of data science. The database is used to efficiently store and query input documents, analysis results, a context corpus and category vectors. The task scheduler queries the database in regular time intervals for new documents that need to be analyzed or updates in the context corpus and schedules tasks for the E-CO-2 analyzer. The E-CO-2 analyzers is the main analysis component that is responsible for providing a similarity matrix of an input document against the EDISON taxonomy and generate category vectors based on a context corpus.
 
 # Use
-The E-CO-2 service is dockerised. To deploy download the Docker file from: servicehttps://github.com/skoulouzis/E-CO-2/releases/download/v0.0.2/Dockerfile.
+The E-CO-2 service is dockerised. To deploy download the Docker file from: https://github.com/skoulouzis/E-CO-2/releases/download/v0.0.2/Dockerfile.
 
 Build the image:
 ```
