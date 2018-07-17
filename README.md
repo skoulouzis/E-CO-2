@@ -19,6 +19,26 @@ The REST API documentation can be found in:
 ```
 http://localhost:9999/doc/
 ```
+# Profile Dataset 
+Download the dataset from 
+```
+https://github.com/skoulouzis/E-CO-2/releases/download/v0.0.1/jobs_dataset.tar.gz
+```
+Extract:
+```
+tar -xzvf jobs_dataset.tar.gz 
+```
+
+Get the script from:
+```
+https://raw.githubusercontent.com/skoulouzis/E-CO-2/master/scripts/add_jobs.sh
+```
+
+Add the jobs data to the service by typing:
+```
+./add_jobs.sh jobs_json/
+```
+
 # Acknowledgment
 This work was funded by the [EDISON](http://edison-project.eu) projects  
 
