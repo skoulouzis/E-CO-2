@@ -8,13 +8,17 @@ The E-CO-2 service is dockerised. To deploy download the Docker file from: https
 
 Build the image:
 ```
-docker build -t e-co-2 .
+docker build -t e-co-2-docker .
 ```
 Run the service:
 ```
-docker run -e RELESE_VERSION=0.0.2 --name e-co-2-inst -d e-co-2 -p 127.0.0.1:9999:9999
+docker run -e RELESE_VERSION=0.0.2 --name e-co-2-inst -p 127.0.0.1:9999:9999 -d e-co-2-docker
 ```
 
+The REST API documentation can be found in:
+```
+http://localhost:9999/doc/
+```
 # Acknowledgment
 This work was funded by the [EDISON](http://edison-project.eu) projects  
 
