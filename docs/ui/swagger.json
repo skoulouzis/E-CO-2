@@ -1,0 +1,351 @@
+{
+  "swagger": "2.0",
+  "info" : {
+    "description" : "<h1>rest<\/h1>",
+    "version" : "1.0-SNAPSHOT",
+    "title" : "rest"
+  },
+  "schemes" : [],
+  "tags" : [
+    {
+      "name" : "ECO2Controller"
+      ,
+      "description" : "The EDISON COmpetencies ClassificatiOn (E-CO-2) service is an automated tool\ndesigned to support gap analysis."
+    }
+  ],
+  "definitions" : {
+  },
+  "paths": {
+    "\/e-co2/average/course" : {
+      "get" : {
+        "tags" : [ "ECO2Controller" ],
+        "summary" : "Returns the average profile of all the classified course.",
+        "description" : "Returns the average profile of all the classified course",
+        "operationId" : "resource_ECO2Controller_getAverageCourse_GET",
+        "produces" : [ "application/json" ],
+        "parameters" : [
+        ],
+        "responses" : {
+          "200" : {
+            "schema" : {
+"description" : "",
+"type" : "string"
+            },
+            "headers" : {
+            },
+            "examples" : {
+            },
+            "description" : "Success"
+          }
+        }
+      }
+    }
+    ,
+    "\/e-co2/average/cv" : {
+      "get" : {
+        "tags" : [ "ECO2Controller" ],
+        "summary" : "Returns the average profile of all the classified CV.",
+        "description" : "Returns the average profile of all the classified CV",
+        "operationId" : "resource_ECO2Controller_getAverageCV_GET",
+        "produces" : [ "application/json" ],
+        "parameters" : [
+        ],
+        "responses" : {
+          "200" : {
+            "schema" : {
+"description" : "",
+"type" : "string"
+            },
+            "headers" : {
+            },
+            "examples" : {
+            },
+            "description" : "Success"
+          }
+        }
+      }
+    }
+    ,
+    "\/e-co2/average/job" : {
+      "get" : {
+        "tags" : [ "ECO2Controller" ],
+        "summary" : "Returns the average profile of all the classified job.",
+        "description" : "Returns the average profile of all the classified job",
+        "operationId" : "resource_ECO2Controller_getAverageJob_GET",
+        "produces" : [ "application/json" ],
+        "parameters" : [
+        ],
+        "responses" : {
+          "200" : {
+            "schema" : {
+"description" : "",
+"type" : "string"
+            },
+            "headers" : {
+            },
+            "examples" : {
+            },
+            "description" : "Success"
+          }
+        }
+      }
+    }
+    ,
+    "\/e-co2/classification/course" : {
+      "post" : {
+        "tags" : [ "ECO2Controller" ],
+        "summary" : "Performs classification of course description based on the EDISON\nDS-taxonomy.",
+        "description" : "Performs classification of course description based on the EDISON\nDS-taxonomy.\n\nThe method is asynchronous. After the call is made an id is immediately\nreturned.",
+        "operationId" : "resource_ECO2Controller_classifyCourse_POST",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "*/*" ],
+        "parameters" : [
+          {
+            "name" : "body",
+            "in" : "body",
+            "schema" : {
+"description" : "",
+"type" : "string"
+            },
+            "description" : ""
+          }
+        ],
+        "responses" : {
+          "201" : {
+            "headers" : {
+            },
+            "examples" : {
+            },
+            "description" : "Success"
+          }
+        }
+      }
+    }
+    ,
+    "\/e-co2/classification/cv" : {
+      "post" : {
+        "tags" : [ "ECO2Controller" ],
+        "summary" : "Performs classification of a cv based on the EDISON DS-taxonomy.",
+        "description" : "Performs classification of a cv based on the EDISON DS-taxonomy. The\nmethod is asynchronous. After the call is made an id is immediately\nreturned.",
+        "operationId" : "resource_ECO2Controller_classifyCV_POST",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "text/plain" ],
+        "parameters" : [
+          {
+            "name" : "body",
+            "in" : "body",
+            "schema" : {
+"description" : "",
+"type" : "string"
+            },
+            "description" : "The document to classify."
+          }
+        ],
+        "responses" : {
+          "201" : {
+            "schema" : {
+"description" : "",
+"type" : "string"
+            },
+            "headers" : {
+            },
+            "examples" : {
+            },
+            "description" : "Success"
+          }
+        }
+      }
+    }
+    ,
+    "\/e-co2/classification/job" : {
+      "post" : {
+        "tags" : [ "ECO2Controller" ],
+        "summary" : "Performs classification of a job posting based on the EDISON DS-taxonomy.",
+        "description" : "Performs classification of a job posting based on the EDISON DS-taxonomy.\nThe method is asynchronous. After the call is made an id is immediately\nreturned.",
+        "operationId" : "resource_ECO2Controller_classifyJob_POST",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "*/*" ],
+        "parameters" : [
+          {
+            "name" : "body",
+            "in" : "body",
+            "schema" : {
+"description" : "",
+"type" : "string"
+            },
+            "description" : ""
+          }
+        ],
+        "responses" : {
+          "201" : {
+            "headers" : {
+            },
+            "examples" : {
+            },
+            "description" : "Success"
+          }
+        }
+      }
+    }
+    ,
+    "\/e-co2/classification/{id}" : {
+      "get" : {
+        "tags" : [ "ECO2Controller" ],
+        "summary" : "Providing the unique classification id this method returns the\nclassification results.",
+        "description" : "Providing the unique classification id this method returns the\nclassification results.",
+        "operationId" : "resource_ECO2Controller_getClassification_GET",
+        "produces" : [ "application/json" ],
+        "parameters" : [
+          {
+            "name" : "id",
+            "in" : "path",
+            "required" : true,
+            "type" : "string",
+            "description" : "unique classification id"
+          }
+        ],
+        "responses" : {
+          "200" : {
+            "schema" : {
+"description" : "",
+"type" : "string"
+            },
+            "headers" : {
+            },
+            "examples" : {
+            },
+            "description" : "Success"
+          }
+        }
+      }
+    }
+    ,
+    "\/e-co2/profile/{id}" : {
+      "get" : {
+        "tags" : [ "ECO2Controller" ],
+        "summary" : "Providing the unique profile id this method returns the profiling\nresults.",
+        "description" : "Providing the unique profile id this method returns the profiling\nresults.",
+        "operationId" : "resource_ECO2Controller_getProfile_GET",
+        "produces" : [ "application/json" ],
+        "parameters" : [
+          {
+            "name" : "id",
+            "in" : "path",
+            "required" : true,
+            "type" : "string",
+            "description" : "unique classification id"
+          }
+        ],
+        "responses" : {
+          "200" : {
+            "schema" : {
+"description" : "",
+"type" : "string"
+            },
+            "headers" : {
+            },
+            "examples" : {
+            },
+            "description" : "Success"
+          }
+        }
+      }
+    }
+    ,
+    "\/e-co2/profile/courses/{id}" : {
+      "get" : {
+        "tags" : [ "ECO2Controller" ],
+        "summary" : "Providing the unique classification id this method profiles the\nclassified document (represented by the unique classification id) against\nthe all courses available to this service.",
+        "description" : "Providing the unique classification id this method profiles the\nclassified document (represented by the unique classification id) against\nthe all courses available to this service.\n\nThe method is asynchronous. After the call is made an id is immediately\nreturned.",
+        "operationId" : "resource_ECO2Controller_getCourseList_GET",
+        "produces" : [ "application/json" ],
+        "parameters" : [
+          {
+            "name" : "id",
+            "in" : "path",
+            "required" : true,
+            "type" : "string",
+            "description" : "the unique classification id (obtained from the\nclassification methods)"
+          }
+        ],
+        "responses" : {
+          "200" : {
+            "schema" : {
+"description" : "",
+"type" : "string"
+            },
+            "headers" : {
+            },
+            "examples" : {
+            },
+            "description" : "Success"
+          }
+        }
+      }
+    }
+    ,
+    "\/e-co2/profile/cv/{id}" : {
+      "get" : {
+        "tags" : [ "ECO2Controller" ],
+        "summary" : "Providing the unique classification id this method profiles the\nclassified document (represented by the unique classification id) against\nthe all CVs available to this service.",
+        "description" : "Providing the unique classification id this method profiles the\nclassified document (represented by the unique classification id) against\nthe all CVs available to this service.\n\nThe method is asynchronous. After the call is made an id is immediately\nreturned.",
+        "operationId" : "resource_ECO2Controller_getCVList_GET",
+        "produces" : [ "application/json" ],
+        "parameters" : [
+          {
+            "name" : "id",
+            "in" : "path",
+            "required" : true,
+            "type" : "string",
+            "description" : "the unique classification id (obtained from the\nclassification methods)"
+          }
+        ],
+        "responses" : {
+          "200" : {
+            "schema" : {
+"description" : "",
+"type" : "string"
+            },
+            "headers" : {
+            },
+            "examples" : {
+            },
+            "description" : "Success"
+          }
+        }
+      }
+    }
+    ,
+    "\/e-co2/profile/jobs/{id}" : {
+      "get" : {
+        "tags" : [ "ECO2Controller" ],
+        "summary" : "Providing the unique classification id this method profiles the\nclassified document (represented by the unique classification id) against\nthe all jobs available to this service.",
+        "description" : "Providing the unique classification id this method profiles the\nclassified document (represented by the unique classification id) against\nthe all jobs available to this service.\n\nThe method is asynchronous. After the call is made an id is immediately\nreturned.",
+        "operationId" : "resource_ECO2Controller_getJobsList_GET",
+        "produces" : [ "application/json" ],
+        "parameters" : [
+          {
+            "name" : "id",
+            "in" : "path",
+            "required" : true,
+            "type" : "string",
+            "description" : "the unique classification id (obtained from the\nclassification methods)"
+          }
+        ],
+        "responses" : {
+          "200" : {
+            "schema" : {
+"description" : "",
+"type" : "string"
+            },
+            "headers" : {
+            },
+            "examples" : {
+            },
+            "description" : "Success"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?enunciate-assumed-base-uri ./?>
+<wadl:application xmlns:wadl="http://wadl.dev.java.net/2009/02" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <wadl:doc xmlns:enunciate="http://enunciate.webcohesion.com/" enunciate:generatedBy="Enunciate-2.0"/>
+  
+  <wadl:grammars>
+  </wadl:grammars>
+
+  <wadl:resources base="./">
+
+    <wadl:resource path="e-co2/average/course">
+      <wadl:method name="GET">
+        <wadl:doc><![CDATA[Returns the average profile of all the classified course]]></wadl:doc>
+        <wadl:response>
+          <wadl:representation mediaType="application/json"/>
+        </wadl:response>
+      </wadl:method>
+    </wadl:resource>
+
+    <wadl:resource path="e-co2/average/cv">
+      <wadl:method name="GET">
+        <wadl:doc><![CDATA[Returns the average profile of all the classified CV]]></wadl:doc>
+        <wadl:response>
+          <wadl:representation mediaType="application/json"/>
+        </wadl:response>
+      </wadl:method>
+    </wadl:resource>
+
+    <wadl:resource path="e-co2/average/job">
+      <wadl:method name="GET">
+        <wadl:doc><![CDATA[Returns the average profile of all the classified job]]></wadl:doc>
+        <wadl:response>
+          <wadl:representation mediaType="application/json"/>
+        </wadl:response>
+      </wadl:method>
+    </wadl:resource>
+
+    <wadl:resource path="e-co2/classification/course">
+      <wadl:method name="POST">
+        <wadl:doc><![CDATA[Performs classification of course description based on the EDISON
+DS-taxonomy.
+
+The method is asynchronous. After the call is made an id is immediately
+returned.]]></wadl:doc>
+        <wadl:request>
+          <wadl:representation mediaType="application/json">
+          </wadl:representation>
+        </wadl:request>
+        <wadl:response>
+          <wadl:doc><![CDATA[a unique id to retrieve the results]]></wadl:doc>
+          <wadl:representation mediaType="*/*"/>
+        </wadl:response>
+      </wadl:method>
+    </wadl:resource>
+
+    <wadl:resource path="e-co2/classification/cv">
+      <wadl:method name="POST">
+        <wadl:doc><![CDATA[Performs classification of a cv based on the EDISON DS-taxonomy. The
+method is asynchronous. After the call is made an id is immediately
+returned.]]></wadl:doc>
+        <wadl:request>
+          <wadl:doc><![CDATA[The document to classify.]]></wadl:doc>
+          <wadl:representation mediaType="application/json">
+          </wadl:representation>
+        </wadl:request>
+        <wadl:response>
+          <wadl:doc><![CDATA[a unique id to retrieve the results]]></wadl:doc>
+          <wadl:representation mediaType="text/plain"/>
+        </wadl:response>
+      </wadl:method>
+    </wadl:resource>
+
+    <wadl:resource path="e-co2/classification/job">
+      <wadl:method name="POST">
+        <wadl:doc><![CDATA[Performs classification of a job posting based on the EDISON DS-taxonomy.
+The method is asynchronous. After the call is made an id is immediately
+returned.]]></wadl:doc>
+        <wadl:request>
+          <wadl:representation mediaType="application/json">
+          </wadl:representation>
+        </wadl:request>
+        <wadl:response>
+          <wadl:doc><![CDATA[a unique id to retrieve the results]]></wadl:doc>
+          <wadl:representation mediaType="*/*"/>
+        </wadl:response>
+      </wadl:method>
+    </wadl:resource>
+
+    <wadl:resource path="e-co2/classification/{id}">
+      <wadl:method name="GET">
+        <wadl:doc><![CDATA[Providing the unique classification id this method returns the
+classification results.]]></wadl:doc>
+        <wadl:request>
+        </wadl:request>
+        <wadl:response>
+          <wadl:doc><![CDATA[the classification results]]></wadl:doc>
+          <wadl:representation mediaType="application/json"/>
+        </wadl:response>
+      </wadl:method>
+      <wadl:param name="id" style="template">
+        <wadl:doc><![CDATA[unique classification id]]></wadl:doc>
+      </wadl:param>
+    </wadl:resource>
+
+    <wadl:resource path="e-co2/profile/{id}">
+      <wadl:method name="GET">
+        <wadl:doc><![CDATA[Providing the unique profile id this method returns the profiling
+results.]]></wadl:doc>
+        <wadl:request>
+        </wadl:request>
+        <wadl:response>
+          <wadl:doc><![CDATA[the profiling results]]></wadl:doc>
+          <wadl:representation mediaType="application/json"/>
+        </wadl:response>
+      </wadl:method>
+      <wadl:param name="id" style="template">
+        <wadl:doc><![CDATA[unique classification id]]></wadl:doc>
+      </wadl:param>
+    </wadl:resource>
+
+    <wadl:resource path="e-co2/profile/courses/{id}">
+      <wadl:method name="GET">
+        <wadl:doc><![CDATA[Providing the unique classification id this method profiles the
+classified document (represented by the unique classification id) against
+the all courses available to this service.
+
+The method is asynchronous. After the call is made an id is immediately
+returned.]]></wadl:doc>
+        <wadl:request>
+        </wadl:request>
+        <wadl:response>
+          <wadl:doc><![CDATA[unique profile id]]></wadl:doc>
+          <wadl:representation mediaType="application/json"/>
+        </wadl:response>
+      </wadl:method>
+      <wadl:param name="id" style="template">
+        <wadl:doc><![CDATA[the unique classification id (obtained from the
+classification methods)]]></wadl:doc>
+      </wadl:param>
+    </wadl:resource>
+
+    <wadl:resource path="e-co2/profile/cv/{id}">
+      <wadl:method name="GET">
+        <wadl:doc><![CDATA[Providing the unique classification id this method profiles the
+classified document (represented by the unique classification id) against
+the all CVs available to this service.
+
+The method is asynchronous. After the call is made an id is immediately
+returned.]]></wadl:doc>
+        <wadl:request>
+        </wadl:request>
+        <wadl:response>
+          <wadl:doc><![CDATA[unique profile id]]></wadl:doc>
+          <wadl:representation mediaType="application/json"/>
+        </wadl:response>
+      </wadl:method>
+      <wadl:param name="id" style="template">
+        <wadl:doc><![CDATA[the unique classification id (obtained from the
+classification methods)]]></wadl:doc>
+      </wadl:param>
+    </wadl:resource>
+
+    <wadl:resource path="e-co2/profile/jobs/{id}">
+      <wadl:method name="GET">
+        <wadl:doc><![CDATA[Providing the unique classification id this method profiles the
+classified document (represented by the unique classification id) against
+the all jobs available to this service.
+
+The method is asynchronous. After the call is made an id is immediately
+returned.]]></wadl:doc>
+        <wadl:request>
+        </wadl:request>
+        <wadl:response>
+          <wadl:doc><![CDATA[unique profile id]]></wadl:doc>
+          <wadl:representation mediaType="application/json"/>
+        </wadl:response>
+      </wadl:method>
+      <wadl:param name="id" style="template">
+        <wadl:doc><![CDATA[the unique classification id (obtained from the
+classification methods)]]></wadl:doc>
+      </wadl:param>
+    </wadl:resource>
+  </wadl:resources>
+</wadl:application>
